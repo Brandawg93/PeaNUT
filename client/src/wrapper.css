@@ -25,3 +25,14 @@
     align-items: center;
     font-size: 100px;
 }
+
+.info-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.status-icon {
+    font-weight: 600;
+    font-size: 24px;
+}

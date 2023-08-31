@@ -12,7 +12,6 @@ export default function NutGrid(props: any) {
   return (
     <Grid
       data={result || (() => new Promise(() => {}))}
-      autoWidth
       columns={[
         { name: 'key' },
         { name: 'value' },

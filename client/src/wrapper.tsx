@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCheck, faExclamation, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import NutGrid from './grid';
 import Gauge from './gauge';
 import LineChart from './line-chart';
@@ -56,6 +56,17 @@ let query = gql`
   }
 `;
 
+const getStatus = (status: string) => {
+    switch (status) {
+        case 'OL':
+            return <p className='status-icon'><FontAwesomeIcon icon={faCheck} style={{color: "#00ff00"}} />&nbsp;Online</p>;
+        case 'OB':
+            return <p className='status-icon'><FontAwesomeIcon icon={faExclamation} style={{color: "#ffff00"}} />&nbsp;On Battery</p>;
+        case 'LB':
+            return <p className='status-icon'><FontAwesomeIcon icon={faCircleExclamation} style={{color: "#ff0000"}} />&nbsp;Low Battery</p>;
+    }
+};
+
 export default function Wrapper() {
     const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
     const [refreshInterval, setRefreshInterval] = useState(localRefresh);
@@ -71,32 +82,42 @@ export default function Wrapper() {
     return (
         <>
         <NavBar onRefreshClick={() => refetch()} onRefreshIntervalChange={(interval: number) => setRefreshInterval(interval)} />
-            <Container>
-                <Row>
-                    <Col>
-                        <div className='gauge-container'>
-                            <Gauge percentage={data?.ups.ups_load} title={'Current Load'} invert />
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className='gauge-container'>
-                            <Gauge percentage={data?.ups.battery_charge} title={'Battery Charge'} />
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <div className='line-container'>
-                            <LineChart data={data} />
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <NutGrid data={data} />
-                    </Col>
-                </Row>
-            </Container>
+        <Container>
+            <div className='info-container'>
+                <div>
+                    <p className='m-0'>Manufacturer: {data.ups.ups_mfr}</p>
+                    <p className='m-0'>Model: {data.ups.ups_model}</p>
+                    <p>Serial: {data.ups.device_serial}</p>
+                </div>
+                <div>
+                    {getStatus(data.ups.ups_status)}
+                </div>
+            </div>
+            <Row>
+                <Col>
+                    <div className='gauge-container'>
+                        <Gauge percentage={data?.ups.ups_load} title={'Current Load'} invert />
+                    </div>
+                </Col>
+                <Col>
+                    <div className='gauge-container'>
+                        <Gauge percentage={data?.ups.battery_charge} title={'Battery Charge'} />
+                    </div>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <div className='line-container'>
+                        <LineChart data={data} />
+                    </div>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <NutGrid data={data} />
+                </Col>
+            </Row>
+        </Container>
         </>
     );
 }

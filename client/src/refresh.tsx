@@ -16,9 +16,9 @@ export default function Refresh(props: any) {
 
     return (
         <Dropdown as={ButtonGroup} onSelect={handleSelect}>
-            <Button variant='outline-primary'><FontAwesomeIcon icon={faRefresh} onClick={onClick} /></Button>
+            <Button variant='outline-secondary'><FontAwesomeIcon icon={faRefresh} onClick={onClick} /></Button>
 
-            <Dropdown.Toggle split variant='outline-primary' />
+            <Dropdown.Toggle split variant='outline-secondary' />
 
             <Dropdown.Menu>
                 <Dropdown.Item eventKey={0} active={refreshInterval === '0'}>off</Dropdown.Item>
