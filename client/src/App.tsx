@@ -6,7 +6,6 @@ import { Chart } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import Wrapper from './wrapper';
 import './App.css';
-import NavBar from './navbar';
 
 Chart.register(annotationPlugin);
 
@@ -18,7 +17,6 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <NavBar />
       <Wrapper />
     </ApolloProvider>
   );

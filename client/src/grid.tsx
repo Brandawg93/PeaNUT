@@ -5,7 +5,7 @@ export default function NutGrid(props: any) {
   const { data } = props;
   let result: any = [];
   if (data?.ups) {
-    result = Object.entries(data.ups).map(( [k, v] ) => ({ key: k, value: v }));
+    result = Object.entries(data.ups).map(( [k, v] ) => ({ key: k.replace(/_/g, '.'), value: v }));
     result.shift();
   }
 

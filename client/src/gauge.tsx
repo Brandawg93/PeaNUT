@@ -26,7 +26,7 @@ const getColor = (value: number, invert = false) => {
     }
     const hue = (num * 120).toString(10);
     return ["hsl(", hue, ",100%,50%)"].join("");
-}
+};
 
 export default function Gauge(props: any) {
     const { percentage, invert, title } = props;

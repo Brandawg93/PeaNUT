@@ -14,6 +14,9 @@ const root = {
     const nut = new Nut(process.env.NUT_HOST || 'localhost', parseInt(process.env.NUT_PORT || '3493'));
     return await nut.getData();
   },
+  updated: () => {
+    return Math.floor(Date.now() / 1000);
+  },
 };
 
 const app: Express = express();

@@ -4,6 +4,7 @@ import { buildSchema } from 'graphql';
 const schema = buildSchema(`
   type Query {
     ups: Ups
+    updated: Int
   }
   type Ups {
     battery_charge: String
