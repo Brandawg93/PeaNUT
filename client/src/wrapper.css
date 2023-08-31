@@ -26,6 +26,24 @@
     font-size: 100px;
 }
 
+.error-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 100px;
+    color: red;
+    margin-bottom: 15px;
+}
+
 .info-container {
     display: flex;
     flex-direction: row;

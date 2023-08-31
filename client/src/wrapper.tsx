@@ -59,19 +59,32 @@ let query = gql`
 const getStatus = (status: string) => {
     switch (status) {
         case 'OL':
-            return <p className='status-icon'><FontAwesomeIcon icon={faCheck} style={{color: "#00ff00"}} />&nbsp;Online</p>;
+            return <p className='status-icon'><FontAwesomeIcon icon={faCheck} style={{color: '#00ff00'}} />&nbsp;Online</p>;
         case 'OB':
-            return <p className='status-icon'><FontAwesomeIcon icon={faExclamation} style={{color: "#ffff00"}} />&nbsp;On Battery</p>;
+            return <p className='status-icon'><FontAwesomeIcon icon={faExclamation} style={{color: '#ffff00'}} />&nbsp;On Battery</p>;
         case 'LB':
-            return <p className='status-icon'><FontAwesomeIcon icon={faCircleExclamation} style={{color: "#ff0000"}} />&nbsp;Low Battery</p>;
+            return <p className='status-icon'><FontAwesomeIcon icon={faCircleExclamation} style={{color: '#ff0000'}} />&nbsp;Low Battery</p>;
     }
 };
 
 export default function Wrapper() {
     const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
     const [refreshInterval, setRefreshInterval] = useState(localRefresh);
-    const { data, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
+    const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
 
+    if (error) {
+        if (error.message.includes('ECONNREFUSED')) {
+            return (
+                <div className='error-container'>
+                    <div>
+                        <FontAwesomeIcon icon={faCircleExclamation} className='error-icon' />
+                        <p>Connection refused. Is NUT server running?</p>
+                    </div>
+                </div>
+            );
+        }
+        console.error(error);
+    }
     if (!data?.ups) {
         return (
             <div className='loading-container'>
