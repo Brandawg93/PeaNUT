@@ -1,0 +1,27 @@
+.gauge-container {
+    border: 1px solid #ccc;
+    height: 40vw;
+    max-height: 20vh;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    border-radius: 5px;
+}
+
+.line-container {
+    max-height: 40vh;
+    height: 80vw;
+    width: 100%;
+}
+
+.loading-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+}
