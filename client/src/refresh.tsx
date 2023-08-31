@@ -6,18 +6,19 @@ import { useState } from 'react';
 export default function Refresh(props: any) {
 
     const { onClick, onChange } = props;
-    const [refreshInterval, setRefreshInterval] = useState('0');
+    const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0');
 
     const handleSelect = (eventKey: any) => {
         setRefreshInterval(eventKey);
         onChange(parseInt(eventKey));
+        localStorage.setItem('refreshInterval', eventKey);
     };
 
     return (
         <Dropdown as={ButtonGroup} onSelect={handleSelect}>
-            <Button variant="outline-primary"><FontAwesomeIcon icon={faRefresh} onClick={onClick} /></Button>
+            <Button variant='outline-primary'><FontAwesomeIcon icon={faRefresh} onClick={onClick} /></Button>
 
-            <Dropdown.Toggle split variant="outline-primary" />
+            <Dropdown.Toggle split variant='outline-primary' />
 
             <Dropdown.Menu>
                 <Dropdown.Item eventKey={0} active={refreshInterval === '0'}>off</Dropdown.Item>

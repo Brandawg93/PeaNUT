@@ -57,7 +57,8 @@ let query = gql`
 `;
 
 export default function Wrapper() {
-    const [refreshInterval, setRefreshInterval] = useState(0);
+    const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
+    const [refreshInterval, setRefreshInterval] = useState(localRefresh);
     const { data, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
 
     if (!data?.ups) {
