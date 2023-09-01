@@ -13,8 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "concurrently \"tsc --watch\" \"nodemon server/**/*\"",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "postinstall": "cd client && npm install"
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",

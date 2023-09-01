@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm ci && npm i typescript -g
+RUN npm ci && npm i typescript -g && cd client && npm ci
 ENV NODE_ENV=production
 RUN npm run build
 
