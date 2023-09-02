@@ -18,13 +18,9 @@ function secondsToDhms(seconds: number) {
 export default function Runtime(props: any) {
     const { runtime } = props;
 
-    const time = secondsToDhms(runtime);
-    const timeSpan = ['day', 'hour', 'minute', 'second'];
-    const intersect = timeSpan.filter((value) => time.includes(value)).length;
-    const size = 5 - intersect;
     return (
-        <div style={{fontSize: `${size}em`}}>
-            <Kpi text={time} description={'Battery Runtime'} />
+        <div style={{fontSize: `2em`}}>
+            <Kpi text={secondsToDhms(runtime)} description={'Battery Runtime'} />
         </div>
     );
 }
