@@ -1,5 +1,6 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
+import './gauge.css';
 
 const gaugeChartText = {
     id: 'gaugeChartText',
@@ -46,6 +47,7 @@ export default function Gauge(props: any) {
         }],
       };
     return (
+      <div className='gauge-container'>
         <Doughnut data={data}
           options={{
             cutout: '80%',
@@ -67,6 +69,7 @@ export default function Gauge(props: any) {
           }}
           plugins={[gaugeChartText]}
         />
+      </div>
     );
   }
   

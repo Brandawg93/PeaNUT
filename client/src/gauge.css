@@ -1,0 +1,8 @@
+.gauge-container {
+    border: 1px solid #ccc;
+    height: 200px;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    border-radius: 5px;
+}

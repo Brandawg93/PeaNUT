@@ -1,0 +1,26 @@
+.kpi-container {
+    border: 1px solid #ccc;
+    height: 200px;
+    position: relative;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.kpi-text {
+    font-weight: 600;
+    display: flex;
+    height: 100%;
+    vertical-align: middle;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-bottom: 20px;
+}
+
+.kpi-description {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666666;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+}

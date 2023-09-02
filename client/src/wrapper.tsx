@@ -8,6 +8,8 @@ import Gauge from './gauge';
 import LineChart from './line-chart';
 import NavBar from './navbar';
 import './wrapper.css';
+import Kpi from './kpi';
+import Runtime from './runtime';
 
 let query = gql`
   query {
@@ -107,26 +109,23 @@ export default function Wrapper() {
                 </div>
             </div>
             <Row>
-                <Col>
-                    <div className='gauge-container'>
-                        <Gauge percentage={data?.ups.ups_load} title={'Current Load'} invert />
-                    </div>
+                <Col className='mb-4'>
+                    <Gauge percentage={data?.ups.ups_load} title={'Current Load'} invert />
                 </Col>
-                <Col>
-                    <div className='gauge-container'>
-                        <Gauge percentage={data?.ups.battery_charge} title={'Battery Charge'} />
-                    </div>
+                <Col className='mb-4'>
+                    <Gauge percentage={data?.ups.battery_charge} title={'Battery Charge'} />
                 </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <div className='line-container'>
-                        <LineChart data={data} />
-                    </div>
+                <Col className='mb-4'>
+                    <Runtime runtime={data?.ups.battery_runtime} />
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col className='mb-4'>
+                    <LineChart data={data} />
+                </Col>
+            </Row>
+            <Row>
+                <Col className='mb-4'>
                     <NutGrid data={data} />
                 </Col>
             </Row>
