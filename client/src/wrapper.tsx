@@ -8,7 +8,6 @@ import Gauge from './gauge';
 import LineChart from './line-chart';
 import NavBar from './navbar';
 import './wrapper.css';
-import Kpi from './kpi';
 import Runtime from './runtime';
 
 let query = gql`
