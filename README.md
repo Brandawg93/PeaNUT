@@ -9,6 +9,8 @@ A Tiny Dashboard for Network UPS Tools
 [![PayPal](https://img.shields.io/badge/paypal-donate-blue?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=CEYYGVB7ZZ764&item_name=peanut&currency_code=USD&source=url)
 ![Docker Pulls](https://img.shields.io/docker/pulls/brandawg93/peanut)
 
+<img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/charts.png" width="600px" />
+
 ## Installation
 
 Install using Docker
