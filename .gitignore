@@ -30,3 +30,5 @@ Thumbs.db
 
 docker-compose.yml
 !examples/docker-compose.yml
+
+scripts
