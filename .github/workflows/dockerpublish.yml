@@ -30,10 +30,12 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           platforms: linux/amd64,linux/arm64,arm/v6,arm/v7
-          version: ${{github.ref_name}}
+          version: latest
       -
         name: Build
         uses: docker/build-push-action@v4
         with:
           context: .
+          tags: brandawg93/peanut:${{github.ref_name}},brandawg93/peanut:latest
+          push: true
   
