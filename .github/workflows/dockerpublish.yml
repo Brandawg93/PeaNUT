@@ -9,9 +9,9 @@
 
 name: Publish Docker image
 
-on:
-  release:
-    types: [published]
+# on:
+#   release:
+#     types: [published]
 
 jobs:
   buildx:
