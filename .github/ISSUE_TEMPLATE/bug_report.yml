@@ -1,0 +1,48 @@
+name: Bug Report
+description: Report an issue with this project.
+title: "[Bug]: "
+labels: bug
+body:
+  - type: textarea
+    id: describe-the-bug
+    attributes:
+      label: Describe the bug
+      description: Also describe what you expected to happen
+    validations:
+      required: true
+  - type: textarea
+    id: debug-output
+    attributes:
+      label: Debug Output
+    validations:
+      required: true
+  - type: textarea
+    id: to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior
+      value: "1. "
+    validations:
+      required: true
+  - type: input
+    id: device-type
+    attributes:
+      label: Device Type
+      description: On what device are you running the project?
+      placeholder: ex. raspberry pi
+    validations:
+      required: true
+  - type: input
+    id: ups-device
+    attributes:
+      label: UPS Device
+      description: What is your UPS type and driver used?
+    validations:
+      required: true
+  - type: input
+    id: last-working-version
+    attributes:
+      label: Last Working Version
+      description: If applicable, what was the last version that worked properly?
+    validations:
+      required: false
