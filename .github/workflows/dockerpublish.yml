@@ -29,8 +29,8 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
-          platforms: linux/amd64,linux/arm64
-          version: latest
+          platforms: linux/amd64,linux/arm64,arm/v6,arm/v7
+          version: ${{github.ref_name}}
       -
         name: Build
         uses: docker/build-push-action@v4
