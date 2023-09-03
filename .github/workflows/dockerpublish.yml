@@ -41,5 +41,5 @@ jobs:
           context: .
           tags: brandawg93/peanut:${{github.ref_name}},brandawg93/peanut:latest
           push: true
-          platforms: linux/amd64,linux/arm64,arm/v6,arm/v7
+          platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
   
