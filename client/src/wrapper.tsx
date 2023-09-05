@@ -12,7 +12,7 @@ import Runtime from './runtime';
 
 let query = gql`
   query {
-    ups {
+    devices {
       battery_charge
       battery_charge_low
       battery_charge_warning
@@ -72,6 +72,7 @@ export default function Wrapper() {
     const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
     const [refreshInterval, setRefreshInterval] = useState(localRefresh);
     const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
+    const [preferredDevice, setPreferredDevice] = useState();
 
     if (error) {
         if (error.message.includes('ECONNREFUSED')) {
@@ -86,46 +87,63 @@ export default function Wrapper() {
         }
         console.error(error);
     }
-    if (!data?.ups) {
+    if (!data?.devices) {
         return (
             <div className='loading-container'>
                 <FontAwesomeIcon icon={faSpinner} spinPulse />
             </div>
         );
     }
+    if (data.devices && data.devices.length === 0) {
+        return (
+            <div className='error-container'>
+                <div>
+                    <FontAwesomeIcon icon={faCircleExclamation} className='error-icon' />
+                    <p>No devices found on this server.</p>
+                </div>
+            </div>
+        );
+    }
+
+    const ups = preferredDevice ? preferredDevice : data.devices[0];
     return (
         <>
-        <NavBar onRefreshClick={() => refetch()} onRefreshIntervalChange={(interval: number) => setRefreshInterval(interval)} />
+        <NavBar
+            onRefreshClick={() => refetch()}
+            onRefreshIntervalChange={(interval: number) => setRefreshInterval(interval)}
+            onDeviceChange={(serial: string) => setPreferredDevice(data.devices.find((d: any) => d.device_serial === serial))}
+            devices={data.devices}
+        />
         <Container>
             <div className='info-container'>
                 <div>
-                    <p className='m-0'>Manufacturer: {data.ups.ups_mfr}</p>
-                    <p className='m-0'>Model: {data.ups.ups_model}</p>
-                    <p>Serial: {data.ups.device_serial}</p>
+                    <p className='m-0'>Manufacturer: {ups.ups_mfr}</p>
+                    <p className='m-0'>Model: {ups.ups_model}</p>
+                    <p>Serial: {ups.device_serial}</p>
                 </div>
                 <div>
-                    {getStatus(data.ups.ups_status)}
+                    {getStatus(ups.ups_status)}
                 </div>
             </div>
             <Row>
                 <Col className='mb-4'>
-                    <Gauge percentage={data?.ups.ups_load} title={'Current Load'} invert />
+                    <Gauge percentage={ups.ups_load} title={'Current Load'} invert />
                 </Col>
                 <Col className='mb-4'>
-                    <Gauge percentage={data?.ups.battery_charge} title={'Battery Charge'} />
+                    <Gauge percentage={ups.battery_charge} title={'Battery Charge'} />
                 </Col>
                 <Col className='mb-4'>
-                    <Runtime runtime={data?.ups.battery_runtime} />
-                </Col>
-            </Row>
-            <Row>
-                <Col className='mb-4'>
-                    <LineChart data={data} />
+                    <Runtime runtime={ups.battery_runtime} />
                 </Col>
             </Row>
             <Row>
                 <Col className='mb-4'>
-                    <NutGrid data={data} />
+                    <LineChart data={ups} />
+                </Col>
+            </Row>
+            <Row>
+                <Col className='mb-4'>
+                    <NutGrid data={ups} />
                 </Col>
             </Row>
         </Container>

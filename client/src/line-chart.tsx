@@ -4,12 +4,12 @@ import './line-chart.css';
 
 export default function LineChart(props: any) {
     const { data } = props;
-    const [inputVoltage, setInputVoltage] = useState([parseInt(data?.ups.input_voltage)]);
-    const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.ups.output_voltage)]);
+    const [inputVoltage, setInputVoltage] = useState([parseInt(data?.input_voltage)]);
+    const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.output_voltage)]);
 
     useEffect(() => {
-        const input = parseInt(data?.ups.input_voltage);
-        const output = parseInt(data?.ups.output_voltage);
+        const input = parseInt(data?.input_voltage);
+        const output = parseInt(data?.output_voltage);
         setInputVoltage((prev: any) => isNaN(input) ? prev : [...prev, input]);
         setOutputVoltage((prev: any) => isNaN(output) ? prev : [...prev, output]);
     }, [data]);
@@ -59,7 +59,7 @@ export default function LineChart(props: any) {
                                     borderDashOffset: 0,
                                     borderWidth: 3,
                                     scaleID: 'y',
-                                    value: parseInt(data?.ups.input_voltage_nominal),                          
+                                    value: parseInt(data?.input_voltage_nominal),                          
                                 }
                             }
                         }
