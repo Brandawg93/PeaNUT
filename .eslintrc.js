@@ -1,7 +1,12 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+  extends: [
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
@@ -23,5 +28,10 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': ['off'],
     '@typescript-eslint/no-this-alias': ['off'],
     '@typescript-eslint/no-non-null-assertion': ['warn'],
+  },
+  settings: {
+    react: {
+      version: '18',
+    },
   },
 };
