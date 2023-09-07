@@ -15,11 +15,15 @@ function NavBar(props: any) {
   const dropdown = (
     <>
       <Dropdown onSelect={handleSelect}>
-        <Dropdown.Toggle variant="outline-secondary">
-          {`${device.device_mfr} ${device.device_model}`}
-        </Dropdown.Toggle>
+        <Dropdown.Toggle variant="outline-secondary">{`${device.device_mfr} ${device.device_model}`}</Dropdown.Toggle>
         <Dropdown.Menu>
-          {devices.map((d: any) => <Dropdown.Item key={d.device_serial} eventKey={d.device_serial} onClick={() => setDevice(d)}>{`${d.device_mfr} ${d.device_model}`}</Dropdown.Item>)}
+          {devices.map((d: any) => (
+            <Dropdown.Item
+              key={d.device_serial}
+              eventKey={d.device_serial}
+              onClick={() => setDevice(d)}
+            >{`${d.device_mfr} ${d.device_model}`}</Dropdown.Item>
+          ))}
         </Dropdown.Menu>
       </Dropdown>
       <div>&nbsp;</div>

@@ -10,7 +10,7 @@ import NavBar from './navbar';
 import './wrapper.css';
 import Runtime from './runtime';
 
-let query = gql`
+const query = gql`
   query {
     devices {
       battery_charge
@@ -58,95 +58,110 @@ let query = gql`
 `;
 
 const getStatus = (status: string) => {
-    switch (status) {
-        case 'OL':
-            return <p className='status-icon'><FontAwesomeIcon icon={faCheck} style={{color: '#00ff00'}} />&nbsp;Online</p>;
-        case 'OB':
-            return <p className='status-icon'><FontAwesomeIcon icon={faExclamation} style={{color: '#ffff00'}} />&nbsp;On Battery</p>;
-        case 'LB':
-            return <p className='status-icon'><FontAwesomeIcon icon={faCircleExclamation} style={{color: '#ff0000'}} />&nbsp;Low Battery</p>;
-    }
+  switch (status) {
+    case 'OL':
+      return (
+        <p className="status-icon">
+          <FontAwesomeIcon icon={faCheck} style={{ color: '#00ff00' }} />
+          &nbsp;Online
+        </p>
+      );
+    case 'OB':
+      return (
+        <p className="status-icon">
+          <FontAwesomeIcon icon={faExclamation} style={{ color: '#ffff00' }} />
+          &nbsp;On Battery
+        </p>
+      );
+    case 'LB':
+      return (
+        <p className="status-icon">
+          <FontAwesomeIcon icon={faCircleExclamation} style={{ color: '#ff0000' }} />
+          &nbsp;Low Battery
+        </p>
+      );
+  }
 };
 
 export default function Wrapper() {
-    const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
-    const [refreshInterval, setRefreshInterval] = useState(localRefresh);
-    const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
-    const [preferredDevice, setPreferredDevice] = useState();
+  const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
+  const [refreshInterval, setRefreshInterval] = useState(localRefresh);
+  const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
+  const [preferredDevice, setPreferredDevice] = useState();
 
-    if (error) {
-        if (error.message.includes('ECONNREFUSED')) {
-            return (
-                <div className='error-container'>
-                    <div>
-                        <FontAwesomeIcon icon={faCircleExclamation} className='error-icon' />
-                        <p>Connection refused. Is NUT server running?</p>
-                    </div>
-                </div>
-            );
-        }
-        console.error(error);
+  if (error) {
+    if (error.message.includes('ECONNREFUSED')) {
+      return (
+        <div className="error-container">
+          <div>
+            <FontAwesomeIcon icon={faCircleExclamation} className="error-icon" />
+            <p>Connection refused. Is NUT server running?</p>
+          </div>
+        </div>
+      );
     }
-    if (!data?.devices) {
-        return (
-            <div className='loading-container'>
-                <FontAwesomeIcon icon={faSpinner} spinPulse />
-            </div>
-        );
-    }
-    if (data.devices && data.devices.length === 0) {
-        return (
-            <div className='error-container'>
-                <div>
-                    <FontAwesomeIcon icon={faCircleExclamation} className='error-icon' />
-                    <p>No devices found on this server.</p>
-                </div>
-            </div>
-        );
-    }
-
-    const ups = preferredDevice ? preferredDevice : data.devices[0];
+    console.error(error);
+  }
+  if (!data?.devices) {
     return (
-        <>
-        <NavBar
-            onRefreshClick={() => refetch()}
-            onRefreshIntervalChange={(interval: number) => setRefreshInterval(interval)}
-            onDeviceChange={(serial: string) => setPreferredDevice(data.devices.find((d: any) => d.device_serial === serial))}
-            devices={data.devices}
-        />
-        <Container>
-            <div className='info-container'>
-                <div>
-                    <p className='m-0'>Manufacturer: {ups.ups_mfr}</p>
-                    <p className='m-0'>Model: {ups.ups_model}</p>
-                    <p>Serial: {ups.device_serial}</p>
-                </div>
-                <div>
-                    {getStatus(ups.ups_status)}
-                </div>
-            </div>
-            <Row>
-                <Col className='mb-4'>
-                    <Gauge percentage={ups.ups_load} title={'Current Load'} invert />
-                </Col>
-                <Col className='mb-4'>
-                    <Gauge percentage={ups.battery_charge} title={'Battery Charge'} />
-                </Col>
-                <Col className='mb-4'>
-                    <Runtime runtime={ups.battery_runtime} />
-                </Col>
-            </Row>
-            <Row>
-                <Col className='mb-4'>
-                    <LineChart data={ups} />
-                </Col>
-            </Row>
-            <Row>
-                <Col className='mb-4'>
-                    <NutGrid data={ups} />
-                </Col>
-            </Row>
-        </Container>
-        </>
+      <div className="loading-container">
+        <FontAwesomeIcon icon={faSpinner} spinPulse />
+      </div>
     );
+  }
+  if (data.devices && data.devices.length === 0) {
+    return (
+      <div className="error-container">
+        <div>
+          <FontAwesomeIcon icon={faCircleExclamation} className="error-icon" />
+          <p>No devices found on this server.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const ups = preferredDevice ? preferredDevice : data.devices[0];
+  return (
+    <>
+      <NavBar
+        onRefreshClick={() => refetch()}
+        onRefreshIntervalChange={(interval: number) => setRefreshInterval(interval)}
+        onDeviceChange={(serial: string) =>
+          setPreferredDevice(data.devices.find((d: any) => d.device_serial === serial))
+        }
+        devices={data.devices}
+      />
+      <Container>
+        <div className="info-container">
+          <div>
+            <p className="m-0">Manufacturer: {ups.ups_mfr}</p>
+            <p className="m-0">Model: {ups.ups_model}</p>
+            <p>Serial: {ups.device_serial}</p>
+          </div>
+          <div>{getStatus(ups.ups_status)}</div>
+        </div>
+        <Row>
+          <Col className="mb-4">
+            <Gauge percentage={ups.ups_load} title={'Current Load'} invert />
+          </Col>
+          <Col className="mb-4">
+            <Gauge percentage={ups.battery_charge} title={'Battery Charge'} />
+          </Col>
+          <Col className="mb-4">
+            <Runtime runtime={ups.battery_runtime} />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="mb-4">
+            <LineChart data={ups} />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="mb-4">
+            <NutGrid data={ups} />
+          </Col>
+        </Row>
+      </Container>
+    </>
+  );
 }
