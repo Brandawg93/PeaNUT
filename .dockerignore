@@ -3,3 +3,8 @@ dist
 client/build
 examples
 .env
+docker-compose.yml
+.github
+images
+scripts
+**/*.test.ts*

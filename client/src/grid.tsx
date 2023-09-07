@@ -9,5 +9,5 @@ export default function NutGrid(props: any) {
     result.shift();
   }
 
-  return <Grid data={result || (() => new Promise(() => {}))} columns={[{ name: 'key' }, { name: 'value' }]} sort />;
+  return <Grid data={result || (() => new Promise(() => null))} columns={[{ name: 'key' }, { name: 'value' }]} sort />;
 }
