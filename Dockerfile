@@ -1,9 +1,5 @@
 FROM node:18-alpine as build
 
-ENV NUT_HOST=localhost
-ENV NUT_PORT=3493
-ENV WEB_PORT=8080
-
 WORKDIR /app
 
 COPY . .
@@ -21,6 +17,9 @@ COPY --from=build /app/LICENSE /LICENSE
 COPY --from=build /app/README.md /README.md
 
 ENV NODE_ENV=production
+ENV NUT_HOST=localhost
+ENV NUT_PORT=3493
+ENV WEB_PORT=8080
 
 RUN npm ci
 
