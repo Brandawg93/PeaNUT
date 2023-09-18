@@ -10,6 +10,7 @@ import LineChart from './line-chart';
 import NavBar from './navbar';
 import './wrapper.css';
 import Runtime from './runtime';
+import pJson from '../package.json';
 
 const query = gql`
   query {
@@ -94,9 +95,9 @@ export default function Wrapper() {
   useEffect(() => {
     fetch('https://api.github.com/repos/brandawg93/peanut/releases').then((res) => {
       res.json().then((json) => {
-        const latest = json[0];
-        const created = new Date(latest.published_at);
-        setLatestRelease({ created: created, version: latest.name, url: latest.html_url });
+        const version = json.find((r: any) => r.name === `v${pJson.version}`);
+        const created = new Date(version.published_at);
+        setLatestRelease({ created: created, version: version.name, url: version.html_url });
       });
     });
   }, []);
