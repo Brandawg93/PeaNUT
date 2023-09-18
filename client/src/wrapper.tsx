@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faCheck, faExclamation, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import NutGrid from './grid';
 import Gauge from './gauge';
 import LineChart from './line-chart';
@@ -88,6 +89,17 @@ export default function Wrapper() {
   const [refreshInterval, setRefreshInterval] = useState(localRefresh);
   const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
   const [preferredDevice, setPreferredDevice] = useState();
+  const [latestRelease, setLatestRelease] = useState({ created: new Date(), version: null, url: '' });
+
+  useEffect(() => {
+    fetch('https://api.github.com/repos/brandawg93/peanut/releases').then((res) => {
+      res.json().then((json) => {
+        const latest = json[0];
+        const created = new Date(latest.published_at);
+        setLatestRelease({ created: created, version: latest.name, url: latest.html_url });
+      });
+    });
+  }, []);
 
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
@@ -159,6 +171,28 @@ export default function Wrapper() {
         <Row>
           <Col className="mb-4">
             <NutGrid data={ups} />
+          </Col>
+        </Row>
+        <Row className="mb-3">
+          <Col>
+            <div>
+              <p className="m-0">
+                Last updated: {new Date(data.updated * 1000).toLocaleString('en-US', { hour12: true })}
+              </p>
+            </div>
+          </Col>
+          <Col>
+            <div style={{ textAlign: 'right' }}>
+              <a
+                href={latestRelease.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{ textDecoration: 'none', color: 'black' }}
+              >
+                <FontAwesomeIcon icon={faGithub} />
+                &nbsp;{latestRelease.version}&nbsp;({latestRelease.created.toLocaleDateString()})
+              </a>
+            </div>
           </Col>
         </Row>
       </Container>
