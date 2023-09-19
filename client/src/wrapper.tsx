@@ -136,17 +136,23 @@ export default function Wrapper() {
   }
 
   const ups = preferredDevice ? preferredDevice : data.devices[0];
-  const voltageChart = ups.input_voltage ? <LineChart data={ups} /> : <></>;
-  const voltageWrapper = (
+  const voltageWrapper = ups.input_voltage ? (
     <Row>
-      <Col className="mb-4">{voltageChart}</Col>
+      <Col className="mb-4">
+        <LineChart data={ups} />
+      </Col>
     </Row>
+  ) : (
+    <></>
   );
-  const wattsChart = ups.ups_realpower ? <WattsChart data={ups} /> : <></>;
-  const wattsWrapper = (
+  const wattsWrapper = ups.ups_realpower ? (
     <Row>
-      <Col className="mb-4">{wattsChart}</Col>
+      <Col className="mb-4">
+        <WattsChart data={ups} />
+      </Col>
     </Row>
+  ) : (
+    <></>
   );
   return (
     <>
