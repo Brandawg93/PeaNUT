@@ -11,6 +11,7 @@ import NavBar from './navbar';
 import './wrapper.css';
 import Runtime from './runtime';
 import pJson from '../package.json';
+import WattsChart from './watts-chart';
 
 const query = gql`
   query {
@@ -47,6 +48,7 @@ const query = gql`
       ups_mfr
       ups_model
       ups_productid
+      ups_realpower
       ups_realpower_nominal
       ups_serial
       ups_status
@@ -134,6 +136,18 @@ export default function Wrapper() {
   }
 
   const ups = preferredDevice ? preferredDevice : data.devices[0];
+  const voltageChart = ups.input_voltage ? <LineChart data={ups} /> : <></>;
+  const voltageWrapper = (
+    <Row>
+      <Col className="mb-4">{voltageChart}</Col>
+    </Row>
+  );
+  const wattsChart = ups.ups_realpower ? <WattsChart data={ups} /> : <></>;
+  const wattsWrapper = (
+    <Row>
+      <Col className="mb-4">{wattsChart}</Col>
+    </Row>
+  );
   return (
     <>
       <NavBar
@@ -164,11 +178,8 @@ export default function Wrapper() {
             <Runtime runtime={ups.battery_runtime} />
           </Col>
         </Row>
-        <Row>
-          <Col className="mb-4">
-            <LineChart data={ups} />
-          </Col>
-        </Row>
+        {voltageWrapper}
+        {wattsWrapper}
         <Row>
           <Col className="mb-4">
             <NutGrid data={ups} />
