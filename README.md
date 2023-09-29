@@ -47,6 +47,34 @@ NUT_HOST | localhost | Host of NUT server |
 NUT_PORT | 3493 | Port of NUT server |
 WEB_PORT | 8080 | Port of web server |
 
+## Homepage Support
+
+With v1.3.0, initial support has been added for [Homepage](https://github.com/benphelps/homepage) to add a custom api widget. An example can been seen below:
+```
+widget:
+    type: customapi
+    url: http://{hostname}:{port}/api/v1/devices/ups
+    mappings:
+    - field: battery_charge
+      label: Battery Charge
+      format: percent
+    - field: ups_load
+      label: UPS Load
+      format: percent
+    - field: ups_status
+      label: UPS Status
+      format: text
+      remap:
+        - value: OL
+          to: Online
+        - value: OB
+          to: On Battery
+        - value: LB
+          to: Low Battery
+        - any: true
+          to: Unknown
+```
+
 ## Tested Devices
 
 [A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Feel free to look there for your device or add your device to the list by submitting an issue with the `tested device` label.
