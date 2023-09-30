@@ -90,16 +90,21 @@ const getStatus = (status: string) => {
 export default function Wrapper() {
   const localRefresh = parseInt(localStorage.getItem('refreshInterval') || '0');
   const [refreshInterval, setRefreshInterval] = useState(localRefresh);
-  const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000 });
+  const { data, error, refetch } = useQuery(query, { pollInterval: refreshInterval * 1000, fetchPolicy: 'no-cache' });
   const [preferredDevice, setPreferredDevice] = useState();
-  const [latestRelease, setLatestRelease] = useState({ created: new Date(), version: null, url: '' });
+  const [currentVersion, setcurrentVersion] = useState({ created: new Date(), version: null, url: '' });
+  const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' });
 
   useEffect(() => {
     fetch('https://api.github.com/repos/brandawg93/peanut/releases').then((res) => {
       res.json().then((json) => {
         const version = json.find((r: any) => r.name === `v${pJson.version}`);
+        const latest = json[0];
         const created = new Date(version.published_at);
-        setLatestRelease({ created: created, version: version.name, url: version.html_url });
+        setcurrentVersion({ created: created, version: version.name, url: version.html_url });
+        if (version.name !== latest.name) {
+          setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url });
+        }
       });
     });
   }, []);
@@ -136,6 +141,9 @@ export default function Wrapper() {
   }
 
   const ups = preferredDevice ? preferredDevice : data.devices[0];
+  if (ups.hasOwnProperty('__typename')) {
+    delete ups.__typename;
+  }
   const voltageWrapper = ups.input_voltage ? (
     <Row>
       <Col className="mb-4">
@@ -151,6 +159,16 @@ export default function Wrapper() {
         <WattsChart data={ups} />
       </Col>
     </Row>
+  ) : (
+    <></>
+  );
+
+  const updateAvailableWrapper = updateAvailable.version ? (
+    <a className="footer-text" href={updateAvailable.url} target="_blank" rel="noreferrer">
+      &nbsp;
+      <FontAwesomeIcon icon={faCircleExclamation} />
+      &nbsp;Update Available: {updateAvailable.version}
+    </a>
   ) : (
     <></>
   );
@@ -194,22 +212,19 @@ export default function Wrapper() {
         <Row className="mb-3">
           <Col>
             <div>
-              <p className="m-0">
-                Last updated: {new Date(data.updated * 1000).toLocaleString('en-US', { hour12: true })}
+              <p className="m-0 footer-text">
+                Last Updated: {new Date(data.updated * 1000).toLocaleString('en-US', { hour12: true })}
               </p>
             </div>
           </Col>
           <Col>
             <div style={{ textAlign: 'right' }}>
-              <a
-                href={latestRelease.url}
-                target="_blank"
-                rel="noreferrer"
-                style={{ textDecoration: 'none', color: 'black' }}
-              >
+              <a className="footer-text" href={currentVersion.url} target="_blank" rel="noreferrer">
                 <FontAwesomeIcon icon={faGithub} />
-                &nbsp;{latestRelease.version}&nbsp;({latestRelease.created.toLocaleDateString()})
+                &nbsp;{currentVersion.version}
+                &nbsp;({currentVersion.created.toLocaleDateString()})
               </a>
+              {updateAvailableWrapper}
             </div>
           </Col>
         </Row>

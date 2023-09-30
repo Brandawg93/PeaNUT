@@ -38,3 +38,9 @@
     font-weight: 600;
     font-size: 24px;
 }
+
+.footer-text {
+    font-size: small;
+    text-decoration: none;
+    color: #888;
+}
