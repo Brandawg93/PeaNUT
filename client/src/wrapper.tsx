@@ -193,7 +193,13 @@ export default function Wrapper() {
         </div>
         <Row>
           <Col className="mb-4">
-            <Gauge percentage={ups.ups_load} title={'Current Load'} invert />
+            {ups.ups_load ? (
+              <Gauge percentage={ups.ups_load} title={'Current Load'} invert />
+            ) : (
+              <div style={{ fontSize: `2em` }}>
+                <Kpi text="N/A" description={'Current Load'} />
+              </div>
+            )}
           </Col>
           <Col className="mb-4">
             <Gauge percentage={ups.battery_charge} title={'Battery Charge'} />
