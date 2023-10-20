@@ -2,6 +2,10 @@ import Kpi from './kpi';
 
 function secondsToDhms(seconds: number) {
   seconds = Number(seconds);
+  if (seconds === 0) {
+    return 'N/A';
+  }
+
   const d = Math.floor(seconds / (3600 * 24));
   const h = Math.floor((seconds % (3600 * 24)) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
