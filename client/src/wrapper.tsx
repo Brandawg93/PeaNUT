@@ -6,6 +6,7 @@ import { faSpinner, faCheck, faExclamation, faCircleExclamation } from '@fortawe
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import NutGrid from './grid';
 import Gauge from './gauge';
+import Kpi from './kpi';
 import LineChart from './line-chart';
 import NavBar from './navbar';
 import './wrapper.css';
