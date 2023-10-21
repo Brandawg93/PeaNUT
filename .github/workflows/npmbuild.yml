@@ -1,0 +1,18 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.0
+      - uses: actions/setup-node@v3.4.1
+        with:
+          node-version: 18
+      - run: npm ci && npm i typescript -g && cd client && npm ci
+      - run: npm run build
+      - run: npm run clean
