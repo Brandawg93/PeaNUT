@@ -1,8 +1,7 @@
 import Kpi from './kpi';
 
 function secondsToDhms(seconds: number) {
-  seconds = Number(seconds);
-  if (seconds === 0) {
+  if (seconds <= 0) {
     return 'N/A';
   }
 
