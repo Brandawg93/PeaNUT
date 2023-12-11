@@ -6,14 +6,15 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "tsc && npm run build --prefix client",
+    "build": "tsc && pnpm run build:client",
+    "build:client": "cd client && pnpm run build",
     "format": "prettier --write **/*.ts*",
     "lint": "eslint **/*.ts* --fix",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "concurrently \"tsc --watch\" \"nodemon server/**/*\"",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "client": "pnpm start --prefix client",
+    "dev": "concurrently \"pnpm run server\" \"pnpm run client\""
   },
   "repository": {
     "type": "git",
