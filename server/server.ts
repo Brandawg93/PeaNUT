@@ -28,7 +28,12 @@ app.get('/', (req, res) => {
 
 app.get('/api/v1/devices/:device', async (req, res) => {
   const device = req.params.device;
-  const nut = new Nut(process.env.NUT_HOST || 'localhost', parseInt(process.env.NUT_PORT || '3493'));
+  const nut = new Nut(
+    process.env.NUT_HOST || 'localhost',
+    parseInt(process.env.NUT_PORT || '3493'),
+    process.env.USERNAME,
+    process.env.PASSWORD,
+  );
   await nut.connect();
   const devices = await nut.getDevices();
   if (!devices.includes(device)) {
@@ -41,7 +46,12 @@ app.get('/api/v1/devices/:device', async (req, res) => {
 });
 
 app.get('/api/v1/devices', async (req, res) => {
-  const nut = new Nut(process.env.NUT_HOST || 'localhost', parseInt(process.env.NUT_PORT || '3493'));
+  const nut = new Nut(
+    process.env.NUT_HOST || 'localhost',
+    parseInt(process.env.NUT_PORT || '3493'),
+    process.env.USERNAME,
+    process.env.PASSWORD,
+  );
   await nut.connect();
   const devices = await nut.getDevices();
   const promises = [];

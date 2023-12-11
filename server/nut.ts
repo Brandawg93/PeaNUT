@@ -5,21 +5,39 @@ export class Nut {
   private socket: PromiseSocket;
   private host: string;
   private port: number;
+  private username: string;
+  private password: string;
 
-  constructor(host: string, port: number) {
+  constructor(host: string, port: number, username?: string, password?: string) {
     this.host = host;
     this.port = port;
+    this.username = username || '';
+    this.password = password || '';
     this.socket = new PromiseSocket(new Socket());
   }
 
-  private async getCommand(command: string) {
+  private async getCommand(command: string, until?: string) {
     await this.socket.write(command);
-    const data = await this.socket.readAll(command);
+    const data = await this.socket.readAll(command, until);
     return data;
   }
 
   public async connect() {
     await this.socket.connect(this.port, this.host);
+
+    if (this.username) {
+      const res = await this.getCommand(`USERNAME ${this.username}`, '\n');
+      if (res !== 'OK\n') {
+        throw new Error('Invalid username');
+      }
+    }
+
+    if (this.password) {
+      const res = await this.getCommand(`PASSWORD ${this.password}`, '\n');
+      if (res !== 'OK\n') {
+        throw new Error('Invalid password');
+      }
+    }
   }
 
   public async close() {

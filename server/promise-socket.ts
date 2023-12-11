@@ -25,12 +25,12 @@ export default class PromiseSocket {
     });
   }
 
-  async readAll(command: string) {
+  async readAll(command: string, until: string = 'END ' + command) {
     return new Promise<string>((resolve, reject) => {
       let buf = '';
       this.innerSok.on('data', (data) => {
         buf += Buffer.from(data).toString();
-        if (buf.includes('END ' + command)) {
+        if (buf.includes(until)) {
           resolve(buf);
         }
       });

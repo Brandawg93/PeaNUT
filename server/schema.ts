@@ -67,7 +67,12 @@ const schema = new GraphQLSchema({
       devices: {
         type: new GraphQLList(ups),
         resolve: async () => {
-          const nut = new Nut(process.env.NUT_HOST || 'localhost', parseInt(process.env.NUT_PORT || '3493'));
+          const nut = new Nut(
+            process.env.NUT_HOST || 'localhost',
+            parseInt(process.env.NUT_PORT || '3493'),
+            process.env.USERNAME,
+            process.env.PASSWORD,
+          );
           await nut.connect();
           const devices = await nut.getDevices();
           const promises = [];
