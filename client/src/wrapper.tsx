@@ -13,6 +13,7 @@ import './wrapper.css';
 import Runtime from './runtime';
 import pJson from '../package.json';
 import WattsChart from './watts-chart';
+import { upsStatus } from './constants';
 
 const query = gql`
   query {
@@ -62,29 +63,16 @@ const query = gql`
   }
 `;
 
-const getStatus = (status: string) => {
+const getStatus = (status: keyof typeof upsStatus) => {
   switch (status) {
     case 'OL':
-      return (
-        <p className="status-icon">
-          <FontAwesomeIcon icon={faCheck} style={{ color: '#00ff00' }} />
-          &nbsp;Online
-        </p>
-      );
+      return <FontAwesomeIcon icon={faCheck} style={{ color: '#00ff00' }} />;
     case 'OB':
-      return (
-        <p className="status-icon">
-          <FontAwesomeIcon icon={faExclamation} style={{ color: '#ffff00' }} />
-          &nbsp;On Battery
-        </p>
-      );
+      return <FontAwesomeIcon icon={faExclamation} style={{ color: '#ffff00' }} />;
     case 'LB':
-      return (
-        <p className="status-icon">
-          <FontAwesomeIcon icon={faCircleExclamation} style={{ color: '#ff0000' }} />
-          &nbsp;Low Battery
-        </p>
-      );
+      return <FontAwesomeIcon icon={faCircleExclamation} style={{ color: '#ff0000' }} />;
+    default:
+      return <></>;
   }
 };
 
@@ -190,7 +178,12 @@ export default function Wrapper() {
             <p className="m-0">Model: {ups.ups_model}</p>
             <p>Serial: {ups.device_serial}</p>
           </div>
-          <div>{getStatus(ups.ups_status)}</div>
+          <div>
+            <p className="status-icon">
+              {getStatus(ups.ups_status)}
+              &nbsp;{upsStatus[ups.ups_status as keyof typeof upsStatus]}
+            </p>
+          </div>
         </div>
         <Row>
           <Col className="mb-4">
