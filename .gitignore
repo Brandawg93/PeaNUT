@@ -34,3 +34,5 @@ docker-compose.yml
 scripts
 
 dev
+
+.next
