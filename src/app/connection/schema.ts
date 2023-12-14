@@ -62,7 +62,7 @@ export const resolvers = {
       );
       await nut.connect();
       const devices = await nut.getDevices();
-      const promises = devices.map((device) => nut.getData(device));
+      const promises = devices.map((device) => nut.getData(device, '_'));
       const data = await Promise.all(promises);
       await nut.close();
       return data;

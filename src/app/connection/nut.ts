@@ -58,7 +58,7 @@ export class Nut {
     return devices.map((device) => device.split(' ')[1]);
   }
 
-  public async getData(device = 'UPS') {
+  public async getData(device = 'UPS', delimiter = '.') {
     const command = `LIST VAR ${device}`;
     let data = await this.getCommand(command);
     data = data.replace(`BEGIN ${command}`, '');
@@ -69,7 +69,7 @@ export class Nut {
     const props = data.trim().split('\n');
     const values: any = {};
     props.forEach((prop) => {
-      const key = prop.substring(0, prop.indexOf(' ')).replace(/\./g, '_');
+      const key = prop.substring(0, prop.indexOf(' ')).replace(/\./g, delimiter);
       const value = prop.substring(prop.indexOf(' ') + 1);
       values[key] = value;
     });
