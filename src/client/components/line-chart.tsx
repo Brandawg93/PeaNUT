@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import './line-chart.css';
+import { useEffect, useState } from 'react'
+import { Line } from 'react-chartjs-2'
+import './line-chart.css'
 
 export default function LineChart(props: any) {
-  const { data } = props;
-  const [inputVoltage, setInputVoltage] = useState([parseInt(data?.input_voltage, 10)]);
-  const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.output_voltage, 10)]);
+  const { data } = props
+  const [inputVoltage, setInputVoltage] = useState([parseInt(data?.input_voltage, 10)])
+  const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.output_voltage, 10)])
 
   useEffect(() => {
-    const input = parseInt(data?.input_voltage, 10);
-    const output = parseInt(data?.output_voltage, 10);
-    setInputVoltage((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]));
-    setOutputVoltage((prev: any) => (Number.isNaN(output) ? prev : [...prev, output]));
-  }, [data]);
+    const input = parseInt(data?.input_voltage, 10)
+    const output = parseInt(data?.output_voltage, 10)
+    setInputVoltage((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
+    setOutputVoltage((prev: any) => (Number.isNaN(output) ? prev : [...prev, output]))
+  }, [data])
 
   return (
     <div className="line-container">
@@ -65,5 +65,5 @@ export default function LineChart(props: any) {
         }}
       />
     </div>
-  );
+  )
 }

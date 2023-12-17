@@ -25,11 +25,17 @@
     "graphql-tag": "^2.12.6",
     "gridjs": "^6.0.6",
     "gridjs-react": "^6.0.1",
-    "next": "14.0.4",
+    "i18next": "^23.7.10",
+    "i18next-browser-languagedetector": "^7.2.0",
+    "i18next-resources-to-backend": "^1.2.0",
+    "next": "^14.0.4",
+    "next-i18next": "^15.1.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0"
+    "react-cookie": "^6.1.1",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^13.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.4",

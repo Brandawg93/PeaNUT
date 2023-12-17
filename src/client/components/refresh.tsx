@@ -1,17 +1,17 @@
-import { Button, Dropdown, ButtonGroup } from 'react-bootstrap';
-import { faRefresh } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { Button, Dropdown, ButtonGroup } from 'react-bootstrap'
+import { faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useState } from 'react'
 
 export default function Refresh(props: any) {
-  const { onClick, onChange } = props;
-  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0');
+  const { onClick, onChange } = props
+  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
 
   const handleSelect = (eventKey: any) => {
-    setRefreshInterval(eventKey);
-    onChange(parseInt(eventKey, 10));
-    localStorage.setItem('refreshInterval', eventKey);
-  };
+    setRefreshInterval(eventKey)
+    onChange(parseInt(eventKey, 10))
+    localStorage.setItem('refreshInterval', eventKey)
+  }
 
   return (
     <Dropdown as={ButtonGroup} onSelect={handleSelect}>
@@ -42,5 +42,5 @@ export default function Refresh(props: any) {
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
-  );
+  )
 }

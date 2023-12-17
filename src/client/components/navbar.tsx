@@ -1,19 +1,19 @@
-import { Container, Navbar, Dropdown } from 'react-bootstrap';
-import { useState } from 'react';
-import Image from 'next/image';
+import { Container, Navbar, Dropdown } from 'react-bootstrap'
+import { useState } from 'react'
+import Image from 'next/image'
 
-import logo from '../../../public/logo.svg';
+import logo from '../../../public/logo.svg'
 
-import Refresh from './refresh';
+import Refresh from './refresh'
 
 function NavBar(props: any) {
-  const { onRefreshClick, onRefreshIntervalChange, onDeviceChange, devices } = props;
-  const [device, setDevice] = useState(devices[0]);
+  const { onRefreshClick, onRefreshIntervalChange, onDeviceChange, devices } = props
+  const [device, setDevice] = useState(devices[0])
 
   const handleSelect = (eventKey: any) => {
-    setDevice(devices.find((d: any) => d.device_serial === eventKey));
-    onDeviceChange(eventKey);
-  };
+    setDevice(devices.find((d: any) => d.device_serial === eventKey))
+    onDeviceChange(eventKey)
+  }
 
   const dropdown = (
     <>
@@ -31,7 +31,7 @@ function NavBar(props: any) {
       </Dropdown>
       <div>&nbsp;</div>
     </>
-  );
+  )
 
   return (
     <Navbar bg="light" expand="lg" sticky="top">
@@ -45,7 +45,7 @@ function NavBar(props: any) {
         </div>
       </Container>
     </Navbar>
-  );
+  )
 }
 
-export default NavBar;
+export default NavBar

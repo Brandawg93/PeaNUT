@@ -6,8 +6,11 @@ settings:
 
 dependencies:
   '@apollo/client':
-    specifier: ^3.8.8
+    specifier: 3.8.8
     version: 3.8.8(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
+  '@apollo/experimental-nextjs-app-support':
+    specifier: ^0.5.2
+    version: 0.5.2(@apollo/client@3.8.8)(next@14.0.4)(react@18.2.0)
   '@apollo/server':
     specifier: ^4.9.5
     version: 4.9.5(graphql@16.8.1)
@@ -47,9 +50,21 @@ dependencies:
   gridjs-react:
     specifier: ^6.0.1
     version: 6.0.1(gridjs@6.0.6)(react@18.2.0)
+  i18next:
+    specifier: ^23.7.10
+    version: 23.7.10
+  i18next-browser-languagedetector:
+    specifier: ^7.2.0
+    version: 7.2.0
+  i18next-resources-to-backend:
+    specifier: ^1.2.0
+    version: 1.2.0
   next:
     specifier: 14.0.4
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
+  next-i18next:
+    specifier: ^15.1.1
+    version: 15.1.1(i18next@23.7.10)(next@14.0.4)(react-i18next@13.5.0)(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -59,9 +74,15 @@ dependencies:
   react-chartjs-2:
     specifier: ^5.2.0
     version: 5.2.0(chart.js@4.4.1)(react@18.2.0)
+  react-cookie:
+    specifier: ^6.1.1
+    version: 6.1.1(react@18.2.0)
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  react-i18next:
+    specifier: ^13.5.0
+    version: 13.5.0(i18next@23.7.10)(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
   '@types/node':
@@ -169,6 +190,21 @@ packages:
       ts-invariant: 0.10.3
       tslib: 2.6.2
       zen-observable-ts: 1.2.5
+    dev: false
+
+  /@apollo/experimental-nextjs-app-support@0.5.2(@apollo/client@3.8.8)(next@14.0.4)(react@18.2.0):
+    resolution: {integrity: sha512-qUopCHDocCBfL+XDhuPNwiWrJHf7rc75bdDBF2TxZyYwW32wo3vPPac6bGWrYy8lgkJ8K8Z5O56655WQOynFTg==}
+    peerDependencies:
+      '@apollo/client': '>=3.8.0-rc || ^3.8.0 || >=3.9.0-alpha || >=3.9.0-beta || >=3.9.0-rc'
+      next: ^13.4.1 || ^14.0.0
+      react: ^18
+    dependencies:
+      '@apollo/client': 3.8.8(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.0.4(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      server-only: 0.0.1
+      superjson: 1.13.3
+      ts-invariant: 0.10.3
     dev: false
 
   /@apollo/protobufjs@1.2.7:
@@ -768,6 +804,10 @@ packages:
       '@types/node': 20.10.4
     dev: false
 
+  /@types/cookie@0.5.4:
+    resolution: {integrity: sha512-7z/eR6O859gyWIAjuvBWFzNURmf2oPBmJlfVWkwehU5nzIyjwBsTh7WMmEEV4JFnHuQ3ex4oyTvfKzcyJVDBNA==}
+    dev: false
+
   /@types/express-serve-static-core@4.17.41:
     resolution: {integrity: sha512-OaJ7XLaelTgrvlZD8/aa0vvvxZdUmlCn6MtWeB7TkiKW70BQLc9XEPpDLPdbo52ZhXUCrznlWdCHWxJWtdyajA==}
     dependencies:
@@ -784,6 +824,13 @@ packages:
       '@types/express-serve-static-core': 4.17.41
       '@types/qs': 6.9.10
       '@types/serve-static': 1.15.5
+    dev: false
+
+  /@types/hoist-non-react-statics@3.3.5:
+    resolution: {integrity: sha512-SbcrWzkKBw2cdwRTwQAswfpB9g9LJWfjtUeW/jvNwbhC8cpmmNYVePa+ncbUe0rGTQ7G3Ff6mYUN2VMfLVr+Sg==}
+    dependencies:
+      '@types/react': 18.2.43
+      hoist-non-react-statics: 3.3.2
     dev: false
 
   /@types/http-errors@2.0.4:
@@ -1403,6 +1450,18 @@ packages:
   /cookie@0.5.0:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /copy-anything@3.0.5:
+    resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.16
+    dev: false
+
+  /core-js@3.34.0:
+    resolution: {integrity: sha512-aDdvlDder8QmY91H88GzNi9EtQi2TjvQhpCX6B1v/dAZHU1AuLgHvRh54RiOerpEhEW46Tkf+vgAViB/CWC0ag==}
+    requiresBuild: true
     dev: false
 
   /cors@2.8.5:
@@ -2438,6 +2497,12 @@ packages:
       react-is: 16.13.1
     dev: false
 
+  /html-parse-stringify@3.0.1:
+    resolution: {integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==}
+    dependencies:
+      void-elements: 3.1.0
+    dev: false
+
   /http-errors@2.0.0:
     resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
     engines: {node: '>= 0.8'}
@@ -2458,6 +2523,28 @@ packages:
     resolution: {integrity: sha512-nZXjEF2nbo7lIw3mgYjItAfgQXog3OjJogSbKa2CQIIvSGWcKgeJnQlNXip6NglNzYH45nSRiEVimMvYL8DDqQ==}
     engines: {node: '>=14.18.0'}
     dev: true
+
+  /i18next-browser-languagedetector@7.2.0:
+    resolution: {integrity: sha512-U00DbDtFIYD3wkWsr2aVGfXGAj2TgnELzOX9qv8bT0aJtvPV9CRO77h+vgmHFBMe7LAxdwvT/7VkCWGya6L3tA==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+    dev: false
+
+  /i18next-fs-backend@2.3.1:
+    resolution: {integrity: sha512-tvfXskmG/9o+TJ5Fxu54sSO5OkY6d+uMn+K6JiUGLJrwxAVfer+8V3nU8jq3ts9Pe5lXJv4b1N7foIjJ8Iy2Gg==}
+    dev: false
+
+  /i18next-resources-to-backend@1.2.0:
+    resolution: {integrity: sha512-8f1l03s+QxDmCfpSXCh9V+AFcxAwIp0UaroWuyOx+hmmv8484GcELHs+lnu54FrNij8cDBEXvEwhzZoXsKcVpg==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+    dev: false
+
+  /i18next@23.7.10:
+    resolution: {integrity: sha512-PRFP5uJz7swMKDW+ErbKb/YRawGQdS3J1iaO/d4Mhh7oBnCUqNF04FwVxJAvCLHKNoAOBSwD8wFe8aVNCFPmfA==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+    dev: false
 
   /iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -2704,6 +2791,11 @@ packages:
       call-bind: 1.0.5
       get-intrinsic: 1.2.2
     dev: true
+
+  /is-what@4.1.16:
+    resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
+    engines: {node: '>=12.13'}
+    dev: false
 
   /is-wsl@2.2.0:
     resolution: {integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==}
@@ -2955,6 +3047,26 @@ packages:
   /negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /next-i18next@15.1.1(i18next@23.7.10)(next@14.0.4)(react-i18next@13.5.0)(react@18.2.0):
+    resolution: {integrity: sha512-IueFofP7Z9G41VjSPX/LdKhjYDDXq/iLAUFap7Rcz/MlsjLQMC7aktzBslhKH6GBYLOXsuhAO98goBFQBdhelg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      i18next: ^23.7.7
+      next: '>= 12.0.0'
+      react: '>= 17.0.2'
+      react-i18next: ^13.5.0
+    dependencies:
+      '@babel/runtime': 7.23.6
+      '@types/hoist-non-react-statics': 3.3.5
+      core-js: 3.34.0
+      hoist-non-react-statics: 3.3.2
+      i18next: 23.7.10
+      i18next-fs-backend: 2.3.1
+      next: 14.0.4(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-i18next: 13.5.0(i18next@23.7.10)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /next@14.0.4(react-dom@18.2.0)(react@18.2.0):
@@ -3450,6 +3562,17 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-cookie@6.1.1(react@18.2.0):
+    resolution: {integrity: sha512-fuFRpf8LH6SfmVMowDUIRywJF5jAUDUWrm0EI5VdXfTl5bPcJ7B0zWbuYpT0Tvikx7Gs18MlvAT+P+744dUz2g==}
+    peerDependencies:
+      react: '>= 16.3.0'
+    dependencies:
+      '@types/hoist-non-react-statics': 3.3.5
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      universal-cookie: 6.1.1
+    dev: false
+
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -3458,6 +3581,26 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-i18next@13.5.0(i18next@23.7.10)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-CFJ5NDGJ2MUyBohEHxljOq/39NQ972rh1ajnadG9BjTk+UXbHLq4z5DKEbEQBDoIhUmmbuS/fIMJKo6VOax1HA==}
+    peerDependencies:
+      i18next: '>= 23.2.3'
+      react: '>= 16.8.0'
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.6
+      html-parse-stringify: 3.0.1
+      i18next: 23.7.10
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-is@16.13.1:
@@ -3665,6 +3808,10 @@ packages:
       - supports-color
     dev: false
 
+  /server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
+    dev: false
+
   /set-function-length@1.1.1:
     resolution: {integrity: sha512-VoaqjbBJKiWtg4yRcKBQ7g7wnGnLV3M8oLvVWwOk2PdYY6PEFegR1vezXR0tw6fZGF9csVakIRjrJiy2veSBFQ==}
     engines: {node: '>= 0.4'}
@@ -3833,6 +3980,13 @@ packages:
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
     dev: true
+
+  /superjson@1.13.3:
+    resolution: {integrity: sha512-mJiVjfd2vokfDxsQPOwJ/PtanO87LhpYY88ubI5dUB1Ab58Txbyje3+jpm+/83R/fevaq/107NNhtYBLuoTrFg==}
+    engines: {node: '>=10'}
+    dependencies:
+      copy-anything: 3.0.5
+    dev: false
 
   /supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -4061,6 +4215,13 @@ packages:
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
+  /universal-cookie@6.1.1:
+    resolution: {integrity: sha512-33S9x3CpdUnnjwTNs2Fgc41WGve2tdLtvaK2kPSbZRc5pGpz2vQFbRWMxlATsxNNe/Cy8SzmnmbuBM85jpZPtA==}
+    dependencies:
+      '@types/cookie': 0.5.4
+      cookie: 0.5.0
+    dev: false
+
   /unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
     engines: {node: '>= 0.8'}
@@ -4110,6 +4271,11 @@ packages:
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /void-elements@3.1.0:
+    resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
+    engines: {node: '>=0.10.0'}
     dev: false
 
   /warning@4.0.3:

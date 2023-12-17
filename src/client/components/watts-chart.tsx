@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import './line-chart.css';
+import { useEffect, useState } from 'react'
+import { Line } from 'react-chartjs-2'
+import './line-chart.css'
 
 export default function WattsChart(props: any) {
-  const { data } = props;
-  const [realpower, setRealPower] = useState([parseInt(data?.ups_realpower, 10)]);
+  const { data } = props
+  const [realpower, setRealPower] = useState([parseInt(data?.ups_realpower, 10)])
 
   useEffect(() => {
-    const input = parseInt(data?.ups_realpower, 10);
-    setRealPower((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]));
-  }, [data]);
+    const input = parseInt(data?.ups_realpower, 10)
+    setRealPower((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
+  }, [data])
 
   return (
     <div className="line-container">
@@ -55,5 +55,5 @@ export default function WattsChart(props: any) {
         }}
       />
     </div>
-  );
+  )
 }

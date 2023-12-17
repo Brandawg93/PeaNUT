@@ -1,49 +1,49 @@
-import { Socket } from 'net';
+import { Socket } from 'net'
 
 export default class PromiseSocket {
-  private innerSok: Socket = new Socket();
+  private innerSok: Socket = new Socket()
 
   public connect(port: number, host: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.innerSok.connect(port, host, () => {
-        resolve();
-      });
+        resolve()
+      })
       this.innerSok.on('error', (err) => {
-        reject(err);
-      });
-    });
+        reject(err)
+      })
+    })
   }
 
   async write(data: string) {
     return new Promise<void>((resolve, reject) => {
       this.innerSok.write(`${data}\n`, () => {
-        resolve();
-      });
+        resolve()
+      })
       this.innerSok.on('error', (err) => {
-        reject(err);
-      });
-    });
+        reject(err)
+      })
+    })
   }
 
   async readAll(command: string, until: string = `END ${command}`) {
     return new Promise<string>((resolve, reject) => {
-      let buf = '';
+      let buf = ''
       this.innerSok.on('data', (data) => {
-        buf += Buffer.from(data).toString();
+        buf += Buffer.from(data).toString()
         if (buf.includes(until)) {
-          resolve(buf);
+          resolve(buf)
         }
-      });
+      })
       this.innerSok.on('error', (err) => {
-        reject(err);
-      });
+        reject(err)
+      })
       this.innerSok.on('end', () => {
-        resolve(buf);
-      });
-    });
+        resolve(buf)
+      })
+    })
   }
 
   close() {
-    this.innerSok.end();
+    this.innerSok.end()
   }
 }

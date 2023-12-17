@@ -1,6 +1,6 @@
-import React from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import './gauge.css';
+import React from 'react'
+import { Doughnut } from 'react-chartjs-2'
+import './gauge.css'
 
 const gaugeChartText = {
   id: 'gaugeChartText',
@@ -9,32 +9,32 @@ const gaugeChartText = {
       ctx,
       data,
       chartArea: { height },
-    } = chart;
-    ctx.save();
+    } = chart
+    ctx.save()
 
-    const xCoor = chart.getDatasetMeta(0).data[0].x;
-    const yCoor = chart.getDatasetMeta(0).data[0].y;
+    const xCoor = chart.getDatasetMeta(0).data[0].x
+    const yCoor = chart.getDatasetMeta(0).data[0].y
 
-    const score = data.datasets[0].data[0];
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.font = `${height / 4}px sans-serif`;
-    ctx.fillText(`${score}%`, xCoor, yCoor);
+    const score = data.datasets[0].data[0]
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'bottom'
+    ctx.font = `${height / 4}px sans-serif`
+    ctx.fillText(`${score}%`, xCoor, yCoor)
   },
-};
+}
 
 const getColor = (value: number, invert = false) => {
   // value from 0 to 1
-  let num = value / 100;
+  let num = value / 100
   if (invert) {
-    num = 1 - num;
+    num = 1 - num
   }
-  const hue = (num * 120).toString(10);
-  return ['hsl(', hue, ',100%,50%)'].join('');
-};
+  const hue = (num * 120).toString(10)
+  return ['hsl(', hue, ',100%,50%)'].join('')
+}
 
 export default function Gauge(props: any) {
-  const { percentage, invert, title } = props;
+  const { percentage, invert, title } = props
   const data = {
     labels: ['Used', 'Unused'],
     datasets: [
@@ -45,7 +45,7 @@ export default function Gauge(props: any) {
         hoverOffset: 4,
       },
     ],
-  };
+  }
   return (
     <div className="gauge-container">
       <Doughnut
@@ -71,5 +71,5 @@ export default function Gauge(props: any) {
         plugins={[gaugeChartText]}
       />
     </div>
-  );
+  )
 }

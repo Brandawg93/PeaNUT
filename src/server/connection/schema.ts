@@ -1,6 +1,6 @@
-import { gql } from 'graphql-tag';
+import { gql } from '@apollo/client'
 
-import { Nut } from './nut';
+import { Nut } from './nut'
 
 export const typeDefs = gql`
   type Query {
@@ -49,7 +49,7 @@ export const typeDefs = gql`
     ups_timer_start: String # Time before the load will be started (seconds)
     ups_vendorid: String # Vendor ID for USB devices
   }
-`;
+`
 
 export const resolvers = {
   Query: {
@@ -59,14 +59,14 @@ export const resolvers = {
         parseInt(process.env.NUT_PORT || '3493', 10),
         process.env.USERNAME,
         process.env.PASSWORD,
-      );
-      await nut.connect();
-      const devices = await nut.getDevices();
-      const promises = devices.map((device) => nut.getData(device, '_'));
-      const data = await Promise.all(promises);
-      await nut.close();
-      return data;
+      )
+      await nut.connect()
+      const devices = await nut.getDevices()
+      const promises = devices.map((device) => nut.getData(device, '_'))
+      const data = await Promise.all(promises)
+      await nut.close()
+      return data
     },
     updated: () => Math.floor(Date.now() / 1000),
   },
-};
+}
