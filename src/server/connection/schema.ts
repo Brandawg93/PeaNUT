@@ -58,7 +58,7 @@ export const resolvers = {
         process.env.NUT_HOST || 'localhost',
         parseInt(process.env.NUT_PORT || '3493', 10),
         process.env.USERNAME,
-        process.env.PASSWORD,
+        process.env.PASSWORD
       )
       await nut.connect()
       const devices = await nut.getDevices()

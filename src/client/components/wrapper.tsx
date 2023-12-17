@@ -47,7 +47,7 @@ export default function Wrapper({ lng }: { lng: string }) {
   const { t } = useTranslation(lng)
 
   const loadingContainer = (
-    <div className="loading-container">
+    <div className='loading-container'>
       <FontAwesomeIcon icon={faSpinner} spinPulse />
     </div>
   )
@@ -70,9 +70,9 @@ export default function Wrapper({ lng }: { lng: string }) {
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
       return (
-        <div className="error-container">
+        <div className='error-container'>
           <div>
-            <FontAwesomeIcon icon={faCircleExclamation} className="error-icon" />
+            <FontAwesomeIcon icon={faCircleExclamation} className='error-icon' />
             <p>Connection refused. Is NUT server running?</p>
           </div>
         </div>
@@ -86,9 +86,9 @@ export default function Wrapper({ lng }: { lng: string }) {
   }
   if (data.devices && data.devices.length === 0) {
     return (
-      <div className="error-container">
+      <div className='error-container'>
         <div>
-          <FontAwesomeIcon icon={faCircleExclamation} className="error-icon" />
+          <FontAwesomeIcon icon={faCircleExclamation} className='error-icon' />
           <p>No devices found on this server.</p>
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function Wrapper({ lng }: { lng: string }) {
   const ups = preferredDevice || data.devices[0]
   const voltageWrapper = ups.input_voltage ? (
     <Row>
-      <Col className="mb-4">
+      <Col className='mb-4'>
         <LineChart data={ups} />
       </Col>
     </Row>
@@ -107,7 +107,7 @@ export default function Wrapper({ lng }: { lng: string }) {
   )
   const wattsWrapper = ups.ups_realpower ? (
     <Row>
-      <Col className="mb-4">
+      <Col className='mb-4'>
         <WattsChart data={ups} />
       </Col>
     </Row>
@@ -116,7 +116,7 @@ export default function Wrapper({ lng }: { lng: string }) {
   )
 
   const updateAvailableWrapper = updateAvailable.version ? (
-    <a className="footer-text" href={updateAvailable.url} target="_blank" rel="noreferrer">
+    <a className='footer-text' href={updateAvailable.url} target='_blank' rel='noreferrer'>
       &nbsp;
       <FontAwesomeIcon icon={faCircleExclamation} />
       &nbsp;Update Available: {updateAvailable.version}
@@ -135,56 +135,56 @@ export default function Wrapper({ lng }: { lng: string }) {
         devices={data.devices}
       />
       <Container>
-        <div className="info-container">
+        <div className='info-container'>
           <div>
-            <p className="m-0">
+            <p className='m-0'>
               {t('manufacturer')}: {ups.ups_mfr}
             </p>
-            <p className="m-0">Model: {ups.ups_model}</p>
+            <p className='m-0'>Model: {ups.ups_model}</p>
             <p>Serial: {ups.device_serial}</p>
           </div>
           <div>
-            <p className="status-icon">
+            <p className='status-icon'>
               {getStatus(ups.ups_status)}
               &nbsp;{upsStatus[ups.ups_status as keyof typeof upsStatus]}
             </p>
           </div>
         </div>
         <Row>
-          <Col className="mb-4">
+          <Col className='mb-4'>
             {ups.ups_load ? (
-              <Gauge percentage={ups.ups_load} title="Current Load" invert />
+              <Gauge percentage={ups.ups_load} title='Current Load' invert />
             ) : (
               <div style={{ fontSize: '2em' }}>
-                <Kpi text="N/A" description="Current Load" />
+                <Kpi text='N/A' description='Current Load' />
               </div>
             )}
           </Col>
-          <Col className="mb-4">
-            <Gauge percentage={ups.battery_charge} title="Battery Charge" />
+          <Col className='mb-4'>
+            <Gauge percentage={ups.battery_charge} title='Battery Charge' />
           </Col>
-          <Col className="mb-4">
+          <Col className='mb-4'>
             <Runtime runtime={ups.battery_runtime} />
           </Col>
         </Row>
         {voltageWrapper}
         {wattsWrapper}
         <Row>
-          <Col className="mb-4">
+          <Col className='mb-4'>
             <NutGrid data={ups} />
           </Col>
         </Row>
-        <Row className="mb-3">
+        <Row className='mb-3'>
           <Col>
             <div>
-              <p className="m-0 footer-text">
+              <p className='footer-text m-0'>
                 Last Updated: {new Date(data.updated * 1000).toLocaleString('en-US', { hour12: true })}
               </p>
             </div>
           </Col>
           <Col>
             <div style={{ textAlign: 'right' }}>
-              <a className="footer-text" href={currentVersion.url} target="_blank" rel="noreferrer">
+              <a className='footer-text' href={currentVersion.url} target='_blank' rel='noreferrer'>
                 <FontAwesomeIcon icon={faGithub} />
                 &nbsp;{currentVersion.version}
                 &nbsp;({currentVersion.created.toLocaleDateString()})

@@ -47,7 +47,7 @@ export default function Gauge(props: any) {
     ],
   }
   return (
-    <div className="gauge-container">
+    <div className='gauge-container'>
       <Doughnut
         data={data}
         options={{

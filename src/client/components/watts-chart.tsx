@@ -12,7 +12,7 @@ export default function WattsChart(props: any) {
   }, [data])
 
   return (
-    <div className="line-container">
+    <div className='line-container'>
       <Line
         data={{
           labels: realpower.map(() => ''),

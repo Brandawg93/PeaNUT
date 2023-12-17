@@ -23,7 +23,7 @@ export default function Runtime(props: any) {
 
   return (
     <div style={{ fontSize: '2em' }}>
-      <Kpi text={secondsToDhms(runtime)} description="Battery Runtime" />
+      <Kpi text={secondsToDhms(runtime)} description='Battery Runtime' />
     </div>
   )
 }

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
     process.env.NUT_HOST || 'localhost',
     parseInt(process.env.NUT_PORT || '3493', 10),
     process.env.USERNAME,
-    process.env.PASSWORD,
+    process.env.PASSWORD
   )
   await nut.connect()
   const devices = await nut.getDevices()

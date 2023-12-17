@@ -18,7 +18,7 @@ function NavBar(props: any) {
   const dropdown = (
     <>
       <Dropdown onSelect={handleSelect}>
-        <Dropdown.Toggle variant="outline-secondary">{`${device.device_mfr} ${device.device_model}`}</Dropdown.Toggle>
+        <Dropdown.Toggle variant='outline-secondary'>{`${device.device_mfr} ${device.device_model}`}</Dropdown.Toggle>
         <Dropdown.Menu>
           {devices.map((d: any) => (
             <Dropdown.Item
@@ -34,10 +34,10 @@ function NavBar(props: any) {
   )
 
   return (
-    <Navbar bg="light" expand="lg" sticky="top">
+    <Navbar bg='light' expand='lg' sticky='top'>
       <Container>
-        <Navbar.Brand href="/">
-          <Image alt="" src={logo} width="30" height="30" className="d-inline-block align-top" /> PeaNUT
+        <Navbar.Brand href='/'>
+          <Image alt='' src={logo} width='30' height='30' className='d-inline-block align-top' /> PeaNUT
         </Navbar.Brand>
         <div style={{ display: 'inline-flex' }}>
           {devices.length > 1 ? dropdown : null}
