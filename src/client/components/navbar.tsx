@@ -2,7 +2,7 @@ import { Container, Navbar, Dropdown } from 'react-bootstrap'
 import { useState } from 'react'
 import Image from 'next/image'
 
-import logo from '../../../public/logo.svg'
+import logo from '@/app/icon.svg'
 
 import Refresh from './refresh'
 
