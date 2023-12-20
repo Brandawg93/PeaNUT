@@ -47,6 +47,14 @@ NUT_HOST | localhost | Host of NUT server |
 NUT_PORT | 3493 | Port of NUT server |
 WEB_PORT | 8080 | Port of web server |
 
+## API
+
+| API Call | Description |
+|----------|-------------|
+| `GET /api/v1/devices` | Retrieves information about all UPS devices |
+| `GET /api/v1/devices/[ups]` | Retrieves information about the specified UPS device |
+| `GET /api/v1/devices/[ups]/[param]` | Retrieves information about a single parameter of the specified UPS device |
+
 ## Homepage Support
 
 With v1.3.0, initial support has been added for [Homepage](https://github.com/benphelps/homepage) to add a custom api widget. An example can been seen below:
