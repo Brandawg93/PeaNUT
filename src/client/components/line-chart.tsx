@@ -2,8 +2,11 @@ import { useEffect, useState, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 
+import { useTranslation } from '@/client/i18n'
+
 export default function LineChart(props: any) {
   const { data } = props
+  const { t } = useTranslation(props.lng)
   const [inputVoltage, setInputVoltage] = useState([parseInt(data?.input_voltage, 10)])
   const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.output_voltage, 10)])
   const prevDataRef = useRef(data)
@@ -28,21 +31,21 @@ export default function LineChart(props: any) {
           labels: inputVoltage.map(() => ''),
           datasets: [
             {
-              label: 'Input Voltage',
+              label: t('lineChart.inputVoltage'),
               data: inputVoltage,
               fill: false,
               borderColor: 'rgb(8, 143, 143)',
               tension: 0.1,
             },
             {
-              label: 'Output Voltage',
+              label: t('lineChart.outputVoltage'),
               data: outputVoltage,
               fill: false,
               borderColor: 'rgb(255, 83, 73)',
               tension: 0.1,
             },
             {
-              label: 'Nominal Input Voltage',
+              label: t('lineChart.nominalInputVoltage'),
               data: [],
               borderColor: 'black',
               borderDash: [6, 6],

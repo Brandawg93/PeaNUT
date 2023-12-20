@@ -29,7 +29,7 @@ export default function Refresh(props: any) {
             <FontAwesomeIcon icon={faCaretDown} />
           </IconButton>
         </MenuHandler>
-        <MenuList className='dark:bg-gray-900 text-black dark:text-white'>
+        <MenuList className='dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-800'>
           <MenuItem className={`text-lg font-semibold ${isActive('0')}`} value={'0'} onClick={handleSelect}>
             off
           </MenuItem>

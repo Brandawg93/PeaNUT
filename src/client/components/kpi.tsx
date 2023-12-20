@@ -8,7 +8,7 @@ export default function Kpi(props: any) {
       <div className='flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold text-black dark:text-white'>
         {text}
       </div>
-      <div className='absolute bottom-2.5 w-full text-xs font-semibold text-[#666666]'>{description}</div>
+      <div className='absolute bottom-2.5 w-full text-xs font-semibold text-[#666666] dark:text-[#999999]'>{description}</div>
     </Card>
   )
 }

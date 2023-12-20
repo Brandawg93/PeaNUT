@@ -133,8 +133,8 @@ export default function Wrapper({ lng }: { lng: string }) {
               <p className='m-0'>
                 {t('manufacturer')}: {ups.ups_mfr}
               </p>
-              <p className='m-0'>Model: {ups.ups_model}</p>
-              <p>Serial: {ups.device_serial}</p>
+              <p className='m-0'>{t('model')}: {ups.ups_model}</p>
+              <p>{t('serial')}: {ups.device_serial}</p>
             </div>
             <div>
               <p className='text-2xl font-semibold'>
@@ -146,27 +146,27 @@ export default function Wrapper({ lng }: { lng: string }) {
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
               {ups.ups_load ? (
-                <Gauge percentage={ups.ups_load} title='Current Load' invert />
+                <Gauge percentage={ups.ups_load} title={t('currentLoad')} invert />
               ) : (
-                <Kpi text='N/A' description='Current Load' />
+                <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={ups.battery_charge} title='Battery Charge' />
+              <Gauge percentage={ups.battery_charge} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={ups.battery_runtime} />
+              <Runtime runtime={ups.battery_runtime} lng={lng} />
             </div>
           </div>
           {voltageWrapper}
           {wattsWrapper}
           <div className='mb-4'>
-            <NutGrid data={ups} />
+            <NutGrid data={ups} lng={lng} />
           </div>
           <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
             <div>
               <p className='text-neutral-500 m-0 text-sm no-underline'>
-                Last Updated: {new Date(data.updated * 1000).toLocaleString('en-US', { hour12: true })}
+              {t('lastUpdated')}: {new Date(data.updated * 1000).toLocaleString('en-US', { hour12: true })}
               </p>
             </div>
             <div className='text-right'>

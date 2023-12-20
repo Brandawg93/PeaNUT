@@ -1,6 +1,8 @@
 import React from 'react'
 import { Card, Typography } from '@material-tailwind/react'
 
+import { useTranslation } from '@/client/i18n'
+
 type TableProps = {
   key: string
   value: any
@@ -8,6 +10,7 @@ type TableProps = {
 
 export default function NutGrid(props: any) {
   const { data } = props
+  const { t } = useTranslation(props.lng)
 
   if (!data || data.length === 0) {
     return null
@@ -28,7 +31,7 @@ export default function NutGrid(props: any) {
               const lastClass = isLast ? '' : 'border-r'
               return (
                 <th key={head} className={`border-b bg-gray-400 dark:bg-gray-700 dark:border-gray-600 ${lastClass} border-neutral-300 p-3`}>
-                  <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{head}</Typography>
+                  <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t(`grid.${head}`)}</Typography>
                 </th>
               )
             })}

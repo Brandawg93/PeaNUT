@@ -1,3 +1,5 @@
+import { useTranslation } from '@/client/i18n'
+
 import Kpi from './kpi'
 
 function secondsToDhms(seconds: number) {
@@ -20,10 +22,11 @@ function secondsToDhms(seconds: number) {
 
 export default function Runtime(props: any) {
   const { runtime } = props
+  const { t } = useTranslation(props.lng)
 
   return (
     <div className='text-3xl'>
-      <Kpi text={secondsToDhms(runtime)} description='Battery Runtime' />
+      <Kpi text={secondsToDhms(runtime)} description={t('batteryRuntime')} />
     </div>
   )
 }
