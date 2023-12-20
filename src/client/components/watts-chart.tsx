@@ -1,18 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
-import './line-chart.css'
+import { Card } from '@material-tailwind/react'
 
 export default function WattsChart(props: any) {
   const { data } = props
   const [realpower, setRealPower] = useState([parseInt(data?.ups_realpower, 10)])
+  const prevDataRef = useRef(data)
 
   useEffect(() => {
     const input = parseInt(data?.ups_realpower, 10)
-    setRealPower((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
+    if (data.device_serial !== prevDataRef.current.device_serial) {
+      setRealPower([input, input, input])
+    } else {
+      setRealPower((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
+    }
+    prevDataRef.current = data
   }, [data])
 
   return (
-    <div className='line-container'>
+    <Card className='border-neutral-300 h-96 w-full border border-solid p-3 shadow-none dark:bg-gray-950 border-gray-300 dark:border-gray-800'>
       <Line
         data={{
           labels: realpower.map(() => ''),
@@ -54,6 +60,6 @@ export default function WattsChart(props: any) {
           },
         }}
       />
-    </div>
+    </Card>
   )
 }

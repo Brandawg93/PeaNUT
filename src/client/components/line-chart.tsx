@@ -1,21 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
-import './line-chart.css'
+import { Card } from '@material-tailwind/react'
 
 export default function LineChart(props: any) {
   const { data } = props
   const [inputVoltage, setInputVoltage] = useState([parseInt(data?.input_voltage, 10)])
   const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.output_voltage, 10)])
+  const prevDataRef = useRef(data)
 
   useEffect(() => {
     const input = parseInt(data?.input_voltage, 10)
     const output = parseInt(data?.output_voltage, 10)
-    setInputVoltage((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
-    setOutputVoltage((prev: any) => (Number.isNaN(output) ? prev : [...prev, output]))
+    if (data.device_serial !== prevDataRef.current.device_serial) {
+      setInputVoltage([input, input, input])
+      setOutputVoltage([output, output, output])
+    } else {
+      setInputVoltage((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
+      setOutputVoltage((prev: any) => (Number.isNaN(output) ? prev : [...prev, output]))
+    }
+    prevDataRef.current = data
   }, [data])
 
   return (
-    <div className='line-container'>
+    <Card className='border-neutral-300 h-96 w-full border border-solid p-3 shadow-none dark:bg-gray-950 border-gray-300 dark:border-gray-800'>
       <Line
         data={{
           labels: inputVoltage.map(() => ''),
@@ -64,6 +71,6 @@ export default function LineChart(props: any) {
           },
         }}
       />
-    </div>
+    </Card>
   )
 }

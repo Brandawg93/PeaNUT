@@ -1,6 +1,6 @@
 import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
-import './gauge.css'
+import { Card } from '@material-tailwind/react'
 
 const gaugeChartText = {
   id: 'gaugeChartText',
@@ -47,7 +47,7 @@ export default function Gauge(props: any) {
     ],
   }
   return (
-    <div className='gauge-container'>
+    <Card className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid shadow-none dark:bg-gray-950 border-gray-300 dark:border-gray-800'>
       <Doughnut
         data={data}
         options={{
@@ -70,6 +70,6 @@ export default function Gauge(props: any) {
         }}
         plugins={[gaugeChartText]}
       />
-    </div>
+    </Card>
   )
 }
