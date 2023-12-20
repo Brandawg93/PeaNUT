@@ -1,0 +1,18 @@
+{
+    "manufacturer": "Manufacturer",
+    "model": "Model",
+    "serial": "Serial",
+    "currentLoad": "Current Load",
+    "batteryCharge": "Battery Charge",
+    "batteryRuntime": "Battery Runtime",
+    "lastUpdated": "Last Updated",
+    "lineChart": {
+        "inputVoltage": "Input Voltage",
+        "outputVoltage": "Output Voltage",
+        "nominalInputVoltage": "Nominal Input Voltage"
+    },
+    "grid": {
+        "key": "Key",
+        "value": "Value"
+    }
+}
