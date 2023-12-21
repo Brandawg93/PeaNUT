@@ -16,7 +16,6 @@ RUN pnpm run build
 FROM node:20-alpine
 
 COPY --from=build --link /app/package.json /app/pnpm-lock.yaml /app/LICENSE /app/README.md /app/next.config.js ./
-COPY --from=build --link /app/public ./public
 COPY --from=build --link /app/.next/standalone ./
 COPY --from=build --link /app/.next/static ./.next/static
 
