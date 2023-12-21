@@ -11,6 +11,10 @@
         "outputVoltage": "Output Voltage",
         "nominalInputVoltage": "Nominal Input Voltage"
     },
+    "wattsChart": {
+        "realpower": "Realpower",
+        "nominalRealpower": "Nominal Realpower"
+    },
     "grid": {
         "key": "Key",
         "value": "Value"
