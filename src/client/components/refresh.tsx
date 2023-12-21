@@ -1,16 +1,22 @@
 import { faCaretDown, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
 
 export default function Refresh(props: any) {
-  const { onClick, onChange, disabled } = props
+  const { onClick, onRefetch, disabled } = props
   const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
+
+  useEffect(() => {
+    if (parseInt(refreshInterval) > 0) {
+      const interval = setInterval(() => onRefetch(), parseInt(refreshInterval) * 1000)
+      return () => clearInterval(interval)
+    }
+  }, [refreshInterval, onRefetch])
 
   const handleSelect = (event: any) => {
     const value = event.target.value
     setRefreshInterval(value)
-    onChange(parseInt(value, 10))
     localStorage.setItem('refreshInterval', value)
   }
 

@@ -7,7 +7,7 @@ import Refresh from './refresh'
 import { DEVICE } from '@/common/types'
 
 export default function NavBar(props: any) {
-  const { onRefreshClick, onRefreshIntervalChange, onDeviceChange, devices, disableRefresh } = props
+  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
   const [device, setDevice] = useState(devices[0])
 
   const handleSelect = (eventKey: any) => {
@@ -42,7 +42,7 @@ export default function NavBar(props: any) {
           <div className='flex items-center'>
             {devices.length > 1 ? dropdown : null}
             &nbsp;
-            <Refresh disabled={disableRefresh} onClick={onRefreshClick} onChange={onRefreshIntervalChange} />
+            <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
           </div>
         </div>
       </div>

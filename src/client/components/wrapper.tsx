@@ -3,7 +3,7 @@
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import 'chart.js/auto'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faExclamation, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation, initReactI18next } from 'react-i18next'
@@ -22,8 +22,7 @@ import WattsChart from './watts-chart'
 import Footer from './footer'
 
 import { upsStatus } from '@/common/constants'
-import { getDevices } from '@/app/actions'
-import { DEVICE } from '@/common/types'
+import useFetch from '@/client/hooks/usefetch'
 import { getOptions, languages, resources } from '@/client/i18n'
 
 const runsOnServerSide = typeof window === 'undefined'
@@ -56,51 +55,10 @@ const getStatus = (status: keyof typeof upsStatus) => {
   }
 }
 
-const useFetch = () => {
-  const [loading, setLoading] = useState<boolean>()
-  const [error, setError] = useState<any>(null)
-  const [data, setData] = useState<{ devices: Array<DEVICE> | undefined; updated: number }>({
-    devices: undefined,
-    updated: new Date().getTime(),
-  })
-
-  const refetch = useCallback(() => {
-    setLoading(true)
-    getDevices()
-      .then((devices) => {
-        setData({ devices: devices, updated: new Date().getTime() })
-        setLoading(false)
-      })
-      .catch((error: any) => {
-        setError(error)
-        setLoading(false)
-      })
-  }, [])
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
-
-  return { data, refetch, loading, error }
-}
-
 export default function Wrapper({ lng }: { lng: string }) {
-  const [refreshInterval, setRefreshInterval] = useState(0)
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const { t } = useTranslation(lng)
-
   const { data, refetch, loading, error } = useFetch()
-
-  useEffect(() => {
-    if (refreshInterval > 0) {
-      const interval = setInterval(() => refetch(), refreshInterval * 1000)
-      return () => clearInterval(interval)
-    }
-  }, [refreshInterval, refetch])
-
-  useEffect(() => {
-    setRefreshInterval(parseInt(localStorage.getItem('refreshInterval') || '0', 10))
-  }, [])
 
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
@@ -155,7 +113,7 @@ export default function Wrapper({ lng }: { lng: string }) {
       <NavBar
         disableRefresh={loading || typeof loading === 'undefined'}
         onRefreshClick={() => refetch()}
-        onRefreshIntervalChange={(interval: number) => setRefreshInterval(interval)}
+        onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
           data.devices && setPreferredDevice(data.devices.findIndex((d: any) => d['device.serial'] === serial))
         }

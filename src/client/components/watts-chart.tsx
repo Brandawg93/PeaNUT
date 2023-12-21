@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next'
 
 export default function WattsChart(props: any) {
   const { data } = props
-  const [realpower, setRealPower] = useState([parseInt(data['ups.realpower'], 10)])
+  const [realpower, setRealPower] = useState([parseInt(data['ups.realpower'])])
   const prevDataRef = useRef(data)
   const { t } = useTranslation(props.lng)
 
   useEffect(() => {
-    const input = parseInt(data['ups.realpower'], 10)
+    const input = parseInt(data['ups.realpower'])
     if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setRealPower([input, input, input])
     } else {
@@ -55,7 +55,7 @@ export default function WattsChart(props: any) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: parseInt(data['ups.realpower.nominal'], 10),
+                  value: parseInt(data['ups.realpower.nominal']),
                 },
               },
             },

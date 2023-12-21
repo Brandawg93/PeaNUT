@@ -5,7 +5,7 @@ import { Nut } from '@/server/nut'
 export async function GET(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',
-    parseInt(process.env.NUT_PORT || '3493', 10),
+    parseInt(process.env.NUT_PORT || '3493'),
     process.env.USERNAME,
     process.env.PASSWORD
   )

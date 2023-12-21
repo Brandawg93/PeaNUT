@@ -7,13 +7,13 @@ import { useTranslation } from 'react-i18next'
 export default function LineChart(props: any) {
   const { data } = props
   const { t } = useTranslation(props.lng)
-  const [inputVoltage, setInputVoltage] = useState([parseInt(data['input.voltage'], 10)])
-  const [outputVoltage, setOutputVoltage] = useState([parseInt(data['output.voltage'], 10)])
+  const [inputVoltage, setInputVoltage] = useState([parseInt(data['input.voltage'])])
+  const [outputVoltage, setOutputVoltage] = useState([parseInt(data['output.voltage'])])
   const prevDataRef = useRef(data)
 
   useEffect(() => {
-    const input = parseInt(data['input.voltage'], 10)
-    const output = parseInt(data['output.voltage'], 10)
+    const input = parseInt(data['input.voltage'])
+    const output = parseInt(data['output.voltage'])
     if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setInputVoltage([input, input, input])
       setOutputVoltage([output, output, output])
@@ -67,7 +67,7 @@ export default function LineChart(props: any) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: parseInt(data['input.voltage.nominal'], 10),
+                  value: parseInt(data['input.voltage.nominal']),
                 },
               },
             },
