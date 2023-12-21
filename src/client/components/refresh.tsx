@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
 
 export default function Refresh(props: any) {
-  const { onClick, onChange } = props
+  const { onClick, onChange, disabled } = props
   const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
 
   const handleSelect = (event: any) => {
@@ -20,16 +20,21 @@ export default function Refresh(props: any) {
 
   return (
     <>
-      <IconButton variant='outlined' className='text-md rounded-r-none dark:text-gray-100 dark:border-gray-500' onClick={onClick}>
-        <FontAwesomeIcon icon={faRefresh} />
+      <IconButton
+        variant='outlined'
+        className='text-md rounded-r-none dark:border-gray-500 dark:text-gray-100'
+        onClick={onClick}
+        disabled={disabled}
+      >
+        <FontAwesomeIcon className={disabled ? 'animate-spin' : ''} icon={faRefresh} />
       </IconButton>
       <Menu>
         <MenuHandler>
-          <IconButton variant='outlined' className='text-md rounded-l-none dark:text-gray-100 dark:border-gray-500'>
+          <IconButton variant='outlined' className='text-md rounded-l-none dark:border-gray-500 dark:text-gray-100'>
             <FontAwesomeIcon icon={faCaretDown} />
           </IconButton>
         </MenuHandler>
-        <MenuList className='dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-800'>
+        <MenuList className='border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
           <MenuItem className={`text-lg font-semibold ${isActive('0')}`} value={'0'} onClick={handleSelect}>
             off
           </MenuItem>

@@ -8,7 +8,7 @@ export default withMT({
       colors: {
         gray: {
           950: '#030712',
-        }
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

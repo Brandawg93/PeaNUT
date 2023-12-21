@@ -1,4 +1,4 @@
-import PromiseSocket from '../utils/promise-socket'
+import PromiseSocket from './promise-socket'
 
 export class Nut {
   private socket: PromiseSocket

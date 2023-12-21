@@ -1,4 +1,4 @@
-import { useTranslation } from '@/client/i18n'
+import { useTranslation } from 'react-i18next'
 
 import Kpi from './kpi'
 

@@ -2,19 +2,19 @@ import { useEffect, useState, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 
-import { useTranslation } from '@/client/i18n'
+import { useTranslation } from 'react-i18next'
 
 export default function LineChart(props: any) {
   const { data } = props
   const { t } = useTranslation(props.lng)
-  const [inputVoltage, setInputVoltage] = useState([parseInt(data?.input_voltage, 10)])
-  const [outputVoltage, setOutputVoltage] = useState([parseInt(data?.output_voltage, 10)])
+  const [inputVoltage, setInputVoltage] = useState([parseInt(data['input.voltage'], 10)])
+  const [outputVoltage, setOutputVoltage] = useState([parseInt(data['output.voltage'], 10)])
   const prevDataRef = useRef(data)
 
   useEffect(() => {
-    const input = parseInt(data?.input_voltage, 10)
-    const output = parseInt(data?.output_voltage, 10)
-    if (data.device_serial !== prevDataRef.current.device_serial) {
+    const input = parseInt(data['input.voltage'], 10)
+    const output = parseInt(data['output.voltage'], 10)
+    if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setInputVoltage([input, input, input])
       setOutputVoltage([output, output, output])
     } else {
@@ -25,7 +25,7 @@ export default function LineChart(props: any) {
   }, [data])
 
   return (
-    <Card className='border-neutral-300 h-96 w-full border border-solid p-3 shadow-none dark:bg-gray-950 border-gray-300 dark:border-gray-800'>
+    <Card className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'>
       <Line
         data={{
           labels: inputVoltage.map(() => ''),
@@ -67,7 +67,7 @@ export default function LineChart(props: any) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: parseInt(data?.input_voltage_nominal, 10),
+                  value: parseInt(data['input.voltage.nominal'], 10),
                 },
               },
             },

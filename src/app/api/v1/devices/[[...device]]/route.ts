@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { Nut } from '@/server/connection/nut'
+import { Nut } from '@/server/nut'
 
 export async function GET(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(

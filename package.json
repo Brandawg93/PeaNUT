@@ -11,8 +11,6 @@
     "format": "prettier --write **/*.ts*"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.8",
-    "@apollo/server": "^4.9.5",
     "@as-integrations/next": "^3.0.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
@@ -21,8 +19,6 @@
     "@material-tailwind/react": "^2.1.7",
     "chart.js": "^4.4.1",
     "chartjs-plugin-annotation": "^3.0.1",
-    "graphql": "^16.8.1",
-    "graphql-tag": "^2.12.6",
     "i18next": "^23.7.10",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-resources-to-backend": "^1.2.0",

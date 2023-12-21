@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Typography } from '@material-tailwind/react'
 
-import { useTranslation } from '@/client/i18n'
+import { useTranslation } from 'react-i18next'
 
 type TableProps = {
   key: string
@@ -18,11 +18,11 @@ export default function NutGrid(props: any) {
   let result: Array<TableProps> = []
   result = Object.entries(data)
     .filter(([k, v]) => k !== '__typename')
-    .map(([k, v]) => ({ key: k.replace(/_/g, '.'), value: v || 'N/A' }))
+    .map(([k, v]) => ({ key: k, value: v || 'N/A' }))
   result.shift()
 
   return (
-    <Card className='border-neutral-300 w-full overflow-scroll border border-solid shadow-none dark:bg-gray-950 border-gray-300 dark:border-gray-800'>
+    <Card className='border-neutral-300 w-full overflow-scroll border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'>
       <table className='w-full min-w-max table-auto text-left'>
         <thead>
           <tr>
@@ -30,8 +30,13 @@ export default function NutGrid(props: any) {
               const isLast = index === Object.keys(result[0]).length - 1
               const lastClass = isLast ? '' : 'border-r'
               return (
-                <th key={head} className={`border-b bg-gray-400 dark:bg-gray-700 dark:border-gray-600 ${lastClass} border-neutral-300 p-3`}>
-                  <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t(`grid.${head}`)}</Typography>
+                <th
+                  key={head}
+                  className={`border-b bg-gray-400 dark:border-gray-600 dark:bg-gray-700 ${lastClass} border-neutral-300 p-3`}
+                >
+                  <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>
+                    {t(`grid.${head}`)}
+                  </Typography>
                 </th>
               )
             })}
