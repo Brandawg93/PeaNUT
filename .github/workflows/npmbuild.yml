@@ -29,6 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
   
-      - run: pnpm i && pnpm i typescript -g && cd client && pnpm i
+      - run: pnpm i
       - run: pnpm run build
+      - run: pnpm run test
       - run: pnpm run clean
