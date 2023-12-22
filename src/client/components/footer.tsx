@@ -15,6 +15,7 @@ export default function Footer({ updated, lng }: { updated: number; lng: string 
     fetch('https://api.github.com/repos/brandawg93/peanut/releases').then((res) => {
       res.json().then((json) => {
         const version = json.find((r: any) => r.name === `v${pJson.version}`)
+        if (!version) return
         const latest = json[0]
         const created = new Date(version.published_at)
         setcurrentVersion({ created, version: version.name, url: version.html_url })
