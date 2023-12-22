@@ -7,16 +7,16 @@ import { getDevices } from '@/app/actions'
 export default function useFetch() {
   const [loading, setLoading] = useState<boolean>()
   const [error, setError] = useState<any>(null)
-  const [data, setData] = useState<{ devices: Array<DEVICE> | undefined; updated: number }>({
+  const [data, setData] = useState<{ devices: Array<DEVICE> | undefined; updated: Date }>({
     devices: undefined,
-    updated: new Date().getTime(),
+    updated: new Date(),
   })
 
   const refetch = useCallback(() => {
     setLoading(true)
     getDevices()
       .then((devices) => {
-        setData({ devices: devices, updated: new Date().getTime() })
+        setData({ devices: devices, updated: new Date() })
         setLoading(false)
       })
       .catch((error: any) => {

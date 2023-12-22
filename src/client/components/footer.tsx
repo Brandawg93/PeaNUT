@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import pJson from '../../../package.json'
 
-export default function Footer({ updated, lng }: { updated: number; lng: string }) {
+export default function Footer({ updated, lng }: { updated: Date; lng: string }) {
   const [currentVersion, setcurrentVersion] = useState({ created: new Date(), version: null, url: '' })
   const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' })
   const { t } = useTranslation(lng)
@@ -40,7 +40,7 @@ export default function Footer({ updated, lng }: { updated: number; lng: string 
     <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
       <div>
         <p className='text-neutral-500 m-0 text-sm no-underline'>
-          {t('lastUpdated')}: {new Date(updated * 1000).toLocaleString('en-US', { hour12: true })}
+          {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
         </p>
       </div>
       <div className='text-right'>
