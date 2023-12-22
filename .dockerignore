@@ -1,6 +1,6 @@
+__tests__
 **/node_modules
-dist
-client/build
+.next
 examples
 .env
 docker-compose.yml

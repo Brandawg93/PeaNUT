@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Homebridge Verified" src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/client/src/logo.svg" width="200px">
+    <img alt="PeaNUT" src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/blob/main/src/app/icon.svg" width="200px">
 </p>
 
 # PeaNUT
@@ -8,6 +8,7 @@ A Tiny Dashboard for Network UPS Tools
 
 [![PayPal](https://img.shields.io/badge/paypal-donate-blue?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=CEYYGVB7ZZ764&item_name=peanut&currency_code=USD&source=url)
 ![Docker Pulls](https://img.shields.io/docker/pulls/brandawg93/peanut)
+[![Crowdin](https://badges.crowdin.net/nut-dashboard/localized.svg)](https://crowdin.com/project/nut-dashboard)
 
 <img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/charts.png" width="600px" />
 
@@ -46,6 +47,14 @@ Variable | Default | Description |
 NUT_HOST | localhost | Host of NUT server |
 NUT_PORT | 3493 | Port of NUT server |
 WEB_PORT | 8080 | Port of web server |
+
+## API
+
+| API Call | Description |
+|----------|-------------|
+| `GET /api/v1/devices` | Retrieves information about all UPS devices |
+| `GET /api/v1/devices/[ups]` | Retrieves information about the specified UPS device |
+| `GET /api/v1/devices/[ups]/[param]` | Retrieves information about a single parameter of the specified UPS device |
 
 ## Homepage Support
 
