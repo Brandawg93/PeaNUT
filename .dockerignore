@@ -1,3 +1,4 @@
+__tests__
 **/node_modules
 .next
 examples

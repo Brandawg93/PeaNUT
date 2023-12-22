@@ -3,7 +3,7 @@
   "version": "1.3.2",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .next",
+    "clean": "rm -rf .next .swc coverage",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
