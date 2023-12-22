@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="PeaNUT" src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/blob/main/src/app/icon.svg" width="200px">
+    <img alt="PeaNUT" src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/src/app/icon.svg" width="200px">
 </p>
 
 # PeaNUT
