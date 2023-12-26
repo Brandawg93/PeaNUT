@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
 
   // api/v1/devices
   if (!params || !params.device || params.device.length === 0) {
-    const promises = devices.map((device) => nut.getData(device))
+    const promises = devices.map((device) => nut.getData(device.name))
     const data = await Promise.all(promises)
     await nut.close()
     return NextResponse.json(data)
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
 
   // api/v1/devices/[device]/[param]
   if (params.device.length === 2) {
-    const paramString = params.device[1]
+    const paramString = params.device[1] as keyof typeof data
     const value = data[paramString]
     if (value === undefined) {
       return NextResponse.json(`Parameter ${paramString} not found`, {

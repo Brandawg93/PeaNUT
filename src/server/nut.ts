@@ -1,3 +1,4 @@
+import { DEVICE, DEVICE_LIST } from '@/common/types'
 import PromiseSocket from './promise-socket'
 
 export class Nut {
@@ -19,7 +20,7 @@ export class Nut {
     this.socket = new PromiseSocket()
   }
 
-  private async getCommand(command: string, until?: string) {
+  public async getCommand(command: string, until?: string) {
     await this.socket.write(command)
     const data = await this.socket.readAll(command, until)
     return data
@@ -48,21 +49,21 @@ export class Nut {
     await this.socket.close()
   }
 
-  public async getDevices() {
+  public async getDevices(): Promise<Array<DEVICE_LIST>> {
     const command = 'LIST UPS'
     let data = await this.getCommand(command)
     data = data.replace(`BEGIN ${command}`, '')
-    data = data.replace(`END ${command}\n`, '')
+    data = data.replace(`END ${command}`, '')
     data = data.replace(/"/g, '')
     const devices = data.trim().split('\n')
-    return devices.map((device) => device.split(' ')[1])
+    return devices.map((device) => ({ name: device.split(' ')[1], description: device.split(' ')[2] }))
   }
 
-  public async getData(device = 'UPS', delimiter = '.') {
+  public async getData(device = 'UPS', delimiter = '.'): Promise<DEVICE> {
     const command = `LIST VAR ${device}`
     let data = await this.getCommand(command)
     data = data.replace(`BEGIN ${command}`, '')
-    data = data.replace(`END ${command}\n`, '')
+    data = data.replace(`END ${command}`, '')
     const regex = new RegExp(`VAR ${device} `, 'g')
     data = data.replace(regex, '')
     data = data.replace(/"/g, '')
@@ -73,6 +74,6 @@ export class Nut {
       const value = prop.substring(prop.indexOf(' ') + 1)
       values[key] = value
     })
-    return values
+    return values as DEVICE
   }
 }

@@ -12,7 +12,7 @@ export async function getDevices() {
   )
   await nut.connect()
   const devices = await nut.getDevices()
-  const promises = devices.map((device) => nut.getData(device))
+  const promises = devices.map((device) => nut.getData(device.name))
   const data: Array<DEVICE> = await Promise.all(promises)
   await nut.close()
   return data

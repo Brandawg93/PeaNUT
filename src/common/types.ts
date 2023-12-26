@@ -1,5 +1,10 @@
 import { upsStatus } from './constants'
 
+export type DEVICE_LIST = {
+  name: string
+  description: string
+}
+
 export type DEVICE = {
   'battery.charge': string // 'battery charge (percent of full)
   'battery.charge.low': string // Remaining 'battery level when UPS switches to LB (percent)
