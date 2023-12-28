@@ -47,6 +47,7 @@ Variable | Default | Description |
 NUT_HOST | localhost | Host of NUT server |
 NUT_PORT | 3493 | Port of NUT server |
 WEB_PORT | 8080 | Port of web server |
+BASE_PATH | undefined | Base path for reverse proxy |
 
 ## API
 
@@ -58,30 +59,15 @@ WEB_PORT | 8080 | Port of web server |
 
 ## Homepage Support
 
-With v1.3.0, initial support has been added for [Homepage](https://github.com/benphelps/homepage) to add a custom api widget. An example can been seen below:
+For information about how to set up Homepage, check the [Homepage docs](https://gethomepage.dev/latest/widgets/services/peanut/).
+
+Ex:
+
 ```
 widget:
-    type: customapi
-    url: http://{hostname}:{port}/api/v1/devices/ups
-    mappings:
-    - field: battery_charge
-      label: Battery Charge
-      format: percent
-    - field: ups_load
-      label: UPS Load
-      format: percent
-    - field: ups_status
-      label: UPS Status
-      format: text
-      remap:
-        - value: OL
-          to: Online
-        - value: OB
-          to: On Battery
-        - value: LB
-          to: Low Battery
-        - any: true
-          to: Unknown
+  type: peanut
+  url: http://peanut.host.or.ip:port
+  key: nameofyourups
 ```
 
 ## Tested Devices
