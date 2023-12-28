@@ -73,7 +73,7 @@ export class Nut {
     for (const line of data.split('\n')) {
       if (line.startsWith('VAR')) {
         const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-        const value = line.split('"')[1]
+        const value = line.split('"')[1].trim()
         properties[key] = value
       }
     }
