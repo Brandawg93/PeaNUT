@@ -20,9 +20,12 @@ export class Nut {
     this.socket = new PromiseSocket()
   }
 
-  public async getCommand(command: string, until?: string) {
+  private async getCommand(command: string, until?: string, start = 'BEGIN') {
     await this.socket.write(command)
     const data = await this.socket.readAll(command, until)
+    if (data.startsWith('ERR') || !data.startsWith(start)) {
+      throw new Error('Invalid response')
+    }
     return data
   }
 
@@ -51,29 +54,60 @@ export class Nut {
 
   public async getDevices(): Promise<Array<DEVICE_LIST>> {
     const command = 'LIST UPS'
+    const devices: Array<DEVICE_LIST> = []
     let data = await this.getCommand(command)
-    data = data.replace(`BEGIN ${command}`, '')
-    data = data.replace(`END ${command}`, '')
-    data = data.replace(/"/g, '')
-    const devices = data.trim().split('\n')
-    return devices.map((device) => ({ name: device.split(' ')[1], description: device.split(' ')[2] }))
+    for (const line of data.split('\n')) {
+      if (line.startsWith('UPS')) {
+        const name = line.split('"')[0].replace('UPS ', '').trim()
+        const description = line.split('"')[1].trim()
+        devices.push({ name, description })
+      }
+    }
+    return devices
   }
 
-  public async getData(device = 'UPS', delimiter = '.'): Promise<DEVICE> {
+  public async getData(device = 'UPS'): Promise<DEVICE> {
     const command = `LIST VAR ${device}`
+    const properties: any = {}
     let data = await this.getCommand(command)
-    data = data.replace(`BEGIN ${command}`, '')
-    data = data.replace(`END ${command}`, '')
-    const regex = new RegExp(`VAR ${device} `, 'g')
-    data = data.replace(regex, '')
-    data = data.replace(/"/g, '')
-    const props = data.trim().split('\n')
-    const values: any = {}
-    props.forEach((prop) => {
-      const key = prop.substring(0, prop.indexOf(' ')).replace(/\./g, delimiter)
-      const value = prop.substring(prop.indexOf(' ') + 1)
-      values[key] = value
-    })
-    return values as DEVICE
+    for (const line of data.split('\n')) {
+      if (line.startsWith('VAR')) {
+        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+        const value = line.split('"')[1]
+        properties[key] = value
+      }
+    }
+
+    return properties as DEVICE
+  }
+
+  public async getDescription(device = 'UPS'): Promise<string> {
+    const command = `GET UPSDESC ${device}`
+    const data = await this.getCommand(command)
+    return data.split('"')[1].trim()
+  }
+
+  public async getCommands(device = 'UPS'): Promise<Array<string>> {
+    const command = `LIST CMD ${device}`
+    const commands: Array<string> = []
+    let data = await this.getCommand(command)
+    for (const line of data.split('\n')) {
+      if (line.startsWith('CMD')) {
+        const command = line.split('"')[0].replace(`CMD ${device} `, '').trim()
+        commands.push(command)
+      }
+    }
+
+    return commands
+  }
+
+  public async getCommandDescription(device = 'UPS', command: string): Promise<string> {
+    const data = await this.getCommand(`GET CMDDESC ${device} ${command}`, '\n', 'CMDDESC')
+    return data.split('"')[1].trim()
+  }
+
+  public async getVar(device = 'UPS', variable: string): Promise<string> {
+    const data = await this.getCommand(`GET VAR ${device} ${variable}`, '\n', 'VAR')
+    return data.split('"')[1].trim()
   }
 }

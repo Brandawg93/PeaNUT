@@ -49,7 +49,7 @@ END LIST VAR ups`
 describe('Nut', () => {      
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
-    const mockSocket = jest.spyOn(nut, 'getCommand')
+    const mockSocket = jest.spyOn(nut as any, 'getCommand')
     mockSocket.mockImplementation(() => { 
         return Promise.resolve('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
     })
@@ -62,7 +62,7 @@ describe('Nut', () => {
 
   it('should work with multiple ups devices on the same server', async () => {
     const nut = new Nut('localhost', 3493)
-    const mockSocket = jest.spyOn(nut, 'getCommand')
+    const mockSocket = jest.spyOn(nut as any, 'getCommand')
     mockSocket.mockImplementation(() => { 
         return Promise.resolve(listVarUps)
     })

@@ -25,9 +25,12 @@ export default class PromiseSocket {
     })
   }
 
-  async readAll(command: string, until: string = `END ${command}`) {
+  async readAll(command: string, until: string = `END ${command}`, timeout = 1000) {
     return new Promise<string>((resolve, reject) => {
       let buf = ''
+      setTimeout(() => {
+        reject(new Error('Timeout'))
+      }, timeout)
       this.innerSok.on('data', (data) => {
         buf += Buffer.from(data).toString()
         if (buf.includes(until)) {
