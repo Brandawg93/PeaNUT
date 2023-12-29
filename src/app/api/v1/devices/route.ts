@@ -23,3 +23,6 @@ export async function GET(request: NextRequest) {
   await nut.close()
   return NextResponse.json(deviceData)
 }
+
+// forces the route handler to be dynamic
+export const dynamic = 'force-dynamic'
