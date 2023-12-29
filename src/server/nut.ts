@@ -20,10 +20,10 @@ export class Nut {
     this.socket = new PromiseSocket()
   }
 
-  private async getCommand(command: string, until?: string, start = 'BEGIN') {
+  private async getCommand(command: string, until?: string) {
     await this.socket.write(command)
     const data = await this.socket.readAll(command, until)
-    if (data.startsWith('ERR') || !data.startsWith(start)) {
+    if (data.startsWith('ERR')) {
       throw new Error('Invalid response')
     }
     return data
@@ -68,22 +68,26 @@ export class Nut {
 
   public async getData(device = 'UPS'): Promise<DEVICE> {
     const command = `LIST VAR ${device}`
-    const properties: any = {}
     let data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('VAR')) {
-        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-        const value = line.split('"')[1].trim()
-        properties[key] = value
-      }
+    if (!data.startsWith(`BEGIN ${command}\n`)) {
+      throw new Error('Invalid response')
     }
-
-    return properties as DEVICE
+    const deviceData: DEVICE = Object.assign(
+      {},
+      ...data.split('\n').map((line) => {
+        if (line.startsWith('VAR')) {
+          const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+          const value = line.split('"')[1].trim()
+          return { [key]: value }
+        }
+      })
+    )
+    return deviceData
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {
     const command = `GET UPSDESC ${device}`
-    const data = await this.getCommand(command)
+    const data = await this.getCommand(command, '\n')
     return data.split('"')[1].trim()
   }
 
@@ -102,12 +106,18 @@ export class Nut {
   }
 
   public async getCommandDescription(device = 'UPS', command: string): Promise<string> {
-    const data = await this.getCommand(`GET CMDDESC ${device} ${command}`, '\n', 'CMDDESC')
+    const data = await this.getCommand(`GET CMDDESC ${device} ${command}`, '\n')
+    if (!data.startsWith('CMDDESC')) {
+      throw new Error('Invalid response')
+    }
     return data.split('"')[1].trim()
   }
 
   public async getVar(device = 'UPS', variable: string): Promise<string> {
-    const data = await this.getCommand(`GET VAR ${device} ${variable}`, '\n', 'VAR')
+    const data = await this.getCommand(`GET VAR ${device} ${variable}`, '\n')
+    if (!data.startsWith('VAR')) {
+      throw new Error('Invalid response')
+    }
     return data.split('"')[1].trim()
   }
 }

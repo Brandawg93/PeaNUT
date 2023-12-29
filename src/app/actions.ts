@@ -11,9 +11,13 @@ export async function getDevices() {
     process.env.PASSWORD
   )
   await nut.connect()
+  const deviceData: Array<DEVICE> = []
   const devices = await nut.getDevices()
   const promises = devices.map((device) => nut.getData(device.name))
-  const data: Array<DEVICE> = await Promise.all(promises)
+  for (const promise of promises) {
+    const data = await promise
+    deviceData.push(data)
+  }
   await nut.close()
-  return data
+  return deviceData
 }
