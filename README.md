@@ -55,7 +55,9 @@ BASE_PATH | undefined | Base path for reverse proxy |
 |----------|-------------|
 | `GET /api/v1/devices` | Retrieves information about all UPS devices |
 | `GET /api/v1/devices/[ups]` | Retrieves information about the specified UPS device |
-| `GET /api/v1/devices/[ups]/[param]` | Retrieves information about a single parameter of the specified UPS device |
+| `GET /api/v1/devices/[ups]/var/[param]` | Retrieves information about a single parameter of the specified UPS device |
+| `GET /api/v1/devices/[ups]/commands` | Retrieves available commands for the specified UPS device |
+| `GET /api/v1/devices/[ups]/description` | Retrieves the description for the specified UPS device |
 
 ## Homepage Support
 
