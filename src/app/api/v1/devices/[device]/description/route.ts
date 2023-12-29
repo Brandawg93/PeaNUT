@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { DEVICE } from '@/common/types'
 
 import { Nut } from '@/server/nut'
 

@@ -4,7 +4,7 @@ import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 
 // api/v1/devices
-export async function GET() {
+export async function GET(request: NextRequest) {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',
     parseInt(process.env.NUT_PORT || '3493'),
