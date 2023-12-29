@@ -105,6 +105,34 @@ export class Nut {
     return commands
   }
 
+  public async getClients(device = 'UPS'): Promise<Array<string>> {
+    const command = `LIST CLIENT ${device}`
+    const clients: Array<string> = []
+    let data = await this.getCommand(command)
+    for (const line of data.split('\n')) {
+      if (line.startsWith('CLIENT')) {
+        const command = line.split('"')[0].replace(`CLIENT ${device} `, '').trim()
+        clients.push(command)
+      }
+    }
+
+    return clients
+  }
+
+  public async getRWVars(device = 'UPS'): Promise<Array<string>> {
+    const command = `LIST RW ${device}`
+    const vars: Array<string> = []
+    let data = await this.getCommand(command)
+    for (const line of data.split('\n')) {
+      if (line.startsWith('RW')) {
+        const command = line.split('"')[0].replace(`RW ${device} `, '').trim()
+        vars.push(command)
+      }
+    }
+
+    return vars
+  }
+
   public async getCommandDescription(device = 'UPS', command: string): Promise<string> {
     const data = await this.getCommand(`GET CMDDESC ${device} ${command}`, '\n')
     if (!data.startsWith('CMDDESC')) {

@@ -58,6 +58,8 @@ BASE_PATH | undefined | Base path for reverse proxy |
 | `GET /api/v1/devices/[ups]/var/[param]` | Retrieves information about a single parameter of the specified UPS device |
 | `GET /api/v1/devices/[ups]/commands` | Retrieves available commands for the specified UPS device |
 | `GET /api/v1/devices/[ups]/description` | Retrieves the description for the specified UPS device |
+| `GET /api/v1/devices/[ups]/clients` | Retrieves the connected clients for the specified UPS device |
+| `GET /api/v1/devices/[ups]/rwvars` | Retrieves writable variables for the specified UPS device |
 
 ## Homepage Support
 
