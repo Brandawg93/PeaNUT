@@ -1,7 +1,6 @@
-import { Nut } from "@/server/nut"
+import { Nut } from '@/server/nut'
 
-const listVarUps = 
-`BEGIN LIST VAR ups
+const listVarUps = `BEGIN LIST VAR ups
 VAR ups battery.charge "100"
 VAR ups battery.charge.low "10"
 VAR ups battery.charge.warning "20"
@@ -46,30 +45,30 @@ VAR ups ups.timer.start "-60"
 VAR ups ups.vendorid "0764"
 END LIST VAR ups`
 
-describe('Nut', () => {      
+describe('Nut', () => {
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
     const mockSocket = jest.spyOn(nut as any, 'getCommand')
-    mockSocket.mockImplementation(() => { 
-        return Promise.resolve('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
+    mockSocket.mockImplementation(() => {
+      return Promise.resolve('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
     })
-  
+
     // await nut.connect()
     const devices = await nut.getDevices()
-    expect(devices.map(device => device.name)).toEqual(['ups', 'ups2'])
+    expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])
     await nut.close()
   })
 
   it('should work with multiple ups devices on the same server', async () => {
     const nut = new Nut('localhost', 3493)
     const mockSocket = jest.spyOn(nut as any, 'getCommand')
-    mockSocket.mockImplementation(() => { 
-        return Promise.resolve(listVarUps)
+    mockSocket.mockImplementation(() => {
+      return Promise.resolve(listVarUps)
     })
-  
+
     // await nut.connect()
     const data = await nut.getData('ups')
-    expect(data["battery.charge"]).toEqual('100')
+    expect(data['battery.charge']).toEqual('100')
     await nut.close()
   })
 })
