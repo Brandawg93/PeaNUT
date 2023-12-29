@@ -15,9 +15,8 @@ export async function GET(request: NextRequest) {
 
   const deviceData: Array<DEVICE> = []
   const devices = await nut.getDevices()
-  const promises = devices.map((device) => nut.getData(device.name))
-  for (const promise of promises) {
-    const data = await promise
+  for (const device of devices) {
+    const data = await nut.getData(device.name)
     deviceData.push(data)
   }
   await nut.close()
