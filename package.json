@@ -10,7 +10,9 @@
     "lint": "next lint --fix",
     "format": "prettier --write **/*",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:test": "./scripts/deploy-test.sh"
   },
   "dependencies": {
     "@as-integrations/next": "^3.0.0",
