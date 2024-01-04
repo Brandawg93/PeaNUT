@@ -1,11 +1,11 @@
 'use client'
 
-import '@fortawesome/fontawesome-svg-core/styles.css'
 import 'chart.js/auto'
 
 import React, { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faExclamation, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
+import { Spinner } from '@material-tailwind/react'
 import { useTranslation, initReactI18next } from 'react-i18next'
 import { Chart } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
@@ -45,11 +45,11 @@ Chart.register(annotationPlugin)
 const getStatus = (status: keyof typeof upsStatus) => {
   switch (status) {
     case 'OL':
-      return <FontAwesomeIcon icon={faCheck} className='text-green-400' />
+      return <CheckIcon className='h-6 w-6 stroke-[3px] text-green-400 inline-block mb-1' />
     case 'OB':
-      return <FontAwesomeIcon icon={faExclamation} className='text-yellow-400' />
+      return <ExclamationTriangleIcon className='h-6 w-6 stroke-[3px] text-yellow-400 inline-block mb-1' />
     case 'LB':
-      return <FontAwesomeIcon icon={faCircleExclamation} className='text-red-400' />
+      return <ExclamationCircleIcon className='h-6 w-6 stroke-[3px] text-red-400 inline-block mb-1' />
     default:
       return <></>
   }
@@ -65,7 +65,7 @@ export default function Wrapper({ lng }: { lng: string }) {
       return (
         <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'>
           <div>
-            <FontAwesomeIcon icon={faCircleExclamation} className='mb-4 text-8xl text-red-600' />
+            <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
             <p>Connection refused. Is NUT server running?</p>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function Wrapper({ lng }: { lng: string }) {
   if (!data.devices) {
     return (
       <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-8xl dark:from-gray-900 dark:to-gray-800 dark:text-white'>
-        <FontAwesomeIcon icon={faSpinner} spinPulse />
+        <Spinner className='h-12 w-12' />
       </div>
     )
   }
@@ -85,7 +85,7 @@ export default function Wrapper({ lng }: { lng: string }) {
     return (
       <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'>
         <div>
-          <FontAwesomeIcon icon={faCircleExclamation} className='mb-4 text-8xl text-red-600' />
+          <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
           <p>No devices found on this server.</p>
         </div>
       </div>

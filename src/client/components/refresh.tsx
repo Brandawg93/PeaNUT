@@ -1,5 +1,4 @@
-import { faCaretDown, faRefresh } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
 
@@ -32,12 +31,12 @@ export default function Refresh(props: any) {
         onClick={onClick}
         disabled={disabled}
       >
-        <FontAwesomeIcon className={disabled ? 'animate-spin' : ''} icon={faRefresh} />
+        <ArrowPathIcon className={`${disabled ? 'animate-spin' : ''} h-4 w-4 stroke-[2px]`} />
       </IconButton>
       <Menu>
         <MenuHandler>
           <IconButton variant='outlined' className='text-md rounded-l-none dark:border-gray-500 dark:text-gray-100'>
-            <FontAwesomeIcon icon={faCaretDown} />
+            <ChevronDownIcon className='h-4 w-4 stroke-[2px]' />
           </IconButton>
         </MenuHandler>
         <MenuList className='border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>

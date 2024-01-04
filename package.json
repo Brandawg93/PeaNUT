@@ -16,10 +16,7 @@
   },
   "dependencies": {
     "@as-integrations/next": "^3.0.0",
-    "@fortawesome/fontawesome-svg-core": "^6.5.1",
-    "@fortawesome/free-brands-svg-icons": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.5.1",
-    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@heroicons/react": "^2.1.1",
     "@material-tailwind/react": "^2.1.8",
     "chart.js": "^4.4.1",
     "chartjs-plugin-annotation": "^3.0.1",

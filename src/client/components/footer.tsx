@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 
 import pJson from '../../../package.json'
@@ -27,9 +25,9 @@ export default function Footer({ updated, lng }: { updated: Date; lng: string })
   }, [])
 
   const updateAvailableWrapper = updateAvailable.version ? (
-    <a className='footer-text' href={updateAvailable.url} target='_blank' rel='noreferrer'>
+    <a className='text-neutral-500 m-0 text-sm no-underline-text' href={updateAvailable.url} target='_blank' rel='noreferrer'>
       &nbsp;
-      <FontAwesomeIcon icon={faCircleExclamation} />
+      <ExclamationCircleIcon className='h-5 w-4 inline-block' />
       &nbsp;Update Available: {updateAvailable.version}
     </a>
   ) : (
@@ -50,8 +48,7 @@ export default function Footer({ updated, lng }: { updated: Date; lng: string })
           target='_blank'
           rel='noreferrer'
         >
-          <FontAwesomeIcon icon={faGithub} />
-          &nbsp;{currentVersion.version}
+          {currentVersion.version}
           &nbsp;({currentVersion.created.toLocaleDateString()})
         </a>
         {updateAvailableWrapper}
