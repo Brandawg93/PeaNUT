@@ -37,4 +37,4 @@ jobs:
       - run: pnpm i
       - run: pnpm run build
       - run: pnpm run test
-      - run: pnpm run test:e2e      
+      - run: pnpm run test:e2e
