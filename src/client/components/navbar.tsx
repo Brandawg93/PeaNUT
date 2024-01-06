@@ -1,22 +1,55 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
-import { Navbar, Typography, Select, Option } from '@material-tailwind/react'
+import {
+  Navbar,
+  Typography,
+  Select,
+  Option,
+  IconButton,
+  Drawer,
+  Card,
+} from '@material-tailwind/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import logo from '@/app/icon.svg'
 import Refresh from './refresh'
 import { DEVICE } from '@/common/types'
 
-export default function NavBar(props: any) {
-  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
+type Props = {
+  onRefreshClick: () => void
+  onRefetch: () => void
+  onDeviceChange: (serial: string) => void
+  devices: any
+  disableRefresh: boolean
+  lng: string
+}
+
+export default function NavBar(props: Props) {
+  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh, lng } = props
   const [device, setDevice] = useState(devices[0])
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
+  const ref = React.useRef(null)
+  const { t } = useTranslation(lng)
 
   const handleSelect = (eventKey: any) => {
     setDevice(devices.find((d: DEVICE) => d['device.serial'] === eventKey))
     onDeviceChange(eventKey)
   }
 
-  const dropdown = (
-    <Select variant='standard' label='Select Device' onChange={handleSelect} value={device['device.serial']}>
+  const openDrawer = () => setIsDrawerOpen(!isDrawerOpen)
+  const closeDrawer = () => setIsDrawerOpen(false)
+
+  const dropdown = (variant: any = 'standard') => (
+    <Select
+      variant={variant}
+      className='dark:text-gray-300'
+      menuProps={{ className: 'dark:bg-gray-900 dark:border-gray-800 dark:text-white' }}
+      labelProps={{ className: 'dark:text-gray-300' }}
+      label='Select Device'
+      onChange={handleSelect}
+      value={device['device.serial']}
+    >
       {devices.map((d: DEVICE) => (
         <Option key={d['device.serial']} value={d['device.serial']}>{`${d['device.mfr']} ${d['device.model']}`}</Option>
       ))}
@@ -40,9 +73,44 @@ export default function NavBar(props: any) {
             &nbsp;PeaNUT
           </Typography>
           <div className='flex items-center'>
-            {devices.length > 1 ? dropdown : null}
+            <div className='hidden lg:block'>{devices.length > 1 ? dropdown() : null}</div>
             &nbsp;
-            <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+            <div className='hidden lg:block'>
+              <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+            </div>
+            <IconButton variant='text' className='block lg:hidden' size='lg' onClick={openDrawer}>
+              {isDrawerOpen ? (
+                <XMarkIcon className='h-8 w-8 stroke-2 dark:text-white' />
+              ) : (
+                <Bars3Icon className='h-8 w-8 stroke-2 dark:text-white' />
+              )}
+            </IconButton>
+            {isDrawerOpen ? (
+              <div className='absolute left-0 top-0 h-screen w-screen bg-black/50 backdrop-blur'></div>
+            ) : null}
+            <Drawer
+              overlay={false}
+              open={isDrawerOpen}
+              onClose={closeDrawer}
+              placement='right'
+              className='rounded-l dark:bg-gray-900'
+            >
+              <Card color='transparent' shadow={false} className='h-[calc(100vh-2rem)] w-full p-4 dark:text-white'>
+                <div className='mb-2 flex items-center gap-4 p-4'>
+                  <Typography variant='h5'>{t('sidebar.settings')}</Typography>
+                  <div className='flex w-full justify-end'>
+                    <IconButton variant='text' size='lg' onClick={closeDrawer}>
+                      <XMarkIcon className='h-8 w-8 stroke-2 dark:text-white' />
+                    </IconButton>
+                  </div>
+                </div>
+                <hr />
+                <div className='mt-2'>
+                  <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+                </div>
+                <div className='mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
+              </Card>
+            </Drawer>
           </div>
         </div>
       </div>
