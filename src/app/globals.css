@@ -14,16 +14,3 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
-@media (prefers-color-scheme: dark) {
-  canvas {
-    filter: invert(100%) hue-rotate(180deg);
-  }
-  /* html {
-    filter: invert(86%) hue-rotate(180deg);
-  }
-  
-  img {
-    filter: invert(100%) hue-rotate(180deg);
-  } */
-}

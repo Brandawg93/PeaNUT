@@ -28,13 +28,10 @@ yarn-error.log*
 .vscode
 Thumbs.db
 
-docker-compose.yml
-!examples/docker-compose.yml
-
 scripts
-config
 
 dev
 
 .next
 .swc
+test-results

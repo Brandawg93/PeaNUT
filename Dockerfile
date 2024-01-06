@@ -27,4 +27,7 @@ ENV PORT $WEB_PORT
 
 EXPOSE $PORT
 
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
+  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://localhost:$PORT/api/ping || exit 1
+
 CMD ["node", "server.js"]

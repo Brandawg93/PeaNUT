@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  nut-upsd:
+    image: instantlinux/nut-upsd
+    container_name: nut-upsd
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+    volumes:
+      - ./config:/etc/nut
+    environment:
+      - API_PASSWORD=nut_test
+    restart: unless-stopped
+    ports:
+      - 3493:3493

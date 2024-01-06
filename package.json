@@ -4,18 +4,18 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage",
-    "dev": "next dev",
+    "dev": "docker compose up -d && next dev && docker compose down",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "next lint --fix",
     "format": "prettier --write **/*",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:e2e": "docker compose up -d && playwright test && docker compose down",
     "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh"
   },
   "dependencies": {
-    "@as-integrations/next": "^3.0.0",
     "@heroicons/react": "^2.1.1",
     "@material-tailwind/react": "^2.1.8",
     "chart.js": "^4.4.1",
@@ -32,6 +32,7 @@
     "react-i18next": "^13.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@types/jest": "^29.5.11",

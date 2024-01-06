@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
-import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
+import { Menu, MenuHandler, MenuList, MenuItem, Button } from '@material-tailwind/react'
 
 export default function Refresh(props: any) {
   const { onClick, onRefetch, disabled } = props
@@ -25,19 +25,22 @@ export default function Refresh(props: any) {
 
   return (
     <>
-      <IconButton
-        variant='outlined'
-        className='text-md rounded-r-none dark:border-gray-500 dark:text-gray-100'
+      <Button
+        variant='filled'
+        className='text-md inline-flex w-1/2 justify-center rounded-r-none border-r bg-gray-400 text-black shadow-none dark:bg-gray-800 dark:text-white'
         onClick={onClick}
         disabled={disabled}
       >
         <ArrowPathIcon className={`${disabled ? 'animate-spin' : ''} h-4 w-4 stroke-[2px]`} />
-      </IconButton>
+      </Button>
       <Menu>
         <MenuHandler>
-          <IconButton variant='outlined' className='text-md rounded-l-none dark:border-gray-500 dark:text-gray-100'>
+          <Button
+            variant='filled'
+            className='text-md inline-flex w-1/2 justify-center rounded-l-none bg-gray-400 text-black shadow-none dark:bg-gray-800 dark:text-white'
+          >
             <ChevronDownIcon className='h-4 w-4 stroke-[2px]' />
-          </IconButton>
+          </Button>
         </MenuHandler>
         <MenuList className='border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
           <MenuItem className={`text-lg font-semibold ${isActive('0')}`} value={'0'} onClick={handleSelect}>

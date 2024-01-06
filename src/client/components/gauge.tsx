@@ -49,6 +49,7 @@ export default function Gauge(props: any) {
   return (
     <Card className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'>
       <Doughnut
+        className='dark:hue-rotate-180 dark:invert'
         data={data}
         options={{
           cutout: '80%',

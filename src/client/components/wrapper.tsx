@@ -2,7 +2,7 @@
 
 import 'chart.js/auto'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Spinner } from '@material-tailwind/react'
@@ -45,11 +45,11 @@ Chart.register(annotationPlugin)
 const getStatus = (status: keyof typeof upsStatus) => {
   switch (status) {
     case 'OL':
-      return <CheckIcon className='h-6 w-6 stroke-[3px] text-green-400 inline-block mb-1' />
+      return <CheckIcon className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
     case 'OB':
-      return <ExclamationTriangleIcon className='h-6 w-6 stroke-[3px] text-yellow-400 inline-block mb-1' />
+      return <ExclamationTriangleIcon className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400' />
     case 'LB':
-      return <ExclamationCircleIcon className='h-6 w-6 stroke-[3px] text-red-400 inline-block mb-1' />
+      return <ExclamationCircleIcon className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400' />
     default:
       return <></>
   }
@@ -59,6 +59,17 @@ export default function Wrapper({ lng }: { lng: string }) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const { t } = useTranslation(lng)
   const { data, refetch, loading, error } = useFetch()
+
+  useEffect(() => {
+    if (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  })
 
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
@@ -118,6 +129,7 @@ export default function Wrapper({ lng }: { lng: string }) {
           data.devices && setPreferredDevice(data.devices.findIndex((d: any) => d['device.serial'] === serial))
         }
         devices={data.devices}
+        lng={lng}
       />
       <div className='flex justify-center'>
         <div className='container'>

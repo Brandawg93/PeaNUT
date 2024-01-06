@@ -18,5 +18,8 @@
   "grid": {
     "key": "Key",
     "value": "Value"
+  },
+  "sidebar": {
+    "settings": "Settings"
   }
 }

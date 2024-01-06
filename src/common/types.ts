@@ -6,6 +6,7 @@ export type DEVICE_LIST = {
 }
 
 export type DEVICE = {
+  [x: string]: string // catch arbitrary keys
   'battery.charge': string // 'battery charge (percent of full)
   'battery.charge.low': string // Remaining 'battery level when UPS switches to LB (percent)
   'battery.charge.warning': string // 'battery level when UPS switches to Warning state (percent)

@@ -1,0 +1,3 @@
+[upsmon]
+        password = nut_test
+        upsmon master

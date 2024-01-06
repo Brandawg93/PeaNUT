@@ -3,6 +3,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 
 import pJson from '../../../package.json'
+import DayNightSwitch from './daynight'
 
 export default function Footer({ updated, lng }: { updated: Date; lng: string }) {
   const [currentVersion, setcurrentVersion] = useState({ created: new Date(), version: null, url: '' })
@@ -25,9 +26,14 @@ export default function Footer({ updated, lng }: { updated: Date; lng: string })
   }, [])
 
   const updateAvailableWrapper = updateAvailable.version ? (
-    <a className='text-neutral-500 m-0 text-sm no-underline-text' href={updateAvailable.url} target='_blank' rel='noreferrer'>
+    <a
+      className='text-neutral-500 no-underline-text m-0 text-sm'
+      href={updateAvailable.url}
+      target='_blank'
+      rel='noreferrer'
+    >
       &nbsp;
-      <ExclamationCircleIcon className='h-5 w-4 inline-block' />
+      <ExclamationCircleIcon className='inline-block h-4 w-4' />
       &nbsp;Update Available: {updateAvailable.version}
     </a>
   ) : (
@@ -35,24 +41,27 @@ export default function Footer({ updated, lng }: { updated: Date; lng: string })
   )
 
   return (
-    <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
-      <div>
-        <p className='text-neutral-500 m-0 text-sm no-underline'>
-          {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
-        </p>
+    <>
+      <DayNightSwitch />
+      <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
+        <div>
+          <p className='text-neutral-500 m-0 text-sm no-underline'>
+            {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
+          </p>
+        </div>
+        <div className='text-right'>
+          <a
+            className='text-neutral-500 m-0 text-sm no-underline'
+            href={currentVersion.url}
+            target='_blank'
+            rel='noreferrer'
+          >
+            {currentVersion.version}
+            &nbsp;({currentVersion.created.toLocaleDateString()})
+          </a>
+          {updateAvailableWrapper}
+        </div>
       </div>
-      <div className='text-right'>
-        <a
-          className='text-neutral-500 m-0 text-sm no-underline'
-          href={currentVersion.url}
-          target='_blank'
-          rel='noreferrer'
-        >
-          {currentVersion.version}
-          &nbsp;({currentVersion.created.toLocaleDateString()})
-        </a>
-        {updateAvailableWrapper}
-      </div>
-    </div>
+    </>
   )
 }
