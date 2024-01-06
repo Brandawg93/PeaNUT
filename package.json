@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage",
-    "dev": "next dev",
+    "dev": "docker compose up -d && next dev && docker compose down",
     "build": "next build",
     "start": "node .next/standalone/server.js",
     "lint": "next lint --fix",
     "format": "prettier --write **/*",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test",
+    "test:e2e": "docker compose up -d && playwright test && docker compose down",
     "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh"
   },
