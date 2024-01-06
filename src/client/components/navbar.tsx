@@ -1,15 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
-import {
-  Navbar,
-  Typography,
-  Select,
-  Option,
-  IconButton,
-  Drawer,
-  Card,
-} from '@material-tailwind/react'
+import { Navbar, Typography, Select, Option, IconButton, Drawer, Card } from '@material-tailwind/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import logo from '@/app/icon.svg'
