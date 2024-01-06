@@ -25,8 +25,11 @@ export default function NavBar(props: Props) {
   const { t } = useTranslation(lng)
 
   const handleSelect = (eventKey: any) => {
-    setDevice(devices.find((d: DEVICE) => d['device.serial'] === eventKey))
-    onDeviceChange(eventKey)
+    const selectedDevice = devices.find((d: DEVICE) => d.vars['device.serial'] === eventKey)
+    if (selectedDevice) {
+      setDevice(selectedDevice)
+      onDeviceChange(eventKey)
+    }
   }
 
   const openDrawer = () => setIsDrawerOpen(!isDrawerOpen)
@@ -43,7 +46,10 @@ export default function NavBar(props: Props) {
       value={device['device.serial']}
     >
       {devices.map((d: DEVICE) => (
-        <Option key={d['device.serial']} value={d['device.serial']}>{`${d['device.mfr']} ${d['device.model']}`}</Option>
+        <Option
+          key={d.vars['device.serial']}
+          value={d.vars['device.serial']}
+        >{`${d.vars['device.mfr']} ${d.vars['device.model']}`}</Option>
       ))}
     </Select>
   )

@@ -5,7 +5,15 @@ export type DEVICE_LIST = {
   description: string
 }
 
-export type DEVICE = {
+export type VAR = {
+  name: string
+  value: string
+  type: string
+  enum: Array<string>
+  range: Array<string>
+}
+
+export type VARS = {
   [x: string]: string // catch arbitrary keys
   'battery.charge': string // 'battery charge (percent of full)
   'battery.charge.low': string // Remaining 'battery level when UPS switches to LB (percent)
@@ -47,4 +55,12 @@ export type DEVICE = {
   'ups.timer.shutdown': string // Time before the load will be shutdown (seconds)
   'ups.timer.start': string // Time before the load will be started (seconds)
   'ups.vendorid': string // Vendor ID for USB 'devices
+}
+
+export type DEVICE = {
+  vars: VARS
+  rwVars: Array<keyof VARS>
+  description: string
+  commands: Array<string>
+  clients: Array<string>
 }
