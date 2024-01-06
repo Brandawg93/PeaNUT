@@ -12,7 +12,7 @@ const devices = [
 describe('NavBar', () => {
   it('renders', () => {
     const lng = 'en'
-    render(<NavBar devices={devices} />)
+    render(<NavBar devices={devices} onRefreshClick={() => {}} onRefetch={() => {}} onDeviceChange={() => {}} disableRefresh={false} lng={''} />)
 
     const heading = screen.getByText('PeaNUT')
 
