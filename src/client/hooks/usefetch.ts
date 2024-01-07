@@ -15,8 +15,8 @@ export default function useFetch() {
   const refetch = useCallback(() => {
     setLoading(true)
     getDevices()
-      .then((devices) => {
-        setData({ devices: devices, updated: new Date() })
+      .then((gridProps) => {
+        setData({ devices: gridProps, updated: new Date() })
         setLoading(false)
       })
       .catch((error: any) => {

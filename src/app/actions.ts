@@ -11,12 +11,13 @@ export async function getDevices() {
     process.env.PASSWORD
   )
   await nut.connect()
-  const deviceData: Array<DEVICE> = []
+  const gridProps: Array<DEVICE> = []
   const devices = await nut.getDevices()
   for (const device of devices) {
     const data = await nut.getData(device.name)
-    deviceData.push(data)
+    const rwVars = await nut.getRWVars(device.name)
+    gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [] })
   }
   await nut.close()
-  return deviceData
+  return gridProps
 }

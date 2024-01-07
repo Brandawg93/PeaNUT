@@ -109,14 +109,14 @@ export default function Wrapper({ lng }: Props) {
   }
 
   const ups = data.devices[preferredDevice]
-  const voltageWrapper = ups['input.voltage'] ? (
+  const voltageWrapper = ups.vars['input.voltage'] ? (
     <div className='mb-4'>
       <LineChart data={ups} lng={lng} />
     </div>
   ) : (
     <></>
   )
-  const wattsWrapper = ups['ups.realpower'] ? (
+  const wattsWrapper = ups.vars['ups.realpower'] ? (
     <div className='mb-4'>
       <WattsChart data={ups} lng={lng} />
     </div>
@@ -131,7 +131,7 @@ export default function Wrapper({ lng }: Props) {
         onRefreshClick={() => refetch()}
         onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
-          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d['device.serial'] === serial))
+          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.vars['device.serial'] === serial))
         }
         devices={data.devices}
         lng={lng}
@@ -141,41 +141,41 @@ export default function Wrapper({ lng }: Props) {
           <div className='flex flex-row justify-between'>
             <div>
               <p className='m-0'>
-                {t('manufacturer')}: {ups['ups.mfr']}
+                {t('manufacturer')}: {ups.vars['ups.mfr']}
               </p>
               <p className='m-0'>
-                {t('model')}: {ups['ups.model']}
+                {t('model')}: {ups.vars['ups.model']}
               </p>
               <p>
-                {t('serial')}: {ups['device.serial']}
+                {t('serial')}: {ups.vars['device.serial']}
               </p>
             </div>
             <div>
               <p className='text-2xl font-semibold'>
-                {getStatus(ups['ups.status'])}
-                &nbsp;{upsStatus[ups['ups.status'] as keyof typeof upsStatus]}
+                {getStatus(ups.vars['ups.status'])}
+                &nbsp;{upsStatus[ups.vars['ups.status'] as keyof typeof upsStatus]}
               </p>
             </div>
           </div>
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
-              {ups['ups.load'] ? (
-                <Gauge percentage={ups['ups.load']} title={t('currentLoad')} invert />
+              {ups.vars['ups.load'] ? (
+                <Gauge percentage={ups.vars['ups.load']} title={t('currentLoad')} invert />
               ) : (
                 <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={ups['battery.charge']} title={t('batteryCharge')} />
+              <Gauge percentage={ups.vars['battery.charge']} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={ups['battery.runtime']} lng={lng} />
+              <Runtime runtime={ups.vars['battery.runtime']} lng={lng} />
             </div>
           </div>
           {voltageWrapper}
           {wattsWrapper}
           <div className='mb-4'>
-            <NutGrid data={ups} lng={lng} />
+            <NutGrid data={data.devices[preferredDevice]} lng={lng} />
           </div>
           <Footer updated={data.updated} lng={lng} />
         </div>

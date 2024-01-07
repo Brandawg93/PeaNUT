@@ -7,6 +7,7 @@ export default class PromiseSocket {
     return new Promise((resolve, reject) => {
       this.innerSok.connect(port, host, () => {
         resolve()
+        this.innerSok.removeAllListeners('error')
       })
       this.innerSok.on('error', (err) => {
         reject(err)
@@ -18,6 +19,7 @@ export default class PromiseSocket {
     return new Promise<void>((resolve, reject) => {
       this.innerSok.write(`${data}\n`, () => {
         resolve()
+        this.innerSok.removeAllListeners('error')
       })
       this.innerSok.on('error', (err) => {
         reject(err)
@@ -42,6 +44,7 @@ export default class PromiseSocket {
       })
       this.innerSok.on('end', () => {
         resolve(buf)
+        this.innerSok.removeAllListeners('error')
       })
     })
   }
