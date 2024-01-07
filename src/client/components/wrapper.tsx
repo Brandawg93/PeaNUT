@@ -159,16 +159,16 @@ export default function Wrapper({ lng }: Props) {
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
               {ups['ups.load'] ? (
-                <Gauge percentage={parseInt(ups['ups.load'])} title={t('currentLoad')} invert />
+                <Gauge percentage={ups['ups.load']} title={t('currentLoad')} invert />
               ) : (
                 <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={parseInt(ups['battery.charge'])} title={t('batteryCharge')} />
+              <Gauge percentage={ups['battery.charge']} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={parseInt(ups['battery.runtime'])} lng={lng} />
+              <Runtime runtime={ups['battery.runtime']} lng={lng} />
             </div>
           </div>
           {voltageWrapper}
