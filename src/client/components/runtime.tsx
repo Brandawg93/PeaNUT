@@ -20,7 +20,12 @@ function secondsToDhms(seconds: number) {
   return result.replace(/,\s*$/, '')
 }
 
-export default function Runtime(props: any) {
+type Props = {
+  runtime: number
+  lng: string
+}
+
+export default function Runtime(props: Props) {
   const { runtime } = props
   const { t } = useTranslation(props.lng)
 

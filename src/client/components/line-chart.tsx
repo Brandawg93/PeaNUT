@@ -4,7 +4,12 @@ import { Card } from '@material-tailwind/react'
 
 import { useTranslation } from 'react-i18next'
 
-export default function LineChart(props: any) {
+type Props = {
+  data: any
+  lng: string
+}
+
+export default function LineChart(props: Props) {
   const { data } = props
   const { t } = useTranslation(props.lng)
   const [inputVoltage, setInputVoltage] = useState([parseInt(data['input.voltage'])])

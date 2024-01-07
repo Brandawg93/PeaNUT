@@ -3,7 +3,12 @@ import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 
-export default function WattsChart(props: any) {
+type Props = {
+  data: any
+  lng: string
+}
+
+export default function WattsChart(props: Props) {
   const { data } = props
   const [realpower, setRealPower] = useState([parseInt(data['ups.realpower'])])
   const prevDataRef = useRef(data)

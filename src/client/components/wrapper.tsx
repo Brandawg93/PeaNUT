@@ -55,7 +55,11 @@ const getStatus = (status: keyof typeof upsStatus) => {
   }
 }
 
-export default function Wrapper({ lng }: { lng: string }) {
+type Props = {
+  lng: string
+}
+
+export default function Wrapper({ lng }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const { t } = useTranslation(lng)
   const { data, refetch, loading, error } = useFetch()
@@ -106,14 +110,14 @@ export default function Wrapper({ lng }: { lng: string }) {
   const ups = data.devices[preferredDevice]
   const voltageWrapper = ups['input.voltage'] ? (
     <div className='mb-4'>
-      <LineChart data={ups} />
+      <LineChart data={ups} lng={lng} />
     </div>
   ) : (
     <></>
   )
   const wattsWrapper = ups['ups.realpower'] ? (
     <div className='mb-4'>
-      <WattsChart data={ups} />
+      <WattsChart data={ups} lng={lng} />
     </div>
   ) : (
     <></>
@@ -155,16 +159,16 @@ export default function Wrapper({ lng }: { lng: string }) {
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
               {ups['ups.load'] ? (
-                <Gauge percentage={ups['ups.load']} title={t('currentLoad')} invert />
+                <Gauge percentage={parseInt(ups['ups.load'])} title={t('currentLoad')} invert />
               ) : (
                 <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={ups['battery.charge']} title={t('batteryCharge')} />
+              <Gauge percentage={parseInt(ups['battery.charge'])} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={ups['battery.runtime']} lng={lng} />
+              <Runtime runtime={parseInt(ups['battery.runtime'])} lng={lng} />
             </div>
           </div>
           {voltageWrapper}
