@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next'
 import pJson from '../../../package.json'
 import DayNightSwitch from './daynight'
 
-export default function Footer({ updated, lng }: { updated: Date; lng: string }) {
+type Props = {
+  updated: Date
+  lng: string
+}
+
+export default function Footer({ updated, lng }: Props) {
   const [currentVersion, setcurrentVersion] = useState({ created: new Date(), version: null, url: '' })
   const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' })
   const { t } = useTranslation(lng)

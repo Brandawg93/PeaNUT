@@ -1,18 +1,23 @@
 import React from 'react'
 import { Card, Typography } from '@material-tailwind/react'
-
 import { useTranslation } from 'react-i18next'
+import { DEVICE } from '@/common/types'
 
 type TableProps = {
   key: string
   value: any
 }
 
-export default function NutGrid(props: any) {
+type Props = {
+  data: DEVICE
+  lng: string
+}
+
+export default function NutGrid(props: Props) {
   const { data } = props
   const { t } = useTranslation(props.lng)
 
-  if (!data || data.length === 0) {
+  if (!data) {
     return null
   }
   let result: Array<TableProps> = []

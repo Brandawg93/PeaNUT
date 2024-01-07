@@ -33,7 +33,13 @@ const getColor = (value: number, invert = false) => {
   return ['hsl(', hue, ',100%,50%)'].join('')
 }
 
-export default function Gauge(props: any) {
+type Props = {
+  percentage: number
+  invert?: boolean
+  title: string
+}
+
+export default function Gauge(props: Props) {
   const { percentage, invert, title } = props
   const data = {
     labels: ['Used', 'Unused'],
