@@ -24,8 +24,8 @@ export default function LineChart(props: Props) {
       setInputVoltage([input, input, input])
       setOutputVoltage([output, output, output])
     } else {
-      setInputVoltage((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
-      setOutputVoltage((prev: any) => (Number.isNaN(output) ? prev : [...prev, output]))
+      setInputVoltage((prev: Array<number>) => (Number.isNaN(input) ? prev : [...prev, input]))
+      setOutputVoltage((prev: Array<number>) => (Number.isNaN(output) ? prev : [...prev, output]))
     }
     prevDataRef.current = data
   }, [data])

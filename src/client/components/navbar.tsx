@@ -12,7 +12,7 @@ type Props = {
   onRefreshClick: () => void
   onRefetch: () => void
   onDeviceChange: (serial: string) => void
-  devices: any
+  devices: Array<any>
   disableRefresh: boolean
   lng: string
 }
@@ -24,7 +24,8 @@ export default function NavBar(props: Props) {
   const ref = React.useRef(null)
   const { t } = useTranslation(lng)
 
-  const handleSelect = (eventKey: any) => {
+  const handleSelect = (eventKey: string | undefined) => {
+    if (!eventKey) return
     setDevice(devices.find((d: DEVICE) => d['device.serial'] === eventKey))
     onDeviceChange(eventKey)
   }

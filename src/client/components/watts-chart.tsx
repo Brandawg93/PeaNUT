@@ -20,7 +20,7 @@ export default function WattsChart(props: Props) {
     if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setRealPower([input, input, input])
     } else {
-      setRealPower((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
+      setRealPower((prev: Array<number>) => (Number.isNaN(input) ? prev : [...prev, input]))
     }
     prevDataRef.current = data
   }, [data])

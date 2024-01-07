@@ -24,6 +24,7 @@ import Footer from './footer'
 import { upsStatus } from '@/common/constants'
 import useFetch from '@/client/hooks/usefetch'
 import { getOptions, languages, resources } from '@/client/i18n'
+import { DEVICE } from '@/common/types'
 
 const runsOnServerSide = typeof window === 'undefined'
 
@@ -130,7 +131,7 @@ export default function Wrapper({ lng }: Props) {
         onRefreshClick={() => refetch()}
         onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
-          data.devices && setPreferredDevice(data.devices.findIndex((d: any) => d['device.serial'] === serial))
+          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d['device.serial'] === serial))
         }
         devices={data.devices}
         lng={lng}
