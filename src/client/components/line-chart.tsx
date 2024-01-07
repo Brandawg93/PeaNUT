@@ -12,13 +12,13 @@ type Props = {
 export default function LineChart(props: Props) {
   const { data } = props
   const { t } = useTranslation(props.lng)
-  const [inputVoltage, setInputVoltage] = useState([parseInt(data['input.voltage'])])
-  const [outputVoltage, setOutputVoltage] = useState([parseInt(data['output.voltage'])])
+  const [inputVoltage, setInputVoltage] = useState([parseFloat(data['input.voltage'])])
+  const [outputVoltage, setOutputVoltage] = useState([parseFloat(data['output.voltage'])])
   const prevDataRef = useRef(data)
 
   useEffect(() => {
-    const input = parseInt(data['input.voltage'])
-    const output = parseInt(data['output.voltage'])
+    const input = parseFloat(data['input.voltage'])
+    const output = parseFloat(data['output.voltage'])
     if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setInputVoltage([input, input, input])
       setOutputVoltage([output, output, output])

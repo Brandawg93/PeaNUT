@@ -10,12 +10,12 @@ type Props = {
 
 export default function WattsChart(props: Props) {
   const { data } = props
-  const [realpower, setRealPower] = useState([parseInt(data['ups.realpower'])])
+  const [realpower, setRealPower] = useState([parseFloat(data['ups.realpower'])])
   const prevDataRef = useRef(data)
   const { t } = useTranslation(props.lng)
 
   useEffect(() => {
-    const input = parseInt(data['ups.realpower'])
+    const input = parseFloat(data['ups.realpower'])
     if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setRealPower([input, input, input])
     } else {
