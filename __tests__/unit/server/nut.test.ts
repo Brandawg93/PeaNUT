@@ -52,10 +52,12 @@ describe('Nut', () => {
     jest.spyOn(PromiseSocket.prototype, 'close').mockReturnValue()
     jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
   })
-  
+
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
-    jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
+    jest
+      .spyOn(PromiseSocket.prototype, 'readAll')
+      .mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
     await nut.connect()
     const devices = await nut.getDevices()
     expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])

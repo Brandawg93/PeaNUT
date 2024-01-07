@@ -3,28 +3,29 @@ import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 
 import { useTranslation } from 'react-i18next'
+import { DEVICE } from '@/common/types'
 
 type Props = {
-  data: any
+  data: DEVICE
   lng: string
 }
 
 export default function LineChart(props: Props) {
   const { data } = props
   const { t } = useTranslation(props.lng)
-  const [inputVoltage, setInputVoltage] = useState([parseInt(data['input.voltage'])])
-  const [outputVoltage, setOutputVoltage] = useState([parseInt(data['output.voltage'])])
+  const [inputVoltage, setInputVoltage] = useState([data['input.voltage']])
+  const [outputVoltage, setOutputVoltage] = useState([data['output.voltage']])
   const prevDataRef = useRef(data)
 
   useEffect(() => {
-    const input = parseInt(data['input.voltage'])
-    const output = parseInt(data['output.voltage'])
+    const input = data['input.voltage']
+    const output = data['output.voltage']
     if (data['device.serial'] !== prevDataRef.current['device.serial']) {
       setInputVoltage([input, input, input])
       setOutputVoltage([output, output, output])
     } else {
-      setInputVoltage((prev: any) => (Number.isNaN(input) ? prev : [...prev, input]))
-      setOutputVoltage((prev: any) => (Number.isNaN(output) ? prev : [...prev, output]))
+      setInputVoltage((prev: Array<number>) => (Number.isNaN(input) ? prev : [...prev, input]))
+      setOutputVoltage((prev: Array<number>) => (Number.isNaN(output) ? prev : [...prev, output]))
     }
     prevDataRef.current = data
   }, [data])
@@ -73,7 +74,7 @@ export default function LineChart(props: Props) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: parseInt(data['input.voltage.nominal']),
+                  value: data['input.voltage.nominal'],
                 },
               },
             },
