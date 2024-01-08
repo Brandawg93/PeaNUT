@@ -38,9 +38,6 @@ dependencies:
   react-chartjs-2:
     specifier: ^5.2.0
     version: 5.2.0(chart.js@4.4.1)(react@18.2.0)
-  react-cookie:
-    specifier: ^6.1.1
-    version: 6.1.1(react@18.2.0)
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
@@ -1162,10 +1159,6 @@ packages:
       '@babel/types': 7.23.6
     dev: true
 
-  /@types/cookie@0.5.4:
-    resolution: {integrity: sha512-7z/eR6O859gyWIAjuvBWFzNURmf2oPBmJlfVWkwehU5nzIyjwBsTh7WMmEEV4JFnHuQ3ex4oyTvfKzcyJVDBNA==}
-    dev: false
-
   /@types/graceful-fs@4.1.9:
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
     dependencies:
@@ -1866,11 +1859,6 @@ packages:
 
   /convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
-
-  /cookie@0.5.0:
-    resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
-    engines: {node: '>= 0.6'}
-    dev: false
 
   /core-js@3.34.0:
     resolution: {integrity: sha512-aDdvlDder8QmY91H88GzNi9EtQi2TjvQhpCX6B1v/dAZHU1AuLgHvRh54RiOerpEhEW46Tkf+vgAViB/CWC0ag==}
@@ -4592,17 +4580,6 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-cookie@6.1.1(react@18.2.0):
-    resolution: {integrity: sha512-fuFRpf8LH6SfmVMowDUIRywJF5jAUDUWrm0EI5VdXfTl5bPcJ7B0zWbuYpT0Tvikx7Gs18MlvAT+P+744dUz2g==}
-    peerDependencies:
-      react: '>= 16.3.0'
-    dependencies:
-      '@types/hoist-non-react-statics': 3.3.5
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      universal-cookie: 6.1.1
-    dev: false
-
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -5331,13 +5308,6 @@ packages:
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
-
-  /universal-cookie@6.1.1:
-    resolution: {integrity: sha512-33S9x3CpdUnnjwTNs2Fgc41WGve2tdLtvaK2kPSbZRc5pGpz2vQFbRWMxlATsxNNe/Cy8SzmnmbuBM85jpZPtA==}
-    dependencies:
-      '@types/cookie': 0.5.4
-      cookie: 0.5.0
-    dev: false
 
   /universalify@0.2.0:
     resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
