@@ -20,6 +20,7 @@ import NavBar from './navbar'
 import Runtime from './runtime'
 import WattsChart from './watts-chart'
 import Footer from './footer'
+import { ThemeContext } from './themecontext'
 
 import { upsStatus } from '@/common/constants'
 import useFetch from '@/client/hooks/usefetch'
@@ -64,6 +65,7 @@ export default function Wrapper({ lng }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const { t } = useTranslation(lng)
   const { data, refetch, loading, error } = useFetch()
+  const [theme, setTheme] = useState('system')
 
   useEffect(() => {
     if (
@@ -74,7 +76,11 @@ export default function Wrapper({ lng }: Props) {
     } else {
       document.documentElement.classList.remove('dark')
     }
-  })
+
+    if (localStorage.theme === 'dark') setTheme('dark')
+    else if (localStorage.theme === 'light') setTheme('light')
+    else setTheme('system')
+  }, [setTheme])
 
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
@@ -125,61 +131,63 @@ export default function Wrapper({ lng }: Props) {
   )
 
   return (
-    <div className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'>
-      <NavBar
-        disableRefresh={loading || typeof loading === 'undefined'}
-        onRefreshClick={() => refetch()}
-        onRefetch={() => refetch()}
-        onDeviceChange={(serial: string) =>
-          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d['device.serial'] === serial))
-        }
-        devices={data.devices}
-        lng={lng}
-      />
-      <div className='flex justify-center'>
-        <div className='container'>
-          <div className='flex flex-row justify-between'>
-            <div>
-              <p className='m-0'>
-                {t('manufacturer')}: {ups['ups.mfr']}
-              </p>
-              <p className='m-0'>
-                {t('model')}: {ups['ups.model']}
-              </p>
-              <p>
-                {t('serial')}: {ups['device.serial']}
-              </p>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <div className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'>
+        <NavBar
+          disableRefresh={loading || typeof loading === 'undefined'}
+          onRefreshClick={() => refetch()}
+          onRefetch={() => refetch()}
+          onDeviceChange={(serial: string) =>
+            data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d['device.serial'] === serial))
+          }
+          devices={data.devices}
+          lng={lng}
+        />
+        <div className='flex justify-center'>
+          <div className='container'>
+            <div className='flex flex-row justify-between'>
+              <div>
+                <p className='m-0'>
+                  {t('manufacturer')}: {ups['ups.mfr']}
+                </p>
+                <p className='m-0'>
+                  {t('model')}: {ups['ups.model']}
+                </p>
+                <p>
+                  {t('serial')}: {ups['device.serial']}
+                </p>
+              </div>
+              <div>
+                <p className='text-2xl font-semibold'>
+                  {getStatus(ups['ups.status'])}
+                  &nbsp;{upsStatus[ups['ups.status'] as keyof typeof upsStatus]}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className='text-2xl font-semibold'>
-                {getStatus(ups['ups.status'])}
-                &nbsp;{upsStatus[ups['ups.status'] as keyof typeof upsStatus]}
-              </p>
+            <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+              <div className='mb-4'>
+                {ups['ups.load'] ? (
+                  <Gauge percentage={ups['ups.load']} title={t('currentLoad')} invert />
+                ) : (
+                  <Kpi text='N/A' description={t('currentLoad')} />
+                )}
+              </div>
+              <div className='mb-4'>
+                <Gauge percentage={ups['battery.charge']} title={t('batteryCharge')} />
+              </div>
+              <div className='mb-4'>
+                <Runtime runtime={ups['battery.runtime']} lng={lng} />
+              </div>
             </div>
-          </div>
-          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+            {voltageWrapper}
+            {wattsWrapper}
             <div className='mb-4'>
-              {ups['ups.load'] ? (
-                <Gauge percentage={ups['ups.load']} title={t('currentLoad')} invert />
-              ) : (
-                <Kpi text='N/A' description={t('currentLoad')} />
-              )}
+              <NutGrid data={ups} lng={lng} />
             </div>
-            <div className='mb-4'>
-              <Gauge percentage={ups['battery.charge']} title={t('batteryCharge')} />
-            </div>
-            <div className='mb-4'>
-              <Runtime runtime={ups['battery.runtime']} lng={lng} />
-            </div>
+            <Footer updated={data.updated} lng={lng} />
           </div>
-          {voltageWrapper}
-          {wattsWrapper}
-          <div className='mb-4'>
-            <NutGrid data={ups} lng={lng} />
-          </div>
-          <Footer updated={data.updated} lng={lng} />
         </div>
       </div>
-    </div>
+    </ThemeContext.Provider>
   )
 }
