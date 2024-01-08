@@ -6,6 +6,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import logo from '@/app/icon.svg'
 import Refresh from './refresh'
+import DayNightSwitch from './daynight/mobile'
 import { DEVICE } from '@/common/types'
 
 type Props = {
@@ -101,7 +102,17 @@ export default function NavBar(props: Props) {
                 <div className='mt-2'>
                   <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
                 </div>
-                <div className='mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
+                <div className='mb-2 mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
+                <hr />
+                <div className='grid grid-flow-row grid-cols-2'>
+                  <div className='flex flex-col justify-center'>
+                    <Typography className='font-medium text-gray-800 dark:text-gray-300'>Theme</Typography>
+                  </div>
+                  <div className='mb-3 mt-3'>
+                    <DayNightSwitch />
+                  </div>
+                </div>
+                <hr />
               </Card>
             </Drawer>
           </div>

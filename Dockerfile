@@ -1,3 +1,18 @@
+FROM docker.io/node:20-alpine AS deps
+
+WORKDIR /app
+
+COPY --link package.json pnpm-lock.yaml* ./
+
+SHELL ["/bin/ash", "-xeo", "pipefail", "-c"]
+RUN apk add --no-cache libc6-compat \
+ && apk add --no-cache --virtual .gyp python3 make g++ \
+ && npm install -g pnpm
+
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm fetch | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
+
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm install -r --offline
+
 FROM node:20-alpine as build
 
 WORKDIR /app
@@ -5,15 +20,18 @@ WORKDIR /app
 ENV PNPM_HOME /.pnpm
 ENV PATH $PATH:$PNPM_HOME
 
-COPY package.json pnpm-lock.yaml ./
-
-RUN npm -g i pnpm && pnpm install --frozen-lockfile
-
+COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . .
 
-RUN pnpm run build
+RUN npm run telemetry && npm run build
 
 FROM node:20-alpine
+
+LABEL org.opencontainers.image.title "PeaNUT"
+LABEL org.opencontainers.image.description "A tiny dashboard for Network UPS Tools"
+LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
+LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
+LABEL org.opencontainers.image.licenses='Apache-2.0'
 
 COPY --from=build --link /app/package.json /app/pnpm-lock.yaml /app/LICENSE /app/README.md /app/next.config.js ./
 COPY --from=build --link /app/.next/standalone ./
@@ -28,6 +46,6 @@ ENV PORT $WEB_PORT
 EXPOSE $PORT
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://localhost:$PORT/api/ping || exit 1
+  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://$HOSTNAME:$PORT/api/ping || exit 1
 
 CMD ["node", "server.js"]
