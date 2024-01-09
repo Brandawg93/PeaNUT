@@ -1,6 +1,6 @@
 {
   "name": "peanut",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage",
@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "test:e2e": "docker compose up -d && playwright test && docker compose down",
     "deploy": "./scripts/deploy.sh",
-    "deploy:test": "./scripts/deploy-test.sh"
+    "deploy:test": "./scripts/deploy-test.sh",
+    "telemetry": "next telemetry disable"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
@@ -27,7 +28,6 @@
     "next-i18next": "^15.1.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
-    "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
     "react-i18next": "^13.5.0"
   },

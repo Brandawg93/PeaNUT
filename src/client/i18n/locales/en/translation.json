@@ -20,6 +20,7 @@
     "value": "Value"
   },
   "sidebar": {
-    "settings": "Settings"
+    "settings": "Settings",
+    "theme": "Theme"
   }
 }

@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import { Button, ButtonGroup } from '@material-tailwind/react'
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline'
 
+import { ThemeContext } from '../themecontext'
+
 export default function DayNightSwitch() {
-  const [theme, setTheme] = useState(localStorage.theme || 'system')
+  const { theme, setTheme } = useContext(ThemeContext)
 
   const handleLight = () => {
     localStorage.theme = 'light'
@@ -37,21 +39,45 @@ export default function DayNightSwitch() {
       <ButtonGroup size='sm' variant='filled' className='mt-3 gap-[1px]'>
         <Button
           onClick={handleLight}
-          className={`flex h-8 justify-center border-none p-[4px] shadow-none hover:shadow-none rounded-full ${isActive('light')}`}
+          className={`flex h-8 justify-center rounded-full border-none p-[4px] shadow-none hover:shadow-none ${isActive(
+            'light'
+          )}`}
         >
-          <SunIcon className={`h-6 w-6 stroke-2 ${theme === 'light' ? 'text-black dark:text-white' : 'text-gray-800 dark:text-gray-300 dark:hover:text-white hover:text-black'}`} />
+          <SunIcon
+            className={`h-6 w-6 stroke-2 ${
+              theme === 'light'
+                ? 'text-black dark:text-white'
+                : 'text-gray-800 hover:text-black dark:text-gray-300 dark:hover:text-white'
+            }`}
+          />
         </Button>
         <Button
           onClick={handleDark}
-          className={`flex h-8 justify-center border-none p-[4px] shadow-none hover:shadow-none rounded-full ${isActive('dark')}`}
+          className={`flex h-8 justify-center rounded-full border-none p-[4px] shadow-none hover:shadow-none ${isActive(
+            'dark'
+          )}`}
         >
-          <MoonIcon className={`h-6 w-6 stroke-2 ${theme === 'dark' ? 'text-black dark:text-white' : 'text-gray-800 dark:text-gray-300 dark:hover:text-white hover:text-black'}`} />
+          <MoonIcon
+            className={`h-6 w-6 stroke-2 ${
+              theme === 'dark'
+                ? 'text-black dark:text-white'
+                : 'text-gray-800 hover:text-black dark:text-gray-300 dark:hover:text-white'
+            }`}
+          />
         </Button>
         <Button
           onClick={handleSystem}
-          className={`flex h-8 justify-center border-none p-[4px] shadow-none hover:shadow-none rounded-full ${isActive('system')}`}
+          className={`flex h-8 justify-center rounded-full border-none p-[4px] shadow-none hover:shadow-none ${isActive(
+            'system'
+          )}`}
         >
-          <ComputerDesktopIcon className={`h-6 w-6 stroke-2 ${theme === 'system' ? 'text-black dark:text-white' : 'text-gray-800 dark:text-gray-300 dark:hover:text-white hover:text-black'}`} />
+          <ComputerDesktopIcon
+            className={`h-6 w-6 stroke-2 ${
+              theme === 'system'
+                ? 'text-black dark:text-white'
+                : 'text-gray-800 hover:text-black dark:text-gray-300 dark:hover:text-white'
+            }`}
+          />
         </Button>
       </ButtonGroup>
     </div>
