@@ -1,19 +1,21 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useContext } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
+
+import { LanguageContext } from '@/client/context/language'
 import { DEVICE } from '@/common/types'
 
 type Props = {
   data: DEVICE
-  lng: string
 }
 
 export default function WattsChart(props: Props) {
   const { data } = props
   const [realpower, setRealPower] = useState([data['ups.realpower']])
   const prevDataRef = useRef(data)
-  const { t } = useTranslation(props.lng)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   useEffect(() => {
     const input = data['ups.realpower']
@@ -26,7 +28,10 @@ export default function WattsChart(props: Props) {
   }, [data])
 
   return (
-    <Card className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'>
+    <Card
+      className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      data-testid='watts'
+    >
       <Line
         className='dark:hue-rotate-180 dark:invert'
         data={{

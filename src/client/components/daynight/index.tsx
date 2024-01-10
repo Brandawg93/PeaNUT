@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Button, ButtonGroup } from '@material-tailwind/react'
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline'
 
-import { ThemeContext } from '../themecontext'
+import { ThemeContext } from '../../context/theme'
 
 export default function DayNightSwitch() {
   const { theme, setTheme } = useContext(ThemeContext)
@@ -35,7 +35,7 @@ export default function DayNightSwitch() {
   }
 
   return (
-    <div className='inline-block'>
+    <div className='inline-block' data-testid='daynight'>
       <ButtonGroup size='sm' variant='filled' className='mt-3 gap-[1px]'>
         <Button
           onClick={handleLight}

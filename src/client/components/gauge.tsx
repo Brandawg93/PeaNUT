@@ -53,7 +53,10 @@ export default function Gauge(props: Props) {
     ],
   }
   return (
-    <Card className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'>
+    <Card
+      className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      data-testid='gauge'
+    >
       <Doughnut
         className='dark:hue-rotate-180 dark:invert'
         data={data}
