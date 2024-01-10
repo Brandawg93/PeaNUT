@@ -3,7 +3,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import '../globals.css'
-import ThemeProvider from '@/client/components/themecontext'
+import ThemeProvider from '@/client/context/theme'
+import LanguageProvider from '@/client/context/language'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +17,9 @@ export default function RootLayout({ children, params }: { children: React.React
   return (
     <html lang={params.lng || 'en'}>
       <body className={inter.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

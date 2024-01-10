@@ -30,7 +30,7 @@ export default function Runtime(props: Props) {
   const { t } = useTranslation(props.lng)
 
   return (
-    <div className='text-3xl'>
+    <div className='text-3xl' data-testid='runtime'>
       <Kpi text={secondsToDhms(runtime)} description={t('batteryRuntime')} />
     </div>
   )

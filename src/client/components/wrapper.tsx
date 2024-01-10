@@ -6,11 +6,9 @@ import React, { useEffect, useState } from 'react'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Spinner } from '@material-tailwind/react'
-import { useTranslation, initReactI18next } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { Chart } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import i18next from 'i18next'
-import LanguageDetector from 'i18next-browser-languagedetector'
 
 import NutGrid from './grid'
 import Gauge from './gauge'
@@ -23,23 +21,7 @@ import Footer from './footer'
 
 import { upsStatus } from '@/common/constants'
 import useFetch from '@/client/hooks/usefetch'
-import { getOptions, languages, resources } from '@/client/i18n'
 import { DEVICE } from '@/common/types'
-
-const runsOnServerSide = typeof window === 'undefined'
-
-i18next
-  .use(initReactI18next)
-  .use(LanguageDetector)
-  .use(resources)
-  .init({
-    ...getOptions(),
-    lng: undefined, // let detect the language on client side
-    detection: {
-      order: ['path', 'htmlTag', 'cookie', 'navigator'],
-    },
-    preload: runsOnServerSide ? languages : [],
-  })
 
 Chart.register(annotationPlugin)
 
@@ -65,21 +47,13 @@ export default function Wrapper({ lng }: Props) {
   const { t } = useTranslation(lng)
   const { data, refetch, loading, error } = useFetch()
 
-  useEffect(() => {
-    if (
-      localStorage.theme === 'dark' ||
-      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [])
-
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
       return (
-        <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'>
+        <div
+          className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+          data-testid='wrapper'
+        >
           <div>
             <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
             <p>Connection refused. Is NUT server running?</p>
@@ -92,14 +66,20 @@ export default function Wrapper({ lng }: Props) {
   }
   if (!data.devices) {
     return (
-      <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-8xl dark:from-gray-900 dark:to-gray-800 dark:text-white'>
+      <div
+        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-8xl dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        data-testid='wrapper'
+      >
         <Spinner className='h-12 w-12' />
       </div>
     )
   }
   if (data.devices && data.devices.length === 0) {
     return (
-      <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'>
+      <div
+        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        data-testid='wrapper'
+      >
         <div>
           <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
           <p>No devices found on this server.</p>
@@ -125,7 +105,10 @@ export default function Wrapper({ lng }: Props) {
   )
 
   return (
-    <div className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'>
+    <div
+      className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
+      data-testid='wrapper'
+    >
       <NavBar
         disableRefresh={loading || typeof loading === 'undefined'}
         onRefreshClick={() => refetch()}

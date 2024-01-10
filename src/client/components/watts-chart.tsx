@@ -26,7 +26,10 @@ export default function WattsChart(props: Props) {
   }, [data])
 
   return (
-    <Card className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'>
+    <Card
+      className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      data-testid='watts'
+    >
       <Line
         className='dark:hue-rotate-180 dark:invert'
         data={{
