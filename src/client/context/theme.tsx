@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useEffect, useState } from 'react'
+import { ThemeProvider as MaterialProvider } from '@material-tailwind/react'
 
 export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: string) => {} })
 
@@ -22,5 +23,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     else setTheme('system')
   }, [])
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
+  return (
+    <MaterialProvider>
+      <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
+    </MaterialProvider>
+  )
 }
