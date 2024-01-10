@@ -47,7 +47,7 @@ export default function Footer({ updated, lng }: Props) {
 
   return (
     <>
-      <div className='hidden lg:inline-block'>
+      <div className='hidden lg:inline-block' data-testid='footer'>
         <DayNightSwitch />
       </div>
       <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>

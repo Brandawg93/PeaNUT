@@ -27,7 +27,10 @@ export default function NutGrid(props: Props) {
   result.shift()
 
   return (
-    <Card className='border-neutral-300 w-full overflow-scroll border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'>
+    <Card
+      className='border-neutral-300 w-full overflow-scroll border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      data-testid='grid'
+    >
       <table className='w-full min-w-max table-auto text-left'>
         <thead>
           <tr>

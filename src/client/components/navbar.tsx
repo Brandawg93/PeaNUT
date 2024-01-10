@@ -106,7 +106,9 @@ export default function NavBar(props: Props) {
                 <hr />
                 <div className='grid grid-flow-row grid-cols-2'>
                   <div className='flex flex-col justify-center'>
-                    <Typography className='font-medium text-gray-800 dark:text-gray-300'>{t('sidebar.theme')}</Typography>
+                    <Typography className='font-medium text-gray-800 dark:text-gray-300'>
+                      {t('sidebar.theme')}
+                    </Typography>
                   </div>
                   <div className='mb-3 mt-3'>
                     <DayNightSwitch />
