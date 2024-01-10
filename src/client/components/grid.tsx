@@ -1,4 +1,4 @@
-import React, { useContext} from 'react'
+import React, { useContext } from 'react'
 import { Card, Typography } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 

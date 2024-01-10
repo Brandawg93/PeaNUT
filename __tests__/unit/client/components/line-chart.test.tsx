@@ -52,7 +52,7 @@ const devices: DEVICE = {
   'ups.vendorid': '0764',
 }
 
-describe('Line', () => {    
+describe('Line', () => {
   it('renders', () => {
     const { getByTestId } = render(<LineChart data={devices} />)
 
