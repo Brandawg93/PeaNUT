@@ -1,5 +1,7 @@
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { LanguageContext } from '@/client/context/language'
 import Kpi from './kpi'
 
 function secondsToDhms(seconds: number) {
@@ -22,12 +24,12 @@ function secondsToDhms(seconds: number) {
 
 type Props = {
   runtime: number
-  lng: string
 }
 
 export default function Runtime(props: Props) {
   const { runtime } = props
-  const { t } = useTranslation(props.lng)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   return (
     <div className='text-3xl' data-testid='runtime'>

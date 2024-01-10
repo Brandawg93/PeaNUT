@@ -2,7 +2,7 @@
 
 import 'chart.js/auto'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Spinner } from '@material-tailwind/react'
@@ -19,6 +19,7 @@ import Runtime from './runtime'
 import WattsChart from './watts-chart'
 import Footer from './footer'
 
+import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import useFetch from '@/client/hooks/usefetch'
 import { DEVICE } from '@/common/types'
@@ -38,12 +39,9 @@ const getStatus = (status: keyof typeof upsStatus) => {
   }
 }
 
-type Props = {
-  lng: string
-}
-
-export default function Wrapper({ lng }: Props) {
+export default function Wrapper() {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
+  const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { data, refetch, loading, error } = useFetch()
 
@@ -91,14 +89,14 @@ export default function Wrapper({ lng }: Props) {
   const ups = data.devices[preferredDevice]
   const voltageWrapper = ups['input.voltage'] ? (
     <div className='mb-4'>
-      <LineChart data={ups} lng={lng} />
+      <LineChart data={ups} />
     </div>
   ) : (
     <></>
   )
   const wattsWrapper = ups['ups.realpower'] ? (
     <div className='mb-4'>
-      <WattsChart data={ups} lng={lng} />
+      <WattsChart data={ups} />
     </div>
   ) : (
     <></>
@@ -117,7 +115,6 @@ export default function Wrapper({ lng }: Props) {
           data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d['device.serial'] === serial))
         }
         devices={data.devices}
-        lng={lng}
       />
       <div className='flex justify-center'>
         <div className='container'>
@@ -152,15 +149,15 @@ export default function Wrapper({ lng }: Props) {
               <Gauge percentage={ups['battery.charge']} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={ups['battery.runtime']} lng={lng} />
+              <Runtime runtime={ups['battery.runtime']} />
             </div>
           </div>
           {voltageWrapper}
           {wattsWrapper}
           <div className='mb-4'>
-            <NutGrid data={ups} lng={lng} />
+            <NutGrid data={ups} />
           </div>
-          <Footer updated={data.updated} lng={lng} />
+          <Footer updated={data.updated} />
         </div>
       </div>
     </div>

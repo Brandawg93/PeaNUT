@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext} from 'react'
 import { Card, Typography } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
+
+import { LanguageContext } from '@/client/context/language'
 import { DEVICE } from '@/common/types'
 
 type TableProps = {
@@ -10,12 +12,12 @@ type TableProps = {
 
 type Props = {
   data: DEVICE
-  lng: string
 }
 
 export default function NutGrid(props: Props) {
   const { data } = props
-  const { t } = useTranslation(props.lng)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   if (!data) {
     return null
@@ -69,6 +71,4 @@ export default function NutGrid(props: Props) {
       </table>
     </Card>
   )
-
-  // return <Grid data={result || (() => new Promise(() => {}))} columns={[{ name: 'key' }, { name: 'value' }]} sort />
 }

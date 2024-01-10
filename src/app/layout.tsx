@@ -2,7 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import '../globals.css'
+import '@/app/globals.css'
 import ThemeProvider from '@/client/context/theme'
 import LanguageProvider from '@/client/context/language'
 
@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   description: 'A dashboard for NUT servers',
 }
 
-export default function RootLayout({ children, params }: { children: React.ReactNode; params: any }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={params.lng || 'en'}>
+    <html>
       <body className={inter.className}>
         <ThemeProvider>
           <LanguageProvider>{children}</LanguageProvider>

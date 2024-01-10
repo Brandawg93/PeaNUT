@@ -15,14 +15,11 @@ i18next
   .init({
     ...getOptions(),
     lng: undefined, // let detect the language on client side
-    detection: {
-      order: ['path', 'htmlTag', 'cookie', 'navigator'],
-    },
     preload: runsOnServerSide ? languages : [],
   })
 
-const LanguageContext = createContext('en')
+export const LanguageContext = createContext(i18next.language)
 
-export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  return <LanguageContext.Provider value={'en'}>{children}</LanguageContext.Provider>
+export default function LanguageProvider({ children }: { children: React.ReactNode }) {
+  return <LanguageContext.Provider value={i18next.language}>{children}</LanguageContext.Provider>
 }

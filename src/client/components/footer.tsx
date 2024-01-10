@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 
+import { LanguageContext } from '@/client/context/language'
 import pJson from '../../../package.json'
 import DayNightSwitch from './daynight'
 
 type Props = {
   updated: Date
-  lng: string
 }
 
-export default function Footer({ updated, lng }: Props) {
+export default function Footer({ updated }: Props) {
   const [currentVersion, setcurrentVersion] = useState({ created: new Date(), version: null, url: '' })
   const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' })
+  const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
   useEffect(() => {
