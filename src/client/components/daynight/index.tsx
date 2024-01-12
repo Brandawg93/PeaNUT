@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Button, ButtonGroup } from '@material-tailwind/react'
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline'
 
-import { ThemeContext } from '../../context/theme'
+import { ThemeContext } from '@/client/context/theme'
 
 export default function DayNightSwitch() {
   const { theme, setTheme } = useContext(ThemeContext)

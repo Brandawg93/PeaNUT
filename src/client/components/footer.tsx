@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
 import pJson from '../../../package.json'
-import DayNightSwitch from './daynight'
+import DayNightSwitch from '@/client/components/daynight'
 
 type Props = {
   updated: Date
