@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
-import Kpi from './kpi'
+import Kpi from '@/client/components/kpi'
 
 function secondsToDhms(seconds: number) {
   if (seconds <= 0) {

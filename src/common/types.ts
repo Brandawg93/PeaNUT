@@ -1,4 +1,4 @@
-import { upsStatus } from './constants'
+import { upsStatus } from '@/common/constants'
 
 export type DEVICE_LIST = {
   name: string

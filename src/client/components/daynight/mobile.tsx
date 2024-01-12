@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { ChevronUpDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline'
-import { ThemeContext } from '../../context/theme'
+import { ThemeContext } from '@/client/context/theme'
 
 export default function DayNightSwitch() {
   const { theme, setTheme } = useContext(ThemeContext)

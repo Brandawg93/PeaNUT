@@ -6,8 +6,8 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
 
 import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
-import Refresh from './refresh'
-import DayNightSwitch from './daynight/mobile'
+import Refresh from '@/client/components/refresh'
+import DayNightSwitch from '@/client/components/daynight/mobile'
 import { DEVICE } from '@/common/types'
 
 type Props = {
