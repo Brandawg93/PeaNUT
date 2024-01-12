@@ -1,18 +1,19 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useContext } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 
 import { useTranslation } from 'react-i18next'
+import { LanguageContext } from '@/client/context/language'
 import { DEVICE } from '@/common/types'
 
 type Props = {
   data: DEVICE
-  lng: string
 }
 
 export default function LineChart(props: Props) {
   const { data } = props
-  const { t } = useTranslation(props.lng)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
   const [inputVoltage, setInputVoltage] = useState([data['input.voltage']])
   const [outputVoltage, setOutputVoltage] = useState([data['output.voltage']])
   const prevDataRef = useRef(data)
@@ -31,7 +32,10 @@ export default function LineChart(props: Props) {
   }, [data])
 
   return (
-    <Card className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'>
+    <Card
+      className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      data-testid='line'
+    >
       <Line
         className='dark:hue-rotate-180 dark:invert'
         data={{

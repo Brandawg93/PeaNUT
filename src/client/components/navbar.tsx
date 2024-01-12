@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option, IconButton, Drawer, Card } from '@material-tailwind/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
 
+import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
 import Refresh from './refresh'
 import DayNightSwitch from './daynight/mobile'
@@ -15,14 +16,13 @@ type Props = {
   onDeviceChange: (serial: string) => void
   devices: Array<any>
   disableRefresh: boolean
-  lng: string
 }
 
 export default function NavBar(props: Props) {
-  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh, lng } = props
+  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
   const [device, setDevice] = useState(devices[0])
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
-  const ref = React.useRef(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
   const handleSelect = (eventKey: string | undefined) => {
@@ -112,7 +112,9 @@ export default function NavBar(props: Props) {
                 <hr />
                 <div className='grid grid-flow-row grid-cols-2'>
                   <div className='flex flex-col justify-center'>
-                    <Typography className='font-medium text-gray-800 dark:text-gray-300'>{t('sidebar.theme')}</Typography>
+                    <Typography className='font-medium text-gray-800 dark:text-gray-300'>
+                      {t('sidebar.theme')}
+                    </Typography>
                   </div>
                   <div className='mb-3 mt-3'>
                     <DayNightSwitch />

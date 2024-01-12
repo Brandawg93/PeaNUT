@@ -4,8 +4,6 @@ services:
   nut-upsd:
     image: instantlinux/nut-upsd
     container_name: nut-upsd
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
     volumes:
       - ./config:/etc/nut
     environment:

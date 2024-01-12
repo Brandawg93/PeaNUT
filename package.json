@@ -3,9 +3,10 @@
   "version": "2.2.1",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .next .swc coverage",
+    "clean": "rm -rf .next .swc coverage test-results",
     "dev": "docker compose up -d && next dev && docker compose down",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "node .next/standalone/server.js",
     "lint": "next lint --fix",
     "format": "prettier --write **/*",
@@ -32,6 +33,7 @@
     "react-i18next": "^13.5.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.0.4",
     "@playwright/test": "^1.40.1",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",

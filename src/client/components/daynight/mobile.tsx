@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { ChevronUpDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline'
-import { ThemeContext } from '../themecontext'
+import { ThemeContext } from '../../context/theme'
 
 export default function DayNightSwitch() {
   const { theme, setTheme } = useContext(ThemeContext)
@@ -43,22 +43,20 @@ export default function DayNightSwitch() {
   }
 
   return (
-    <div className='relative inline-block h-full rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'>
+    <div
+      className='relative inline-block h-full rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'
+      data-testid='daynightmobile'
+    >
       <div className='absolute left-0 z-0 ml-2 mr-2 inline-flex h-full flex-col justify-center'>{getIcon()}</div>
       <div className='inline'>
         <select
+          value={theme}
           onChange={handleSelect}
           className='relative z-10 h-9 appearance-none bg-transparent pl-11 pr-5 outline-none'
         >
-          <option selected={theme === 'light'} value='light'>
-            Light
-          </option>
-          <option selected={theme === 'dark'} value='dark'>
-            Dark
-          </option>
-          <option selected={theme === 'system'} value='system'>
-            System
-          </option>
+          <option value='light'>Light</option>
+          <option value='dark'>Dark</option>
+          <option value='system'>System</option>
         </select>
       </div>
       <div className='absolute right-0 z-0 inline-flex h-full flex-col justify-center'>

@@ -1,7 +1,9 @@
-import React from 'react'
-import { Card, IconButton, Typography } from '@material-tailwind/react'
-import { PencilSquareIcon } from '@heroicons/react/24/solid'
+import React, { useContext } from 'react'
+import { Card, Typography, IconButton } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
+
+import { LanguageContext } from '@/client/context/language'
 import { DEVICE, VARS } from '@/common/types'
 
 type TableProps = {
@@ -11,12 +13,12 @@ type TableProps = {
 
 type Props = {
   data: DEVICE
-  lng: string
 }
 
 export default function NutGrid(props: Props) {
   const { data } = props
-  const { t } = useTranslation(props.lng)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   if (!data) {
     return null
@@ -34,7 +36,10 @@ export default function NutGrid(props: Props) {
   )
 
   return (
-    <Card className='border-neutral-300 w-full overflow-scroll border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'>
+    <Card
+      className='border-neutral-300 w-full overflow-scroll border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      data-testid='grid'
+    >
       <table className='w-full min-w-max table-auto text-left'>
         <thead>
           <tr>

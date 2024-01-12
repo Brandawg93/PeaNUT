@@ -1,4 +1,4 @@
-FROM docker.io/node:20-alpine AS deps
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
@@ -17,9 +17,6 @@ FROM node:20-alpine as build
 
 WORKDIR /app
 
-ENV PNPM_HOME /.pnpm
-ENV PATH $PATH:$PNPM_HOME
-
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . .
 
@@ -33,7 +30,8 @@ LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
-COPY --from=build --link /app/package.json /app/pnpm-lock.yaml /app/LICENSE /app/README.md /app/next.config.js ./
+COPY --link package.json next.config.js ./
+
 COPY --from=build --link /app/.next/standalone ./
 COPY --from=build --link /app/.next/static ./.next/static
 

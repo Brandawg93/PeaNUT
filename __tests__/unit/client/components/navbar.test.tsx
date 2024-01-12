@@ -11,7 +11,6 @@ const devices = [
 
 describe('NavBar', () => {
   it('renders', () => {
-    const lng = 'en'
     render(
       <NavBar
         devices={devices}
@@ -19,7 +18,6 @@ describe('NavBar', () => {
         onRefetch={() => {}}
         onDeviceChange={() => {}}
         disableRefresh={false}
-        lng={''}
       />
     )
 
