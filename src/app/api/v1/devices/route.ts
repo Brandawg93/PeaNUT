@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { DEVICE } from '@/common/types'
+import { VARS } from '@/common/types'
 
 import { Nut } from '@/server/nut'
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   )
   await nut.connect()
 
-  const deviceData: Array<DEVICE> = []
+  const deviceData: Array<VARS> = []
   const devices = await nut.getDevices()
   for (const device of devices) {
     const data = await nut.getData(device.name)

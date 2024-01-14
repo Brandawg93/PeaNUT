@@ -45,7 +45,7 @@ export default function NavBar(props: Props) {
       labelProps={{ className: 'dark:text-gray-300' }}
       label='Select Device'
       onChange={handleSelect}
-      value={device['device.serial']}
+      value={device.vars['device.serial']}
     >
       {devices.map((d: DEVICE) => (
         <Option

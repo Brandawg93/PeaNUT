@@ -12,14 +12,14 @@ type Props = {
 
 export default function WattsChart(props: Props) {
   const { data } = props
-  const [realpower, setRealPower] = useState([data['ups.realpower']])
+  const [realpower, setRealPower] = useState([data.vars['ups.realpower']])
   const prevDataRef = useRef(data)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    const input = data['ups.realpower']
-    if (data['device.serial'] !== prevDataRef.current['device.serial']) {
+    const input = data.vars['ups.realpower']
+    if (data.vars['device.serial'] !== prevDataRef.current.vars['device.serial']) {
       setRealPower([input, input, input])
     } else {
       setRealPower((prev: Array<number>) => (Number.isNaN(input) ? prev : [...prev, input]))
@@ -67,7 +67,7 @@ export default function WattsChart(props: Props) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: data['ups.realpower.nominal'],
+                  value: data.vars['ups.realpower.nominal'],
                 },
               },
             },

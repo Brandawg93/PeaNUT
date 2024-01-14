@@ -16,7 +16,12 @@ export default function useFetch() {
     setLoading(true)
     getDevices()
       .then((gridProps) => {
-        setData({ devices: gridProps, updated: new Date() })
+        if (gridProps.message) {
+          setError(gridProps.message)
+          setLoading(false)
+          return
+        }
+        setData({ devices: gridProps.data, updated: new Date() })
         setLoading(false)
       })
       .catch((error: any) => {

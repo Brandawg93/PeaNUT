@@ -14,14 +14,14 @@ export default function LineChart(props: Props) {
   const { data } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [inputVoltage, setInputVoltage] = useState([data['input.voltage']])
-  const [outputVoltage, setOutputVoltage] = useState([data['output.voltage']])
+  const [inputVoltage, setInputVoltage] = useState([data.vars['input.voltage']])
+  const [outputVoltage, setOutputVoltage] = useState([data.vars['output.voltage']])
   const prevDataRef = useRef(data)
 
   useEffect(() => {
-    const input = data['input.voltage']
-    const output = data['output.voltage']
-    if (data['device.serial'] !== prevDataRef.current['device.serial']) {
+    const input = data.vars['input.voltage']
+    const output = data.vars['output.voltage']
+    if (data.vars['device.serial'] !== prevDataRef.current.vars['device.serial']) {
       setInputVoltage([input, input, input])
       setOutputVoltage([output, output, output])
     } else {
@@ -78,7 +78,7 @@ export default function LineChart(props: Props) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: data['input.voltage.nominal'],
+                  value: data.vars['input.voltage.nominal'],
                 },
               },
             },

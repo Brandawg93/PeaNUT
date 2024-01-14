@@ -3,10 +3,10 @@
 import React, { createContext, useEffect, useState } from 'react'
 import { ThemeProvider as MaterialProvider } from '@material-tailwind/react'
 
-export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: string) => {} })
+export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: 'light' | 'dark' | 'system') => {} })
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState('system')
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
 
   useEffect(() => {
     if (

@@ -49,6 +49,12 @@ export default class PromiseSocket {
     })
   }
 
+  removeAllListeners() {
+    this.innerSok.removeAllListeners('error')
+    this.innerSok.removeAllListeners('data')
+    this.innerSok.removeAllListeners('end')
+  }
+
   close() {
     this.innerSok.end()
   }

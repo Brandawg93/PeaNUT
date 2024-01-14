@@ -24,7 +24,7 @@ export class Nut {
     await this.socket.write(command)
     const data = await this.socket.readAll(command, until)
     if (data.startsWith('ERR')) {
-      throw new Error('Invalid response')
+      throw new Error(`Invalid response: ${data}`)
     }
     return data
   }
@@ -120,6 +120,9 @@ export class Nut {
   }
 
   public async getRWVars(device = 'UPS'): Promise<Array<keyof VARS>> {
+    if (!process.env.USERNAME || !process.env.PASSWORD) {
+      return []
+    }
     const command = `LIST RW ${device}`
     const vars: Array<keyof VARS> = []
     let data = await this.getCommand(command)
@@ -146,6 +149,15 @@ export class Nut {
     if (!data.startsWith('VAR')) {
       throw new Error('Invalid response')
     }
+    return data.split('"')[1].trim()
+  }
+
+  public async getVarDescription(device = 'UPS', variable: string): Promise<string> {
+    const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n')
+    if (!data.startsWith('DESC')) {
+      throw new Error('Invalid response')
+    }
+    this.socket.removeAllListeners()
     return data.split('"')[1].trim()
   }
 
@@ -183,5 +195,12 @@ export class Nut {
       throw new Error('Invalid response')
     }
     return data.split(`TYPE ${device} ${variable}`)[1].trim()
+  }
+
+  public async setVar(device = 'UPS', variable: string, value: string): Promise<void> {
+    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n')
+    if (data !== 'OK\n') {
+      throw new Error('Invalid response')
+    }
   }
 }

@@ -7,7 +7,7 @@ export type DEVICE_LIST = {
 
 export type VAR = {
   name: string
-  value: string
+  value: string | number
   type: string
   enum: Array<string>
   range: Array<string>
@@ -65,4 +65,5 @@ export type DEVICE = {
   description: string
   commands: Array<string>
   clients: Array<string>
+  name: string
 }
