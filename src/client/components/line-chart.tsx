@@ -10,10 +10,11 @@ type Props = {
   inputVoltage: number
   inputVoltageNominal: number
   outputVoltage: number
+  updated: Date
 }
 
 export default function LineChart(props: Props) {
-  const { serial, inputVoltage, inputVoltageNominal, outputVoltage } = props
+  const { serial, inputVoltage, inputVoltageNominal, outputVoltage, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [inputVoltageData, setInputVoltageData] = useState<Array<number>>([])
@@ -29,7 +30,7 @@ export default function LineChart(props: Props) {
       setOutputVoltageData((prev: Array<number>) => [...prev, outputVoltage])
     }
     prevDataRef.current = serial
-  }, [serial, inputVoltage, outputVoltage])
+  }, [serial, inputVoltage, outputVoltage, updated])
 
   return (
     <Card

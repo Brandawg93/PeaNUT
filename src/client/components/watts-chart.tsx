@@ -9,10 +9,11 @@ type Props = {
   serial: string
   realpower: number
   realpowerNominal: number
+  updated: Date
 }
 
 export default function WattsChart(props: Props) {
-  const { serial, realpower, realpowerNominal } = props
+  const { serial, realpower, realpowerNominal, updated } = props
   const [dataPoints, setDataPoints] = useState<Array<number>>([])
   const prevDataRef = useRef(serial)
   const lng = useContext<string>(LanguageContext)
@@ -25,7 +26,7 @@ export default function WattsChart(props: Props) {
       setDataPoints((prev: Array<number>) => [...prev, realpower])
     }
     prevDataRef.current = serial
-  }, [serial, realpower])
+  }, [serial, realpower, updated])
 
   return (
     <Card
