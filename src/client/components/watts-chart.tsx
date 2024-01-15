@@ -7,8 +7,8 @@ import { LanguageContext } from '@/client/context/language'
 
 type Props = {
   serial: string
-  realpower: number
-  realpowerNominal: number
+  realpower?: number
+  realpowerNominal?: number
   updated: Date
 }
 
@@ -21,9 +21,10 @@ export default function WattsChart(props: Props) {
 
   useEffect(() => {
     if (serial !== prevDataRef.current) {
-      setDataPoints([realpower, realpower, realpower])
+      if (realpower) setDataPoints([realpower])
+      else setDataPoints([])
     } else {
-      setDataPoints((prev: Array<number>) => [...prev, realpower])
+      if (realpower) setDataPoints((prev: Array<number>) => [...prev, realpower])
     }
     prevDataRef.current = serial
   }, [serial, realpower, updated])

@@ -7,9 +7,9 @@ import { LanguageContext } from '@/client/context/language'
 
 type Props = {
   serial: string
-  inputVoltage: number
-  inputVoltageNominal: number
-  outputVoltage: number
+  inputVoltage?: number
+  inputVoltageNominal?: number
+  outputVoltage?: number
   updated: Date
 }
 
@@ -23,11 +23,13 @@ export default function LineChart(props: Props) {
 
   useEffect(() => {
     if (serial !== prevDataRef.current) {
-      setInputVoltageData([inputVoltage, inputVoltage, inputVoltage])
-      setOutputVoltageData([outputVoltage, outputVoltage, outputVoltage])
+      if (inputVoltage) setInputVoltageData([inputVoltage])
+      else setInputVoltageData([])
+      if (outputVoltage) setOutputVoltageData([outputVoltage])
+      else setOutputVoltageData([])
     } else {
-      setInputVoltageData((prev: Array<number>) => [...prev, inputVoltage])
-      setOutputVoltageData((prev: Array<number>) => [...prev, outputVoltage])
+      if (inputVoltage) setInputVoltageData((prev: Array<number>) => [...prev, inputVoltage])
+      if (outputVoltage) setOutputVoltageData((prev: Array<number>) => [...prev, outputVoltage])
     }
     prevDataRef.current = serial
   }, [serial, inputVoltage, outputVoltage, updated])

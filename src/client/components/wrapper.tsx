@@ -97,9 +97,9 @@ export default function Wrapper() {
     <div className='mb-4'>
       <LineChart
         serial={vars['ups.serial'].value}
-        inputVoltage={parseFloat(vars['input.voltage'].value)}
-        inputVoltageNominal={parseFloat(vars['input.voltage.nominal'].value)}
-        outputVoltage={parseFloat(vars['output.voltage'].value)}
+        inputVoltage={parseFloat(vars['input.voltage']?.value)}
+        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value)}
+        outputVoltage={parseFloat(vars['output.voltage']?.value)}
         updated={data.updated}
       />
     </div>
@@ -110,8 +110,8 @@ export default function Wrapper() {
     <div className='mb-4'>
       <WattsChart
         serial={vars['ups.serial'].value}
-        realpower={parseFloat(vars['ups.realpower'].value)}
-        realpowerNominal={parseFloat(vars['ups.realpower.nominal'].value)}
+        realpower={parseFloat(vars['ups.realpower']?.value)}
+        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value)}
         updated={data.updated}
       />
     </div>
