@@ -26,12 +26,12 @@ export default function NutGrid(props: Props) {
   const { t } = useTranslation(lng)
   const [edit, setEdit] = React.useState<number>(-1)
   const ref = useRef<any>(null)
-  const anyRW = data.rwVars.length > 0
+  const anyRW = data.rwVars?.length > 0
 
   let result = React.useMemo<Array<TableProps>>(() => [], [])
   result = Object.entries(data.vars)
     .filter(([k, v]) => k !== '__typename')
-    .map(([k, v]) => ({ key: k, value: v || 'N/A' }))
+    .map(([k, v]) => ({ key: k, value: v.value || 'N/A' }))
   result.shift()
 
   useEffect(() => {

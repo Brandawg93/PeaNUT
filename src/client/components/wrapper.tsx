@@ -45,6 +45,15 @@ export default function Wrapper() {
   const { t } = useTranslation(lng)
   const { data, refetch, loading, error } = useFetch()
 
+  const loadingWrapper = (
+    <div
+      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+      data-testid='wrapper'
+    >
+      <Spinner className='h-12 w-12' />
+    </div>
+  )
+
   if (error) {
     if (error.message.includes('ECONNREFUSED')) {
       return (
@@ -63,14 +72,7 @@ export default function Wrapper() {
     console.error(error)
   }
   if (!data.devices) {
-    return (
-      <div
-        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-8xl dark:from-gray-900 dark:to-gray-800 dark:text-white'
-        data-testid='wrapper'
-      >
-        <Spinner className='h-12 w-12' />
-      </div>
-    )
+    return loadingWrapper
   }
   if (data.devices && data.devices.length === 0) {
     return (
@@ -87,16 +89,29 @@ export default function Wrapper() {
   }
 
   const ups = data.devices[preferredDevice]
-  const voltageWrapper = ups.vars['input.voltage'] ? (
+  const vars = ups.vars
+  if (!vars) {
+    return loadingWrapper
+  }
+  const voltageWrapper = vars['input.voltage'] ? (
     <div className='mb-4'>
-      <LineChart data={ups} />
+      <LineChart
+        serial={vars['ups.serial'].value}
+        inputVoltage={parseFloat(vars['input.voltage'].value)}
+        inputVoltageNominal={parseFloat(vars['input.voltage.nominal'].value)}
+        outputVoltage={parseFloat(vars['output.voltage'].value)}
+      />
     </div>
   ) : (
     <></>
   )
-  const wattsWrapper = ups.vars['ups.realpower'] ? (
+  const wattsWrapper = vars['ups.realpower'] ? (
     <div className='mb-4'>
-      <WattsChart data={ups} />
+      <WattsChart
+        serial={vars['ups.serial'].value}
+        realpower={parseFloat(vars['ups.realpower'].value)}
+        realpowerNominal={parseFloat(vars['ups.realpower.nominal'].value)}
+      />
     </div>
   ) : (
     <></>
@@ -112,7 +127,8 @@ export default function Wrapper() {
         onRefreshClick={() => refetch()}
         onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
-          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.vars['device.serial'] === serial))
+          data.devices &&
+          setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.vars && d.vars['device.serial'].value === serial))
         }
         devices={data.devices}
       />
@@ -121,35 +137,35 @@ export default function Wrapper() {
           <div className='flex flex-row justify-between'>
             <div>
               <p className='m-0'>
-                {t('manufacturer')}: {ups.vars['ups.mfr']}
+                {t('manufacturer')}: {vars['ups.mfr'].value}
               </p>
               <p className='m-0'>
-                {t('model')}: {ups.vars['ups.model']}
+                {t('model')}: {vars['ups.model'].value}
               </p>
               <p>
-                {t('serial')}: {ups.vars['device.serial']}
+                {t('serial')}: {vars['device.serial'].value}
               </p>
             </div>
             <div>
               <p className='text-2xl font-semibold'>
-                {getStatus(ups.vars['ups.status'])}
-                &nbsp;{upsStatus[ups.vars['ups.status'] as keyof typeof upsStatus]}
+                {getStatus(vars['ups.status'].value as keyof typeof upsStatus)}
+                &nbsp;{upsStatus[vars['ups.status'].value as keyof typeof upsStatus]}
               </p>
             </div>
           </div>
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
-              {ups.vars['ups.load'] ? (
-                <Gauge percentage={ups.vars['ups.load']} title={t('currentLoad')} invert />
+              {vars['ups.load'] ? (
+                <Gauge percentage={parseFloat(vars['ups.load'].value)} title={t('currentLoad')} invert />
               ) : (
                 <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={ups.vars['battery.charge']} title={t('batteryCharge')} />
+              <Gauge percentage={parseFloat(vars['battery.charge'].value)} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={ups.vars['battery.runtime']} />
+              <Runtime runtime={parseFloat(vars['battery.runtime'].value)} />
             </div>
           </div>
           {voltageWrapper}

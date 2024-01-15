@@ -4,32 +4,32 @@ import { Card } from '@material-tailwind/react'
 
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
-import { DEVICE } from '@/common/types'
 
 type Props = {
-  data: DEVICE
+  serial: string
+  inputVoltage: number
+  inputVoltageNominal: number
+  outputVoltage: number
 }
 
 export default function LineChart(props: Props) {
-  const { data } = props
+  const { serial, inputVoltage, inputVoltageNominal, outputVoltage } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [inputVoltage, setInputVoltage] = useState([data.vars['input.voltage']])
-  const [outputVoltage, setOutputVoltage] = useState([data.vars['output.voltage']])
-  const prevDataRef = useRef(data)
+  const [inputVoltageData, setInputVoltageData] = useState<Array<number>>([])
+  const [outputVoltageData, setOutputVoltageData] = useState<Array<number>>([])
+  const prevDataRef = useRef(serial)
 
   useEffect(() => {
-    const input = data.vars['input.voltage']
-    const output = data.vars['output.voltage']
-    if (data.vars['device.serial'] !== prevDataRef.current.vars['device.serial']) {
-      setInputVoltage([input, input, input])
-      setOutputVoltage([output, output, output])
+    if (serial !== prevDataRef.current) {
+      setInputVoltageData([inputVoltage, inputVoltage, inputVoltage])
+      setOutputVoltageData([outputVoltage, outputVoltage, outputVoltage])
     } else {
-      setInputVoltage((prev: Array<number>) => (Number.isNaN(input) ? prev : [...prev, input]))
-      setOutputVoltage((prev: Array<number>) => (Number.isNaN(output) ? prev : [...prev, output]))
+      setInputVoltageData((prev: Array<number>) => [...prev, inputVoltage])
+      setOutputVoltageData((prev: Array<number>) => [...prev, outputVoltage])
     }
-    prevDataRef.current = data
-  }, [data])
+    prevDataRef.current = serial
+  }, [serial, inputVoltage, outputVoltage])
 
   return (
     <Card
@@ -39,18 +39,18 @@ export default function LineChart(props: Props) {
       <Line
         className='dark:hue-rotate-180 dark:invert'
         data={{
-          labels: inputVoltage.map(() => ''),
+          labels: inputVoltageData.map(() => ''),
           datasets: [
             {
               label: t('lineChart.inputVoltage'),
-              data: inputVoltage,
+              data: inputVoltageData,
               fill: false,
               borderColor: 'rgb(8, 143, 143)',
               tension: 0.1,
             },
             {
               label: t('lineChart.outputVoltage'),
-              data: outputVoltage,
+              data: outputVoltageData,
               fill: false,
               borderColor: 'rgb(255, 83, 73)',
               tension: 0.1,
@@ -78,7 +78,7 @@ export default function LineChart(props: Props) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: data.vars['input.voltage.nominal'],
+                  value: inputVoltageNominal,
                 },
               },
             },

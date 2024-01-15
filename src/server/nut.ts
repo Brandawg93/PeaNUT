@@ -1,4 +1,4 @@
-import { DEVICE, DEVICE_LIST, VARS } from '@/common/types'
+import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
 export class Nut {
@@ -52,15 +52,15 @@ export class Nut {
     await this.socket.close()
   }
 
-  public async getDevices(): Promise<Array<DEVICE_LIST>> {
+  public async getDevices(): Promise<Array<DEVICE>> {
     const command = 'LIST UPS'
-    const devices: Array<DEVICE_LIST> = []
+    const devices: Array<DEVICE> = []
     let data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('UPS')) {
         const name = line.split('"')[0].replace('UPS ', '').trim()
         const description = line.split('"')[1].trim()
-        devices.push({ name, description })
+        devices.push({ name, description, rwVars: [], commands: [], clients: [], vars: {} })
       }
     }
     return devices
@@ -72,17 +72,15 @@ export class Nut {
     if (!data.startsWith(`BEGIN ${command}\n`)) {
       throw new Error('Invalid response')
     }
-    const deviceData: VARS = Object.assign(
-      {},
-      ...data.split('\n').map((line) => {
-        if (line.startsWith('VAR')) {
-          const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-          const value = line.split('"')[1].trim()
-          return { [key]: value }
-        }
-      })
-    )
-    return deviceData
+    const vars: VARS = {}
+    for (const line of data.split('\n')) {
+      if (line.startsWith('VAR')) {
+        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+        const value = line.split('"')[1].trim()
+        vars[key] = { value }
+      }
+    }
+    return vars
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {

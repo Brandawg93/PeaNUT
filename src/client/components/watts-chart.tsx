@@ -4,28 +4,28 @@ import { Card } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
-import { DEVICE } from '@/common/types'
 
 type Props = {
-  data: DEVICE
+  serial: string
+  realpower: number
+  realpowerNominal: number
 }
 
 export default function WattsChart(props: Props) {
-  const { data } = props
-  const [realpower, setRealPower] = useState([data.vars['ups.realpower']])
-  const prevDataRef = useRef(data)
+  const { serial, realpower, realpowerNominal } = props
+  const [dataPoints, setDataPoints] = useState<Array<number>>([])
+  const prevDataRef = useRef(serial)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    const input = data.vars['ups.realpower']
-    if (data.vars['device.serial'] !== prevDataRef.current.vars['device.serial']) {
-      setRealPower([input, input, input])
+    if (serial !== prevDataRef.current) {
+      setDataPoints([realpower, realpower, realpower])
     } else {
-      setRealPower((prev: Array<number>) => (Number.isNaN(input) ? prev : [...prev, input]))
+      setDataPoints((prev: Array<number>) => [...prev, realpower])
     }
-    prevDataRef.current = data
-  }, [data])
+    prevDataRef.current = serial
+  }, [serial, realpower])
 
   return (
     <Card
@@ -35,11 +35,11 @@ export default function WattsChart(props: Props) {
       <Line
         className='dark:hue-rotate-180 dark:invert'
         data={{
-          labels: realpower.map(() => ''),
+          labels: dataPoints.map(() => ''),
           datasets: [
             {
               label: t('wattsChart.realpower'),
-              data: realpower,
+              data: dataPoints,
               fill: false,
               borderColor: 'rgb(8, 143, 143)',
               tension: 0.1,
@@ -67,7 +67,7 @@ export default function WattsChart(props: Props) {
                   borderDashOffset: 0,
                   borderWidth: 3,
                   scaleID: 'y',
-                  value: data.vars['ups.realpower.nominal'],
+                  value: realpowerNominal,
                 },
               },
             },

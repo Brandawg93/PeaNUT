@@ -14,7 +14,7 @@ type Props = {
   onRefreshClick: () => void
   onRefetch: () => void
   onDeviceChange: (serial: string) => void
-  devices: Array<any>
+  devices: Array<DEVICE>
   disableRefresh: boolean
 }
 
@@ -27,7 +27,7 @@ export default function NavBar(props: Props) {
 
   const handleSelect = (eventKey: string | undefined) => {
     if (!eventKey) return
-    const selectedDevice = devices.find((d: DEVICE) => d.vars['device.serial'] === eventKey)
+    const selectedDevice = devices.find((d: DEVICE) => d.vars['device.serial'].value === eventKey)
     if (selectedDevice) {
       setDevice(selectedDevice)
       onDeviceChange(eventKey)
@@ -45,13 +45,13 @@ export default function NavBar(props: Props) {
       labelProps={{ className: 'dark:text-gray-300' }}
       label='Select Device'
       onChange={handleSelect}
-      value={device.vars['device.serial']}
+      value={device.vars['device.serial'].value}
     >
       {devices.map((d: DEVICE) => (
         <Option
-          key={d.vars['device.serial']}
-          value={d.vars['device.serial']}
-        >{`${d.vars['device.mfr']} ${d.vars['device.model']}`}</Option>
+          key={d.vars['device.serial'].value}
+          value={d.vars['device.serial'].value}
+        >{`${d.vars['device.mfr'].value} ${d.vars['device.model'].value}`}</Option>
       ))}
     </Select>
   )
