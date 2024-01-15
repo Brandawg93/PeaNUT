@@ -3,8 +3,12 @@ import { Socket } from 'net'
 export default class PromiseSocket {
   private innerSok: Socket = new Socket()
 
-  public connect(port: number, host: string): Promise<void> {
+  public connect(port: number, host: string, timeout = 1000): Promise<void> {
     return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error('Timeout'))
+      }, timeout)
+
       this.innerSok.connect(port, host, () => {
         resolve()
         this.innerSok.removeAllListeners('error')
@@ -15,8 +19,12 @@ export default class PromiseSocket {
     })
   }
 
-  async write(data: string) {
+  async write(data: string, timeout = 1000) {
     return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error('Timeout'))
+      }, timeout)
+
       this.innerSok.write(`${data}\n`, () => {
         resolve()
         this.innerSok.removeAllListeners('error')

@@ -35,12 +35,10 @@ export default function NutGrid(props: Props) {
   result.shift()
 
   useEffect(() => {
-    for (const key of result.map((r) => r.key)) {
-      getAllVarDescriptions(data.name, Object.keys(data.vars)).then((data) => {
-        const descriptions = data.data
-        setDescriptions(descriptions)
-      })
-    }
+    getAllVarDescriptions(data.name, Object.keys(data.vars)).then((data) => {
+      const descriptions = data.data
+      setDescriptions(descriptions)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -58,7 +56,7 @@ export default function NutGrid(props: Props) {
 
   const handleSave = async (key: string) => {
     try {
-      const res = await saveVar(data.name, key, data.vars[key].value)
+      const res = await saveVar(data.name, key, ref.current.value)
       if (res?.message) {
         toast.error(res.message)
         return

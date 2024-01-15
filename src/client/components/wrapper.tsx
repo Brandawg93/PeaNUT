@@ -55,7 +55,7 @@ export default function Wrapper() {
   )
 
   if (error) {
-    if (error.message.includes('ECONNREFUSED')) {
+    if (error.message?.includes('ECONNREFUSED')) {
       return (
         <div
           className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
