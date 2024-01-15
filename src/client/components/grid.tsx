@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify'
 
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'
-import { DEVICE, VARS } from '@/common/types'
+import { DEVICE, VAR, VARS } from '@/common/types'
 import { getAllVarDescriptions, saveVar } from '@/app/actions'
 
 type TableProps = {
@@ -56,14 +56,14 @@ export default function NutGrid(props: Props) {
     setEdit(-1)
   }
 
-  const handleSave = async (key: string, index: number) => {
+  const handleSave = async (key: string) => {
     try {
-      const res = await saveVar(data.name, key, data.vars[key].toString())
+      const res = await saveVar(data.name, key, data.vars[key].value.toString())
       if (res?.message) {
         toast.error(res.message)
         return
       }
-      if (ref.current) data.vars[key] = ref.current.value
+      if (ref.current) data.vars[key].value = ref.current.value
       handleClose()
     } catch (e: any) {
       toast.error(e.message)
@@ -79,7 +79,7 @@ export default function NutGrid(props: Props) {
           className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
           defaultValue={value}
         />
-        <IconButton onClick={async () => await handleSave(key, index)} variant='text'>
+        <IconButton onClick={async () => await handleSave(key)} variant='text'>
           <CheckCircleIcon className='h-6 w-6 text-green-500' />
         </IconButton>
         <IconButton variant='text' onClick={() => handleClose()}>
