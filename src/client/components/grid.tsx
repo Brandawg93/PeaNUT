@@ -58,7 +58,7 @@ export default function NutGrid(props: Props) {
 
   const handleSave = async (key: string) => {
     try {
-      const res = await saveVar(data.name, key, data.vars[key].value.toString())
+      const res = await saveVar(data.name, key, data.vars[key].value)
       if (res?.message) {
         toast.error(res.message)
         return
@@ -70,7 +70,7 @@ export default function NutGrid(props: Props) {
     }
   }
 
-  const editinput = (key: string, value: string, index: number) => (
+  const editinput = (key: string, value: string) => (
     <>
       <div className='flex'>
         <input
@@ -138,7 +138,7 @@ export default function NutGrid(props: Props) {
                 </td>
                 <td className={`p-3 ${lastClass} border-neutral-300 border-r dark:border-gray-800`}>
                   {edit === index ? (
-                    editinput(key, value.toString(), index)
+                    editinput(key, value.toString())
                   ) : (
                     <Typography className='mb-0 font-normal dark:text-white'>{value || ' '}</Typography>
                   )}
