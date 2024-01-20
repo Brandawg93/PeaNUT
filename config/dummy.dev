@@ -25,7 +25,7 @@ driver.version.internal: 0.52
 driver.version.usb: libusb-1.0.26 (API: 0x1000109)
 input.voltage: 123.0
 input.voltage.nominal: 120
-output.voltage: 123.0
+output.voltage: 124.0
 ups.beeper.status: enabled
 ups.delay.shutdown: 20
 ups.delay.start: 30

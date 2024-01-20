@@ -71,7 +71,7 @@ describe('Nut', () => {
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(listVarUps)
     await nut.connect()
     const data = await nut.getData('ups')
-    expect(data['battery.charge']).toEqual('100')
+    expect(data['battery.charge'].value).toEqual('100')
     await nut.close()
   })
 })

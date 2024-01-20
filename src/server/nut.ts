@@ -1,4 +1,4 @@
-import { DEVICE, DEVICE_LIST } from '@/common/types'
+import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
 export class Nut {
@@ -24,7 +24,7 @@ export class Nut {
     await this.socket.write(command)
     const data = await this.socket.readAll(command, until)
     if (data.startsWith('ERR')) {
-      throw new Error('Invalid response')
+      throw new Error(`Invalid response: ${data}`)
     }
     return data
   }
@@ -52,37 +52,35 @@ export class Nut {
     await this.socket.close()
   }
 
-  public async getDevices(): Promise<Array<DEVICE_LIST>> {
+  public async getDevices(): Promise<Array<DEVICE>> {
     const command = 'LIST UPS'
-    const devices: Array<DEVICE_LIST> = []
+    const devices: Array<DEVICE> = []
     let data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('UPS')) {
         const name = line.split('"')[0].replace('UPS ', '').trim()
         const description = line.split('"')[1].trim()
-        devices.push({ name, description })
+        devices.push({ name, description, rwVars: [], commands: [], clients: [], vars: {} })
       }
     }
     return devices
   }
 
-  public async getData(device = 'UPS'): Promise<DEVICE> {
+  public async getData(device = 'UPS'): Promise<VARS> {
     const command = `LIST VAR ${device}`
     let data = await this.getCommand(command)
     if (!data.startsWith(`BEGIN ${command}\n`)) {
       throw new Error('Invalid response')
     }
-    const deviceData: DEVICE = Object.assign(
-      {},
-      ...data.split('\n').map((line) => {
-        if (line.startsWith('VAR')) {
-          const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-          const value = line.split('"')[1].trim()
-          return { [key]: value }
-        }
-      })
-    )
-    return deviceData
+    const vars: VARS = {}
+    for (const line of data.split('\n')) {
+      if (line.startsWith('VAR')) {
+        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+        const value = line.split('"')[1].trim()
+        vars[key] = { value }
+      }
+    }
+    return vars
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {
@@ -119,13 +117,16 @@ export class Nut {
     return clients
   }
 
-  public async getRWVars(device = 'UPS'): Promise<Array<string>> {
+  public async getRWVars(device = 'UPS'): Promise<Array<keyof VARS>> {
+    if (!process.env.USERNAME || !process.env.PASSWORD) {
+      return []
+    }
     const command = `LIST RW ${device}`
-    const vars: Array<string> = []
+    const vars: Array<keyof VARS> = []
     let data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('RW')) {
-        const command = line.split('"')[0].replace(`RW ${device} `, '').trim()
+        const command = line.split('"')[0].replace(`RW ${device} `, '').trim() as keyof VARS
         vars.push(command)
       }
     }
@@ -147,5 +148,57 @@ export class Nut {
       throw new Error('Invalid response')
     }
     return data.split('"')[1].trim()
+  }
+
+  public async getVarDescription(device = 'UPS', variable: string): Promise<string> {
+    const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n')
+    if (!data.startsWith('DESC')) {
+      throw new Error('Invalid response')
+    }
+    this.socket.removeAllListeners()
+    return data.split('"')[1].trim()
+  }
+
+  public async getEnum(device = 'UPS', variable: string): Promise<Array<string>> {
+    const command = `LIST ENUM ${device} ${variable}`
+    const enums: Array<string> = []
+    let data = await this.getCommand(command)
+    for (const line of data.split('\n')) {
+      if (line.startsWith('ENUM')) {
+        const command = line.split('"')[0].replace(`ENUM ${device} `, '').trim()
+        enums.push(command)
+      }
+    }
+
+    return enums
+  }
+
+  public async getRange(device = 'UPS', variable: string): Promise<Array<string>> {
+    const command = `LIST RANGE ${device} ${variable}`
+    const ranges: Array<string> = []
+    let data = await this.getCommand(command)
+    for (const line of data.split('\n')) {
+      if (line.startsWith('RANGE')) {
+        const command = line.split('"')[0].replace(`RANGE ${device} `, '').trim()
+        ranges.push(command)
+      }
+    }
+
+    return ranges
+  }
+
+  public async getType(device = 'UPS', variable: string): Promise<string> {
+    const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n')
+    if (!data.startsWith('TYPE')) {
+      throw new Error('Invalid response')
+    }
+    return data.split(`TYPE ${device} ${variable}`)[1].trim()
+  }
+
+  public async setVar(device = 'UPS', variable: string, value: string): Promise<void> {
+    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n')
+    if (data !== 'OK\n') {
+      throw new Error('Invalid response')
+    }
   }
 }

@@ -47,6 +47,8 @@ Variable | Default | Description |
 NUT_HOST | localhost | Host of NUT server |
 NUT_PORT | 3493 | Port of NUT server |
 WEB_PORT | 8080 | Port of web server |
+USERNAME | undefined | Optional but required to edit |
+PASSWORD | undefined | Optional but required to edit |
 BASE_PATH | undefined | Base path for reverse proxy |
 
 ## API

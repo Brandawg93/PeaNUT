@@ -3,7 +3,11 @@
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 
-export async function getDevices() {
+type Error = {
+  message: string
+}
+
+async function connect() {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',
     parseInt(process.env.NUT_PORT || '3493'),
@@ -11,12 +15,58 @@ export async function getDevices() {
     process.env.PASSWORD
   )
   await nut.connect()
-  const deviceData: Array<DEVICE> = []
-  const devices = await nut.getDevices()
-  for (const device of devices) {
-    const data = await nut.getData(device.name)
-    deviceData.push(data)
+  return nut
+}
+
+export async function getDevices() {
+  try {
+    const nut = await connect()
+    const gridProps: Array<DEVICE> = []
+    const devices = await nut.getDevices()
+    for (const device of devices) {
+      const data = await nut.getData(device.name)
+      const rwVars = await nut.getRWVars(device.name)
+      gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [], name: device.name })
+    }
+    await nut.close()
+    return { data: gridProps, message: '' }
+  } catch (e: any) {
+    return { message: e.message }
   }
-  await nut.close()
-  return deviceData
+}
+
+export async function getVarDescription(device: string, param: string) {
+  try {
+    const nut = await connect()
+    const data = await nut.getVarDescription(device, param)
+    await nut.close()
+    return { data, message: '' }
+  } catch (e: any) {
+    return { message: e.message }
+  }
+}
+
+export async function getAllVarDescriptions(device: string, params: string[]) {
+  try {
+    const nut = await connect()
+    const data: any = {}
+    for (const param of params) {
+      const desc = await nut.getVarDescription(device, param)
+      data[param] = desc
+    }
+    await nut.close()
+    return { data, message: '' }
+  } catch (e: any) {
+    return { message: e.message }
+  }
+}
+
+export async function saveVar(device: string, varName: string, value: string) {
+  try {
+    const nut = await connect()
+    await nut.setVar(device, varName, value)
+    await nut.close()
+  } catch (e: any) {
+    return { message: e.message }
+  }
 }

@@ -1,3 +1,6 @@
-[upsmon]
+[admin]
         password = nut_test
+        actions = set
+        actions = fsd
+        instcmds = all
         upsmon master

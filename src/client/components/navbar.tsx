@@ -14,7 +14,7 @@ type Props = {
   onRefreshClick: () => void
   onRefetch: () => void
   onDeviceChange: (serial: string) => void
-  devices: Array<any>
+  devices: Array<DEVICE>
   disableRefresh: boolean
 }
 
@@ -27,8 +27,11 @@ export default function NavBar(props: Props) {
 
   const handleSelect = (eventKey: string | undefined) => {
     if (!eventKey) return
-    setDevice(devices.find((d: DEVICE) => d['device.serial'] === eventKey))
-    onDeviceChange(eventKey)
+    const selectedDevice = devices.find((d: DEVICE) => d.vars['device.serial'].value === eventKey)
+    if (selectedDevice) {
+      setDevice(selectedDevice)
+      onDeviceChange(eventKey)
+    }
   }
 
   const openDrawer = () => setIsDrawerOpen(!isDrawerOpen)
@@ -42,10 +45,13 @@ export default function NavBar(props: Props) {
       labelProps={{ className: 'dark:text-gray-300' }}
       label='Select Device'
       onChange={handleSelect}
-      value={device['device.serial']}
+      value={device.vars['device.serial'].value}
     >
       {devices.map((d: DEVICE) => (
-        <Option key={d['device.serial']} value={d['device.serial']}>{`${d['device.mfr']} ${d['device.model']}`}</Option>
+        <Option
+          key={d.vars['device.serial'].value}
+          value={d.vars['device.serial'].value}
+        >{`${d.vars['device.mfr'].value} ${d.vars['device.model'].value}`}</Option>
       ))}
     </Select>
   )
