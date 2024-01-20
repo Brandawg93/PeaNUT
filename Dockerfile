@@ -20,7 +20,7 @@ COPY . .
 
 RUN npm run telemetry && npm run build
 
-FROM node:20-alpine
+FROM node:20-alpine as runner
 
 LABEL org.opencontainers.image.title "PeaNUT"
 LABEL org.opencontainers.image.description "A tiny dashboard for Network UPS Tools"
