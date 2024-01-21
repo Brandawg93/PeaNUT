@@ -1,6 +1,7 @@
 'use client'
 
 import 'chart.js/auto'
+import 'react-toastify/dist/ReactToastify.css'
 
 import React, { useContext, useState } from 'react'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
