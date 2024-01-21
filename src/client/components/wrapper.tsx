@@ -97,8 +97,8 @@ export default function Wrapper() {
   const voltageWrapper = vars['input.voltage'] ? (
     <div className='mb-4'>
       <LineChart
-        serial={vars['ups.serial'].value}
-        inputVoltage={parseFloat(vars['input.voltage']?.value)}
+        serial={vars['device.serial']?.value}
+        inputVoltage={parseFloat(vars['input.voltage'].value)}
         inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value)}
         outputVoltage={parseFloat(vars['output.voltage']?.value)}
         updated={data.updated}
@@ -110,8 +110,8 @@ export default function Wrapper() {
   const wattsWrapper = vars['ups.realpower'] ? (
     <div className='mb-4'>
       <WattsChart
-        serial={vars['ups.serial'].value}
-        realpower={parseFloat(vars['ups.realpower']?.value)}
+        serial={vars['device.serial']?.value}
+        realpower={parseFloat(vars['ups.realpower'].value)}
         realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value)}
         updated={data.updated}
       />
@@ -131,7 +131,7 @@ export default function Wrapper() {
         onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
           data.devices &&
-          setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.vars && d.vars['device.serial'].value === serial))
+          setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.vars && d.vars['device.serial']?.value === serial))
         }
         devices={data.devices}
       />
@@ -140,19 +140,19 @@ export default function Wrapper() {
           <div className='flex flex-row justify-between'>
             <div>
               <p className='m-0'>
-                {t('manufacturer')}: {vars['ups.mfr'].value}
+                {t('manufacturer')}: {vars['ups.mfr']?.value}
               </p>
               <p className='m-0'>
-                {t('model')}: {vars['ups.model'].value}
+                {t('model')}: {vars['ups.model']?.value}
               </p>
               <p>
-                {t('serial')}: {vars['device.serial'].value}
+                {t('serial')}: {vars['device.serial']?.value}
               </p>
             </div>
             <div>
               <p className='text-2xl font-semibold'>
-                {getStatus(vars['ups.status'].value as keyof typeof upsStatus)}
-                &nbsp;{upsStatus[vars['ups.status'].value as keyof typeof upsStatus]}
+                {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
+                &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus]}
               </p>
             </div>
           </div>
@@ -165,10 +165,10 @@ export default function Wrapper() {
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={parseFloat(vars['battery.charge'].value)} title={t('batteryCharge')} />
+              <Gauge percentage={parseFloat(vars['battery.charge']?.value)} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={parseFloat(vars['battery.runtime'].value)} />
+              <Runtime runtime={parseFloat(vars['battery.runtime']?.value)} />
             </div>
           </div>
           {voltageWrapper}

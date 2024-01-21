@@ -4,6 +4,7 @@ import { VARS } from '@/common/types'
 import { Nut } from '@/server/nut'
 
 // api/v1/devices
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',

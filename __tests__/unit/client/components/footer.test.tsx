@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
 import Footer from '@/client/components/footer'
-import { DEVICE } from '@/common/types'
 
 global.fetch = jest.fn(() =>
   Promise.resolve({

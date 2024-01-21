@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify'
 
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'
-import { DEVICE, VAR, VARS } from '@/common/types'
+import { DEVICE, VARS } from '@/common/types'
 import { getAllVarDescriptions, saveVar } from '@/app/actions'
 
 type TableProps = {
@@ -30,8 +30,7 @@ export default function NutGrid(props: Props) {
 
   let result = React.useMemo<Array<TableProps>>(() => [], [])
   result = Object.entries(data.vars)
-    .filter(([k, v]) => k !== '__typename')
-    .map(([k, v]) => ({ key: k, value: v.value || 'N/A' }))
+    .map(([k, v]) => ({ key: k, value: v?.value || 'N/A' }))
   result.shift()
 
   useEffect(() => {
@@ -96,7 +95,7 @@ export default function NutGrid(props: Props) {
       <table className='w-full min-w-max table-auto text-left'>
         <thead>
           <tr className='grid-row'>
-            {Object.keys(result[0]).map((head: string, index: number) => {
+            {Object.keys(result[0]).map((head: string) => {
               return (
                 <th
                   key={head}

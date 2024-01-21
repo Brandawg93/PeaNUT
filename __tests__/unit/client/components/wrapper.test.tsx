@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
 
-import LanguageProvider from '@/client/context/language'
 import Wrapper from '@/client/components/wrapper'
 
 describe('Wrapper', () => {

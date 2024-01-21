@@ -55,7 +55,7 @@ export class Nut {
   public async getDevices(): Promise<Array<DEVICE>> {
     const command = 'LIST UPS'
     const devices: Array<DEVICE> = []
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('UPS')) {
         const name = line.split('"')[0].replace('UPS ', '').trim()
@@ -68,7 +68,7 @@ export class Nut {
 
   public async getData(device = 'UPS'): Promise<VARS> {
     const command = `LIST VAR ${device}`
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     if (!data.startsWith(`BEGIN ${command}\n`)) {
       throw new Error('Invalid response')
     }
@@ -92,7 +92,7 @@ export class Nut {
   public async getCommands(device = 'UPS'): Promise<Array<string>> {
     const command = `LIST CMD ${device}`
     const commands: Array<string> = []
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('CMD')) {
         const command = line.split('"')[0].replace(`CMD ${device} `, '').trim()
@@ -106,7 +106,7 @@ export class Nut {
   public async getClients(device = 'UPS'): Promise<Array<string>> {
     const command = `LIST CLIENT ${device}`
     const clients: Array<string> = []
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('CLIENT')) {
         const command = line.split('"')[0].replace(`CLIENT ${device} `, '').trim()
@@ -123,7 +123,7 @@ export class Nut {
     }
     const command = `LIST RW ${device}`
     const vars: Array<keyof VARS> = []
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('RW')) {
         const command = line.split('"')[0].replace(`RW ${device} `, '').trim() as keyof VARS
@@ -162,7 +162,7 @@ export class Nut {
   public async getEnum(device = 'UPS', variable: string): Promise<Array<string>> {
     const command = `LIST ENUM ${device} ${variable}`
     const enums: Array<string> = []
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('ENUM')) {
         const command = line.split('"')[0].replace(`ENUM ${device} `, '').trim()
@@ -176,7 +176,7 @@ export class Nut {
   public async getRange(device = 'UPS', variable: string): Promise<Array<string>> {
     const command = `LIST RANGE ${device} ${variable}`
     const ranges: Array<string> = []
-    let data = await this.getCommand(command)
+    const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('RANGE')) {
         const command = line.split('"')[0].replace(`RANGE ${device} `, '').trim()

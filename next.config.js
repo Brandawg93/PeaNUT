@@ -7,6 +7,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
     output: 'standalone',
     basePath: process.env.BASE_PATH,
+    eslint: {
+        dirs: ['src', '__tests__'],
+    },
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

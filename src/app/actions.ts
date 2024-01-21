@@ -3,10 +3,6 @@
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 
-type Error = {
-  message: string
-}
-
 async function connect() {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',
