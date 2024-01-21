@@ -17,7 +17,11 @@ export async function GET(request: NextRequest) {
   const devices = await nut.getDevices()
   for (const device of devices) {
     const data = await nut.getData(device.name)
-    deviceData.push(data)
+    const ret: any = {}
+    Object.keys(data).forEach(function (key) {
+      ret[key] = data[key].value
+    })
+    deviceData.push(ret)
   }
   await nut.close()
   return NextResponse.json(deviceData)

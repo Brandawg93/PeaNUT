@@ -6,6 +6,6 @@ test.describe('Vars', () => {
     const createJson = await create.json()
 
     expect(create.status()).toBe(200)
-    expect(createJson['device.serial'].value).toBe('test1')
+    expect(createJson['device.serial']).toBe('test1')
   })
 })

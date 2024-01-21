@@ -7,8 +7,8 @@ test.describe('Devices', () => {
 
     expect(create.status()).toBe(200)
     expect(createJson).toHaveLength(3)
-    expect(createJson[0]['device.serial'].value).toBe('test1')
-    expect(createJson[1]['device.serial'].value).toBe('test2')
-    expect(createJson[2]['device.serial'].value).toBe('test3')
+    expect(createJson[0]['device.serial']).toBe('test1')
+    expect(createJson[1]['device.serial']).toBe('test2')
+    expect(createJson[2]['device.serial']).toBe('test3')
   })
 })

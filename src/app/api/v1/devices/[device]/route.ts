@@ -14,8 +14,12 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const device = params.device
   try {
     const data = await nut.getData(device)
+    const ret: any = {}
+    Object.keys(data).forEach(function (key) {
+      ret[key] = data[key].value
+    })
     await nut.close()
-    return NextResponse.json(data)
+    return NextResponse.json(ret)
   } catch (e) {
     return NextResponse.json(`Device ${device} not found`, { status: 404 })
   }
