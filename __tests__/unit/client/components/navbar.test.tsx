@@ -3,9 +3,12 @@ import NavBar from '@/client/components/navbar'
 
 const devices = [
   {
-    'device.serial': '1234',
-    'device.mfr': 'test',
-    'device.model': 'test',
+    vars: {},
+    rwVars: [],
+    commands: [],
+    description: 'test',
+    clients: [],
+    name: 'test',
   },
 ]
 

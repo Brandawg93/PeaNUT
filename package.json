@@ -8,6 +8,7 @@
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "start": "node .next/standalone/server.js",
+    "type-check": "tsc --noEmit",
     "lint": "next lint --fix --dir src --dir __tests__",
     "format": "prettier --write **/*",
     "test": "jest",

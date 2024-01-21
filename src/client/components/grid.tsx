@@ -29,8 +29,7 @@ export default function NutGrid(props: Props) {
   const anyRW = data.rwVars?.length > 0
 
   let result = React.useMemo<Array<TableProps>>(() => [], [])
-  result = Object.entries(data.vars)
-    .map(([k, v]) => ({ key: k, value: v?.value || 'N/A' }))
+  result = Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A' }))
   result.shift()
 
   useEffect(() => {
