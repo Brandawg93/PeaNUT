@@ -82,6 +82,38 @@ widget:
   key: nameofyourups
 ```
 
+Or use the `customapi` widget for complete customization!
+
+Ex:
+
+```
+widget:
+    type: customapi
+    url: http://{HOSTNAME}:{PORT}/api/v1/devices/ups
+    mappings:
+    - field: battery.charge
+      label: Battery Charge
+      format: percent
+    - field: battery.runtime
+      label: Battery Runtime
+      format: text
+    - field: ups.load
+      label: UPS Load
+      format: percent
+    - field: ups.status
+      label: UPS Status
+      format: text
+      remap:
+        - value: OL
+          to: Online
+        - value: OB
+          to: On Battery
+        - value: LB
+          to: Low Battery
+        - any: true
+          to: Unknown
+```
+
 ## Tested Devices
 
 [A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Feel free to look there for your device or add your device to the list by submitting an issue with the `tested device` label.
