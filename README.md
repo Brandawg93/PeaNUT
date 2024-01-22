@@ -17,12 +17,15 @@ A Tiny Dashboard for Network UPS Tools
 Install using Docker
 
 ### docker run
+
 ```
 docker run -p 8080:8080 --restart unless-stopped \
 --env NUT_HOST=nut-upsd --env NUT_PORT=3493 \
 --env WEB_PORT=8080 brandawg93/peanut
 ```
+
 ### docker-compose.yml
+
 ```
 version: '3'
 services:
@@ -42,29 +45,29 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-Variable | Default | Description |
--------- | ------- | ----------- |
-NUT_HOST | localhost | Host of NUT server |
-NUT_PORT | 3493 | Port of NUT server |
-WEB_PORT | 8080 | Port of web server |
-USERNAME | undefined | Optional but required to edit |
-PASSWORD | undefined | Optional but required to edit |
-BASE_PATH | undefined | Base path for reverse proxy |
+| Variable  | Default   | Description                   |
+| --------- | --------- | ----------------------------- |
+| NUT_HOST  | localhost | Host of NUT server            |
+| NUT_PORT  | 3493      | Port of NUT server            |
+| WEB_PORT  | 8080      | Port of web server            |
+| USERNAME  | undefined | Optional but required to edit |
+| PASSWORD  | undefined | Optional but required to edit |
+| BASE_PATH | undefined | Base path for reverse proxy   |
 
 ## API
 
-| API Call | Description |
-|----------|-------------|
-| `GET /api/v1/devices` | Retrieves information about all UPS devices |
-| `GET /api/v1/devices/[ups]` | Retrieves information about the specified UPS device |
-| `GET /api/v1/devices/[ups]/var/[param]` | Retrieves value for a single parameter of the specified UPS device |
-| `POST /api/v1/devices/[ups]/var/[param]` | Saves value for a single parameter of the specified UPS device |
+| API Call                                            | Description                                                              |
+| --------------------------------------------------- | ------------------------------------------------------------------------ |
+| `GET /api/v1/devices`                               | Retrieves information about all UPS devices                              |
+| `GET /api/v1/devices/[ups]`                         | Retrieves information about the specified UPS device                     |
+| `GET /api/v1/devices/[ups]/var/[param]`             | Retrieves value for a single parameter of the specified UPS device       |
+| `POST /api/v1/devices/[ups]/var/[param]`            | Saves value for a single parameter of the specified UPS device           |
 | `GET /api/v1/devices/[ups]/var/[param]/description` | Retrieves description for a single parameter of the specified UPS device |
-| `GET /api/v1/devices/[ups]/var/[param]/type` | Retrieves type for a single parameter of the specified UPS device |
-| `GET /api/v1/devices/[ups]/commands` | Retrieves available commands for the specified UPS device |
-| `GET /api/v1/devices/[ups]/description` | Retrieves the description for the specified UPS device |
-| `GET /api/v1/devices/[ups]/clients` | Retrieves the connected clients for the specified UPS device |
-| `GET /api/v1/devices/[ups]/rwvars` | Retrieves writable variables for the specified UPS device |
+| `GET /api/v1/devices/[ups]/var/[param]/type`        | Retrieves type for a single parameter of the specified UPS device        |
+| `GET /api/v1/devices/[ups]/commands`                | Retrieves available commands for the specified UPS device                |
+| `GET /api/v1/devices/[ups]/description`             | Retrieves the description for the specified UPS device                   |
+| `GET /api/v1/devices/[ups]/clients`                 | Retrieves the connected clients for the specified UPS device             |
+| `GET /api/v1/devices/[ups]/rwvars`                  | Retrieves writable variables for the specified UPS device                |
 
 ## Homepage Support
 
@@ -84,4 +87,5 @@ widget:
 [A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Feel free to look there for your device or add your device to the list by submitting an issue with the `tested device` label.
 
 ## Donate to Support PeaNUT
+
 This project was made with you in mind. If you would like to show your appreciation for its continued development, please consider [sponsoring me on Github](https://github.com/sponsors/Brandawg93).

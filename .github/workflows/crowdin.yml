@@ -5,10 +5,8 @@ on:
   schedule:
     - cron: '2 */12 * * *'
   push:
-    paths: [
-      '/src/client/i18n/locales/en/*.json',
-    ]
-    branches: [ main ]
+    paths: ['/src/client/i18n/locales/en/*.json']
+    branches: [main]
 
 jobs:
   synchronize-with-crowdin:
@@ -16,16 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: crowdin action
-      uses: crowdin/github-action@v1
-      with:
-        upload_translations: false
-        download_translations: true
-        crowdin_branch_name: main
-        localization_branch_name: l10n_main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
-        CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: crowdin action
+        uses: crowdin/github-action@v1
+        with:
+          upload_translations: false
+          download_translations: true
+          crowdin_branch_name: main
+          localization_branch_name: l10n_main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

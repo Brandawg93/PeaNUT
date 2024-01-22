@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report an issue with this project.
-title: "[Bug]: "
+title: '[Bug]: '
 labels: bug
 body:
   - type: textarea
@@ -21,7 +21,7 @@ body:
     attributes:
       label: Steps to reproduce
       description: Steps to reproduce the behavior
-      value: "1. "
+      value: '1. '
     validations:
       required: true
   - type: input
