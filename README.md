@@ -29,7 +29,7 @@ docker run -p 8080:8080 --restart unless-stopped \
 ```
 version: '3'
 services:
-  nut_dashboard:
+  peanut:
     image: brandawg93/peanut:latest
     container_name: PeaNUT
     restart: unless-stopped
