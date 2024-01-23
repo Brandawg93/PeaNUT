@@ -1,3 +1,4 @@
 .gitignore
 *.png
 config
+pnpm-lock.yaml
