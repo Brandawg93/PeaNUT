@@ -7,7 +7,7 @@
     "dev": "docker compose up -d && next dev && docker compose down",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
-    "start": "node .next/standalone/server.js",
+    "start": "PORT=$WEB_PORT node server.js",
     "type-check": "tsc --noEmit",
     "lint": "next lint --dir src --dir __tests__",
     "lint:fix": "npm run lint -- --fix",

@@ -37,11 +37,10 @@ ENV NODE_ENV production
 ENV NUT_HOST localhost
 ENV NUT_PORT 3493
 ENV WEB_PORT 8080
-ENV PORT $WEB_PORT
 
-EXPOSE $PORT
+EXPOSE $WEB_PORT
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://$HOSTNAME:$PORT/api/ping || exit 1
+  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://$HOSTNAME:$WEB_PORT/api/ping || exit 1
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
