@@ -23,6 +23,7 @@
   "dependencies": {
     "@heroicons/react": "^2.1.1",
     "@material-tailwind/react": "^2.1.8",
+    "@tanstack/react-query": "^5.17.19",
     "chart.js": "^4.4.1",
     "chartjs-plugin-annotation": "^3.0.1",
     "i18next": "^23.7.18",

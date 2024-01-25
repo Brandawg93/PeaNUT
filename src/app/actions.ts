@@ -25,9 +25,9 @@ export async function getDevices() {
       gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [], name: device.name })
     }
     await nut.close()
-    return { data: gridProps, message: '' }
+    return { devices: gridProps, message: '', updated: new Date() }
   } catch (e: any) {
-    return { message: e.message }
+    return { message: e.message, updated: new Date() }
   }
 }
 

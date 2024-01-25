@@ -4,6 +4,7 @@ import 'chart.js/auto'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { useContext, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Spinner } from '@material-tailwind/react'
@@ -22,8 +23,8 @@ import Footer from '@/client/components/footer'
 
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
-import useFetch from '@/client/hooks/usefetch'
 import { DEVICE } from '@/common/types'
+import { getDevices } from '@/app/actions'
 
 Chart.register(annotationPlugin)
 
@@ -44,7 +45,11 @@ export default function Wrapper() {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { data, refetch, loading, error } = useFetch()
+  // const { data, refetch, loading, error } = useFetch()
+  const { isLoading, error, data, refetch } = useQuery({
+    queryKey: ['repoData'],
+    queryFn: () => getDevices(),
+  })
 
   const loadingWrapper = (
     <div
@@ -72,7 +77,7 @@ export default function Wrapper() {
 
     console.error(error)
   }
-  if (!data.devices) {
+  if (!data || !data.devices) {
     return loadingWrapper
   }
   if (data.devices && data.devices.length === 0) {
@@ -126,7 +131,7 @@ export default function Wrapper() {
       data-testid='wrapper'
     >
       <NavBar
-        disableRefresh={loading || typeof loading === 'undefined'}
+        disableRefresh={isLoading}
         onRefreshClick={() => refetch()}
         onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
