@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext } from 'react'
+import { createContext } from 'react'
 import { getOptions, languages, resources } from '@/client/i18n'
 import i18next from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'

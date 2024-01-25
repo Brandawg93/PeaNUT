@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { ThemeProvider as MaterialProvider } from '@material-tailwind/react'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

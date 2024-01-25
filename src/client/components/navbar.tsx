@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option, IconButton, Drawer, Card } from '@material-tailwind/react'

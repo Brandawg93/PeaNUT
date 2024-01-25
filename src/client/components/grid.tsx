@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import { useState, useMemo, useContext, useEffect, useRef } from 'react'
 import { Card, Typography, IconButton, Tooltip } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon, PencilSquareIcon, XCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
@@ -20,15 +20,15 @@ type Props = {
 
 export default function NutGrid(props: Props) {
   const { data } = props
-  const [descriptions, setDescriptions] = React.useState<any>({})
+  const [descriptions, setDescriptions] = useState<any>({})
   const lng = useContext<string>(LanguageContext)
   const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
-  const [edit, setEdit] = React.useState<number>(-1)
+  const [edit, setEdit] = useState<number>(-1)
   const ref = useRef<any>(null)
   const anyRW = data.rwVars?.length > 0
 
-  let result = React.useMemo<Array<TableProps>>(() => [], [])
+  let result = useMemo<Array<TableProps>>(() => [], [])
   result = Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A' }))
   result.shift()
 
