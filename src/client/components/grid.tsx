@@ -1,6 +1,6 @@
 import { useState, useMemo, useContext, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Card, Typography, IconButton, Tooltip } from '@material-tailwind/react'
+import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon, PencilSquareIcon, XCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 import { ToastContainer, toast } from 'react-toastify'
@@ -72,12 +72,14 @@ export default function NutGrid(props: Props) {
           className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
           defaultValue={value}
         />
-        <IconButton onClick={async () => await handleSave(key)} variant='text'>
-          <CheckCircleIcon className='h-6 w-6 text-green-500' />
-        </IconButton>
-        <IconButton variant='text' onClick={() => handleClose()}>
-          <XCircleIcon className='h-6 w-6 text-red-500' />
-        </IconButton>
+        <ButtonGroup size='sm' variant='text' className='divide-none'>
+          <Button className='px-2' onClick={async () => await handleSave(key)} variant='text'>
+            <CheckCircleIcon className='h-6 w-6 text-green-500' />
+          </Button>
+          <Button className='px-2' variant='text' onClick={() => handleClose()}>
+            <XCircleIcon className='h-6 w-6 text-red-500' />
+          </Button>
+        </ButtonGroup>
       </div>
     </>
   )
