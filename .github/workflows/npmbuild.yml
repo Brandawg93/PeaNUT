@@ -36,7 +36,7 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
       - name: Get installed Playwright version
         id: playwright-version
-        run: echo "::set-output name=version::$(pnpm why --json @playwright/test | jq --raw-output '.[0].devDependencies["@playwright/test"].version')"
+        run: echo "version=$(pnpm why --json @playwright/test | jq --raw-output '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright
         uses: actions/cache@v3
@@ -46,7 +46,7 @@ jobs:
           key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
           restore-keys: |
             ${{ runner.os }}-playwright-
-  
+
       - name: Install dependencies
         run: pnpm i
 
