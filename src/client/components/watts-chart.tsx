@@ -58,6 +58,9 @@ export default function WattsChart(props: Props) {
           ],
         }}
         options={{
+          animation: {
+            duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
+          },
           maintainAspectRatio: false,
           plugins: {
             annotation: {

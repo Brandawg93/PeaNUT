@@ -60,6 +60,9 @@ export default function Gauge(props: Props) {
         className='dark:hue-rotate-180 dark:invert'
         data={data}
         options={{
+          animation: {
+            duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
+          },
           cutout: '80%',
           circumference: 180,
           rotation: 270,
