@@ -45,7 +45,7 @@ export default function Wrapper() {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { isLoading, error, data, refetch } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: () => getDevices(),
   })
@@ -59,22 +59,25 @@ export default function Wrapper() {
     </div>
   )
 
-  if (error) {
-    if (error.message?.includes('ECONNREFUSED')) {
-      return (
-        <div
-          className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-          data-testid='wrapper'
-        >
-          <div>
-            <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
-            <p>Connection refused. Is NUT server running?</p>
-          </div>
-        </div>
-      )
+  if (data?.error) {
+    let error = 'Internal Server Error'
+    if (data?.error.message?.includes('ECONNREFUSED')) {
+      error = 'Connection refused. Is NUT server running?'
     }
 
     console.error(error)
+
+    return (
+      <div
+        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        data-testid='wrapper'
+      >
+        <div>
+          <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
+          <p>{error}</p>
+        </div>
+      </div>
+    )
   }
   if (!data || !data.devices) {
     return loadingWrapper

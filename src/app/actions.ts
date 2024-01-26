@@ -15,27 +15,35 @@ async function connect() {
 }
 
 export async function getDevices() {
-  const nut = await connect()
-  const gridProps: Array<DEVICE> = []
-  const devices = await nut.getDevices()
-  for (const device of devices) {
-    const data = await nut.getData(device.name)
-    const rwVars = await nut.getRWVars(device.name)
-    gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [], name: device.name })
+  try {
+    const nut = await connect()
+    const gridProps: Array<DEVICE> = []
+    const devices = await nut.getDevices()
+    for (const device of devices) {
+      const data = await nut.getData(device.name)
+      const rwVars = await nut.getRWVars(device.name)
+      gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [], name: device.name })
+    }
+    await nut.close()
+    return { devices: gridProps, updated: new Date(), error: undefined }
+  } catch (e: any) {
+    return { devices: undefined, updated: new Date(), error: e.message }
   }
-  await nut.close()
-  return { devices: gridProps, updated: new Date() }
 }
 
 export async function getAllVarDescriptions(device: string, params: string[]) {
-  const nut = await connect()
-  const data: { [x: string]: string } = {}
-  for (const param of params) {
-    const desc = await nut.getVarDescription(device, param)
-    data[param] = desc
+  try {
+    const nut = await connect()
+    const data: { [x: string]: string } = {}
+    for (const param of params) {
+      const desc = await nut.getVarDescription(device, param)
+      data[param] = desc
+    }
+    await nut.close()
+    return { data, error: undefined }
+  } catch (e: any) {
+    return { data: undefined, error: e.message }
   }
-  await nut.close()
-  return data
 }
 
 export async function saveVar(device: string, varName: string, value: string) {
@@ -44,6 +52,6 @@ export async function saveVar(device: string, varName: string, value: string) {
     await nut.setVar(device, varName, value)
     await nut.close()
   } catch (e: any) {
-    return { message: e.message }
+    return { error: e.message }
   }
 }

@@ -52,8 +52,8 @@ export default function NutGrid(props: Props) {
   const handleSave = async (key: string) => {
     try {
       const res = await saveVar(data.name, key, ref.current.value)
-      if (res?.message) {
-        toast.error(res.message)
+      if (res?.error) {
+        toast.error(res.error)
         return
       }
       if (ref.current) data.vars[key].value = ref.current.value
@@ -123,7 +123,9 @@ export default function NutGrid(props: Props) {
                     <Tooltip
                       className='border border-gray-400 bg-gray-300 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
                       content={
-                        <Typography>{(descriptions && descriptions[key]) || 'Descripion Unavailable'}</Typography>
+                        <Typography>
+                          {(descriptions?.data && descriptions.data[key]) || 'Descripion Unavailable'}
+                        </Typography>
                       }
                       placement='right'
                     >
