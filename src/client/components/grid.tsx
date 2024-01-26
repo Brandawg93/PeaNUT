@@ -1,4 +1,5 @@
-import { useState, useMemo, useContext, useEffect, useRef } from 'react'
+import { useState, useMemo, useContext, useRef } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Card, Typography, IconButton, Tooltip } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon, PencilSquareIcon, XCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
@@ -20,25 +21,21 @@ type Props = {
 
 export default function NutGrid(props: Props) {
   const { data } = props
-  const [descriptions, setDescriptions] = useState<any>({})
   const lng = useContext<string>(LanguageContext)
   const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
   const [edit, setEdit] = useState<number>(-1)
   const ref = useRef<any>(null)
+  const { data: descriptions } = useQuery({
+    queryKey: ['deviceDescriptions'],
+    queryFn: () => getAllVarDescriptions(data.name, Object.keys(data.vars)),
+  })
+
   const anyRW = data.rwVars?.length > 0
 
   let result = useMemo<Array<TableProps>>(() => [], [])
   result = Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A' }))
   result.shift()
-
-  useEffect(() => {
-    getAllVarDescriptions(data.name, Object.keys(data.vars)).then((data) => {
-      const descriptions = data.data
-      setDescriptions(descriptions)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   if (!data) {
     return null
@@ -125,7 +122,9 @@ export default function NutGrid(props: Props) {
                     <Typography className='mb-0 inline font-normal dark:text-white'>{key}</Typography>
                     <Tooltip
                       className='border border-gray-400 bg-gray-300 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
-                      content={<Typography>{descriptions[key] || 'Descripion Unavailable'}</Typography>}
+                      content={
+                        <Typography>{(descriptions && descriptions[key]) || 'Descripion Unavailable'}</Typography>
+                      }
                       placement='right'
                     >
                       <InformationCircleIcon className='mt-1 inline h-4 w-4' />

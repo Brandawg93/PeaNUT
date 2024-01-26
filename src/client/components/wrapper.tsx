@@ -45,9 +45,8 @@ export default function Wrapper() {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  // const { data, refetch, loading, error } = useFetch()
   const { isLoading, error, data, refetch } = useQuery({
-    queryKey: ['repoData'],
+    queryKey: ['devicesData'],
     queryFn: () => getDevices(),
   })
 
