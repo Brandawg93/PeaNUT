@@ -38,6 +38,7 @@ export default function DayNightSwitch() {
     <div className='inline-block' data-testid='daynight'>
       <ButtonGroup size='sm' variant='filled' className='mt-3 gap-[1px]'>
         <Button
+          data-testid='light'
           onClick={handleLight}
           className={`flex h-8 justify-center rounded-full border-none p-[4px] shadow-none hover:shadow-none ${isActive(
             'light'
@@ -52,6 +53,7 @@ export default function DayNightSwitch() {
           />
         </Button>
         <Button
+          data-testid='dark'
           onClick={handleDark}
           className={`flex h-8 justify-center rounded-full border-none p-[4px] shadow-none hover:shadow-none ${isActive(
             'dark'
@@ -66,6 +68,7 @@ export default function DayNightSwitch() {
           />
         </Button>
         <Button
+          data-testid='system'
           onClick={handleSystem}
           className={`flex h-8 justify-center rounded-full border-none p-[4px] shadow-none hover:shadow-none ${isActive(
             'system'

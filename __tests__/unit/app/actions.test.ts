@@ -1,4 +1,4 @@
-import { getDevices } from '@/app/actions'
+import { getAllVarDescriptions, getDevices } from '@/app/actions'
 import { DEVICE, VARS } from '@/common/types'
 import { Nut } from '@/server/nut'
 
@@ -25,6 +25,7 @@ beforeAll(() => {
     ])
   jest.spyOn(Nut.prototype, 'getData').mockResolvedValue(vars)
   jest.spyOn(Nut.prototype, 'getRWVars').mockResolvedValue(['battery.charge'])
+  jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
 })
 
 describe('actions', () => {
@@ -38,5 +39,10 @@ describe('actions', () => {
     process.env.NUT_PORT = ''
     const data = await getDevices()
     expect(data.devices).toEqual(result)
+  })
+
+  it('gets all var descriptions', async () => {
+    const data = await getAllVarDescriptions('ups', ['battery.charge'])
+    expect(data?.data && data.data['battery.charge']).toEqual('test')
   })
 })
