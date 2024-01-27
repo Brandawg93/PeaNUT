@@ -25,7 +25,7 @@ export async function getDevices() {
       gridProps.push({
         vars: data,
         rwVars,
-        description: device.description,
+        description: device.description === 'Description unavailable' ? '' : device.description,
         clients: [],
         commands: [],
         name: device.name,
