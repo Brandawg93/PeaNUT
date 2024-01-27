@@ -56,12 +56,9 @@ jobs:
 
       - name: Build and test
         run: |
-          pnpm run type-check
-          pnpm run lint
-          pnpm run format
+          pnpm run precheck
+          pnpm run test:all
           pnpm run build
-          pnpm run test
-          pnpm run test:e2e
         env:
           USERNAME: admin
           PASSWORD: nut_test
