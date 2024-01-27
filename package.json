@@ -20,7 +20,8 @@
     "test:all": "concurrently \"npm run test\" \"npm run test:e2e\"",
     "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh",
-    "telemetry": "next telemetry disable"
+    "telemetry": "next telemetry disable",
+    "prepare": "husky"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
@@ -56,6 +57,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.0.6",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.33",
