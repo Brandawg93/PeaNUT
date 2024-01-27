@@ -36,7 +36,7 @@ export default function DayNightSwitch() {
 
   return (
     <div className='inline-block' data-testid='daynight'>
-      <ButtonGroup size='sm' variant='filled' className='mt-3 gap-[1px]'>
+      <ButtonGroup size='sm' variant='filled' className='mt-3 gap-[1px]' title='Toggle theme'>
         <Button
           data-testid='light'
           onClick={handleLight}
