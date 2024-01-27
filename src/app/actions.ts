@@ -22,7 +22,14 @@ export async function getDevices() {
     for (const device of devices) {
       const data = await nut.getData(device.name)
       const rwVars = await nut.getRWVars(device.name)
-      gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [], name: device.name })
+      gridProps.push({
+        vars: data,
+        rwVars,
+        description: device.description,
+        clients: [],
+        commands: [],
+        name: device.name,
+      })
     }
     await nut.close()
     return { devices: gridProps, updated: new Date(), error: undefined }

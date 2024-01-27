@@ -8,7 +8,7 @@ const result: Array<DEVICE> = [
   {
     clients: [],
     commands: [],
-    description: '',
+    description: 'bar',
     name: 'foo',
     rwVars: ['battery.charge'],
     vars: {},

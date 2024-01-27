@@ -48,10 +48,9 @@ export default function NavBar(props: Props) {
       value={device.vars['device.serial']?.value}
     >
       {devices.map((d: DEVICE) => (
-        <Option
-          key={d.vars['device.serial']?.value}
-          value={d.vars['device.serial']?.value}
-        >{`${d.vars['device.mfr']?.value} ${d.vars['device.model']?.value}`}</Option>
+        <Option key={d.vars['device.serial']?.value} value={d.vars['device.serial']?.value}>
+          {d.description || `${d.vars['device.mfr']?.value} ${d.vars['device.model']?.value}`}
+        </Option>
       ))}
     </Select>
   )
