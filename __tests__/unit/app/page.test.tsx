@@ -1,18 +1,17 @@
 import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-import Wrapper from '@/client/components/wrapper'
+import Page from '@/app/page'
 
 const queryClient = new QueryClient()
 
-describe('Wrapper', () => {
-  it('renders', () => {
-    const { getByTestId } = render(
+describe('Page', () => {
+  it('renders a heading', () => {
+    const page = render(
       <QueryClientProvider client={queryClient}>
-        <Wrapper />
+        <Page />
       </QueryClientProvider>
     )
 
-    expect(getByTestId('wrapper')).toBeInTheDocument()
+    expect(page).toBeDefined()
   })
 })

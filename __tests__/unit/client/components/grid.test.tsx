@@ -1,6 +1,9 @@
 import { render } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NutGrid from '@/client/components/grid'
 import { DEVICE } from '@/common/types'
+
+const queryClient = new QueryClient()
 
 const device: DEVICE = {
   vars: {
@@ -32,7 +35,11 @@ describe('Grid', () => {
   })
 
   it('renders', () => {
-    const { getByTestId } = render(<NutGrid data={device} />)
+    const { getByTestId } = render(
+      <QueryClientProvider client={queryClient}>
+        <NutGrid data={device} />
+      </QueryClientProvider>
+    )
 
     expect(getByTestId('grid')).toBeInTheDocument()
   })

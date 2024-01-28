@@ -22,38 +22,34 @@ export async function getDevices() {
     for (const device of devices) {
       const data = await nut.getData(device.name)
       const rwVars = await nut.getRWVars(device.name)
-      gridProps.push({ vars: data, rwVars, description: '', clients: [], commands: [], name: device.name })
+      gridProps.push({
+        vars: data,
+        rwVars,
+        description: device.description === 'Description unavailable' ? '' : device.description,
+        clients: [],
+        commands: [],
+        name: device.name,
+      })
     }
     await nut.close()
-    return { data: gridProps, message: '' }
+    return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
-    return { message: e.message }
-  }
-}
-
-export async function getVarDescription(device: string, param: string) {
-  try {
-    const nut = await connect()
-    const data = await nut.getVarDescription(device, param)
-    await nut.close()
-    return { data, message: '' }
-  } catch (e: any) {
-    return { message: e.message }
+    return { devices: undefined, updated: new Date(), error: e.message }
   }
 }
 
 export async function getAllVarDescriptions(device: string, params: string[]) {
   try {
     const nut = await connect()
-    const data: any = {}
+    const data: { [x: string]: string } = {}
     for (const param of params) {
       const desc = await nut.getVarDescription(device, param)
       data[param] = desc
     }
     await nut.close()
-    return { data, message: '' }
+    return { data, error: undefined }
   } catch (e: any) {
-    return { message: e.message }
+    return { data: undefined, error: e.message }
   }
 }
 
@@ -63,6 +59,6 @@ export async function saveVar(device: string, varName: string, value: string) {
     await nut.setVar(device, varName, value)
     await nut.close()
   } catch (e: any) {
-    return { message: e.message }
+    return { error: e.message }
   }
 }

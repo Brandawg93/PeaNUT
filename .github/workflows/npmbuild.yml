@@ -34,13 +34,31 @@ jobs:
         uses: ScribeMD/docker-cache@0.3.7
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
-      - run: pnpm i
-      - run: pnpm run type-check
-      - run: pnpm run lint
-      - run: pnpm run format
-      - run: pnpm run build
-      - run: pnpm run test
-      - run: pnpm run test:e2e
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "version=$(pnpm why --json @playwright/test | jq --raw-output '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: '~/.cache/ms-playwright'
+          key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright's dependencies
+        run: npx playwright install --with-deps
+
+      - name: Build and test
+        run: |
+          pnpm run precheck
+          pnpm run test:all
+          pnpm run build
         env:
           USERNAME: admin
           PASSWORD: nut_test

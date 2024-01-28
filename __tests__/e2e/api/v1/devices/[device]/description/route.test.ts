@@ -6,6 +6,6 @@ test.describe('Description', () => {
     const createJson = await create.json()
 
     expect(create.status()).toBe(200)
-    expect(createJson).toBe('dummy-ups in dummy-once mode')
+    expect(createJson).toBe('CPS Test')
   })
 })

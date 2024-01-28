@@ -70,6 +70,9 @@ export default function LineChart(props: Props) {
           ],
         }}
         options={{
+          animation: {
+            duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
+          },
           maintainAspectRatio: false,
           plugins: {
             annotation: {

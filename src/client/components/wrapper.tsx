@@ -4,6 +4,7 @@ import 'chart.js/auto'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { useContext, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Spinner } from '@material-tailwind/react'
@@ -22,8 +23,8 @@ import Footer from '@/client/components/footer'
 
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
-import useFetch from '@/client/hooks/usefetch'
 import { DEVICE } from '@/common/types'
+import { getDevices } from '@/app/actions'
 
 Chart.register(annotationPlugin)
 
@@ -44,7 +45,10 @@ export default function Wrapper() {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { data, refetch, loading, error } = useFetch()
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['devicesData'],
+    queryFn: () => getDevices(),
+  })
 
   const loadingWrapper = (
     <div
@@ -55,24 +59,27 @@ export default function Wrapper() {
     </div>
   )
 
-  if (error) {
-    if (error.message?.includes('ECONNREFUSED')) {
-      return (
-        <div
-          className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-          data-testid='wrapper'
-        >
-          <div>
-            <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
-            <p>Connection refused. Is NUT server running?</p>
-          </div>
-        </div>
-      )
+  if (data?.error) {
+    let error = 'Internal Server Error'
+    if (data?.error.message?.includes('ECONNREFUSED')) {
+      error = 'Connection refused. Is NUT server running?'
     }
 
     console.error(error)
+
+    return (
+      <div
+        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        data-testid='wrapper'
+      >
+        <div>
+          <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
+          <p>{error}</p>
+        </div>
+      </div>
+    )
   }
-  if (!data.devices) {
+  if (!data || !data.devices) {
     return loadingWrapper
   }
   if (data.devices && data.devices.length === 0) {
@@ -126,7 +133,7 @@ export default function Wrapper() {
       data-testid='wrapper'
     >
       <NavBar
-        disableRefresh={loading || typeof loading === 'undefined'}
+        disableRefresh={isLoading}
         onRefreshClick={() => refetch()}
         onRefetch={() => refetch()}
         onDeviceChange={(serial: string) =>
