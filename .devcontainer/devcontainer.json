@@ -1,0 +1,21 @@
+{
+  "name": "peanut",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "VARIANT": "20"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "codeandstuff.package-json-upgrade",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  "postCreateCommand": ".devcontainer/setup.sh",
+  "forwardPorts": [3000]
+}
