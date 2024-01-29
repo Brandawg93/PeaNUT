@@ -18,7 +18,6 @@
     "test:watch": "jest --watch",
     "test:e2e": "docker compose up -d && playwright test && docker compose down",
     "test:all": "concurrently \"npm run test\" \"npm run test:e2e\"",
-    "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh",
     "telemetry": "next telemetry disable",
     "prepare": "husky"
