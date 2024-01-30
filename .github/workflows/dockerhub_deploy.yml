@@ -46,7 +46,7 @@ jobs:
           images: brandawg93/peanut
           tags: |
             latest
-            test-${{ steps.get-version.outputs.version }}
+            ${{ steps.get-version.outputs.version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
