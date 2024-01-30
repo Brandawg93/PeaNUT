@@ -3,7 +3,20 @@ import { VARS } from '@/common/types'
 
 import { Nut } from '@/server/nut'
 
-// api/v1/devices
+/**
+ * Retrieves device data from the NUT server.
+ *
+ * @swagger
+ * /api/v1/devices:
+ *   get:
+ *     summary: Retrieves data from all devices
+ *     responses:
+ *       '200':
+ *         description: Successful response with device data
+ *     tags:
+ *       - Devices
+ */
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   const nut = new Nut(

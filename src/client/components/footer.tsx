@@ -48,22 +48,22 @@ export default function Footer({ updated }: Props) {
 
   return (
     <>
-      <div className='hidden lg:inline-block' data-testid='footer'>
+      <div className='hidden lg:grid lg:grid-flow-row lg:grid-cols-2' data-testid='footer'>
         <DayNightSwitch />
+        <div className='mt-6 text-right text-gray-600'>
+          <a className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+            {t('docs')}
+          </a>
+        </div>
       </div>
       <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
         <div>
-          <p className='text-neutral-500 m-0 text-sm no-underline'>
+          <p className='m-0 text-sm no-underline'>
             {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
           </p>
         </div>
         <div className='text-right'>
-          <a
-            className='text-neutral-500 m-0 text-sm no-underline'
-            href={currentVersion.url}
-            target='_blank'
-            rel='noreferrer'
-          >
+          <a className='m-0 text-sm no-underline' href={currentVersion.url} target='_blank' rel='noreferrer'>
             {currentVersion.version}
             &nbsp;({currentVersion.created.toLocaleDateString()})
           </a>

@@ -3,7 +3,34 @@ import { DEVICE } from '@/common/types'
 
 import { Nut } from '@/server/nut'
 
-// api/v1/devices/[device]/var/[param]
+/**
+ * Retrieves value for a specific var.
+ *
+ * @swagger
+ * /api/v1/devices/{device}/var/{param}:
+ *   get:
+ *     summary: Retrieve var data
+ *     parameters:
+ *       - in: path
+ *         name: device
+ *         required: true
+ *         description: The ID of the device
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: param
+ *         required: true
+ *         description: The key of the param
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response with var value
+ *       '404':
+ *         description: Var not found
+ *     tags:
+ *       - Vars
+ */
 export async function GET(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',

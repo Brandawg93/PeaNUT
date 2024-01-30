@@ -2,7 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { Nut } from '@/server/nut'
 
-// api/v1/devices/[device]/var
+/**
+ * Retrieves data for a specific device.
+ *
+ * @swagger
+ * /api/v1/devices/{device}/vars:
+ *   get:
+ *     summary: Retrieve device data
+ *     parameters:
+ *       - in: path
+ *         name: device
+ *         required: true
+ *         description: The ID of the device
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response with device data
+ *       '404':
+ *         description: Device not found
+ *     tags:
+ *       - Vars
+ */
 export async function GET(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',
