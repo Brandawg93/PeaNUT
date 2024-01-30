@@ -14,3 +14,15 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+.swagger-ui {
+  background-color: white;
+  position: absolute;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .swagger-ui {
+    filter: invert(94%) hue-rotate(180deg);
+  }
+}
