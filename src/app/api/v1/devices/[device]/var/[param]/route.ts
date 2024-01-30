@@ -57,7 +57,41 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   }
 }
 
-// api/v1/devices/[device]/var/[param]
+/**
+ * Saves value for a specific var.
+ *
+ * @swagger
+ * /api/v1/devices/{device}/var/{param}:
+ *   post:
+ *     summary: Save var data
+ *     parameters:
+ *       - in: path
+ *         name: device
+ *         required: true
+ *         description: The ID of the device
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: param
+ *         required: true
+ *         description: The key of the param
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: The value to be saved
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response with success message
+ *       '500':
+ *         description: Failed to save var
+ *     tags:
+ *       - Vars
+ */
 export async function POST(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(
     process.env.NUT_HOST || 'localhost',
