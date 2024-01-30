@@ -94,32 +94,43 @@ export default function NavBar(props: Props) {
               placement='right'
               className='rounded-l dark:bg-gray-900'
             >
-              <Card color='transparent' shadow={false} className='h-[calc(100vh-2rem)] w-full p-4 dark:text-white'>
-                <div className='mb-2 flex items-center gap-4 p-4'>
-                  <Typography variant='h5'>{t('sidebar.settings')}</Typography>
-                  <div className='flex w-full justify-end'>
-                    <IconButton variant='text' size='lg' onClick={closeDrawer}>
-                      <XMarkIcon className='h-8 w-8 stroke-2 dark:text-white' />
-                    </IconButton>
+              <Card
+                color='transparent'
+                shadow={false}
+                className='h-[calc(100vh-2rem)] w-full justify-between p-4 dark:text-white'
+              >
+                <div>
+                  <div className='mb-2 flex items-center gap-4 p-4'>
+                    <Typography variant='h5'>{t('sidebar.settings')}</Typography>
+                    <div className='flex w-full justify-end'>
+                      <IconButton variant='text' size='lg' onClick={closeDrawer}>
+                        <XMarkIcon className='h-8 w-8 stroke-2 dark:text-white' />
+                      </IconButton>
+                    </div>
                   </div>
-                </div>
-                <hr />
-                <div className='mt-2'>
-                  <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
-                </div>
-                <div className='mb-2 mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
-                <hr />
-                <div className='grid grid-flow-row grid-cols-2'>
-                  <div className='flex flex-col justify-center'>
-                    <Typography className='font-medium text-gray-800 dark:text-gray-300'>
-                      {t('sidebar.theme')}
-                    </Typography>
+                  <hr />
+                  <div className='mt-2'>
+                    <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
                   </div>
-                  <div className='mb-3 mt-3'>
-                    <DayNightSwitch />
+                  <div className='mb-2 mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
+                  <hr />
+                  <div className='grid grid-flow-row grid-cols-2'>
+                    <div className='flex flex-col justify-center'>
+                      <Typography className='font-medium text-gray-800 dark:text-gray-300'>
+                        {t('sidebar.theme')}
+                      </Typography>
+                    </div>
+                    <div className='mb-3 mt-3'>
+                      <DayNightSwitch />
+                    </div>
                   </div>
+                  <hr />
                 </div>
-                <hr />
+                <div className='mt-6 text-right text-gray-600'>
+                  <a className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+                    {t('docs')}
+                  </a>
+                </div>
               </Card>
             </Drawer>
           </div>
