@@ -6,6 +6,7 @@
   "batteryCharge": "Battery Charge",
   "batteryRuntime": "Battery Runtime",
   "lastUpdated": "Last Updated",
+  "docs": "API Docs",
   "lineChart": {
     "inputVoltage": "Input Voltage",
     "outputVoltage": "Output Voltage",
