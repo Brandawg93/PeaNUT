@@ -60,7 +60,7 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 | --------- | --------- | ----------------------------- |
 | NUT_HOST  | localhost | Host of NUT server            |
 | NUT_PORT  | 3493      | Port of NUT server            |
-| HOSTNAME  | localhost | Hostname of web server        |
+| WEB_HOST  | localhost | Hostname of web server        |
 | WEB_PORT  | 8080      | Port of web server            |
 | USERNAME  | undefined | Optional but required to edit |
 | PASSWORD  | undefined | Optional but required to edit |
