@@ -10,7 +10,7 @@ dependencies:
     version: 2.1.1(react@18.2.0)
   '@material-tailwind/react':
     specifier: ^2.1.8
-    version: 2.1.8(react-dom@18.2.0)(react@18.2.0)
+    version: 2.1.9(react-dom@18.2.0)(react@18.2.0)
   '@tanstack/react-query':
     specifier: ^5.17.19
     version: 5.17.19(react@18.2.0)
@@ -937,8 +937,8 @@ packages:
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
     dev: false
 
-  /@material-tailwind/react@2.1.8(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-+YI8DTS8dz8FNkjbsgz1HS6+CRszZ+gUErw5FnTuAL2ONeM9R204B6u4PKd9otjYlQQS/fKjKuQ/mwLubWljfg==}
+  /@material-tailwind/react@2.1.9(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-3uPlJE9yK4JF9DEQO4I1QbjR8o05+4fysLqoZ0v38TDOLE2tvDRhTBVhn6Mp9vSsq5CoJOKgemG7kbkOFAji4A==}
     peerDependencies:
       react: ^16 || ^17 || ^18
       react-dom: ^16 || ^17 || ^18
@@ -2799,6 +2799,7 @@ packages:
   /deepmerge@4.2.2:
     resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
     engines: {node: '>=0.10.0'}
+    dev: false
 
   /deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
@@ -4382,7 +4383,7 @@ packages:
       babel-jest: 29.7.0(@babel/core@7.23.6)
       chalk: 4.1.2
       ci-info: 3.9.0
-      deepmerge: 4.2.2
+      deepmerge: 4.3.1
       glob: 7.2.3
       graceful-fs: 4.2.11
       jest-circus: 29.7.0
