@@ -36,7 +36,7 @@ COPY --from=build --link /app/.next/static ./.next/static
 ENV NODE_ENV production
 ENV NUT_HOST localhost
 ENV NUT_PORT 3493
-ENV WEB_HOST localhost
+ENV WEB_HOST 0.0.0.0
 ENV WEB_PORT 8080
 
 EXPOSE $WEB_PORT
