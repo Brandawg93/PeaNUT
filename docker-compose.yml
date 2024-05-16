@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   nut-upsd:
     image: instantlinux/nut-upsd
