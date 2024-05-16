@@ -146,12 +146,22 @@ export default function Wrapper() {
         <div className='container'>
           <div className='flex flex-row justify-between'>
             <div>
-              <p className='m-0'>
-                {t('manufacturer')}: {vars['ups.mfr']?.value}
-              </p>
-              <p className='m-0'>
-                {t('model')}: {vars['ups.model']?.value}
-              </p>
+              {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
+                <>
+                  <p className='m-0'>
+                    {t('manufacturer')}: {vars['ups.mfr']?.value}
+                  </p>
+                  <p className='m-0'>
+                    {t('model')}: {vars['ups.model']?.value}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className='m-0'>
+                    {t('device')}: {ups.description}
+                  </p>
+                </>
+              )}
               <p>
                 {t('serial')}: {vars['device.serial']?.value}
               </p>

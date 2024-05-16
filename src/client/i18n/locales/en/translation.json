@@ -1,4 +1,5 @@
 {
+  "device": "Device",
   "manufacturer": "Manufacturer",
   "model": "Model",
   "serial": "Serial",
