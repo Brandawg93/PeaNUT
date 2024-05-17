@@ -1,27 +1,28 @@
 {
-  "manufacturer": "Manufacturer",
-  "model": "Model",
-  "serial": "Serial",
-  "currentLoad": "Current Load",
-  "batteryCharge": "Battery Charge",
-  "batteryRuntime": "Battery Runtime",
-  "lastUpdated": "Last Updated",
-  "docs": "API Docs",
+  "device": "Dispositivo",
+  "manufacturer": "Fabricante",
+  "model": "Modelo",
+  "serial": "Número de serie",
+  "currentLoad": "Carga Actual",
+  "batteryCharge": "Carga de Batería",
+  "batteryRuntime": "Duración de la Batería",
+  "lastUpdated": "Última Actualización",
+  "docs": "Documentos de API",
   "lineChart": {
-    "inputVoltage": "Input Voltage",
-    "outputVoltage": "Output Voltage",
-    "nominalInputVoltage": "Nominal Input Voltage"
+    "inputVoltage": "Voltaje de Entrada",
+    "outputVoltage": "Voltaje de Salida",
+    "nominalInputVoltage": "Voltaje de Entrada Nominal"
   },
   "wattsChart": {
-    "realpower": "Realpower",
-    "nominalRealpower": "Nominal Realpower"
+    "realpower": "Potencia Real",
+    "nominalRealpower": "Potencia Real Nominal"
   },
   "grid": {
-    "key": "Key",
-    "value": "Value"
+    "key": "Clave",
+    "value": "Valor"
   },
   "sidebar": {
-    "settings": "Settings",
-    "theme": "Theme"
+    "settings": "Configuraciones",
+    "theme": "Tema"
   }
 }
