@@ -18,7 +18,7 @@ Install using Docker
 
 ### docker run
 
-```
+```bash
 docker run -p 8080:8080 --restart unless-stopped \
 --env NUT_HOST=nut-upsd --env NUT_PORT=3493 \
 --env WEB_PORT=8080 brandawg93/peanut
@@ -26,7 +26,7 @@ docker run -p 8080:8080 --restart unless-stopped \
 
 ### docker-compose.yml
 
-```
+```yaml
 version: '3'
 services:
   peanut:
@@ -43,7 +43,7 @@ services:
 
 ### compile from source
 
-```
+```bash
 git clone https://github.com/Brandawg93/PeaNUT.git
 cd PeaNUT
 npm i -g pnpm # only if you don't have pnpm installed
@@ -87,7 +87,7 @@ For information about how to set up Homepage, check the [Homepage docs](https://
 
 Ex:
 
-```
+```yaml
 widget:
   type: peanut
   url: http://peanut.host.or.ip:port
@@ -98,11 +98,11 @@ Or use the `customapi` widget for complete customization!
 
 Ex:
 
-```
+```yaml
 widget:
-    type: customapi
-    url: http://{HOSTNAME}:{PORT}/api/v1/devices/ups
-    mappings:
+  type: customapi
+  url: http://{HOSTNAME}:{PORT}/api/v1/devices/ups
+  mappings:
     - field: battery.charge
       label: Battery Charge
       format: percent
