@@ -48,8 +48,8 @@ git clone https://github.com/Brandawg93/PeaNUT.git
 cd PeaNUT
 npm i -g pnpm # only if you don't have pnpm installed
 pnpm i
-pnpm run build
-node .next/standalone/server.js
+pnpm run build:local
+pnpm run start:local
 ```
 
 More examples can be found in the [examples](https://github.com/Brandawg93/PeaNUT/tree/main/examples) folder.
