@@ -1,0 +1,57 @@
+services:
+  nut-upsd:
+    image: instantlinux/nut-upsd
+    container_name: nut-upsd
+    devices:
+      - /dev/bus/usb
+    restart: unless-stopped
+
+  peanut:
+    image: brandawg93/peanut:latest
+    container_name: PeaNUT
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    environment:
+      - NUT_HOST=nut-upsd
+      - NUT_PORT=3493
+      - WEB_PORT=8080
+
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    environment:
+      - WEB_HOST=PeaNUT
+      - WEB_PORT=8080
+    depends_on:
+      - influxdb
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - influxdb
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:
+  influxdb-storage:
+
+networks:
+  default:
+    name: nut_network

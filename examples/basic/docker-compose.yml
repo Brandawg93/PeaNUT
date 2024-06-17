@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   nut-upsd:
     image: instantlinux/nut-upsd
@@ -11,11 +9,12 @@ services:
   peanut:
     image: brandawg93/peanut:latest
     container_name: PeaNUT
+    ports:
+      - 8080:8080
     restart: unless-stopped
     environment:
       - NUT_HOST=nut-upsd
       - NUT_PORT=3493
-      - WEB_HOST=localhost
       - WEB_PORT=8080
 
 networks:
