@@ -105,9 +105,9 @@ export default function Wrapper() {
     <div className='mb-4'>
       <LineChart
         serial={vars['device.serial']?.value}
-        inputVoltage={parseFloat(vars['input.voltage'].value)}
-        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value)}
-        outputVoltage={parseFloat(vars['output.voltage']?.value)}
+        inputVoltage={parseFloat(vars['input.voltage'].value.toString())}
+        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value.toString())}
+        outputVoltage={parseFloat(vars['output.voltage']?.value.toString())}
         updated={data.updated}
       />
     </div>
@@ -118,8 +118,8 @@ export default function Wrapper() {
     <div className='mb-4'>
       <WattsChart
         serial={vars['device.serial']?.value}
-        realpower={parseFloat(vars['ups.realpower'].value)}
-        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value)}
+        realpower={parseFloat(vars['ups.realpower'].value.toString())}
+        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value.toString())}
         updated={data.updated}
       />
     </div>
@@ -176,16 +176,16 @@ export default function Wrapper() {
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
               {vars['ups.load'] ? (
-                <Gauge percentage={parseFloat(vars['ups.load'].value)} title={t('currentLoad')} invert />
+                <Gauge percentage={parseFloat(vars['ups.load'].value.toString())} title={t('currentLoad')} invert />
               ) : (
                 <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={parseFloat(vars['battery.charge']?.value)} title={t('batteryCharge')} />
+              <Gauge percentage={parseFloat(vars['battery.charge']?.value.toString())} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={parseFloat(vars['battery.runtime']?.value)} />
+              <Runtime runtime={parseFloat(vars['battery.runtime']?.value.toString())} />
             </div>
           </div>
           {voltageWrapper}

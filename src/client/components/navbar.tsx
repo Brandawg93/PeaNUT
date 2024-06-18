@@ -45,10 +45,10 @@ export default function NavBar(props: Props) {
       labelProps={{ className: 'dark:text-gray-300' }}
       label='Select Device'
       onChange={handleSelect}
-      value={device.vars['device.serial']?.value}
+      value={device.vars['device.serial']?.value.toString()}
     >
       {devices.map((d: DEVICE) => (
-        <Option key={d.vars['device.serial']?.value} value={d.vars['device.serial']?.value}>
+        <Option key={d.vars['device.serial']?.value} value={d.vars['device.serial']?.value.toString()}>
           {d.description || `${d.vars['device.mfr']?.value} ${d.vars['device.model']?.value}`}
         </Option>
       ))}

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
 type Props = {
-  serial: string
+  serial: string | number
   realpower?: number
   realpowerNominal?: number
   updated: Date
