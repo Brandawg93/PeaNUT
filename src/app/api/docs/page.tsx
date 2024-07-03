@@ -1,3 +1,4 @@
+import React from 'react'
 import { getApiDocs } from '@/app/api/swagger'
 import ReactSwagger from './react-swagger'
 

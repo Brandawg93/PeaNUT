@@ -1,3 +1,4 @@
+import React from 'react'
 import { render } from '@testing-library/react'
 import WattsChart from '@/client/components/watts-chart'
 import { DEVICE } from '@/common/types'

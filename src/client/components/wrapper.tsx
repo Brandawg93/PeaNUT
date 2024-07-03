@@ -3,7 +3,7 @@
 import 'chart.js/auto'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'

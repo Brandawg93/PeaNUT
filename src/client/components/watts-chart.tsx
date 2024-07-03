@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'

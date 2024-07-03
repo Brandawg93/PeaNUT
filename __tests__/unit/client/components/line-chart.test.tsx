@@ -1,3 +1,4 @@
+import React from 'react'
 import { render } from '@testing-library/react'
 import LineChart from '@/client/components/line-chart'
 import { DEVICE } from '@/common/types'
