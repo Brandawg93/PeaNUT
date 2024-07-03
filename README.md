@@ -27,7 +27,6 @@ docker run -p 8080:8080 --restart unless-stopped \
 ### docker-compose.yml
 
 ```yaml
-version: '3'
 services:
   peanut:
     image: brandawg93/peanut:latest
