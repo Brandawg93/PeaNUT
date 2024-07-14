@@ -1,3 +1,4 @@
+import React from 'react'
 import { render } from '@testing-library/react'
 import LineChart from '@/client/components/line-chart'
 import { DEVICE } from '@/common/types'
@@ -34,9 +35,9 @@ describe('Line', () => {
     const { getByTestId } = render(
       <LineChart
         serial={vars['device.serial']?.value}
-        inputVoltage={parseFloat(vars['input.voltage'].value)}
-        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value)}
-        outputVoltage={parseFloat(vars['output.voltage']?.value)}
+        inputVoltage={parseFloat(vars['input.voltage'].value as string)}
+        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value as string)}
+        outputVoltage={parseFloat(vars['output.voltage']?.value as string)}
         updated={new Date()}
       />
     )

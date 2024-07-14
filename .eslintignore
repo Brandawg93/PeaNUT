@@ -1,7 +1,0 @@
-.gitignore
-.devcontainer
-.husky
-.pnpm-store
-*.png
-config
-pnpm-lock.yaml

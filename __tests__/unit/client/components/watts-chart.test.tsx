@@ -1,3 +1,4 @@
+import React from 'react'
 import { render } from '@testing-library/react'
 import WattsChart from '@/client/components/watts-chart'
 import { DEVICE } from '@/common/types'
@@ -31,8 +32,8 @@ describe('Gauge', () => {
     const { getByTestId } = render(
       <WattsChart
         serial={vars['device.serial']?.value}
-        realpower={parseFloat(vars['ups.realpower'].value)}
-        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value)}
+        realpower={parseFloat(vars['ups.realpower'].value as string)}
+        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value as string)}
         updated={new Date()}
       />
     )

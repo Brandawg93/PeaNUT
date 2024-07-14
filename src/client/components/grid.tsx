@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext, useRef } from 'react'
+import React, { useState, useMemo, useContext, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'

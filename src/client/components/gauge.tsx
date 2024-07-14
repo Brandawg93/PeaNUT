@@ -1,3 +1,4 @@
+import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 

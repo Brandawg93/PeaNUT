@@ -26,6 +26,7 @@ export class Nut {
     if (data.startsWith('ERR')) {
       throw new Error(`Invalid response: ${data}`)
     }
+    this.socket.removeAllListeners()
     return data
   }
 
@@ -77,7 +78,13 @@ export class Nut {
       if (line.startsWith('VAR')) {
         const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
         const value = line.split('"')[1].trim()
-        vars[key] = { value }
+        const type = await this.getType(device, key)
+        if (type.includes('NUMBER')) {
+          const num = parseFloat(value)
+          vars[key] = { value: num ? num : value }
+        } else {
+          vars[key] = { value }
+        }
       }
     }
     return vars
@@ -155,7 +162,6 @@ export class Nut {
     if (!data.startsWith('DESC')) {
       throw new Error('Invalid response')
     }
-    this.socket.removeAllListeners()
     return data.split('"')[1].trim()
   }
 
