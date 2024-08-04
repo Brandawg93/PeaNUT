@@ -104,7 +104,7 @@ export default function Wrapper() {
   const voltageWrapper = vars['input.voltage'] ? (
     <div className='mb-4'>
       <LineChart
-        serial={vars['device.serial']?.value}
+        id={ups.name}
         inputVoltage={parseFloat(vars['input.voltage'].value.toString())}
         inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value.toString())}
         outputVoltage={parseFloat(vars['output.voltage']?.value.toString())}
@@ -117,7 +117,7 @@ export default function Wrapper() {
   const wattsWrapper = vars['ups.realpower'] ? (
     <div className='mb-4'>
       <WattsChart
-        serial={vars['device.serial']?.value}
+        id={ups.name}
         realpower={parseFloat(vars['ups.realpower'].value.toString())}
         realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value.toString())}
         updated={data.updated}
@@ -136,9 +136,8 @@ export default function Wrapper() {
         disableRefresh={isLoading}
         onRefreshClick={() => refetch()}
         onRefetch={() => refetch()}
-        onDeviceChange={(serial: string) =>
-          data.devices &&
-          setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.vars && d.vars['device.serial']?.value === serial))
+        onDeviceChange={(name: string) =>
+          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
         }
         devices={data.devices}
       />

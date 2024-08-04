@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
 type Props = {
-  serial: string | number
+  id: string
   inputVoltage?: number
   inputVoltageNominal?: number
   outputVoltage?: number
@@ -14,15 +14,15 @@ type Props = {
 }
 
 export default function LineChart(props: Props) {
-  const { serial, inputVoltage, inputVoltageNominal, outputVoltage, updated } = props
+  const { id, inputVoltage, inputVoltageNominal, outputVoltage, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [inputVoltageData, setInputVoltageData] = useState<Array<number>>([])
   const [outputVoltageData, setOutputVoltageData] = useState<Array<number>>([])
-  const prevDataRef = useRef(serial)
+  const prevDataRef = useRef(id)
 
   useEffect(() => {
-    if (serial !== prevDataRef.current) {
+    if (id !== prevDataRef.current) {
       if (inputVoltage) setInputVoltageData([inputVoltage])
       else setInputVoltageData([])
       if (outputVoltage) setOutputVoltageData([outputVoltage])
@@ -31,8 +31,8 @@ export default function LineChart(props: Props) {
       if (inputVoltage) setInputVoltageData((prev: Array<number>) => [...prev, inputVoltage])
       if (outputVoltage) setOutputVoltageData((prev: Array<number>) => [...prev, outputVoltage])
     }
-    prevDataRef.current = serial
-  }, [serial, inputVoltage, outputVoltage, updated])
+    prevDataRef.current = id
+  }, [id, inputVoltage, outputVoltage, updated])
 
   return (
     <Card

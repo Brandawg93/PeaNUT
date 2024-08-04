@@ -6,28 +6,28 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
 type Props = {
-  serial: string | number
+  id: string
   realpower?: number
   realpowerNominal?: number
   updated: Date
 }
 
 export default function WattsChart(props: Props) {
-  const { serial, realpower, realpowerNominal, updated } = props
+  const { id, realpower, realpowerNominal, updated } = props
   const [dataPoints, setDataPoints] = useState<Array<number>>([])
-  const prevDataRef = useRef(serial)
+  const prevDataRef = useRef(id)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    if (serial !== prevDataRef.current) {
+    if (id !== prevDataRef.current) {
       if (realpower) setDataPoints([realpower])
       else setDataPoints([])
     } else {
       if (realpower) setDataPoints((prev: Array<number>) => [...prev, realpower])
     }
-    prevDataRef.current = serial
-  }, [serial, realpower, updated])
+    prevDataRef.current = id
+  }, [id, realpower, updated])
 
   return (
     <Card
