@@ -11,7 +11,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm f
 
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm install -r --offline
 
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ COPY . .
 
 RUN npm run telemetry && npm run build
 
-FROM node:20-alpine as runner
+FROM node:20-alpine AS runner
 
 LABEL org.opencontainers.image.title "PeaNUT"
 LABEL org.opencontainers.image.description "A tiny dashboard for Network UPS Tools"
