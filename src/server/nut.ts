@@ -1,5 +1,5 @@
-import { DEVICE, VARS } from '@/common/types'
-import PromiseSocket from '@/server/promise-socket'
+import { DEVICE, VARS } from '../common/types'
+import PromiseSocket from './promise-socket'
 
 export class Nut {
   private socket: PromiseSocket

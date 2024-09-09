@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
-    "dev": "docker compose up -d && nodemon ; docker compose down",
-    "build": "next build && tsc --project tsconfig.server.json",
+    "dev": "docker compose up -d && next dev && docker compose down",
+    "build": "next build",
+    "build:local": "npm run build && cp -r .next/static .next/standalone/.next/",
     "build:analyze": "ANALYZE=true next build",
     "start": "HOSTNAME=$WEB_HOST PORT=$WEB_PORT node dist/server.js",
     "type-check": "tsc --noEmit",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.4",
+    "@influxdata/influxdb-client": "^1.35.0",
     "@material-tailwind/react": "^2.1.9",
     "@tanstack/react-query": "^5.49.2",
     "chart.js": "^4.4.3",

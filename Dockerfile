@@ -32,7 +32,6 @@ COPY --link package.json next.config.js ./
 
 COPY --from=build --link /app/.next/standalone ./
 COPY --from=build --link /app/.next/static ./.next/static
-COPY --from=build --link /app/dist ./dist
 
 ENV NODE_ENV production
 ENV NUT_HOST localhost

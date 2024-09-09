@@ -8,6 +8,9 @@ dependencies:
   '@heroicons/react':
     specifier: ^2.1.4
     version: 2.1.4(react@18.3.1)
+  '@influxdata/influxdb-client':
+    specifier: ^1.35.0
+    version: 1.35.0
   '@material-tailwind/react':
     specifier: ^2.1.9
     version: 2.1.9(react-dom@18.3.1)(react@18.3.1)
@@ -796,6 +799,10 @@ packages:
     resolution: {integrity: sha512-d2CGZR2o7fS6sWB7DG/3a95bGKQyHMACZ5aW8qGkkqQpUoZV6C0X7Pc7l4ZNMZkfNBf4VWNe9E1jRsf0G146Ew==}
     engines: {node: '>=18.18'}
     dev: true
+
+  /@influxdata/influxdb-client@1.35.0:
+    resolution: {integrity: sha512-woWMi8PDpPQpvTsRaUw4Ig+nOGS/CWwAwS66Fa1Vr/EkW+NEwxI8YfPBsdBMn33jK2Y86/qMiiuX/ROHIkJLTw==}
+    dev: false
 
   /@istanbuljs/load-nyc-config@1.1.0:
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
