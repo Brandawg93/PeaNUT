@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . .
 
-RUN npm run telemetry && npm run build && rm -rf .next/standalone/node_modules/.pnpm
+RUN npm run telemetry && npm run build
 
 FROM node:20-alpine AS runner
 
