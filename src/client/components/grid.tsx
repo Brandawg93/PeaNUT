@@ -86,7 +86,7 @@ export default function NutGrid(props: Props) {
 
   return (
     <Card
-      className='border-neutral-300 w-full overflow-scroll border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
+      className='border-neutral-300 w-full border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='grid'
     >
       <ToastContainer theme={theme === 'dark' || theme === 'system' ? 'dark' : 'light'} />
