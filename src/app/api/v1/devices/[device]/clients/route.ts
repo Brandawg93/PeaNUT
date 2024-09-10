@@ -39,6 +39,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
     await nut.close()
     return NextResponse.json(data)
   } catch (e) {
+    console.error(e)
     return NextResponse.json(`Device ${device} not found`, { status: 404 })
   }
 }
