@@ -11,6 +11,9 @@ const nextConfig = {
   eslint: {
     dirs: ['src', '__tests__'],
   },
+  experimental: {
+    instrumentationHook: true,
+  },
 }
 
 module.exports = withBundleAnalyzer(nextConfig)

@@ -10,8 +10,11 @@ export default class InfluxWriter {
 
   writePoint(device: DEVICE, timestamp?: Date | number) {
     // float fields
+    console.log(Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'number'))
     for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'number')) {
-      const point = new Point(device.name).tag(key, key).floatField('value', device.vars[key].value)
+      const point = new Point(device.name)
+        .tag('description', device.description)
+        .floatField(key, device.vars[key].value)
       if (timestamp) {
         point.timestamp(timestamp)
       }
@@ -21,8 +24,11 @@ export default class InfluxWriter {
     }
 
     // string fields
+    console.log(Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'string'))
     for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'string')) {
-      const point = new Point(device.name).tag(key, key).stringField('value', device.vars[key].value)
+      const point = new Point(device.name)
+        .tag('description', device.description)
+        .stringField(key, device.vars[key].value)
       if (timestamp) {
         point.timestamp(timestamp)
       }
