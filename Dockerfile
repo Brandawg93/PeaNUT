@@ -22,8 +22,8 @@ RUN npm run telemetry && npm run build
 
 FROM node:20-alpine AS runner
 
-LABEL org.opencontainers.image.title "PeaNUT"
-LABEL org.opencontainers.image.description "A tiny dashboard for Network UPS Tools"
+LABEL org.opencontainers.image.title="PeaNUT"
+LABEL org.opencontainers.image.description="A tiny dashboard for Network UPS Tools"
 LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
@@ -33,11 +33,11 @@ COPY --link package.json next.config.js ./
 COPY --from=build --link /app/.next/standalone ./
 COPY --from=build --link /app/.next/static ./.next/static
 
-ENV NODE_ENV production
-ENV NUT_HOST localhost
-ENV NUT_PORT 3493
-ENV WEB_HOST 0.0.0.0
-ENV WEB_PORT 8080
+ENV NODE_ENV=production
+ENV NUT_HOST=localhost
+ENV NUT_PORT=3493
+ENV WEB_HOST=0.0.0.0
+ENV WEB_PORT=8080
 
 EXPOSE $WEB_PORT
 

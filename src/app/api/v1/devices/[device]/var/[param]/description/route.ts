@@ -53,6 +53,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
     }
     return NextResponse.json(data)
   } catch (e) {
+    console.error(e)
     return NextResponse.json(`Parameter ${paramString.toString()} on device ${device} not found`, { status: 404 })
   }
 }
