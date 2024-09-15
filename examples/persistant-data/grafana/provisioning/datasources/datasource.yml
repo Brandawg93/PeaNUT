@@ -1,12 +1,14 @@
 apiVersion: 1
 
 datasources:
-  - name: InfluxDB
+  - name: InfluxDB_v2_Flux
     type: influxdb
     access: proxy
-    database: telegraf
-    isDefault:
-    editable: false
     url: http://influxdb:8086
     jsonData:
-      httpMode: GET
+      version: Flux
+      organization: home
+      defaultBucket: ups
+      tlsSkipVerify: true
+    secureJsonData:
+      token: super_secret_token
