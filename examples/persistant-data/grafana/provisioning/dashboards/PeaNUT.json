@@ -339,19 +339,6 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 15
-      },
-      "id": 2,
-      "panels": [],
-      "title": "Table",
-      "type": "row"
-    },
-    {
       "datasource": {
         "default": false,
         "type": "influxdb",
@@ -390,7 +377,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 15
       },
       "id": 1,
       "options": {
@@ -415,7 +402,6 @@
           "refId": "A"
         }
       ],
-      "title": "Panel Title",
       "transformations": [
         {
           "id": "filterFieldsByName",
