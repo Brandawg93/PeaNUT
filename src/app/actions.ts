@@ -4,7 +4,7 @@ import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings } from '@/server/settings'
 
-const settingsFile = './settings.yml'
+const settingsFile = './config/settings.yml'
 
 async function connect() {
   const settings = new YamlSettings(settingsFile)

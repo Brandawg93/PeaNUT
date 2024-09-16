@@ -2,7 +2,7 @@
 
 import InfluxWriter from './server/influxdb'
 
-const settingsFile = './settings.yml'
+const settingsFile = './config/settings.yml'
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
