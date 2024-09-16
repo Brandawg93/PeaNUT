@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { Nut } from '@/server/nut'
+import { getSettings } from '@/app/actions'
 
 /**
  * Retrieves commands for a specific device.
@@ -25,12 +26,11 @@ import { Nut } from '@/server/nut'
  *       - Devices
  */
 export async function GET(request: NextRequest, { params }: { params: any }) {
-  const nut = new Nut(
-    process.env.NUT_HOST || 'localhost',
-    parseInt(process.env.NUT_PORT || '3493'),
-    process.env.USERNAME,
-    process.env.PASSWORD
-  )
+  const NUT_HOST = await getSettings('NUT_HOST')
+  const NUT_PORT = await getSettings('NUT_PORT')
+  const USERNAME = await getSettings('USERNAME')
+  const PASSWORD = await getSettings('PASSWORD')
+  const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
   await nut.connect()
 
   const device = params.device

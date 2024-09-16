@@ -59,6 +59,9 @@ importers:
       tailwindcss-animated:
         specifier: ^1.1.2
         version: 1.1.2(tailwindcss@3.4.11(ts-node@10.9.2(@types/node@20.14.9)(typescript@5.5.4)))
+      yaml:
+        specifier: ^2.5.1
+        version: 2.5.1
     devDependencies:
       '@eslint/compat':
         specifier: ^1.1.1
@@ -4108,9 +4111,10 @@ packages:
     resolution: {integrity: sha512-W7h5dEhywMKenDJh2iX/LABkbFnBxasD27oyXWDS/feDsxiw0dD5ncXdYXgkvAsXIY2MpW/ZKkr9IU30DBdMNQ==}
     engines: {node: '>= 6'}
 
-  yaml@2.3.4:
-    resolution: {integrity: sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==}
+  yaml@2.5.1:
+    resolution: {integrity: sha512-bLQOjaX/ADgQ20isPJRvF0iRUHIxVhYvr53Of7wGcWlO2jvtUlH5m87DsmulFVxRpNLOnI4tB6p/oh8D7kpn9Q==}
     engines: {node: '>= 14'}
+    hasBin: true
 
   yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
@@ -7760,7 +7764,7 @@ snapshots:
   postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2(@types/node@20.14.9)(typescript@5.5.4)):
     dependencies:
       lilconfig: 3.0.0
-      yaml: 2.3.4
+      yaml: 2.5.1
     optionalDependencies:
       postcss: 8.4.47
       ts-node: 10.9.2(@types/node@20.14.9)(typescript@5.5.4)
@@ -8948,7 +8952,7 @@ snapshots:
 
   yaml@2.0.0-1: {}
 
-  yaml@2.3.4: {}
+  yaml@2.5.1: {}
 
   yargs-parser@21.1.1: {}
 

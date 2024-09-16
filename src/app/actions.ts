@@ -2,13 +2,17 @@
 
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
+import { YamlSettings } from '@/server/settings'
+
+const settingsFile = './settings.yml'
 
 async function connect() {
+  const settings = new YamlSettings(settingsFile)
   const nut = new Nut(
-    process.env.NUT_HOST || 'localhost',
-    parseInt(process.env.NUT_PORT || '3493'),
-    process.env.USERNAME,
-    process.env.PASSWORD
+    settings.get('NUT_HOST'),
+    settings.get('NUT_PORT'),
+    settings.get('USERNAME'),
+    settings.get('PASSWORD')
   )
   await nut.connect()
   return nut
@@ -61,4 +65,14 @@ export async function saveVar(device: string, varName: string, value: string) {
   } catch (e: any) {
     return { error: e.message }
   }
+}
+
+export async function getSettings(key: string) {
+  const settings = new YamlSettings(settingsFile)
+  return settings.get(key)
+}
+
+export async function setSettings(key: string, value: any) {
+  const settings = new YamlSettings(settingsFile)
+  settings.set(key, value)
 }
