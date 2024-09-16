@@ -47,7 +47,7 @@ export default function Wrapper() {
   const { t } = useTranslation(lng)
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
-    queryFn: () => getDevices(),
+    queryFn: async () => await getDevices(),
   })
 
   const loadingWrapper = (

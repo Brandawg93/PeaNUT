@@ -1,27 +1,20 @@
 import { ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, Button } from '@material-tailwind/react'
 
 type Props = {
   onClick: () => void
-  onRefetch: () => void
+  onRefreshChange: (value: string) => void
+  refreshInterval: string
   disabled: boolean
 }
 
 export default function Refresh(props: Props) {
-  const { onClick, onRefetch, disabled } = props
-  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
-
-  useEffect(() => {
-    if (parseInt(refreshInterval) > 0) {
-      const interval = setInterval(() => onRefetch(), parseInt(refreshInterval) * 1000)
-      return () => clearInterval(interval)
-    }
-  }, [refreshInterval, onRefetch])
+  const { onClick, onRefreshChange, refreshInterval, disabled } = props
 
   const handleSelect = (event: any) => {
     const value = event.target.value
-    setRefreshInterval(value)
+    onRefreshChange(value)
     localStorage.setItem('refreshInterval', value)
   }
 

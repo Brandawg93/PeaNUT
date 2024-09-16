@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option, IconButton, Drawer, Card } from '@material-tailwind/react'
@@ -22,8 +22,16 @@ export default function NavBar(props: Props) {
   const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
   const [device, setDevice] = useState(devices[0])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
+
+  useEffect(() => {
+    if (parseInt(refreshInterval) > 0) {
+      const interval = setInterval(() => onRefetch(), parseInt(refreshInterval) * 1000)
+      return () => clearInterval(interval)
+    }
+  }, [refreshInterval])
 
   const handleSelect = (eventKey: string | undefined) => {
     if (!eventKey) return
@@ -75,7 +83,12 @@ export default function NavBar(props: Props) {
             <div className='hidden lg:block'>{devices.length > 1 ? dropdown() : null}</div>
             &nbsp;
             <div className='hidden lg:block'>
-              <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+              <Refresh
+                disabled={disableRefresh}
+                onClick={onRefreshClick}
+                onRefreshChange={(interval) => setRefreshInterval(interval)}
+                refreshInterval={refreshInterval}
+              />
             </div>
             <IconButton variant='text' className='block lg:hidden' size='lg' onClick={openDrawer}>
               {isDrawerOpen ? (
@@ -110,7 +123,12 @@ export default function NavBar(props: Props) {
                   </div>
                   <hr />
                   <div className='mt-2'>
-                    <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+                    <Refresh
+                      disabled={disableRefresh}
+                      onClick={onRefreshClick}
+                      onRefreshChange={(interval) => setRefreshInterval(interval)}
+                      refreshInterval={refreshInterval}
+                    />
                   </div>
                   <div className='mb-2 mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
                   <hr />
