@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { YamlSettings } from './src/server/settings'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -29,3 +30,5 @@ jest.mock('react-i18next', () => ({
     init: () => {},
   },
 }))
+
+new YamlSettings('./config/settings.yml')

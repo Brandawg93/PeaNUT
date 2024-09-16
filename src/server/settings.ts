@@ -1,5 +1,5 @@
-import * as fs from 'fs'
-import * as yaml from 'yaml'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { load, dump } from 'js-yaml'
 
 const ISettings = {
   NUT_HOST: 'localhost',
@@ -25,9 +25,9 @@ export class YamlSettings {
   }
 
   private load(): void {
-    if (fs.existsSync(this.filePath)) {
-      const fileContents = fs.readFileSync(this.filePath, 'utf8')
-      this.data = yaml.parse(fileContents)
+    if (existsSync(this.filePath)) {
+      const fileContents = readFileSync(this.filePath, 'utf8')
+      this.data = load(fileContents)
     } else {
       this.data = {}
     }
@@ -47,8 +47,8 @@ export class YamlSettings {
   }
 
   private save(): void {
-    const yamlStr = yaml.stringify(this.data)
-    fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+    const yamlStr = dump(this.data)
+    writeFileSync(this.filePath, yamlStr, 'utf8')
   }
 
   public initWithEnvVars(): void {
