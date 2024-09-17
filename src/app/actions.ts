@@ -86,3 +86,15 @@ export async function deleteSettings(key: string) {
   const settings = new YamlSettings(settingsFile)
   settings.delete(key)
 }
+
+export async function disconnect() {
+  const settings = new YamlSettings(settingsFile)
+  settings.delete('NUT_HOST')
+  settings.delete('NUT_PORT')
+  settings.delete('USERNAME')
+  settings.delete('PASSWORD')
+  settings.delete('INFLUX_HOST')
+  settings.delete('INFLUX_TOKEN')
+  settings.delete('INFLUX_ORG')
+  settings.delete('INFLUX_BUCKET')
+}

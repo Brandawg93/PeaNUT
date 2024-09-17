@@ -24,7 +24,7 @@ import Footer from '@/client/components/footer'
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import { DEVICE } from '@/common/types'
-import { getDevices, checkSettings, deleteSettings } from '@/app/actions'
+import { getDevices, checkSettings, disconnect } from '@/app/actions'
 import Connect from './connect'
 
 Chart.register(annotationPlugin)
@@ -66,8 +66,7 @@ export default function Wrapper() {
   }
 
   const handleDisconnect = async () => {
-    await deleteSettings('NUT_HOST')
-    await deleteSettings('NUT_PORT')
+    await disconnect()
     setSettingsError(true)
   }
 

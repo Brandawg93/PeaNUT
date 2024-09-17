@@ -19,8 +19,9 @@ export async function register() {
     const influxBucket = settings.get('INFLUX_BUCKET')
     const influxInterval = settings.get('INFLUX_INTERVAL')
 
+    let interval
     if (influxHost && influxToken && influxOrg && influxBucket) {
-      setInterval(async () => {
+      interval = setInterval(async () => {
         const { devices } = await getDevices()
         for (const device of devices || []) {
           const influxdata = new InfluxWriter(influxHost, influxToken, influxOrg, influxBucket)
@@ -28,6 +29,8 @@ export async function register() {
           await influxdata.close()
         }
       }, influxInterval * 1000)
+    } else {
+      clearInterval(interval)
     }
   }
 }
