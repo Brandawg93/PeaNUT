@@ -3,7 +3,7 @@
 import 'chart.js/auto'
 import 'react-toastify/dist/ReactToastify.css'
 
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
@@ -24,7 +24,8 @@ import Footer from '@/client/components/footer'
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import { DEVICE } from '@/common/types'
-import { getDevices } from '@/app/actions'
+import { getDevices, checkSettings, deleteSettings } from '@/app/actions'
+import Connect from './connect'
 
 Chart.register(annotationPlugin)
 
@@ -43,12 +44,32 @@ const getStatus = (status: keyof typeof upsStatus) => {
 
 export default function Wrapper() {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
+  const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
+  const [settingsError, setSettingsError] = useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevices(),
   })
+
+  useEffect(() => {
+    checkSettings().then((res) => {
+      setSettingsLoaded(true)
+      setSettingsError(!res)
+    })
+  }, [])
+
+  const handleConnect = () => {
+    setSettingsLoaded(true)
+    setSettingsError(false)
+  }
+
+  const handleDisconnect = async () => {
+    await deleteSettings('NUT_HOST')
+    await deleteSettings('NUT_PORT')
+    setSettingsError(true)
+  }
 
   const loadingWrapper = (
     <div
@@ -58,6 +79,10 @@ export default function Wrapper() {
       <Spinner className='h-12 w-12' />
     </div>
   )
+
+  if (settingsError) {
+    return <Connect onConnect={handleConnect} />
+  }
 
   if (data?.error) {
     let error = 'Internal Server Error'
@@ -79,7 +104,7 @@ export default function Wrapper() {
       </div>
     )
   }
-  if (!data || !data.devices) {
+  if (!settingsLoaded || !data || !data.devices) {
     return loadingWrapper
   }
   if (data.devices && data.devices.length === 0) {
@@ -139,6 +164,7 @@ export default function Wrapper() {
         onDeviceChange={(name: string) =>
           data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
         }
+        onDisconnect={handleDisconnect}
         devices={data.devices}
       />
       <div className='flex justify-center'>

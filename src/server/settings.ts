@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { load, dump } from 'js-yaml'
 
 const ISettings = {
-  NUT_HOST: 'localhost',
+  NUT_HOST: undefined,
   NUT_PORT: 3493,
   WEB_HOST: 'localhost',
   WEB_PORT: 8080,

@@ -23,6 +23,8 @@
   },
   "sidebar": {
     "settings": "Settings",
-    "theme": "Theme"
+    "theme": "Theme",
+    "disconnect": "Disconnect",
+    "refresh": "Refresh"
   }
 }

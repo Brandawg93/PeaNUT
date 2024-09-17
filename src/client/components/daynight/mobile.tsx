@@ -44,7 +44,7 @@ export default function DayNightSwitch() {
 
   return (
     <div
-      className='relative inline-block h-full rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'
+      className='relative inline-block h-full w-full rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'
       data-testid='daynightmobile'
     >
       <div className='absolute left-0 z-0 ml-2 mr-2 inline-flex h-full flex-col justify-center'>{getIcon()}</div>

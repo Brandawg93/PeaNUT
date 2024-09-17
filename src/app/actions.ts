@@ -67,6 +67,11 @@ export async function saveVar(device: string, varName: string, value: string) {
   }
 }
 
+export async function checkSettings() {
+  const settings = new YamlSettings(settingsFile)
+  return !!settings.get('NUT_HOST')
+}
+
 export async function getSettings(key: string) {
   const settings = new YamlSettings(settingsFile)
   return settings.get(key)
@@ -75,4 +80,9 @@ export async function getSettings(key: string) {
 export async function setSettings(key: string, value: any) {
   const settings = new YamlSettings(settingsFile)
   settings.set(key, value)
+}
+
+export async function deleteSettings(key: string) {
+  const settings = new YamlSettings(settingsFile)
+  settings.delete(key)
 }
