@@ -38,6 +38,7 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-resources-to-backend": "^1.2.1",
     "js-yaml": "^4.1.0",
+    "ldrs": "^1.0.2",
     "next": "^14.2.9",
     "next-i18next": "^15.3.1",
     "react": "^18.3.1",

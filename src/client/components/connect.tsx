@@ -1,10 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useContext } from 'react'
 import Image from 'next/image'
+import { useTranslation } from 'react-i18next'
+import { dotPulse } from 'ldrs'
+import { CheckIcon } from '@heroicons/react/24/outline'
 
+import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
-import { setSettings } from '@/app/actions'
+import { setSettings, testConnection } from '@/app/actions'
+
+dotPulse.register()
 
 type Props = {
   onConnect: () => void
@@ -13,13 +19,49 @@ type Props = {
 export default function Connect(props: Props) {
   const [server, setServer] = React.useState<string | undefined>()
   const [port, setPort] = React.useState<number | undefined>()
+  const [connecting, setConnecting] = React.useState<boolean>(false)
+  const [showSuccess, setShowSuccess] = React.useState<boolean>(false)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   const { onConnect } = props
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
     setSettings('NUT_HOST', server)
     setSettings('NUT_PORT', port)
     onConnect()
+  }
+
+  const handleTestConnection = async () => {
+    if (server && port) {
+      setConnecting(true)
+      const { error } = await testConnection(server, port)
+      setConnecting(false)
+      if (error) {
+        alert(`Connection failed: ${error}`)
+      } else {
+        setShowSuccess(true)
+        setTimeout(() => {
+          setShowSuccess(false)
+        }, 2000)
+      }
+    }
+  }
+
+  const getTestButton = () => {
+    if (connecting) {
+      return (
+        <div>
+          <l-dot-pulse size={33} speed={1.3} color='white'></l-dot-pulse>
+        </div>
+      )
+    } else {
+      if (showSuccess) {
+        return <CheckIcon className='h-6 w-6 stroke-[3px] font-bold text-green-500' />
+      }
+      return t('connect.test')
+    }
   }
 
   return (
@@ -34,10 +76,10 @@ export default function Connect(props: Props) {
         <h1 className='mb-4 text-4xl font-bold'>PeaNUT</h1>
       </div>
       <div>
-        <form className='w-full max-w-sm rounded-lg bg-white p-6 shadow-md dark:bg-gray-800'>
+        <form className='w-full max-w-sm rounded-lg bg-white p-6 shadow-md dark:bg-gray-800' onSubmit={handleSubmit}>
           <div className='mb-4'>
             <label className='mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300' htmlFor='server'>
-              Server Address
+              {t('connect.server')}
             </label>
             <input
               value={server}
@@ -46,11 +88,13 @@ export default function Connect(props: Props) {
               id='server'
               type='text'
               placeholder='Enter server address'
+              min={1}
+              max={65535}
             />
           </div>
           <div className='mb-6'>
             <label className='mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300' htmlFor='port'>
-              Port
+              {t('connect.port')}
             </label>
             <input
               value={port}
@@ -61,13 +105,21 @@ export default function Connect(props: Props) {
               placeholder='Enter port number'
             />
           </div>
-          <div className='flex flex-row-reverse items-center justify-between'>
+          <div className='flex flex-row items-center justify-between'>
             <button
-              onClick={handleSubmit}
-              className='focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none'
+              disabled={connecting}
+              onClick={handleTestConnection}
+              className='focus:shadow-outline flex min-h-[40px] min-w-16 justify-center rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none'
               type='button'
             >
-              Connect
+              {getTestButton()}
+            </button>
+            <button
+              disabled={connecting}
+              className='focus:shadow-outline flex justify-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none'
+              type='submit'
+            >
+              {t('connect.connect')}
             </button>
           </div>
         </form>

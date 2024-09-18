@@ -18,6 +18,17 @@ async function connect() {
   return nut
 }
 
+export async function testConnection(server: string, port: number) {
+  try {
+    const nut = new Nut(server, port)
+    await nut.connect()
+    await nut.close()
+    return { error: undefined }
+  } catch (e: any) {
+    return { error: e.message }
+  }
+}
+
 export async function getDevices() {
   try {
     const nut = await connect()

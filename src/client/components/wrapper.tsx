@@ -5,12 +5,18 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { CheckIcon, ExclamationTriangleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import {
+  CheckIcon,
+  ExclamationTriangleIcon,
+  ExclamationCircleIcon,
+  ArrowRightStartOnRectangleIcon,
+} from '@heroicons/react/24/outline'
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
-import { Spinner } from '@material-tailwind/react'
+import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { Chart } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
+import { helix } from 'ldrs'
 
 import NutGrid from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
@@ -27,6 +33,7 @@ import { DEVICE } from '@/common/types'
 import { getDevices, checkSettings, disconnect } from '@/app/actions'
 import Connect from './connect'
 
+helix.register()
 Chart.register(annotationPlugin)
 
 const getStatus = (status: keyof typeof upsStatus) => {
@@ -60,7 +67,8 @@ export default function Wrapper() {
     })
   }, [])
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
+    await refetch()
     setSettingsLoaded(true)
     setSettingsError(false)
   }
@@ -75,7 +83,11 @@ export default function Wrapper() {
       className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
       data-testid='wrapper'
     >
-      <Spinner className='h-12 w-12' />
+      <l-helix
+        size={100}
+        speed={2.5}
+        color={window.matchMedia('(prefers-color-scheme: dark)').matches ? 'white' : 'black'}
+      />
     </div>
   )
 
@@ -88,17 +100,30 @@ export default function Wrapper() {
     if (data?.error.message?.includes('ECONNREFUSED')) {
       error = 'Connection refused. Is NUT server running?'
     }
+    if (data?.error.includes('ENOTFOUND')) {
+      error = 'Host not found. Check your settings.'
+    }
 
     console.error(error)
 
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
         data-testid='wrapper'
       >
         <div>
           <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
           <p>{error}</p>
+        </div>
+        <div>
+          <Button
+            variant='filled'
+            title={t('sidebar.disconnect')}
+            className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
+            onClick={async () => await handleDisconnect()}
+          >
+            <ArrowRightStartOnRectangleIcon className='h-4 w-4 stroke-2 dark:text-white' />
+          </Button>
         </div>
       </div>
     )
