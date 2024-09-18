@@ -16,7 +16,6 @@ import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { Chart } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import { helix } from 'ldrs'
 
 import NutGrid from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
@@ -26,6 +25,7 @@ import NavBar from '@/client/components/navbar'
 import Runtime from '@/client/components/runtime'
 import WattsChart from '@/client/components/watts-chart'
 import Footer from '@/client/components/footer'
+import Loader from '@/client/components/loader'
 
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
@@ -33,7 +33,6 @@ import { DEVICE } from '@/common/types'
 import { getDevices, checkSettings, disconnect } from '@/app/actions'
 import Connect from './connect'
 
-helix.register()
 Chart.register(annotationPlugin)
 
 const getStatus = (status: keyof typeof upsStatus) => {
@@ -83,11 +82,7 @@ export default function Wrapper() {
       className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
       data-testid='wrapper'
     >
-      <l-helix
-        size={100}
-        speed={2.5}
-        color={window.matchMedia('(prefers-color-scheme: dark)').matches ? 'white' : 'black'}
-      />
+      <Loader />
     </div>
   )
 

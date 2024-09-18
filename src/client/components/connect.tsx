@@ -1,16 +1,11 @@
-'use client'
-
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
-import { dotPulse } from 'ldrs'
 import { CheckIcon } from '@heroicons/react/24/outline'
 
 import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
 import { setSettings, testConnection } from '@/app/actions'
-
-dotPulse.register()
 
 type Props = {
   onConnect: () => void
@@ -25,6 +20,14 @@ export default function Connect(props: Props) {
   const { t } = useTranslation(lng)
 
   const { onConnect } = props
+
+  useEffect(() => {
+    async function getLoader() {
+      const { dotPulse } = await import('ldrs')
+      dotPulse.register()
+    }
+    getLoader()
+  }, [])
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
