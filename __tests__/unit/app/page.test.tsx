@@ -1,18 +1,19 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Page from '@/app/page'
 
 const queryClient = new QueryClient()
 
 describe('Page', () => {
-  it('renders a heading', () => {
-    const page = render(
+  it('renders a heading', async () => {
+    render(
       <QueryClientProvider client={queryClient}>
         <Page />
       </QueryClientProvider>
     )
 
-    expect(page).toBeDefined()
+    const wrapper = await screen.findByTestId('wrapper')
+    expect(wrapper).toBeInTheDocument()
   })
 })

@@ -49,7 +49,7 @@ describe('Wrapper Component', () => {
     ;(checkSettings as jest.Mock).mockResolvedValue(true)
   })
 
-  it('renders loading state', () => {
+  it('renders loading state', async () => {
     ;(useQuery as jest.Mock).mockReturnValue({
       isLoading: true,
       data: null,
@@ -62,7 +62,8 @@ describe('Wrapper Component', () => {
       </LanguageContext.Provider>
     )
 
-    expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+    const wrapper = await screen.findByTestId('wrapper')
+    expect(wrapper).toBeInTheDocument()
   })
 
   it('renders error state', async () => {
