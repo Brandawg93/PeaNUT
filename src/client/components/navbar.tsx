@@ -68,7 +68,7 @@ export default function NavBar(props: Props) {
     <Navbar
       variant='gradient'
       color='gray'
-      className='sticky top-0 z-10 mb-4 flex h-max max-w-full justify-center rounded-none bg-gradient-to-t from-gray-300 to-gray-100 px-4 py-2 dark:from-gray-950 dark:to-gray-900 lg:px-8 lg:py-4'
+      className='sticky top-0 z-10 mb-4 flex h-max max-w-full justify-center rounded-none bg-gradient-to-t from-gray-300 to-gray-100 px-4 py-2 lg:px-8 lg:py-4 dark:from-gray-950 dark:to-gray-900'
     >
       <div className='container'>
         <div className='flex items-center justify-between'>
