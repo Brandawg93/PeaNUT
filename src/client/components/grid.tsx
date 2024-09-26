@@ -116,7 +116,7 @@ export default function NutGrid(props: Props) {
           {result.map(({ key, value }, index: number) => {
             const isLast = index === result.length - 1
             const lastClass = isLast ? '' : 'border-b dark:border-gray-800'
-            const isRW = data.rwVars.includes(key as keyof VARS)
+            const isRW = data.rwVars?.includes(key as keyof VARS)
             return (
               <tr key={key} aria-rowindex={index} className='grid-row'>
                 <td className={`p-3 ${lastClass} border-neutral-300 w-1/2 border-r dark:border-gray-800`}>

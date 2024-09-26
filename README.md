@@ -55,15 +55,20 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-| Variable  | Default   | Description                   |
-| --------- | --------- | ----------------------------- |
-| NUT_HOST  | localhost | Host of NUT server            |
-| NUT_PORT  | 3493      | Port of NUT server            |
-| WEB_HOST  | localhost | Hostname of web server        |
-| WEB_PORT  | 8080      | Port of web server            |
-| USERNAME  | undefined | Optional but required to edit |
-| PASSWORD  | undefined | Optional but required to edit |
-| BASE_PATH | undefined | Base path for reverse proxy   |
+| Variable        | Default   | Description                   |
+| --------------- | --------- | ----------------------------- |
+| NUT_HOST        | localhost | Host of NUT server            |
+| NUT_PORT        | 3493      | Port of NUT server            |
+| WEB_HOST        | localhost | Hostname of web server        |
+| WEB_PORT        | 8080      | Port of web server            |
+| USERNAME        | undefined | Optional but required to edit |
+| PASSWORD        | undefined | Optional but required to edit |
+| BASE_PATH       | undefined | Base path for reverse proxy   |
+| INFLUX_HOST     | undefined | Host for Influx server        |
+| INFLUX_TOKEN    | undefined | Token for Influx server       |
+| INFLUX_ORG      | undefined | Org for influx server         |
+| INFLUX_BUCKET   | undefined | Bucket for influx server      |
+| INFLUX_INTERVAL | 10        | Inverval for Influx ingestion |
 
 ## API
 

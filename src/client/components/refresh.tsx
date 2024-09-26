@@ -1,27 +1,24 @@
 import { ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
-import React, { useState, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, Button } from '@material-tailwind/react'
+import { useTranslation } from 'react-i18next'
 
+import { LanguageContext } from '@/client/context/language'
 type Props = {
   onClick: () => void
-  onRefetch: () => void
+  onRefreshChange: (value: string) => void
+  refreshInterval: string
   disabled: boolean
 }
 
 export default function Refresh(props: Props) {
-  const { onClick, onRefetch, disabled } = props
-  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
-
-  useEffect(() => {
-    if (parseInt(refreshInterval) > 0) {
-      const interval = setInterval(() => onRefetch(), parseInt(refreshInterval) * 1000)
-      return () => clearInterval(interval)
-    }
-  }, [refreshInterval, onRefetch])
+  const { onClick, onRefreshChange, refreshInterval, disabled } = props
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   const handleSelect = (event: any) => {
     const value = event.target.value
-    setRefreshInterval(value)
+    onRefreshChange(value)
     localStorage.setItem('refreshInterval', value)
   }
 
@@ -33,6 +30,7 @@ export default function Refresh(props: Props) {
     <>
       <Button
         variant='filled'
+        title={t('sidebar.refresh')}
         className='text-md inline-flex w-1/2 justify-center rounded-r-none border-r bg-gray-400 text-black shadow-none dark:bg-gray-800 dark:text-white'
         onClick={onClick}
         disabled={disabled}

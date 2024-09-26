@@ -2,16 +2,31 @@
 
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
+import { YamlSettings } from '@/server/settings'
+
+const settingsFile = './config/settings.yml'
 
 async function connect() {
+  const settings = new YamlSettings(settingsFile)
   const nut = new Nut(
-    process.env.NUT_HOST || 'localhost',
-    parseInt(process.env.NUT_PORT || '3493'),
-    process.env.USERNAME,
-    process.env.PASSWORD
+    settings.get('NUT_HOST'),
+    settings.get('NUT_PORT'),
+    settings.get('USERNAME'),
+    settings.get('PASSWORD')
   )
   await nut.connect()
   return nut
+}
+
+export async function testConnection(server: string, port: number) {
+  try {
+    const nut = new Nut(server, port)
+    await nut.connect()
+    await nut.close()
+    return { error: undefined }
+  } catch (e: any) {
+    return { error: e.message }
+  }
 }
 
 export async function getDevices() {
@@ -61,4 +76,36 @@ export async function saveVar(device: string, varName: string, value: string) {
   } catch (e: any) {
     return { error: e.message }
   }
+}
+
+export async function checkSettings() {
+  const settings = new YamlSettings(settingsFile)
+  return !!settings.get('NUT_HOST')
+}
+
+export async function getSettings(key: string) {
+  const settings = new YamlSettings(settingsFile)
+  return settings.get(key)
+}
+
+export async function setSettings(key: string, value: any) {
+  const settings = new YamlSettings(settingsFile)
+  settings.set(key, value)
+}
+
+export async function deleteSettings(key: string) {
+  const settings = new YamlSettings(settingsFile)
+  settings.delete(key)
+}
+
+export async function disconnect() {
+  const settings = new YamlSettings(settingsFile)
+  settings.delete('NUT_HOST')
+  settings.delete('NUT_PORT')
+  settings.delete('USERNAME')
+  settings.delete('PASSWORD')
+  settings.delete('INFLUX_HOST')
+  settings.delete('INFLUX_TOKEN')
+  settings.delete('INFLUX_ORG')
+  settings.delete('INFLUX_BUCKET')
 }

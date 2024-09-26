@@ -33,6 +33,8 @@ scripts
 
 dev
 
+settings.yml
+
 .next
 .swc
 test-results

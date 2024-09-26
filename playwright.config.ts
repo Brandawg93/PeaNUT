@@ -44,10 +44,15 @@ export default defineConfig({
 
   projects: [
     {
+      name: 'setup environment',
+      testMatch: /global\.setup\.ts/,
+    },
+    {
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
       },
+      dependencies: ['setup environment'],
     },
     // {
     //   name: 'Desktop Firefox',
@@ -67,10 +72,12 @@ export default defineConfig({
       use: {
         ...devices['Pixel 5'],
       },
+      dependencies: ['setup environment'],
     },
     {
       name: 'Mobile Safari',
       use: devices['iPhone 12'],
+      dependencies: ['setup environment'],
     },
   ],
 })
