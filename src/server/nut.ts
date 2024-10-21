@@ -79,7 +79,7 @@ export class Nut {
         const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
         const value = line.split('"')[1].trim()
         const type = await this.getType(device, key)
-        if (type.includes('NUMBER')) {
+        if (type.includes('NUMBER') && !isNaN(+value)) {
           const num = parseFloat(value)
           vars[key] = { value: num ? num : value }
         } else {
