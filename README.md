@@ -32,6 +32,8 @@ services:
     image: brandawg93/peanut:latest
     container_name: PeaNUT
     restart: unless-stopped
+    volumes:
+      - /path/to/config:/config
     ports:
       - 8080:8080
     environment:
@@ -54,6 +56,8 @@ pnpm run start:local
 More examples can be found in the [examples](https://github.com/Brandawg93/PeaNUT/tree/main/examples) folder.
 
 ## Environment Variables
+
+_Note:_ Environment variables are not required and used for first time setup only.
 
 | Variable        | Default   | Description                   |
 | --------------- | --------- | ----------------------------- |
