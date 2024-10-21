@@ -79,7 +79,7 @@ export class Nut {
         const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
         const value = line.split('"')[1].trim()
         const type = await this.getType(device, key)
-        if (type.includes('NUMBER')) {
+        if (type.includes('NUMBER') && !isNaN(+value)) {
           const num = parseFloat(value)
           vars[key] = { value: num ? num : value }
         } else {
@@ -102,7 +102,7 @@ export class Nut {
     const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('CMD')) {
-        const command = line.split('"')[0].replace(`CMD ${device} `, '').trim()
+        const command = line.replace(`CMD ${device} `, '').trim()
         commands.push(command)
       }
     }
@@ -116,7 +116,7 @@ export class Nut {
     const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('CLIENT')) {
-        const command = line.split('"')[0].replace(`CLIENT ${device} `, '').trim()
+        const command = line.replace(`CLIENT ${device} `, '').trim()
         clients.push(command)
       }
     }
@@ -171,7 +171,7 @@ export class Nut {
     const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('ENUM')) {
-        const command = line.split('"')[0].replace(`ENUM ${device} `, '').trim()
+        const command = line.split('"')[1].replace(`ENUM ${device} `, '').trim()
         enums.push(command)
       }
     }
@@ -185,7 +185,7 @@ export class Nut {
     const data = await this.getCommand(command)
     for (const line of data.split('\n')) {
       if (line.startsWith('RANGE')) {
-        const command = line.split('"')[0].replace(`RANGE ${device} `, '').trim()
+        const command = line.split('"')[1].replace(`RANGE ${device} `, '').trim()
         ranges.push(command)
       }
     }

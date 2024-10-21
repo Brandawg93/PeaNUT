@@ -62,3 +62,6 @@ jobs:
         env:
           USERNAME: admin
           PASSWORD: nut_test
+          NUT_HOST: localhost
+          NUT_PORT: 3493
+          WEB_PORT: 8080

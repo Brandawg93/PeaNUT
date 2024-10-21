@@ -12,6 +12,8 @@ services:
     ports:
       - 8080:8080
     restart: unless-stopped
+    volumes:
+      - /path/to/config:/config
     environment:
       - NUT_HOST=nut-upsd
       - NUT_PORT=3493

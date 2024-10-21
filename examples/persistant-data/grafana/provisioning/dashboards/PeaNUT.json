@@ -18,13 +18,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
       "datasource": {
+        "default": false,
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "P5697886F9CA74929"
       },
       "fieldConfig": {
         "defaults": {
@@ -59,7 +59,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 8,
         "x": 0,
         "y": 0
       },
@@ -69,6 +69,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": ["lastNotNull"],
           "fields": "",
@@ -78,28 +79,15 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "P5697886F9CA74929"
           },
-          "groupBy": [],
-          "measurement": "http_peanut",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": ["battery.charge"],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"${device}\" and\n    r._field == \"battery.charge\"\n  )\n  |> last()",
+          "refId": "A"
         }
       ],
       "title": "Battery Charge",
@@ -107,8 +95,9 @@
     },
     {
       "datasource": {
+        "default": false,
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "P5697886F9CA74929"
       },
       "fieldConfig": {
         "defaults": {
@@ -143,8 +132,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 8,
+        "x": 8,
         "y": 0
       },
       "id": 5,
@@ -153,6 +142,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": ["lastNotNull"],
           "fields": "",
@@ -162,28 +152,15 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "P5697886F9CA74929"
           },
-          "groupBy": [],
-          "measurement": "http_peanut",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": ["ups.load"],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"${device}\" and\n    r._field == \"ups.load\"\n  )\n  |> last()",
+          "refId": "A"
         }
       ],
       "title": "UPS Load",
@@ -191,8 +168,70 @@
     },
     {
       "datasource": {
+        "default": false,
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "P5697886F9CA74929"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P5697886F9CA74929"
+          },
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"${device}\" and\n    r._field == \"battery.runtime\"\n  )\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Runtime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "influxdb",
+        "uid": "P5697886F9CA74929"
       },
       "fieldConfig": {
         "defaults": {
@@ -203,8 +242,10 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -243,7 +284,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "volt"
         },
         "overrides": []
       },
@@ -269,97 +311,38 @@
       },
       "targets": [
         {
-          "alias": "Input Voltage",
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "P5697886F9CA74929"
           },
-          "groupBy": [
-            {
-              "params": ["$__interval"],
-              "type": "time"
-            },
-            {
-              "params": ["null"],
-              "type": "fill"
-            }
-          ],
-          "measurement": "http_peanut",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "Input Voltage",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": ["input.voltage"],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Output Voltage",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
-          },
-          "groupBy": [
-            {
-              "params": ["$__interval"],
-              "type": "time"
-            },
-            {
-              "params": ["null"],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "http_peanut",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "Output Voltage",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": ["output.voltage"],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"${device}\" and\n    r._field == \"input.voltage\" or r._field == \"output.voltage\"\n  )",
+          "refId": "A"
         }
       ],
       "title": "Voltage",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(input\\.voltage.*)",
+            "renamePattern": "Input Voltage"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(output\\.voltage.*)",
+            "renamePattern": "Output Voltage"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 15
-      },
-      "id": 2,
-      "panels": [],
-      "title": "Table",
-      "type": "row"
-    },
-    {
       "datasource": {
+        "default": false,
         "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "uid": "P5697886F9CA74929"
       },
       "fieldConfig": {
         "defaults": {
@@ -394,7 +377,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 15
       },
       "id": 1,
       "options": {
@@ -405,46 +388,83 @@
           "reducer": ["sum"],
           "show": false
         },
+        "frameIndex": 4,
         "showHeader": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "uid": "P5697886F9CA74929"
           },
-          "groupBy": [],
-          "measurement": "http_peanut",
-          "orderByTime": "DESC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "table",
-          "select": [
-            [
-              {
-                "params": ["*"],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"${device}\"\n  )\n  |> map(fn: (r) => ({r with _value: string(v: r._value)}))\n  |> last()\n  |> group(columns: [\"_measurement\"])\n",
+          "refId": "A"
         }
       ],
-      "title": "Panel Title",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": ["_field", "_value"]
+            }
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "_field",
+            "renamePattern": "Key"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "_value",
+            "renamePattern": "Value"
+          }
+        }
+      ],
       "type": "table"
     }
   ],
   "schemaVersion": 39,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "ups",
+          "value": "ups"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "P5697886F9CA74929"
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.measurements(bucket: v.bucket)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Device",
+        "multi": false,
+        "name": "device",
+        "options": [],
+        "query": {
+          "query": "import \"influxdata/influxdb/v1\"\nv1.measurements(bucket: v.bucket)"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-5m",
     "to": "now"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "browser",
   "title": "PeaNUT",

@@ -16,25 +16,25 @@ services:
       - NUT_HOST=nut-upsd
       - NUT_PORT=3493
       - WEB_PORT=8080
-
-  telegraf:
-    image: telegraf:latest
-    container_name: telegraf
-    environment:
-      - WEB_HOST=PeaNUT
-      - WEB_PORT=8080
-    depends_on:
-      - influxdb
-    volumes:
-      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-    restart: unless-stopped
+      - INFLUX_HOST=http://influxdb:8086
+      - INFLUX_TOKEN=super_secret_token
+      - INFLUX_ORG=home
+      - INFLUX_BUCKET=ups
+      - INFLUX_INTERVAL=3
 
   influxdb:
-    image: influxdb:1.8
+    image: influxdb:2
     container_name: influxdb
     volumes:
-      - influxdb-storage:/var/lib/influxdb
+      - influxdb-storage:/var/lib/influxdb2
     restart: unless-stopped
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=peanut
+      - DOCKER_INFLUXDB_INIT_PASSWORD=super_secret_password
+      - DOCKER_INFLUXDB_INIT_ORG=home
+      - DOCKER_INFLUXDB_INIT_BUCKET=ups
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=super_secret_token
 
   grafana:
     image: grafana/grafana:latest

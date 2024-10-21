@@ -5,11 +5,12 @@ WORKDIR /app
 COPY --link package.json pnpm-lock.yaml* ./
 
 SHELL ["/bin/ash", "-xeo", "pipefail", "-c"]
+ENV CI=true
 RUN npm install -g pnpm
 
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm fetch | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
 
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm install -r --offline
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm install
 
 FROM node:20-alpine AS build
 

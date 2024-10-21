@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
-import { Navbar, Typography, Select, Option, IconButton, Drawer, Card } from '@material-tailwind/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
+import { Navbar, Typography, Select, Option, IconButton, Drawer, Card, Button } from '@material-tailwind/react'
+import { Bars3Icon, XMarkIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid'
 
 import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
@@ -14,16 +14,25 @@ type Props = {
   onRefreshClick: () => void
   onRefetch: () => void
   onDeviceChange: (name: string) => void
+  onDisconnect: () => void
   devices: Array<DEVICE>
   disableRefresh: boolean
 }
 
 export default function NavBar(props: Props) {
-  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
+  const { onRefreshClick, onRefetch, onDeviceChange, onDisconnect, devices, disableRefresh } = props
   const [device, setDevice] = useState(devices[0])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
+
+  useEffect(() => {
+    if (parseInt(refreshInterval) > 0) {
+      const interval = setInterval(() => onRefetch(), parseInt(refreshInterval) * 1000)
+      return () => clearInterval(interval)
+    }
+  }, [refreshInterval])
 
   const handleSelect = (eventKey: string | undefined) => {
     if (!eventKey) return
@@ -59,7 +68,7 @@ export default function NavBar(props: Props) {
     <Navbar
       variant='gradient'
       color='gray'
-      className='sticky top-0 z-10 mb-4 flex h-max max-w-full justify-center rounded-none bg-gradient-to-t from-gray-300 to-gray-100 px-4 py-2 dark:from-gray-950 dark:to-gray-900 lg:px-8 lg:py-4'
+      className='sticky top-0 z-10 mb-4 flex h-max max-w-full justify-center rounded-none bg-gradient-to-t from-gray-300 to-gray-100 px-4 py-2 lg:px-8 lg:py-4 dark:from-gray-950 dark:to-gray-900'
     >
       <div className='container'>
         <div className='flex items-center justify-between'>
@@ -75,7 +84,23 @@ export default function NavBar(props: Props) {
             <div className='hidden lg:block'>{devices.length > 1 ? dropdown() : null}</div>
             &nbsp;
             <div className='hidden lg:block'>
-              <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+              <Refresh
+                disabled={disableRefresh}
+                onClick={onRefreshClick}
+                onRefreshChange={(interval) => setRefreshInterval(interval)}
+                refreshInterval={refreshInterval}
+              />
+            </div>
+            &nbsp;
+            <div className='hidden lg:block'>
+              <Button
+                variant='filled'
+                title={t('sidebar.disconnect')}
+                className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
+                onClick={() => onDisconnect()}
+              >
+                <ArrowRightStartOnRectangleIcon className='h-4 w-4 stroke-2 dark:text-white' />
+              </Button>
             </div>
             <IconButton variant='text' className='block lg:hidden' size='lg' onClick={openDrawer}>
               {isDrawerOpen ? (
@@ -110,12 +135,17 @@ export default function NavBar(props: Props) {
                   </div>
                   <hr />
                   <div className='mt-2'>
-                    <Refresh disabled={disableRefresh} onClick={onRefreshClick} onRefetch={onRefetch} />
+                    <Refresh
+                      disabled={disableRefresh}
+                      onClick={onRefreshClick}
+                      onRefreshChange={(interval) => setRefreshInterval(interval)}
+                      refreshInterval={refreshInterval}
+                    />
                   </div>
                   <div className='mb-2 mt-3'>{devices.length > 1 ? dropdown('outlined') : null}</div>
                   <hr />
                   <div className='grid grid-flow-row grid-cols-2'>
-                    <div className='flex flex-col justify-center'>
+                    <div className='flex flex-col justify-around'>
                       <Typography className='font-medium text-gray-800 dark:text-gray-300'>
                         {t('sidebar.theme')}
                       </Typography>
@@ -125,6 +155,23 @@ export default function NavBar(props: Props) {
                     </div>
                   </div>
                   <hr />
+                  <div className='grid grid-flow-row grid-cols-2'>
+                    <div className='flex flex-col justify-around'>
+                      <Typography className='font-medium text-gray-800 dark:text-gray-300'>
+                        {t('sidebar.disconnect')}
+                      </Typography>
+                    </div>
+                    <div className='mb-3 mt-3'>
+                      <Button
+                        variant='filled'
+                        title={t('sidebar.disconnect')}
+                        className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
+                        onClick={() => onDisconnect()}
+                      >
+                        <ArrowRightStartOnRectangleIcon className='h-4 w-4 stroke-2 dark:text-white' />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 <div className='mt-6 text-right text-gray-600'>
                   <a className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
