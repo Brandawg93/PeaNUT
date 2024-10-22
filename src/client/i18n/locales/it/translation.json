@@ -23,6 +23,14 @@
   },
   "sidebar": {
     "settings": "Impostazioni",
-    "theme": "Tema"
+    "theme": "Tema",
+    "disconnect": "Disconnect",
+    "refresh": "Refresh"
+  },
+  "connect": {
+    "server": "Server Address",
+    "port": "Port",
+    "connect": "Connect",
+    "test": "Test"
   }
 }
