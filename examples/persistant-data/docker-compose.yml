@@ -9,6 +9,8 @@ services:
   peanut:
     image: brandawg93/peanut:latest
     container_name: PeaNUT
+    volumes:
+      - ${PWD}/config:/config
     restart: unless-stopped
     ports:
       - 8080:8080
