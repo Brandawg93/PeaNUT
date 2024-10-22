@@ -19,7 +19,7 @@ Install using Docker
 ### docker run
 
 ```bash
-docker run -p 8080:8080 --restart unless-stopped \
+docker run -v ${PWD}/config:/config -p 8080:8080 --restart unless-stopped \
 --env NUT_HOST=nut-upsd --env NUT_PORT=3493 \
 --env WEB_PORT=8080 brandawg93/peanut
 ```
