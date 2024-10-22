@@ -1,10 +1,9 @@
-FROM node:20-alpine AS deps
+FROM node:22 AS deps
 
 WORKDIR /app
 
 COPY --link package.json pnpm-lock.yaml* ./
 
-SHELL ["/bin/ash", "-xeo", "pipefail", "-c"]
 ENV CI=true
 RUN npm install -g pnpm
 
@@ -12,16 +11,16 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm f
 
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm install
 
-FROM node:20-alpine AS build
+FROM node:22 AS build
 
 WORKDIR /app
 
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . .
 
-RUN npm run telemetry && npm run build
+RUN npm install -g pnpm && npm run telemetry && npm run build
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 LABEL org.opencontainers.image.title="PeaNUT"
 LABEL org.opencontainers.image.description="A tiny dashboard for Network UPS Tools"
