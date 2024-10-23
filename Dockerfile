@@ -33,8 +33,6 @@ COPY --link package.json next.config.js ./
 COPY --from=build --link /app/.next/standalone ./
 COPY --from=build --link /app/.next/static ./.next/static
 
-RUN mkdir ./config && touch ./config/settings.yml
-
 ENV NODE_ENV=production
 ENV NUT_HOST=localhost
 ENV NUT_PORT=3493

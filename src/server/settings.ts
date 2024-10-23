@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import fs from 'fs'
+import path from 'path'
 import { load, dump } from 'js-yaml'
 
 const ISettings = {
@@ -21,15 +22,15 @@ export class YamlSettings {
 
   constructor(filePath: string) {
     this.filePath = filePath
+    this.data = {}
     this.load()
   }
 
   private load(): void {
-    if (existsSync(this.filePath)) {
-      const fileContents = readFileSync(this.filePath, 'utf8')
+    fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
+    if (fs.existsSync(this.filePath)) {
+      const fileContents = fs.readFileSync(this.filePath, 'utf8')
       this.data = load(fileContents)
-    } else {
-      this.data = {}
     }
   }
 
@@ -48,7 +49,7 @@ export class YamlSettings {
 
   private save(): void {
     const yamlStr = dump(this.data)
-    writeFileSync(this.filePath, yamlStr, 'utf8')
+    fs.writeFileSync(this.filePath, yamlStr, 'utf8')
   }
 
   public initWithEnvVars(): void {
