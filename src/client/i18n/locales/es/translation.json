@@ -1,4 +1,6 @@
 {
+  "noDevicesError": "No se encontraron dispositivos en este servidor.",
+  "updateAvailable": "Actualización Disponible",
   "device": "Dispositivo",
   "manufacturer": "Fabricante",
   "model": "Modelo",
@@ -32,5 +34,10 @@
     "port": "Puerto",
     "connect": "Conectar",
     "test": "Probar"
+  },
+  "theme": {
+    "dark": "Oscuro",
+    "light": "Claro",
+    "system": "Sistema"
   }
 }

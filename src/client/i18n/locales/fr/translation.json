@@ -1,4 +1,6 @@
 {
+  "noDevicesError": "Aucun appareil trouvé sur ce serveur.",
+  "updateAvailable": "Mise à jour disponible",
   "device": "Appareil",
   "manufacturer": "Fabricant",
   "model": "Modèle",
@@ -32,5 +34,10 @@
     "port": "Port",
     "connect": "Connecter",
     "test": "Tester"
+  },
+  "theme": {
+    "dark": "Sombre",
+    "light": "Clair",
+    "system": "Système"
   }
 }

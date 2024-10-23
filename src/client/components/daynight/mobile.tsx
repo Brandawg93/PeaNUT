@@ -1,9 +1,13 @@
 import React, { useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import { LanguageContext } from '@/client/context/language'
 import { ChevronUpDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline'
 import { ThemeContext } from '@/client/context/theme'
 
 export default function DayNightSwitch() {
   const { theme, setTheme } = useContext(ThemeContext)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   const handleSelect = (event: any) => {
     const eventKey = event.target.value
@@ -55,9 +59,9 @@ export default function DayNightSwitch() {
           onChange={handleSelect}
           className='relative z-10 h-9 appearance-none bg-transparent pl-11 pr-5 outline-none'
         >
-          <option value='light'>Light</option>
-          <option value='dark'>Dark</option>
-          <option value='system'>System</option>
+          <option value='light'>{t('theme.light')}</option>
+          <option value='dark'>{t('theme.dark')}</option>
+          <option value='system'>{t('theme.system')}</option>
         </select>
       </div>
       <div className='absolute right-0 z-0 inline-flex h-full flex-col justify-center'>

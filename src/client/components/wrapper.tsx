@@ -134,7 +134,7 @@ export default function Wrapper() {
       >
         <div>
           <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
-          <p>No devices found on this server.</p>
+          <p>{t('noDevicesError')}</p>
         </div>
       </div>
     )

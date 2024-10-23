@@ -40,7 +40,7 @@ export default function Footer({ updated }: Props) {
     >
       &nbsp;
       <ExclamationCircleIcon className='inline-block h-4 w-4' />
-      &nbsp;Update Available: {updateAvailable.version}
+      &nbsp;{t('updateAvailable')}: {updateAvailable.version}
     </a>
   ) : (
     <></>
