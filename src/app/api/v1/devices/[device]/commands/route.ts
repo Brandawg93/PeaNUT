@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
   await nut.connect()
 
-  const device = params.device
+  const { device } = await params
   const data = await nut.getCommands(device)
   try {
     await nut.close()

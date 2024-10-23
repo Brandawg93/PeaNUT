@@ -40,8 +40,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
   await nut.connect()
 
-  const device = params.device
-  const param = params.param
+  const { device, param } = await params
   const paramString = param as keyof DEVICE
   try {
     const data = await nut.getVarDescription(device, param)
