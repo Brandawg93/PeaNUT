@@ -24,13 +24,13 @@
   "sidebar": {
     "settings": "Paramètres",
     "theme": "Thème",
-    "disconnect": "Disconnect",
-    "refresh": "Refresh"
+    "disconnect": "Déconnecter",
+    "refresh": "Rafraîchir"
   },
   "connect": {
-    "server": "Server Address",
+    "server": "Serveur",
     "port": "Port",
-    "connect": "Connect",
-    "test": "Test"
+    "connect": "Connecter",
+    "test": "Tester"
   }
 }
