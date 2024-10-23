@@ -21,13 +21,12 @@ export class YamlSettings {
   private data: any
 
   constructor(filePath: string) {
-    this.filePath = path.resolve(__dirname, filePath)
+    this.filePath = filePath
     this.data = {}
     this.load()
   }
 
   private load(): void {
-    console.log('Loading settings from', this.filePath)
     fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
     if (fs.existsSync(this.filePath)) {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
