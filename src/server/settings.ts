@@ -18,7 +18,7 @@ const ISettings = {
 
 export class YamlSettings {
   private filePath: string
-  private data: any
+  private data: Partial<Record<keyof typeof ISettings, any>>
 
   constructor(filePath: string) {
     this.filePath = filePath
@@ -30,18 +30,18 @@ export class YamlSettings {
     fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
     if (fs.existsSync(this.filePath)) {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
-      this.data = load(fileContents)
+      this.data = load(fileContents) || {}
     }
   }
 
   private loadFromEnvVars(): void {
     for (const key of Object.keys(ISettings)) {
-      if (!this.data[key] && process.env[key]) {
+      if (!this.data[key as keyof typeof ISettings] && process.env[key]) {
         const eVar = key as keyof typeof ISettings
         if (typeof ISettings[eVar] === 'number') {
-          this.data[key] = parseInt(process.env[key], 10)
+          this.data[key as keyof typeof ISettings] = parseInt(process.env[key], 10)
         } else {
-          this.data[key] = process.env[key]
+          this.data[key as keyof typeof ISettings] = process.env[key]
         }
       }
     }
@@ -58,16 +58,16 @@ export class YamlSettings {
   }
 
   public get(key: string): any {
-    return this.data[key]
+    return this.data[key as keyof typeof ISettings]
   }
 
   public set(key: string, value: any): void {
-    this.data[key] = value
+    this.data[key as keyof typeof ISettings] = value
     this.save()
   }
 
   public delete(key: string): void {
-    delete this.data[key]
+    delete this.data[key as keyof typeof ISettings]
     this.save()
   }
 
