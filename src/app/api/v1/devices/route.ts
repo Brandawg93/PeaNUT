@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
   const USERNAME = await getSettings('USERNAME')
   const PASSWORD = await getSettings('PASSWORD')
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-  await nut.connect()
 
   const deviceData: Array<VARS> = []
   const devices = await nut.getDevices()
@@ -37,7 +36,6 @@ export async function GET(request: NextRequest) {
     })
     deviceData.push(ret)
   }
-  await nut.close()
   return NextResponse.json(deviceData)
 }
 

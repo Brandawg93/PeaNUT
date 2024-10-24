@@ -2,8 +2,6 @@ import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
 export class Nut {
-  private socket: PromiseSocket
-
   private host: string
 
   private port: number
@@ -17,40 +15,46 @@ export class Nut {
     this.port = port
     this.username = username || ''
     this.password = password || ''
-    this.socket = new PromiseSocket()
   }
 
-  private async getCommand(command: string, until?: string) {
-    await this.socket.write(command)
-    const data = await this.socket.readAll(command, until)
+  private async getCommand(command: string, until?: string, checkCredentials = false): Promise<string> {
+    const socket = new PromiseSocket()
+    await socket.connect(this.port, this.host)
+    if (checkCredentials) {
+      await this.checkCredentials(socket)
+    }
+    await socket.write(command)
+    const data = await socket.readAll(command, until)
+    await socket.write('LOGOUT')
+    await socket.close()
     if (data.startsWith('ERR')) {
       throw new Error(`Invalid response: ${data}`)
     }
-    this.socket.removeAllListeners()
     return data
   }
 
-  public async connect() {
-    await this.socket.connect(this.port, this.host)
-
+  public async checkCredentials(socket: PromiseSocket): Promise<void> {
     if (this.username) {
-      const res = await this.getCommand(`USERNAME ${this.username}`, '\n')
-      if (res !== 'OK\n') {
+      const command = `USERNAME ${this.username}`
+      await socket.write(command)
+      const data = await socket.readAll(command, '\n')
+      if (data !== 'OK\n') {
         throw new Error('Invalid username')
       }
     }
 
     if (this.password) {
-      const res = await this.getCommand(`PASSWORD ${this.password}`, '\n')
-      if (res !== 'OK\n') {
+      const command = `PASSWORD ${this.password}`
+      await socket.write(command)
+      const data = await socket.readAll(command, '\n')
+      if (data !== 'OK\n') {
         throw new Error('Invalid password')
       }
     }
   }
 
-  public async close() {
-    await this.socket.write('LOGOUT')
-    await this.socket.close()
+  public async testConnection(): Promise<boolean> {
+    return await !!this.getCommand('LIST UPS')
   }
 
   public async getDevices(): Promise<Array<DEVICE>> {
@@ -71,23 +75,29 @@ export class Nut {
     const command = `LIST VAR ${device}`
     const data = await this.getCommand(command)
     if (!data.startsWith(`BEGIN ${command}\n`)) {
+      console.log('data: ', data)
       throw new Error('Invalid response')
     }
     const vars: VARS = {}
-    for (const line of data.split('\n')) {
-      if (line.startsWith('VAR')) {
-        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-        const value = line.split('"')[1].trim()
-        const type = await this.getType(device, key)
-        if (type.includes('NUMBER') && !isNaN(+value)) {
-          const num = parseFloat(value)
-          vars[key] = { value: num ? num : value }
-        } else {
-          vars[key] = { value }
-        }
+    const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
+    const promises = lines.map(async (line) => {
+      const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+      const value = line.split('"')[1].trim()
+      const type = await this.getType(device, key)
+      if (type.includes('NUMBER') && !isNaN(+value)) {
+        const num = parseFloat(value)
+        vars[key] = { value: num ? num : value }
+      } else {
+        vars[key] = { value }
       }
-    }
-    return vars
+    })
+    await Promise.all(promises)
+    return Object.keys(vars)
+      .sort()
+      .reduce((finalObject: VARS, key) => {
+        finalObject[key] = vars[key]
+        return finalObject
+      }, {})
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {
@@ -202,7 +212,7 @@ export class Nut {
   }
 
   public async setVar(device = 'UPS', variable: string, value: string): Promise<void> {
-    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n')
+    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n', true)
     if (data !== 'OK\n') {
       throw new Error('Invalid response')
     }

@@ -8,21 +8,13 @@ const settingsFile = './config/settings.yml'
 
 async function connect() {
   const settings = new YamlSettings(settingsFile)
-  const nut = new Nut(
-    settings.get('NUT_HOST'),
-    settings.get('NUT_PORT'),
-    settings.get('USERNAME'),
-    settings.get('PASSWORD')
-  )
-  await nut.connect()
-  return nut
+  return new Nut(settings.get('NUT_HOST'), settings.get('NUT_PORT'), settings.get('USERNAME'), settings.get('PASSWORD'))
 }
 
 export async function testConnection(server: string, port: number) {
   try {
     const nut = new Nut(server, port)
-    await nut.connect()
-    await nut.close()
+    await nut.testConnection()
     return { error: undefined }
   } catch (e: any) {
     return { error: e.message }
@@ -46,7 +38,6 @@ export async function getDevices() {
         name: device.name,
       })
     }
-    await nut.close()
     return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
     return { devices: undefined, updated: new Date(), error: e.message }
@@ -61,7 +52,6 @@ export async function getAllVarDescriptions(device: string, params: string[]) {
       const desc = await nut.getVarDescription(device, param)
       data[param] = desc
     }
-    await nut.close()
     return { data, error: undefined }
   } catch (e: any) {
     return { data: undefined, error: e.message }
@@ -72,7 +62,6 @@ export async function saveVar(device: string, varName: string, value: string) {
   try {
     const nut = await connect()
     await nut.setVar(device, varName, value)
-    await nut.close()
   } catch (e: any) {
     return { error: e.message }
   }
