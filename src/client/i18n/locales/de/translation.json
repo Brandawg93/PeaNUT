@@ -1,6 +1,6 @@
 {
-  "noDevicesError": "Keine Geräte auf diesem Server gefunden.",
-  "updateAvailable": "Update verfügbar",
+  "noDevicesError": "No devices found on this server.",
+  "updateAvailable": "Update Available",
   "device": "Gerät",
   "manufacturer": "Hersteller",
   "model": "Modell",
@@ -26,18 +26,18 @@
   "sidebar": {
     "settings": "Einstellungen",
     "theme": "Thema",
-    "disconnect": "Trennen",
-    "refresh": "Aktualisieren"
+    "disconnect": "Disconnect",
+    "refresh": "Refresh"
   },
   "connect": {
-    "server": "Serveradresse",
+    "server": "Server Address",
     "port": "Port",
-    "connect": "Verbinden",
-    "test": "Testen"
+    "connect": "Connect",
+    "test": "Test"
   },
   "theme": {
-    "dark": "Dunkel",
-    "light": "Hell",
+    "dark": "Dark",
+    "light": "Light",
     "system": "System"
   }
 }
