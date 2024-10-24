@@ -27,3 +27,10 @@ jest.mock('react-i18next', () => ({
     init: () => {},
   },
 }))
+
+jest.mock('fs', () => ({
+  readFileSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  existsSync: jest.fn(),
+  mkdirSync: jest.fn(),
+}))

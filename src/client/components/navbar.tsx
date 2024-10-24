@@ -53,6 +53,7 @@ export default function NavBar(props: Props) {
       menuProps={{ className: 'dark:bg-gray-900 dark:border-gray-800 dark:text-white' }}
       labelProps={{ className: 'dark:text-gray-300' }}
       label='Select Device'
+      data-testid={`device-select-${variant}`}
       onChange={handleSelect}
       value={device.name}
     >
