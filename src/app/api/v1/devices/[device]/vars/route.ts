@@ -34,10 +34,7 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const { device } = await params
   try {
     const data = await nut.getData(device)
-    const ret: any = {}
-    Object.keys(data).forEach(function (key) {
-      ret[key] = data[key].value
-    })
+    const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
     return NextResponse.json(ret)
   } catch (e) {
     console.error(e)

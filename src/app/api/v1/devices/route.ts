@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { VARS } from '@/common/types'
 
 import { Nut } from '@/server/nut'
 import { getSettings } from '@/app/actions'
@@ -26,15 +25,11 @@ export async function GET(request: NextRequest) {
   const PASSWORD = await getSettings('PASSWORD')
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
 
-  const deviceData: Array<VARS> = []
+  const deviceData: Array<Record<string, string | number>> = []
   const devices = await nut.getDevices()
   const deviceDataPromises = devices.map(async (device) => {
     const data = await nut.getData(device.name)
-    const ret: Record<string, any> = {}
-    for (const [key, value] of Object.entries(data)) {
-      ret[key] = value.value
-    }
-    return ret
+    return Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
   })
 
   const resolvedDeviceData = await Promise.all(deviceDataPromises)

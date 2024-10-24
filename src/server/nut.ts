@@ -17,6 +17,13 @@ export class Nut {
     this.password = password || ''
   }
 
+  private parseInfo(data: string, start: string, callback: (line: string) => string): Array<string> {
+    return data
+      .split('\n')
+      .filter((line) => line.startsWith(start))
+      .map((line) => callback(line))
+  }
+
   private async getCommand(command: string, until?: string, checkCredentials = false): Promise<string> {
     const socket = new PromiseSocket()
     await socket.connect(this.port, this.host)
@@ -61,14 +68,17 @@ export class Nut {
     const command = 'LIST UPS'
     const devices: Array<DEVICE> = []
     const data = await this.getCommand(command)
-    data.split('\n').forEach((line) => {
-      if (line.startsWith('UPS')) {
-        const [namePart, descriptionPart] = line.split('"')
-        const name = namePart.replace('UPS ', '').trim()
-        const description = descriptionPart.trim()
-        devices.push({ name, description, rwVars: [], commands: [], clients: [], vars: {} })
-      }
-    })
+    devices.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('UPS'))
+        .map((line) => {
+          const [namePart, descriptionPart] = line.split('"')
+          const name = namePart.replace('UPS ', '').trim()
+          const description = descriptionPart.trim()
+          return { name, description, rwVars: [], commands: [], clients: [], vars: {} }
+        })
+    )
     return devices
   }
 
@@ -109,29 +119,17 @@ export class Nut {
 
   public async getCommands(device = 'UPS'): Promise<Array<string>> {
     const command = `LIST CMD ${device}`
-    const commands: Array<string> = []
     const data = await this.getCommand(command)
-    commands.push(
-      ...data
-        .split('\n')
-        .filter((line) => line.startsWith('CMD'))
-        .map((line) => line.replace(`CMD ${device} `, '').trim())
-    )
-
+    const commands: Array<string> = this.parseInfo(data, 'CMD', (line) => line.replace(`CMD ${device} `, '').trim())
     return commands
   }
 
   public async getClients(device = 'UPS'): Promise<Array<string>> {
     const command = `LIST CLIENT ${device}`
-    const clients: Array<string> = []
     const data = await this.getCommand(command)
-    clients.push(
-      ...data
-        .split('\n')
-        .filter((line) => line.startsWith('CLIENT'))
-        .map((line) => line.replace(`CLIENT ${device} `, '').trim())
+    const clients: Array<string> = this.parseInfo(data, 'CLIENT', (line) =>
+      line.replace(`CLIENT ${device} `, '').trim()
     )
-
     return clients
   }
 
@@ -140,15 +138,10 @@ export class Nut {
       return []
     }
     const command = `LIST RW ${device}`
-    const vars: Array<keyof VARS> = []
     const data = await this.getCommand(command)
-    vars.push(
-      ...data
-        .split('\n')
-        .filter((line) => line.startsWith('RW'))
-        .map((line) => line.split('"')[0].replace(`RW ${device} `, '').trim() as keyof VARS)
+    const vars: Array<string> = this.parseInfo(data, 'RW', (line) =>
+      line.split('"')[0].replace(`RW ${device} `, '').trim()
     )
-
     return vars
   }
 
@@ -178,29 +171,19 @@ export class Nut {
 
   public async getEnum(device = 'UPS', variable: string): Promise<Array<string>> {
     const command = `LIST ENUM ${device} ${variable}`
-    const enums: Array<string> = []
     const data = await this.getCommand(command)
-    enums.push(
-      ...data
-        .split('\n')
-        .filter((line) => line.startsWith('ENUM'))
-        .map((line) => line.split('"')[1].replace(`ENUM ${device} `, '').trim())
+    const enums: Array<string> = this.parseInfo(data, 'ENUM', (line) =>
+      line.split('"')[1].replace(`ENUM ${device} `, '').trim()
     )
-
     return enums
   }
 
   public async getRange(device = 'UPS', variable: string): Promise<Array<string>> {
     const command = `LIST RANGE ${device} ${variable}`
-    const ranges: Array<string> = []
     const data = await this.getCommand(command)
-    ranges.push(
-      ...data
-        .split('\n')
-        .filter((line) => line.startsWith('RANGE'))
-        .map((line) => line.split('"')[1].replace(`RANGE ${device} `, '').trim())
+    const ranges: Array<string> = this.parseInfo(data, 'RANGE', (line) =>
+      line.split('"')[1].replace(`RANGE ${device} `, '').trim()
     )
-
     return ranges
   }
 
