@@ -11,9 +11,9 @@
   "lastUpdated": "Ultimo aggiornamento",
   "docs": "Documenti API",
   "lineChart": {
-    "inputVoltage": "Tensione di ingresso",
+    "inputVoltage": "Tensione d'ingresso",
     "outputVoltage": "Tensione di uscita",
-    "nominalInputVoltage": "Tensione di ingresso nominale"
+    "nominalInputVoltage": "Tensione d'ingresso nominale"
   },
   "wattsChart": {
     "realpower": "Potenza reale",
