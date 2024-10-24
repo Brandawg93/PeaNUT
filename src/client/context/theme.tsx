@@ -16,25 +16,15 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     if (media.matches !== matches) {
       setMatches(media.matches)
       if (theme === 'system') {
-        if (media.matches) {
-          document.documentElement.classList.add('dark')
-          document.documentElement.classList.remove('light')
-        } else {
-          document.documentElement.classList.add('light')
-          document.documentElement.classList.remove('dark')
-        }
+        document.documentElement.classList.toggle('dark', media.matches)
+        document.documentElement.classList.toggle('light', !media.matches)
       }
     }
     const listener = () => {
       setMatches(media.matches)
       if (theme === 'system') {
-        if (media.matches) {
-          document.documentElement.classList.add('dark')
-          document.documentElement.classList.remove('light')
-        } else {
-          document.documentElement.classList.add('light')
-          document.documentElement.classList.remove('dark')
-        }
+        document.documentElement.classList.toggle('dark', media.matches)
+        document.documentElement.classList.toggle('light', !media.matches)
       }
     }
     const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
