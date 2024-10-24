@@ -26,8 +26,8 @@
   "sidebar": {
     "settings": "Impostazioni",
     "theme": "Tema",
-    "disconnect": "Disconnect",
-    "refresh": "Refresh"
+    "disconnect": "Disconnetto",
+    "refresh": "Aggiorna"
   },
   "connect": {
     "server": "Server",
