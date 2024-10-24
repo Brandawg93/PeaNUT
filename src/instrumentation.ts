@@ -23,11 +23,10 @@ export async function register() {
     if (influxHost && influxToken && influxOrg && influxBucket) {
       interval = setInterval(async () => {
         const { devices } = await getDevices()
-        for (const device of devices || []) {
-          const influxdata = new InfluxWriter(influxHost, influxToken, influxOrg, influxBucket)
-          influxdata.writePoint(device, new Date())
-          await influxdata.close()
-        }
+        const influxdata = new InfluxWriter(influxHost, influxToken, influxOrg, influxBucket)
+        const writePromises = (devices || []).map((device) => influxdata.writePoint(device, new Date()))
+        await Promise.all(writePromises)
+        await influxdata.close()
       }, influxInterval * 1000)
     } else {
       clearInterval(interval)

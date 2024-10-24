@@ -61,13 +61,14 @@ export class Nut {
     const command = 'LIST UPS'
     const devices: Array<DEVICE> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
+    data.split('\n').forEach((line) => {
       if (line.startsWith('UPS')) {
-        const name = line.split('"')[0].replace('UPS ', '').trim()
-        const description = line.split('"')[1].trim()
+        const [namePart, descriptionPart] = line.split('"')
+        const name = namePart.replace('UPS ', '').trim()
+        const description = descriptionPart.trim()
         devices.push({ name, description, rwVars: [], commands: [], clients: [], vars: {} })
       }
-    }
+    })
     return devices
   }
 
@@ -110,12 +111,12 @@ export class Nut {
     const command = `LIST CMD ${device}`
     const commands: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('CMD')) {
-        const command = line.replace(`CMD ${device} `, '').trim()
-        commands.push(command)
-      }
-    }
+    commands.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('CMD'))
+        .map((line) => line.replace(`CMD ${device} `, '').trim())
+    )
 
     return commands
   }
@@ -124,12 +125,12 @@ export class Nut {
     const command = `LIST CLIENT ${device}`
     const clients: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('CLIENT')) {
-        const command = line.replace(`CLIENT ${device} `, '').trim()
-        clients.push(command)
-      }
-    }
+    clients.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('CLIENT'))
+        .map((line) => line.replace(`CLIENT ${device} `, '').trim())
+    )
 
     return clients
   }
@@ -141,12 +142,12 @@ export class Nut {
     const command = `LIST RW ${device}`
     const vars: Array<keyof VARS> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('RW')) {
-        const command = line.split('"')[0].replace(`RW ${device} `, '').trim() as keyof VARS
-        vars.push(command)
-      }
-    }
+    vars.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('RW'))
+        .map((line) => line.split('"')[0].replace(`RW ${device} `, '').trim() as keyof VARS)
+    )
 
     return vars
   }
@@ -179,12 +180,12 @@ export class Nut {
     const command = `LIST ENUM ${device} ${variable}`
     const enums: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('ENUM')) {
-        const command = line.split('"')[1].replace(`ENUM ${device} `, '').trim()
-        enums.push(command)
-      }
-    }
+    enums.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('ENUM'))
+        .map((line) => line.split('"')[1].replace(`ENUM ${device} `, '').trim())
+    )
 
     return enums
   }
@@ -193,12 +194,12 @@ export class Nut {
     const command = `LIST RANGE ${device} ${variable}`
     const ranges: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('RANGE')) {
-        const command = line.split('"')[1].replace(`RANGE ${device} `, '').trim()
-        ranges.push(command)
-      }
-    }
+    ranges.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('RANGE'))
+        .map((line) => line.split('"')[1].replace(`RANGE ${device} `, '').trim())
+    )
 
     return ranges
   }

@@ -28,14 +28,17 @@ export async function GET(request: NextRequest) {
 
   const deviceData: Array<VARS> = []
   const devices = await nut.getDevices()
-  for (const device of devices) {
+  const deviceDataPromises = devices.map(async (device) => {
     const data = await nut.getData(device.name)
-    const ret: any = {}
-    Object.keys(data).forEach(function (key) {
-      ret[key] = data[key].value
-    })
-    deviceData.push(ret)
-  }
+    const ret: Record<string, any> = {}
+    for (const [key, value] of Object.entries(data)) {
+      ret[key] = value.value
+    }
+    return ret
+  })
+
+  const resolvedDeviceData = await Promise.all(deviceDataPromises)
+  deviceData.push(...resolvedDeviceData)
   return NextResponse.json(deviceData)
 }
 
