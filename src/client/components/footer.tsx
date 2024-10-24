@@ -48,8 +48,12 @@ export default function Footer({ updated }: Props) {
 
   return (
     <>
-      <div className='hidden lg:grid lg:grid-flow-row lg:grid-cols-2' data-testid='footer'>
-        <DayNightSwitch />
+      <div className='grid grid-flow-row grid-cols-2' data-testid='footer'>
+        <div>
+          <div className='hidden lg:block'>
+            <DayNightSwitch />
+          </div>
+        </div>
         <div className='mt-6 text-right text-gray-600'>
           <a className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
             {t('docs')}
