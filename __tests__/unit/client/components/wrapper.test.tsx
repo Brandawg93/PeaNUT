@@ -3,17 +3,16 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
-import { checkSettings } from '@/app/actions'
 
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
 }))
 
-jest.mock('../../../../src/app/actions', () => ({
-  getDevices: jest.fn(),
-  checkSettings: jest.fn(),
-  disconnect: jest.fn(),
-}))
+jest.mock('../../../../src/client/components/footer', () => {
+  const MockFooter = () => <div data-testid='mock-footer'>Mock Footer</div>
+  MockFooter.displayName = 'MockFooter'
+  return MockFooter
+})
 
 describe('Wrapper Component', () => {
   const mockDevicesData = {
@@ -46,7 +45,6 @@ describe('Wrapper Component', () => {
       data: mockDevicesData,
       refetch: jest.fn(),
     })
-    ;(checkSettings as jest.Mock).mockResolvedValue(true)
   })
 
   it('renders loading state', async () => {
@@ -58,7 +56,11 @@ describe('Wrapper Component', () => {
 
     render(
       <LanguageContext.Provider value='en'>
-        <Wrapper />
+        <Wrapper
+          checkSettingsAction={jest.fn().mockResolvedValue(true)}
+          getDevicesAction={jest.fn().mockResolvedValue({})}
+          disconnectAction={jest.fn().mockResolvedValue(null)}
+        />
       </LanguageContext.Provider>
     )
 
@@ -67,11 +69,13 @@ describe('Wrapper Component', () => {
   })
 
   it('renders error state', async () => {
-    ;(checkSettings as jest.Mock).mockResolvedValue(false)
-
     render(
       <LanguageContext.Provider value='en'>
-        <Wrapper />
+        <Wrapper
+          checkSettingsAction={jest.fn().mockResolvedValue(false)}
+          getDevicesAction={jest.fn().mockResolvedValue({})}
+          disconnectAction={jest.fn().mockResolvedValue(null)}
+        />
       </LanguageContext.Provider>
     )
 
