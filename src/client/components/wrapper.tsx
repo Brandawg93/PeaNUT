@@ -1,8 +1,5 @@
 'use client'
 
-import 'chart.js/auto'
-import 'react-toastify/dist/ReactToastify.css'
-
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -14,25 +11,20 @@ import {
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
-import { Chart } from 'chart.js'
-import annotationPlugin from 'chartjs-plugin-annotation'
 
 import NutGrid from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
-import LineChart from '@/client/components/line-chart'
 import NavBar from '@/client/components/navbar'
 import Runtime from '@/client/components/runtime'
-import WattsChart from '@/client/components/watts-chart'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
+import Connect from '@/client/components/connect'
+import ChartsContainer from '@/client/components/charts-container'
 
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import { DEVICE } from '@/common/types'
-import Connect from './connect'
-
-Chart.register(annotationPlugin)
 
 const getStatus = (status: keyof typeof upsStatus) => {
   switch (status) {
@@ -142,7 +134,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   if (!settingsLoaded || !data || !data.devices) {
     return loadingWrapper
   }
-  if (data.devices && data.devices.length === 0) {
+  if (data.devices.length === 0) {
     return (
       <div
         className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
@@ -161,31 +153,6 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   if (!vars) {
     return loadingWrapper
   }
-  const voltageWrapper = vars['input.voltage'] ? (
-    <div className='mb-4'>
-      <LineChart
-        id={ups.name}
-        inputVoltage={parseFloat(vars['input.voltage'].value.toString())}
-        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value.toString())}
-        outputVoltage={parseFloat(vars['output.voltage']?.value.toString())}
-        updated={data.updated}
-      />
-    </div>
-  ) : (
-    <></>
-  )
-  const wattsWrapper = vars['ups.realpower'] ? (
-    <div className='mb-4'>
-      <WattsChart
-        id={ups.name}
-        realpower={parseFloat(vars['ups.realpower'].value.toString())}
-        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value.toString())}
-        updated={data.updated}
-      />
-    </div>
-  ) : (
-    <></>
-  )
 
   return (
     <div
@@ -248,8 +215,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
               <Runtime runtime={parseFloat(vars['battery.runtime']?.value.toString())} />
             </div>
           </div>
-          {voltageWrapper}
-          {wattsWrapper}
+          <ChartsContainer vars={vars} data={data} name={ups.name} />
           <div className='mb-4'>
             <NutGrid data={ups} />
           </div>
