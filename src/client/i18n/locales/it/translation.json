@@ -33,7 +33,7 @@
     "server": "Server",
     "port": "Porta",
     "connect": "Connetti",
-    "test": "Test"
+    "test": "Verificare"
   },
   "theme": {
     "dark": "Scuro",
