@@ -31,12 +31,10 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const USERNAME = await getSettings('USERNAME')
   const PASSWORD = await getSettings('PASSWORD')
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-  await nut.connect()
 
   const { device } = await params
   const data = await nut.getDescription(device)
   try {
-    await nut.close()
     return NextResponse.json(data)
   } catch (e) {
     console.error(e)

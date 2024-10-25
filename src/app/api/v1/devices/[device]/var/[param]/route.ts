@@ -38,13 +38,11 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const USERNAME = await getSettings('USERNAME')
   const PASSWORD = await getSettings('PASSWORD')
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-  await nut.connect()
 
   const { device, param } = await params
   const paramString = param as keyof DEVICE
   try {
     const data = await nut.getVar(device, param)
-    await nut.close()
     if (data === undefined) {
       return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
         status: 404,
@@ -98,14 +96,12 @@ export async function POST(request: NextRequest, { params }: { params: any }) {
   const USERNAME = await getSettings('USERNAME')
   const PASSWORD = await getSettings('PASSWORD')
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-  await nut.connect()
 
   const { device, param } = await params
   const value = await request.json()
 
   try {
     await nut.setVar(device, param, value)
-    await nut.close()
     return NextResponse.json(`Variable ${param} on device ${device} saved successfully`)
   } catch (e) {
     console.error(e)

@@ -3,7 +3,7 @@ import { Socket } from 'net'
 export default class PromiseSocket {
   private innerSok: Socket = new Socket()
 
-  public connect(port: number, host: string, timeout = 1000): Promise<void> {
+  public connect(port: number, host: string, timeout = 10000): Promise<void> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         reject(new Error('Timeout'))
@@ -11,7 +11,6 @@ export default class PromiseSocket {
 
       this.innerSok.connect(port, host, () => {
         resolve()
-        this.innerSok.removeAllListeners('error')
       })
       this.innerSok.on('error', (err) => {
         reject(err)
@@ -19,7 +18,7 @@ export default class PromiseSocket {
     })
   }
 
-  async write(data: string, timeout = 1000) {
+  async write(data: string, timeout = 10000) {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         reject(new Error('Timeout'))
@@ -27,7 +26,6 @@ export default class PromiseSocket {
 
       this.innerSok.write(`${data}\n`, () => {
         resolve()
-        this.innerSok.removeAllListeners('error')
       })
       this.innerSok.on('error', (err) => {
         reject(err)
@@ -35,7 +33,7 @@ export default class PromiseSocket {
     })
   }
 
-  async readAll(command: string, until: string = `END ${command}`, timeout = 1000) {
+  async readAll(command: string, until: string = `END ${command}`, timeout = 10000) {
     return new Promise<string>((resolve, reject) => {
       let buf = ''
       setTimeout(() => {
@@ -52,18 +50,23 @@ export default class PromiseSocket {
       })
       this.innerSok.on('end', () => {
         resolve(buf)
-        this.innerSok.removeAllListeners('error')
       })
     })
   }
 
-  removeAllListeners() {
-    this.innerSok.removeAllListeners('error')
-    this.innerSok.removeAllListeners('data')
-    this.innerSok.removeAllListeners('end')
-  }
-
-  close() {
+  async close(timeout = 10000) {
     this.innerSok.end()
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error('Timeout'))
+      }, timeout)
+
+      this.innerSok.on('end', () => {
+        resolve()
+      })
+      this.innerSok.on('error', (err) => {
+        reject(err)
+      })
+    })
   }
 }

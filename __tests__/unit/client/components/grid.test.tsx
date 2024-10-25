@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NutGrid from '@/client/components/grid'
 import { DEVICE } from '@/common/types'
+import PromiseSocket from '@/server/promise-socket'
 
 const queryClient = new QueryClient()
 
@@ -30,9 +31,9 @@ const device: DEVICE = {
 
 describe('Grid', () => {
   beforeAll(() => {
-    jest.mock('../../../../src/app/actions', () => ({
-      getAllVarDescriptions: jest.fn(),
-    }))
+    jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
+    jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
+    jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
   })
 
   it('renders', () => {

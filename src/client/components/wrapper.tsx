@@ -30,7 +30,6 @@ import Loader from '@/client/components/loader'
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import { DEVICE } from '@/common/types'
-import { getDevices, checkSettings, disconnect } from '@/app/actions'
 import Connect from './connect'
 
 Chart.register(annotationPlugin)
@@ -48,7 +47,24 @@ const getStatus = (status: keyof typeof upsStatus) => {
   }
 }
 
-export default function Wrapper() {
+type Props = {
+  getDevicesAction: () => Promise<
+    | {
+        devices: DEVICE[]
+        updated: Date
+        error: undefined
+      }
+    | {
+        devices: undefined
+        updated: Date
+        error: any
+      }
+  >
+  checkSettingsAction: () => Promise<boolean>
+  disconnectAction: () => Promise<void>
+}
+
+export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [settingsError, setSettingsError] = useState<boolean>(false)
@@ -56,11 +72,11 @@ export default function Wrapper() {
   const { t } = useTranslation(lng)
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
-    queryFn: async () => await getDevices(),
+    queryFn: async () => await getDevicesAction(),
   })
 
   useEffect(() => {
-    checkSettings().then((res) => {
+    checkSettingsAction().then((res) => {
       setSettingsLoaded(true)
       setSettingsError(!res)
     })
@@ -73,7 +89,7 @@ export default function Wrapper() {
   }
 
   const handleDisconnect = async () => {
-    await disconnect()
+    await disconnectAction()
     setSettingsError(true)
   }
 

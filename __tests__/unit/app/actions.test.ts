@@ -12,6 +12,7 @@ import {
   disconnect,
 } from '@/app/actions'
 import { YamlSettings } from '@/server/settings'
+import PromiseSocket from '@/server/promise-socket'
 
 const vars: VARS = {}
 
@@ -27,8 +28,6 @@ const result: Array<DEVICE> = [
 ]
 
 beforeAll(() => {
-  jest.spyOn(Nut.prototype, 'connect').mockResolvedValue()
-  jest.spyOn(Nut.prototype, 'close').mockResolvedValue()
   jest
     .spyOn(Nut.prototype, 'getDevices')
     .mockResolvedValue([
@@ -38,6 +37,10 @@ beforeAll(() => {
   jest.spyOn(Nut.prototype, 'getRWVars').mockResolvedValue(['battery.charge'])
   jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
   jest.spyOn(Nut.prototype, 'setVar').mockResolvedValue()
+  jest.spyOn(Nut.prototype, 'checkCredentials').mockResolvedValue()
+  jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
+  jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
+  jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: string) => {
     const settings = {
       NUT_HOST: 'localhost',

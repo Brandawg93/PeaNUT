@@ -49,13 +49,6 @@ describe('PromiseSocket', () => {
     jest.useRealTimers()
   })
 
-  test('removeAllListeners should remove all listeners', () => {
-    promiseSocket.removeAllListeners()
-    expect(mockSocket.removeAllListeners).toHaveBeenCalledWith('error')
-    expect(mockSocket.removeAllListeners).toHaveBeenCalledWith('data')
-    expect(mockSocket.removeAllListeners).toHaveBeenCalledWith('end')
-  })
-
   test('close should end the socket connection', () => {
     promiseSocket.close()
     expect(mockSocket.end).toHaveBeenCalled()
