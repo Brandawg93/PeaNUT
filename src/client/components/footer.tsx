@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useContext } from 'react'
+import Link from 'next/link'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 
@@ -34,7 +35,7 @@ export default function Footer({ updated }: Props) {
   }, [])
 
   const updateAvailableWrapper = updateAvailable.version ? (
-    <a
+    <Link
       className='text-neutral-500 no-underline-text m-0 text-sm'
       href={updateAvailable.url}
       target='_blank'
@@ -43,7 +44,7 @@ export default function Footer({ updated }: Props) {
       &nbsp;
       <ExclamationCircleIcon className='inline-block h-4 w-4' />
       &nbsp;{t('updateAvailable')}: {updateAvailable.version}
-    </a>
+    </Link>
   ) : (
     <></>
   )
@@ -57,9 +58,9 @@ export default function Footer({ updated }: Props) {
           </div>
         </div>
         <div className='mt-6 text-right text-gray-600'>
-          <a className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+          <Link className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
             {t('docs')}
-          </a>
+          </Link>
         </div>
       </div>
       <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
@@ -69,10 +70,10 @@ export default function Footer({ updated }: Props) {
           </p>
         </div>
         <div className='text-right'>
-          <a className='m-0 text-sm no-underline' href={currentVersion.url} target='_blank' rel='noreferrer'>
+          <Link className='m-0 text-sm no-underline' href={currentVersion.url} target='_blank' rel='noreferrer'>
             {currentVersion.version}
             &nbsp;({currentVersion.created.toLocaleDateString()})
-          </a>
+          </Link>
           {updateAvailableWrapper}
         </div>
       </div>

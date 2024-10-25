@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useContext, useEffect } from 'react'
+import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option, IconButton, Drawer, Card, Button } from '@material-tailwind/react'
@@ -177,9 +178,9 @@ export default function NavBar(props: Props) {
                   </div>
                 </div>
                 <div className='mt-6 text-right text-gray-600'>
-                  <a className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+                  <Link className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
                     {t('docs')}
-                  </a>
+                  </Link>
                 </div>
               </Card>
             </Drawer>
