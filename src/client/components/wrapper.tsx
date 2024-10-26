@@ -169,7 +169,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
         onDisconnect={handleDisconnect}
         devices={data.devices}
       />
-      <div className='flex justify-center'>
+      <div className='flex justify-center pl-3 pr-3'>
         <div className='container'>
           <div className='flex flex-row justify-between'>
             <div>
