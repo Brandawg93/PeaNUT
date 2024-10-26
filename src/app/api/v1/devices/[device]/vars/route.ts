@@ -31,15 +31,10 @@ export async function GET(request: NextRequest, { params }: { params: any }) {
   const USERNAME = await getSettings('USERNAME')
   const PASSWORD = await getSettings('PASSWORD')
   const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-  await nut.connect()
   const { device } = await params
   try {
     const data = await nut.getData(device)
-    const ret: any = {}
-    Object.keys(data).forEach(function (key) {
-      ret[key] = data[key].value
-    })
-    await nut.close()
+    const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
     return NextResponse.json(ret)
   } catch (e) {
     console.error(e)

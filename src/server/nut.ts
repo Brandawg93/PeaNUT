@@ -2,8 +2,6 @@ import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
 export class Nut {
-  private socket: PromiseSocket
-
   private host: string
 
   private port: number
@@ -17,53 +15,70 @@ export class Nut {
     this.port = port
     this.username = username || ''
     this.password = password || ''
-    this.socket = new PromiseSocket()
   }
 
-  private async getCommand(command: string, until?: string) {
-    await this.socket.write(command)
-    const data = await this.socket.readAll(command, until)
+  private parseInfo(data: string, start: string, callback: (line: string) => string): Array<string> {
+    return data
+      .split('\n')
+      .filter((line) => line.startsWith(start))
+      .map((line) => callback(line))
+  }
+
+  private async getCommand(command: string, until?: string, checkCredentials = false): Promise<string> {
+    const socket = new PromiseSocket()
+    await socket.connect(this.port, this.host)
+    if (checkCredentials) {
+      await this.checkCredentials(socket)
+    }
+    await socket.write(command)
+    const data = await socket.readAll(command, until)
+    await socket.write('LOGOUT')
+    await socket.close()
     if (data.startsWith('ERR')) {
       throw new Error(`Invalid response: ${data}`)
     }
-    this.socket.removeAllListeners()
     return data
   }
 
-  public async connect() {
-    await this.socket.connect(this.port, this.host)
-
+  public async checkCredentials(socket: PromiseSocket): Promise<void> {
     if (this.username) {
-      const res = await this.getCommand(`USERNAME ${this.username}`, '\n')
-      if (res !== 'OK\n') {
+      const command = `USERNAME ${this.username}`
+      await socket.write(command)
+      const data = await socket.readAll(command, '\n')
+      if (data !== 'OK\n') {
         throw new Error('Invalid username')
       }
     }
 
     if (this.password) {
-      const res = await this.getCommand(`PASSWORD ${this.password}`, '\n')
-      if (res !== 'OK\n') {
+      const command = `PASSWORD ${this.password}`
+      await socket.write(command)
+      const data = await socket.readAll(command, '\n')
+      if (data !== 'OK\n') {
         throw new Error('Invalid password')
       }
     }
   }
 
-  public async close() {
-    await this.socket.write('LOGOUT')
-    await this.socket.close()
+  public async testConnection(): Promise<boolean> {
+    return await !!this.getCommand('LIST UPS')
   }
 
   public async getDevices(): Promise<Array<DEVICE>> {
     const command = 'LIST UPS'
     const devices: Array<DEVICE> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('UPS')) {
-        const name = line.split('"')[0].replace('UPS ', '').trim()
-        const description = line.split('"')[1].trim()
-        devices.push({ name, description, rwVars: [], commands: [], clients: [], vars: {} })
-      }
-    }
+    devices.push(
+      ...data
+        .split('\n')
+        .filter((line) => line.startsWith('UPS'))
+        .map((line) => {
+          const [namePart, descriptionPart] = line.split('"')
+          const name = namePart.replace('UPS ', '').trim()
+          const description = descriptionPart.trim()
+          return { name, description, rwVars: [], commands: [], clients: [], vars: {} }
+        })
+    )
     return devices
   }
 
@@ -71,23 +86,29 @@ export class Nut {
     const command = `LIST VAR ${device}`
     const data = await this.getCommand(command)
     if (!data.startsWith(`BEGIN ${command}\n`)) {
+      console.log('data: ', data)
       throw new Error('Invalid response')
     }
     const vars: VARS = {}
-    for (const line of data.split('\n')) {
-      if (line.startsWith('VAR')) {
-        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-        const value = line.split('"')[1].trim()
-        const type = await this.getType(device, key)
-        if (type.includes('NUMBER') && !isNaN(+value)) {
-          const num = parseFloat(value)
-          vars[key] = { value: num ? num : value }
-        } else {
-          vars[key] = { value }
-        }
+    const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
+    const promises = lines.map(async (line) => {
+      const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+      const value = line.split('"')[1].trim()
+      const type = await this.getType(device, key)
+      if (type.includes('NUMBER') && !isNaN(+value)) {
+        const num = parseFloat(value)
+        vars[key] = { value: num ? num : value }
+      } else {
+        vars[key] = { value }
       }
-    }
-    return vars
+    })
+    await Promise.all(promises)
+    return Object.keys(vars)
+      .sort()
+      .reduce((finalObject: VARS, key) => {
+        finalObject[key] = vars[key]
+        return finalObject
+      }, {})
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {
@@ -98,29 +119,17 @@ export class Nut {
 
   public async getCommands(device = 'UPS'): Promise<Array<string>> {
     const command = `LIST CMD ${device}`
-    const commands: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('CMD')) {
-        const command = line.replace(`CMD ${device} `, '').trim()
-        commands.push(command)
-      }
-    }
-
+    const commands: Array<string> = this.parseInfo(data, 'CMD', (line) => line.replace(`CMD ${device} `, '').trim())
     return commands
   }
 
   public async getClients(device = 'UPS'): Promise<Array<string>> {
     const command = `LIST CLIENT ${device}`
-    const clients: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('CLIENT')) {
-        const command = line.replace(`CLIENT ${device} `, '').trim()
-        clients.push(command)
-      }
-    }
-
+    const clients: Array<string> = this.parseInfo(data, 'CLIENT', (line) =>
+      line.replace(`CLIENT ${device} `, '').trim()
+    )
     return clients
   }
 
@@ -129,15 +138,10 @@ export class Nut {
       return []
     }
     const command = `LIST RW ${device}`
-    const vars: Array<keyof VARS> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('RW')) {
-        const command = line.split('"')[0].replace(`RW ${device} `, '').trim() as keyof VARS
-        vars.push(command)
-      }
-    }
-
+    const vars: Array<string> = this.parseInfo(data, 'RW', (line) =>
+      line.split('"')[0].replace(`RW ${device} `, '').trim()
+    )
     return vars
   }
 
@@ -167,29 +171,19 @@ export class Nut {
 
   public async getEnum(device = 'UPS', variable: string): Promise<Array<string>> {
     const command = `LIST ENUM ${device} ${variable}`
-    const enums: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('ENUM')) {
-        const command = line.split('"')[1].replace(`ENUM ${device} `, '').trim()
-        enums.push(command)
-      }
-    }
-
+    const enums: Array<string> = this.parseInfo(data, 'ENUM', (line) =>
+      line.split('"')[1].replace(`ENUM ${device} `, '').trim()
+    )
     return enums
   }
 
   public async getRange(device = 'UPS', variable: string): Promise<Array<string>> {
     const command = `LIST RANGE ${device} ${variable}`
-    const ranges: Array<string> = []
     const data = await this.getCommand(command)
-    for (const line of data.split('\n')) {
-      if (line.startsWith('RANGE')) {
-        const command = line.split('"')[1].replace(`RANGE ${device} `, '').trim()
-        ranges.push(command)
-      }
-    }
-
+    const ranges: Array<string> = this.parseInfo(data, 'RANGE', (line) =>
+      line.split('"')[1].replace(`RANGE ${device} `, '').trim()
+    )
     return ranges
   }
 
@@ -202,7 +196,7 @@ export class Nut {
   }
 
   public async setVar(device = 'UPS', variable: string, value: string): Promise<void> {
-    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n')
+    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n', true)
     if (data !== 'OK\n') {
       throw new Error('Invalid response')
     }

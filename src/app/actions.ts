@@ -8,21 +8,13 @@ const settingsFile = './config/settings.yml'
 
 async function connect() {
   const settings = new YamlSettings(settingsFile)
-  const nut = new Nut(
-    settings.get('NUT_HOST'),
-    settings.get('NUT_PORT'),
-    settings.get('USERNAME'),
-    settings.get('PASSWORD')
-  )
-  await nut.connect()
-  return nut
+  return new Nut(settings.get('NUT_HOST'), settings.get('NUT_PORT'), settings.get('USERNAME'), settings.get('PASSWORD'))
 }
 
 export async function testConnection(server: string, port: number) {
   try {
     const nut = new Nut(server, port)
-    await nut.connect()
-    await nut.close()
+    await nut.testConnection()
     return { error: undefined }
   } catch (e: any) {
     return { error: e.message }
@@ -34,19 +26,19 @@ export async function getDevices() {
     const nut = await connect()
     const gridProps: Array<DEVICE> = []
     const devices = await nut.getDevices()
-    for (const device of devices) {
-      const data = await nut.getData(device.name)
-      const rwVars = await nut.getRWVars(device.name)
-      gridProps.push({
+    const devicePromises = devices.map(async (device) => {
+      const [data, rwVars] = await Promise.all([nut.getData(device.name), nut.getRWVars(device.name)])
+      return {
         vars: data,
         rwVars,
         description: device.description === 'Description unavailable' ? '' : device.description,
         clients: [],
         commands: [],
         name: device.name,
-      })
-    }
-    await nut.close()
+      }
+    })
+    const resolvedDevices = await Promise.all(devicePromises)
+    gridProps.push(...resolvedDevices)
     return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
     return { devices: undefined, updated: new Date(), error: e.message }
@@ -57,11 +49,10 @@ export async function getAllVarDescriptions(device: string, params: string[]) {
   try {
     const nut = await connect()
     const data: { [x: string]: string } = {}
-    for (const param of params) {
-      const desc = await nut.getVarDescription(device, param)
-      data[param] = desc
-    }
-    await nut.close()
+    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(device, param)))
+    params.forEach((param, index) => {
+      data[param] = descriptions[index]
+    })
     return { data, error: undefined }
   } catch (e: any) {
     return { data: undefined, error: e.message }
@@ -72,7 +63,6 @@ export async function saveVar(device: string, varName: string, value: string) {
   try {
     const nut = await connect()
     await nut.setVar(device, varName, value)
-    await nut.close()
   } catch (e: any) {
     return { error: e.message }
   }
