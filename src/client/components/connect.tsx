@@ -12,8 +12,8 @@ type Props = {
 }
 
 export default function Connect(props: Props) {
-  const [server, setServer] = React.useState<string | undefined>()
-  const [port, setPort] = React.useState<number | undefined>()
+  const [server, setServer] = React.useState<string>('')
+  const [port, setPort] = React.useState<number>(0)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
