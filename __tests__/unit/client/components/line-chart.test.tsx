@@ -35,9 +35,9 @@ describe('Line', () => {
     const { getByTestId } = render(
       <LineChart
         id={device.name}
-        inputVoltage={parseFloat(vars['input.voltage'].value as string)}
-        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value as string)}
-        outputVoltage={parseFloat(vars['output.voltage']?.value as string)}
+        inputVoltage={+vars['input.voltage'].value}
+        inputVoltageNominal={+vars['input.voltage.nominal']?.value}
+        outputVoltage={+vars['output.voltage']?.value}
         updated={new Date()}
       />
     )

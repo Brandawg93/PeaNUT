@@ -101,7 +101,7 @@ export default function Connect(props: Props) {
             </label>
             <input
               value={port}
-              onChange={(e) => setPort(parseInt(e.target.value))}
+              onChange={(e) => setPort(+e.target.value)}
               className='focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none'
               id='port'
               type='number'

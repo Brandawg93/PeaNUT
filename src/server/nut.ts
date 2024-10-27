@@ -96,7 +96,7 @@ export class Nut {
       const value = line.split('"')[1].trim()
       const type = await this.getType(device, key)
       if (type.includes('NUMBER') && !isNaN(+value)) {
-        const num = parseFloat(value)
+        const num = +value
         vars[key] = { value: num ? num : value }
       } else {
         vars[key] = { value }

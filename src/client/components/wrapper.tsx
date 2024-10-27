@@ -203,16 +203,16 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>
               {vars['ups.load'] ? (
-                <Gauge percentage={parseFloat(vars['ups.load'].value.toString())} title={t('currentLoad')} invert />
+                <Gauge percentage={+vars['ups.load'].value} title={t('currentLoad')} invert />
               ) : (
                 <Kpi text='N/A' description={t('currentLoad')} />
               )}
             </div>
             <div className='mb-4'>
-              <Gauge percentage={parseFloat(vars['battery.charge']?.value.toString())} title={t('batteryCharge')} />
+              <Gauge percentage={+vars['battery.charge']?.value} title={t('batteryCharge')} />
             </div>
             <div className='mb-4'>
-              <Runtime runtime={parseFloat(vars['battery.runtime']?.value.toString())} />
+              <Runtime runtime={+vars['battery.runtime']?.value} />
             </div>
           </div>
           <ChartsContainer vars={vars} data={data} name={ups.name} />
