@@ -7,6 +7,14 @@ import { ThemeProvider as MaterialProvider } from '@material-tailwind/react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: 'light' | 'dark' | 'system') => {} })
 
+export const getCurrentTheme = (): 'light' | 'dark' | 'system' => {
+  if (localStorage.theme === 'dark') return 'dark'
+  if (localStorage.theme === 'light') return 'light'
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'light'
+  return 'system'
+}
+
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
   const [matches, setMatches] = useState(false)

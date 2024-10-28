@@ -32,8 +32,8 @@ describe('Gauge', () => {
     const { getByTestId } = render(
       <WattsChart
         id={device.name}
-        realpower={parseFloat(vars['ups.realpower'].value as string)}
-        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value as string)}
+        realpower={+vars['ups.realpower'].value}
+        realpowerNominal={+vars['ups.realpower.nominal']?.value}
         updated={new Date()}
       />
     )

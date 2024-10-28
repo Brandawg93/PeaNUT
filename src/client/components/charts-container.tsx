@@ -25,9 +25,9 @@ export default function ChartsContainer({ vars, data, name }: Props) {
     <div className='mb-4'>
       <LineChart
         id={name}
-        inputVoltage={parseFloat(vars['input.voltage'].value.toString())}
-        inputVoltageNominal={parseFloat(vars['input.voltage.nominal']?.value.toString())}
-        outputVoltage={parseFloat(vars['output.voltage']?.value.toString())}
+        inputVoltage={+vars['input.voltage'].value}
+        inputVoltageNominal={+vars['input.voltage.nominal']?.value}
+        outputVoltage={+vars['output.voltage']?.value}
         updated={data.updated}
       />
     </div>
@@ -38,8 +38,8 @@ export default function ChartsContainer({ vars, data, name }: Props) {
     <div className='mb-4'>
       <WattsChart
         id={name}
-        realpower={parseFloat(vars['ups.realpower'].value.toString())}
-        realpowerNominal={parseFloat(vars['ups.realpower.nominal']?.value.toString())}
+        realpower={+vars['ups.realpower'].value}
+        realpowerNominal={+vars['ups.realpower.nominal']?.value}
         updated={data.updated}
       />
     </div>

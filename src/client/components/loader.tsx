@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { getCurrentTheme } from '../context/theme'
 
 export default function Loader() {
   const [color, setColor] = React.useState('black')
@@ -11,7 +12,7 @@ export default function Loader() {
       helix.register()
     }
     getLoader()
-    setColor(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'white' : 'black')
+    setColor(getCurrentTheme() === 'dark' ? 'white' : 'black')
   }, [])
   return <l-helix size={100} speed={2.5} color={color} />
 }

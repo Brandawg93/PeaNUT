@@ -39,7 +39,7 @@ export class YamlSettings {
       if (!this.data[key as keyof typeof ISettings] && process.env[key]) {
         const eVar = key as keyof typeof ISettings
         if (typeof ISettings[eVar] === 'number') {
-          this.data[key as keyof typeof ISettings] = parseInt(process.env[key], 10)
+          this.data[key as keyof typeof ISettings] = +process.env[key]
         } else {
           this.data[key as keyof typeof ISettings] = process.env[key]
         }

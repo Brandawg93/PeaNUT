@@ -1,7 +1,11 @@
+'use client'
+
+import 'react-toastify/dist/ReactToastify.css'
 import React, { useContext, useEffect } from 'react'
 import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon } from '@heroicons/react/24/outline'
+import { ToastContainer, toast } from 'react-toastify'
+import { getCurrentTheme } from '@/client/context/theme'
 
 import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
@@ -13,9 +17,8 @@ type Props = {
 
 export default function Connect(props: Props) {
   const [server, setServer] = React.useState<string>('')
-  const [port, setPort] = React.useState<number>(0)
+  const [port, setPort] = React.useState<number>(3493)
   const [connecting, setConnecting] = React.useState<boolean>(false)
-  const [showSuccess, setShowSuccess] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
@@ -39,16 +42,23 @@ export default function Connect(props: Props) {
   const handleTestConnection = async () => {
     if (server && port) {
       setConnecting(true)
-      const { error } = await testConnection(server, port)
-      setConnecting(false)
-      if (error) {
-        alert(`Connection failed: ${error}`)
-      } else {
-        setShowSuccess(true)
-        setTimeout(() => {
-          setShowSuccess(false)
-        }, 2000)
-      }
+      const promise = testConnection(server, port)
+      toast.promise(promise, {
+        pending: t('connect.testing'),
+        success: {
+          render() {
+            setConnecting(false)
+            return t('connect.success')
+          },
+        },
+        error: {
+          render({ data }: { data: string }) {
+            console.error(data)
+            setConnecting(false)
+            return `${data}`
+          },
+        },
+      })
     }
   }
 
@@ -60,10 +70,7 @@ export default function Connect(props: Props) {
         </div>
       )
     } else {
-      if (showSuccess) {
-        return <CheckIcon className='h-6 w-6 stroke-[3px] font-bold text-green-500' />
-      }
-      return t('connect.test')
+      return <>{t('connect.test')}</>
     }
   }
 
@@ -72,6 +79,7 @@ export default function Connect(props: Props) {
       className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
       data-testid='wrapper'
     >
+      <ToastContainer position='top-center' theme={getCurrentTheme()} />
       <div className='mb-8 flex justify-center'>
         <Image alt='' src={logo} width='100' height='100' className='d-inline-block align-top' />
       </div>
@@ -101,7 +109,7 @@ export default function Connect(props: Props) {
             </label>
             <input
               value={port}
-              onChange={(e) => setPort(parseInt(e.target.value))}
+              onChange={(e) => setPort(+e.target.value)}
               className='focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none'
               id='port'
               type='number'

@@ -31,8 +31,8 @@ export default function NavBar(props: Props) {
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    if (parseInt(refreshInterval) > 0) {
-      const interval = setInterval(() => onRefetch(), parseInt(refreshInterval) * 1000)
+    if (+refreshInterval > 0) {
+      const interval = setInterval(() => onRefetch(), +refreshInterval * 1000)
       return () => clearInterval(interval)
     }
   }, [refreshInterval])
