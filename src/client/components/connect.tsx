@@ -52,10 +52,9 @@ export default function Connect(props: Props) {
           },
         },
         error: {
-          render({ data }: { data: string }) {
-            console.error(data)
+          render() {
             setConnecting(false)
-            return `${data}`
+            return t('connect.error')
           },
         },
       })

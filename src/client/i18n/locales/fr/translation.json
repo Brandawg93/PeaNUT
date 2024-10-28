@@ -33,7 +33,10 @@
     "server": "Serveur",
     "port": "Port",
     "connect": "Connecter",
-    "test": "Tester"
+    "test": "Tester",
+    "success": "Connexion réussie",
+    "error": "Échec de la connexion. Vérifiez les journaux pour plus d'informations.",
+    "testing": "Test de la connexion..."
   },
   "theme": {
     "dark": "Sombre",

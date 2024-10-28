@@ -33,7 +33,10 @@
     "server": "Server",
     "port": "Porta",
     "connect": "Connetti",
-    "test": "Verificare"
+    "test": "Verificare",
+    "success": "Connessione riuscita",
+    "error": "Connessione fallita. Controlla i log per maggiori informazioni.",
+    "testing": "Verifica della connessione in corso..."
   },
   "theme": {
     "dark": "Scuro",

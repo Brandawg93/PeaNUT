@@ -33,7 +33,10 @@
     "server": "Serveradresse",
     "port": "Port",
     "connect": "Verbinden",
-    "test": "Testen"
+    "test": "Testen",
+    "success": "Verbindung erfolgreich",
+    "error": "Verbindung fehlgeschlagen. Überprüfen Sie die Protokolle für weitere Informationen.",
+    "testing": "Verbindung wird getestet..."
   },
   "theme": {
     "dark": "Dunkel",

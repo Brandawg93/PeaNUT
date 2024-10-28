@@ -35,6 +35,7 @@
     "connect": "Connect",
     "test": "Test",
     "success": "Connection successful",
+    "error": "Connection failed. Check the logs for more info.",
     "testing": "Testing connection..."
   },
   "theme": {

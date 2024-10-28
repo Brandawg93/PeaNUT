@@ -33,7 +33,10 @@
     "server": "Servidor",
     "port": "Puerto",
     "connect": "Conectar",
-    "test": "Probar"
+    "test": "Probar",
+    "success": "Conexión exitosa",
+    "error": "Conexión fallida. Verifique los registros para más información.",
+    "testing": "Probando conexión..."
   },
   "theme": {
     "dark": "Oscuro",
