@@ -12,13 +12,8 @@ async function connect() {
 }
 
 export async function testConnection(server: string, port: number) {
-  try {
-    const nut = new Nut(server, port)
-    await nut.testConnection()
-    return { error: undefined }
-  } catch (e: any) {
-    return { error: e.message }
-  }
+  const nut = new Nut(server, port)
+  return await nut.testConnection()
 }
 
 export async function getDevices() {

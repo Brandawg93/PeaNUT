@@ -91,7 +91,7 @@ export default function NutGrid(props: Props) {
       className='border-neutral-300 w-full overflow-auto border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='grid'
     >
-      <ToastContainer theme={getCurrentTheme()} />
+      <ToastContainer position='top-center' theme={getCurrentTheme()} />
       <table className='w-full min-w-max table-auto text-left'>
         <thead>
           <tr className='grid-row'>

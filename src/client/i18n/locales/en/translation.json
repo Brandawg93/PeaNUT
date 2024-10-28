@@ -33,7 +33,9 @@
     "server": "Server Address",
     "port": "Port",
     "connect": "Connect",
-    "test": "Test"
+    "test": "Test",
+    "success": "Connection successful",
+    "testing": "Testing connection..."
   },
   "theme": {
     "dark": "Dark",

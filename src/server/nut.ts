@@ -26,7 +26,11 @@ export class Nut {
 
   private async getCommand(command: string, until?: string, checkCredentials = false): Promise<string> {
     const socket = new PromiseSocket()
-    await socket.connect(this.port, this.host)
+    try {
+      await socket.connect(this.port, this.host)
+    } catch (e: any) {
+      return Promise.reject(new Error(`Connection failed: ${e.message}`))
+    }
     if (checkCredentials) {
       await this.checkCredentials(socket)
     }
@@ -60,8 +64,17 @@ export class Nut {
     }
   }
 
-  public async testConnection(): Promise<boolean> {
-    return await !!this.getCommand('LIST UPS')
+  public async testConnection(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.getCommand('LIST UPS')
+        .then(() => {
+          resolve('Connection successful')
+        })
+        .catch((error: any) => {
+          console.error(error?.message)
+          reject(error?.message)
+        })
+    })
   }
 
   public async getDevices(): Promise<Array<DEVICE>> {

@@ -72,9 +72,8 @@ describe('actions', () => {
     expect(data?.data && data.data['battery.charge']).toEqual('test')
   })
 
-  it('tests connection', async () => {
-    const data = await testConnection('localhost', 3493)
-    expect(data.error).toBeUndefined()
+  it('tests connection', () => {
+    expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
