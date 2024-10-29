@@ -23,7 +23,7 @@ import { getNutInstance } from '@/app/api/utils'
  *     tags:
  *       - Devices
  */
-export async function GET(request: NextRequest, { params }: { params: { device: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ device: any }> }) {
   const nut = await getNutInstance()
   const { device } = await params
   try {

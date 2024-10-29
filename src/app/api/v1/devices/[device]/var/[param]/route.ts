@@ -35,7 +35,7 @@ type Params = {
  *     tags:
  *       - Vars
  */
-export async function GET(request: NextRequest, { params }: { params: Params }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   const nut = await getNutInstance()
   const { device, param } = await params
   const paramString = param
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
  *     tags:
  *       - Vars
  */
-export async function POST(request: NextRequest, { params }: { params: Params }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
   const nut = await getNutInstance()
   const { device, param } = await params
   const value = await request.json()
