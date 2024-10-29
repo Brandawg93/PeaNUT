@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
-test.describe('Devices', () => {
-  test('should get devices', async ({ request }) => {
+test.describe('Netversion', () => {
+  test('should get net version', async ({ request }) => {
     const create = await request.get('/api/v1/netversion')
     const createText = await create.text()
 
