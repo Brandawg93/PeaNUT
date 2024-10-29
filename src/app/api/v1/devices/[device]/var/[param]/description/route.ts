@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { DEVICE } from '@/common/types'
+import { getNutInstance } from '@/app/api/utils'
 
-import { Nut } from '@/server/nut'
-import { getSettings } from '@/app/actions'
+type Params = {
+  device: string
+  param: keyof DEVICE
+}
 
 /**
  * Retrieves description for a specific var.
@@ -32,15 +35,10 @@ import { getSettings } from '@/app/actions'
  *     tags:
  *       - Vars
  */
-export async function GET(request: NextRequest, { params }: { params: any }) {
-  const NUT_HOST = await getSettings('NUT_HOST')
-  const NUT_PORT = await getSettings('NUT_PORT')
-  const USERNAME = await getSettings('USERNAME')
-  const PASSWORD = await getSettings('PASSWORD')
-  const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-
+export async function GET(request: NextRequest, { params }: { params: Params }) {
+  const nut = await getNutInstance()
   const { device, param } = await params
-  const paramString = param as keyof DEVICE
+  const paramString = param
   try {
     const data = await nut.getVarDescription(device, param)
     if (data === undefined) {

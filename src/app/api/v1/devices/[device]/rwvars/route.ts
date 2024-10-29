@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-import { Nut } from '@/server/nut'
-import { getSettings } from '@/app/actions'
+import { getNutInstance } from '@/app/api/utils'
 
 /**
  * Retrieves writable vars for specific device.
@@ -25,13 +23,8 @@ import { getSettings } from '@/app/actions'
  *     tags:
  *       - Vars
  */
-export async function GET(request: NextRequest, { params }: { params: any }) {
-  const NUT_HOST = await getSettings('NUT_HOST')
-  const NUT_PORT = await getSettings('NUT_PORT')
-  const USERNAME = await getSettings('USERNAME')
-  const PASSWORD = await getSettings('PASSWORD')
-  const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-
+export async function GET(request: NextRequest, { params }: { params: { device: string } }) {
+  const nut = await getNutInstance()
   const { device } = await params
   const data = await nut.getRWVars(device)
   try {
