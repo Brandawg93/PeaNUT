@@ -39,6 +39,8 @@ const getStatus = (status: keyof typeof upsStatus) => {
   }
 }
 
+const roundIfNeeded = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100
+
 type Props = {
   getDevicesAction: () => Promise<
     | {
@@ -60,6 +62,9 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [settingsError, setSettingsError] = useState<boolean>(false)
+  const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
+    typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
+  )
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { isLoading, data, refetch } = useQuery({
@@ -154,6 +159,38 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     return loadingWrapper
   }
 
+  const toggleWattsOrPercent = () => {
+    setWattsOrPercent((prev) => {
+      localStorage.setItem('wattsOrPercent', (!prev).toString())
+      return !prev
+    })
+  }
+
+  const currentLoad = () => {
+    if (vars['ups.load']) {
+      if (vars['ups.realpower.nominal'] && wattsOrPercent) {
+        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
+        return (
+          <Kpi
+            onClick={() => toggleWattsOrPercent()}
+            text={`${roundIfNeeded(currentWattage)}W`}
+            description={`${t('currentLoad')} (W)`}
+          />
+        )
+      } else {
+        return (
+          <Gauge
+            onClick={() => toggleWattsOrPercent()}
+            percentage={+vars['ups.load'].value}
+            title={`${t('currentLoad')} (%)`}
+            invert
+          />
+        )
+      }
+    }
+    return <Kpi text='N/A' description={t('currentLoad')} />
+  }
+
   return (
     <div
       className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
@@ -201,13 +238,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
             </div>
           </div>
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-            <div className='mb-4'>
-              {vars['ups.load'] ? (
-                <Gauge percentage={+vars['ups.load'].value} title={t('currentLoad')} invert />
-              ) : (
-                <Kpi text='N/A' description={t('currentLoad')} />
-              )}
-            </div>
+            <div className='mb-4'>{currentLoad()}</div>
             <div className='mb-4'>
               <Gauge percentage={+vars['battery.charge']?.value} title={t('batteryCharge')} />
             </div>

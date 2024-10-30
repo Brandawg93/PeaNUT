@@ -37,10 +37,11 @@ type Props = {
   percentage: number
   invert?: boolean
   title: string
+  onClick?: () => void
 }
 
 export default function Gauge(props: Props) {
-  const { percentage, invert, title } = props
+  const { percentage, invert, title, onClick } = props
   const data = {
     labels: ['Used', 'Unused'],
     datasets: [
@@ -54,35 +55,39 @@ export default function Gauge(props: Props) {
   }
   return (
     <Card
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
       className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='gauge'
     >
-      <Doughnut
-        className='dark:hue-rotate-180 dark:invert'
-        data={data}
-        options={{
-          animation: {
-            duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
-          },
-          cutout: '80%',
-          circumference: 180,
-          rotation: 270,
-          plugins: {
-            legend: {
-              display: false,
+      <div className='motion-safe:animate-fade'>
+        <Doughnut
+          className='dark:hue-rotate-180 dark:invert'
+          data={data}
+          options={{
+            animation: {
+              duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
             },
-            title: {
-              display: true,
-              text: title,
-              position: 'bottom',
+            cutout: '80%',
+            circumference: 180,
+            rotation: 270,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              title: {
+                display: true,
+                text: title,
+                position: 'bottom',
+              },
+              tooltip: {
+                enabled: false,
+              },
             },
-            tooltip: {
-              enabled: false,
-            },
-          },
-        }}
-        plugins={[gaugeChartText]}
-      />
+          }}
+          plugins={[gaugeChartText]}
+        />
+      </div>
     </Card>
   )
 }
