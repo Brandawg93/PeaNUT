@@ -2,7 +2,7 @@ import { InfluxDB, Point, HttpError } from '@influxdata/influxdb-client'
 import { DEVICE } from '@/common/types'
 
 export default class InfluxWriter {
-  private writeApi: any
+  private writeApi: ReturnType<InfluxDB['getWriteApi']>
 
   constructor(url: string, token: string, org: string, bucket: string) {
     this.writeApi = new InfluxDB({ url, token }).getWriteApi(org, bucket, 's')

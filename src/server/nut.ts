@@ -64,6 +64,16 @@ export class Nut {
     }
   }
 
+  public async getVersion(): Promise<string> {
+    const command = `VER`
+    return (await this.getCommand(command, '\n')).replace('\n', '')
+  }
+
+  public async getNetVersion(): Promise<string> {
+    const command = `NETVER`
+    return (await this.getCommand(command, '\n')).replace('\n', '')
+  }
+
   public async testConnection(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.getCommand('LIST UPS')
