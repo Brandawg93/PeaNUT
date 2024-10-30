@@ -34,9 +34,9 @@
     "port": "Port",
     "connect": "Connecter",
     "test": "Tester",
-    "success": "Connexion réussie",
-    "error": "Échec de la connexion. Vérifiez les journaux pour plus d'informations.",
-    "testing": "Test de la connexion..."
+    "success": "Connection successful",
+    "error": "Connection failed. Check the logs for more info.",
+    "testing": "Testing connection..."
   },
   "theme": {
     "dark": "Sombre",

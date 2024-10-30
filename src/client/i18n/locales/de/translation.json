@@ -34,9 +34,9 @@
     "port": "Port",
     "connect": "Verbinden",
     "test": "Testen",
-    "success": "Verbindung erfolgreich",
-    "error": "Verbindung fehlgeschlagen. Überprüfen Sie die Protokolle für weitere Informationen.",
-    "testing": "Verbindung wird getestet..."
+    "success": "Connection successful",
+    "error": "Connection failed. Check the logs for more info.",
+    "testing": "Testing connection..."
   },
   "theme": {
     "dark": "Dunkel",
