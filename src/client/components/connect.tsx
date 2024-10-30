@@ -5,6 +5,7 @@ import React, { useContext, useEffect } from 'react'
 import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
+import { Card, Input, Button } from '@material-tailwind/react'
 import { getCurrentTheme } from '@/client/context/theme'
 
 import { LanguageContext } from '@/client/context/language'
@@ -85,55 +86,55 @@ export default function Connect(props: Props) {
       <div>
         <h1 className='mb-4 text-4xl font-bold'>PeaNUT</h1>
       </div>
-      <div>
-        <form className='w-full max-w-sm rounded-lg bg-white p-6 shadow-md dark:bg-gray-800' onSubmit={handleSubmit}>
+      <Card className='border-neutral-300 relative flex flex-row justify-around border border-solid border-gray-300 shadow-md dark:border-gray-800 dark:bg-gray-950'>
+        <form className='w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800' onSubmit={handleSubmit}>
           <div className='mb-4'>
-            <label className='mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300' htmlFor='server'>
-              {t('connect.server')}
-            </label>
-            <input
+            <Input
+              type='text'
+              variant='outlined'
+              label={t('connect.server')}
               value={server}
               onChange={(e) => setServer(e.target.value)}
-              className='focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none'
+              className='w-full px-3 py-2'
+              color={getCurrentTheme() === 'light' ? 'black' : 'white'}
               id='server'
-              type='text'
-              placeholder='Enter server address'
-              min={1}
-              max={65535}
+              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
-            <label className='mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300' htmlFor='port'>
-              {t('connect.port')}
-            </label>
-            <input
+            <Input
+              type='number'
+              variant='outlined'
+              label={t('connect.port')}
               value={port}
               onChange={(e) => setPort(+e.target.value)}
-              className='focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none'
+              className='w-full px-3 py-2'
+              color={getCurrentTheme() === 'light' ? 'black' : 'white'}
               id='port'
-              type='number'
-              placeholder='Enter port number'
+              min={0}
+              max={65535}
+              crossOrigin=''
             />
           </div>
           <div className='flex flex-row items-center justify-between'>
-            <button
+            <Button
               disabled={connecting}
               onClick={handleTestConnection}
-              className='focus:shadow-outline flex min-h-[40px] min-w-16 justify-center rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none'
+              className='bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700'
               type='button'
             >
               {getTestButton()}
-            </button>
-            <button
+            </Button>
+            <Button
               disabled={connecting}
-              className='focus:shadow-outline flex justify-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none'
+              className='bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700'
               type='submit'
             >
               {t('connect.connect')}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   )
 }
