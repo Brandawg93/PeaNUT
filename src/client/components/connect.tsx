@@ -97,7 +97,7 @@ export default function Connect(props: Props) {
               onChange={(e) => setServer(e.target.value)}
               className='w-full px-3 py-2'
               color={getCurrentTheme() === 'light' ? 'black' : 'white'}
-              id='server'
+              data-testid='server'
               crossOrigin=''
             />
           </div>
@@ -110,7 +110,7 @@ export default function Connect(props: Props) {
               onChange={(e) => setPort(+e.target.value)}
               className='w-full px-3 py-2'
               color={getCurrentTheme() === 'light' ? 'black' : 'white'}
-              id='port'
+              data-testid='port'
               min={0}
               max={65535}
               crossOrigin=''

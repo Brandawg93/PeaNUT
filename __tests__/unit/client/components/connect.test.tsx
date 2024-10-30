@@ -31,10 +31,10 @@ describe('Connect Component', () => {
   })
 
   it('calls setSettings and onConnect on form submit', async () => {
-    const { getByPlaceholderText, getByText } = renderComponent()
+    const { getByTestId, getByText } = renderComponent()
 
-    fireEvent.change(getByPlaceholderText('Enter server address'), { target: { value: 'localhost' } })
-    fireEvent.change(getByPlaceholderText('Enter port number'), { target: { value: '1234' } })
+    fireEvent.change(getByTestId('server'), { target: { value: 'localhost' } })
+    fireEvent.change(getByTestId('port'), { target: { value: '1234' } })
 
     fireEvent.click(getByText('connect.connect'))
 
@@ -44,10 +44,10 @@ describe('Connect Component', () => {
   })
 
   it('shows success icon on successful connection test', async () => {
-    const { getByPlaceholderText, getByText, queryByText } = renderComponent()
+    const { getByTestId, getByText, queryByText } = renderComponent()
 
-    fireEvent.change(getByPlaceholderText('Enter server address'), { target: { value: 'localhost' } })
-    fireEvent.change(getByPlaceholderText('Enter port number'), { target: { value: '1234' } })
+    fireEvent.change(getByTestId('server'), { target: { value: 'localhost' } })
+    fireEvent.change(getByTestId('port'), { target: { value: '1234' } })
 
     fireEvent.click(getByText('connect.test'))
 
