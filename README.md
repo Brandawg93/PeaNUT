@@ -141,3 +141,10 @@ widget:
 ## Donate to Support PeaNUT
 
 This project was made with you in mind. If you would like to show your appreciation for its continued development, please consider [sponsoring me on Github](https://github.com/sponsors/Brandawg93).
+
+<details>
+  <summary>Star History</summary>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=brandawg93/peanut&type=Date)](https://star-history.com/#brandawg93/peanut&Date)
+
+</details>
