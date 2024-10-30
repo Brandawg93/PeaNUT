@@ -6,6 +6,7 @@ import { fixupConfigRules } from '@eslint/compat'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactPlugin from 'eslint-plugin-react'
 import prettier from 'eslint-plugin-prettier'
+import nextPlugin from '@next/eslint-plugin-next'
 
 export default [
   {
@@ -42,6 +43,15 @@ export default [
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    plugins: {
+      '@next/next': nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
     },
   },
 ]

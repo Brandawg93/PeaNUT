@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-import { Nut } from '@/server/nut'
-import { getSettings } from '@/app/actions'
+import { getNutInstance } from '@/app/api/utils'
 
 /**
  * Retrieves device data from the NUT server.
@@ -19,12 +17,7 @@ import { getSettings } from '@/app/actions'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
-  const NUT_HOST = await getSettings('NUT_HOST')
-  const NUT_PORT = await getSettings('NUT_PORT')
-  const USERNAME = await getSettings('USERNAME')
-  const PASSWORD = await getSettings('PASSWORD')
-  const nut = new Nut(NUT_HOST, NUT_PORT, USERNAME, PASSWORD)
-
+  const nut = await getNutInstance()
   const deviceData: Array<Record<string, string | number>> = []
   const devices = await nut.getDevices()
   const deviceDataPromises = devices.map(async (device) => {
