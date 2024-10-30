@@ -174,7 +174,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           <Kpi
             onClick={() => toggleWattsOrPercent()}
             text={`${roundIfNeeded(currentWattage)}W`}
-            description={t('currentLoad')}
+            description={`${t('currentLoad')} (W)`}
           />
         )
       } else {
@@ -182,7 +182,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           <Gauge
             onClick={() => toggleWattsOrPercent()}
             percentage={+vars['ups.load'].value}
-            title={t('currentLoad')}
+            title={`${t('currentLoad')} (%)`}
             invert
           />
         )
