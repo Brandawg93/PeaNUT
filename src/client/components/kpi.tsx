@@ -4,12 +4,11 @@ import { Card } from '@material-tailwind/react'
 type Props = {
   text: string
   description: string
-  visible?: boolean
   onClick?: () => void
 }
 
 export default function Kpi(props: Props) {
-  const { text, description, visible, onClick } = props
+  const { text, description, onClick } = props
   const containerRef = React.useRef<HTMLDivElement>(null)
   const spanRef = React.useRef<HTMLDivElement>(null)
   const [scale, setScale] = React.useState(1)
@@ -22,7 +21,7 @@ export default function Kpi(props: Props) {
       const containerWidth = container.clientWidth
       const spanWidth = span.clientWidth
       const newScale = containerWidth / spanWidth
-      setScale(newScale)
+      setScale(Math.min(newScale, 7))
     }
   }
 
@@ -33,7 +32,7 @@ export default function Kpi(props: Props) {
     return () => {
       window.removeEventListener('resize', resize)
     }
-  }, [visible])
+  }, [text])
 
   const onClickHandler = () => {
     if (onClick) {
