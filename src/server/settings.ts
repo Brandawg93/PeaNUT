@@ -35,14 +35,11 @@ export class YamlSettings {
   }
 
   private loadFromEnvVars(): void {
-    for (const key of Object.keys(ISettings)) {
-      if (!this.data[key as keyof typeof ISettings] && process.env[key]) {
-        const eVar = key as keyof typeof ISettings
-        if (typeof ISettings[eVar] === 'number') {
-          this.data[key as keyof typeof ISettings] = +process.env[key]
-        } else {
-          this.data[key as keyof typeof ISettings] = process.env[key]
-        }
+    for (const key in ISettings) {
+      const envValue = process.env[key]
+      if (envValue !== undefined && this.data[key as keyof typeof ISettings] === undefined) {
+        const typedKey = key as keyof typeof ISettings
+        this.data[typedKey] = typeof ISettings[typedKey] === 'number' ? Number(envValue) : envValue
       }
     }
   }

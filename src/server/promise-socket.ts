@@ -1,72 +1,69 @@
 import { Socket } from 'net'
 
+const TIMEOUT = 10000
+
 export default class PromiseSocket {
   private innerSok: Socket = new Socket()
 
-  public connect(port: number, host: string, timeout = 10000): Promise<void> {
-    return new Promise((resolve, reject) => {
+  private setTimeoutPromise(timeout: number): Promise<any> {
+    return new Promise<any>((_, reject) => {
       setTimeout(() => {
         reject(new Error('Timeout'))
       }, timeout)
-
-      this.innerSok.connect(port, host, () => {
-        resolve()
-      })
-      this.innerSok.on('error', (err) => {
-        reject(err)
-      })
     })
   }
 
-  async write(data: string, timeout = 10000) {
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error('Timeout'))
-      }, timeout)
-
-      this.innerSok.write(`${data}\n`, () => {
-        resolve()
-      })
-      this.innerSok.on('error', (err) => {
-        reject(err)
-      })
-    })
+  public connect(port: number, host: string, timeout = TIMEOUT): Promise<void> {
+    return Promise.race([
+      new Promise<void>((resolve, reject) => {
+        this.innerSok.connect(port, host, resolve)
+        this.innerSok.on('error', reject)
+      }),
+      this.setTimeoutPromise(timeout),
+    ])
   }
 
-  async readAll(command: string, until: string = `END ${command}`, timeout = 10000) {
-    return new Promise<string>((resolve, reject) => {
-      let buf = ''
-      setTimeout(() => {
-        reject(new Error('Timeout'))
-      }, timeout)
-      this.innerSok.on('data', (data) => {
-        buf += Buffer.from(data).toString()
-        if (buf.includes(until)) {
-          resolve(buf)
-        }
-      })
-      this.innerSok.on('error', (err) => {
-        reject(err)
-      })
-      this.innerSok.on('end', () => {
-        resolve(buf)
-      })
-    })
+  async write(data: string, timeout = TIMEOUT): Promise<void> {
+    return Promise.race([
+      new Promise<void>((resolve, reject) => {
+        this.innerSok.write(`${data}\n`, (err) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
+        this.innerSok.on('error', reject)
+      }),
+      this.setTimeoutPromise(timeout),
+    ])
   }
 
-  async close(timeout = 10000) {
+  async readAll(command: string, until: string = `END ${command}`, timeout = TIMEOUT): Promise<string> {
+    return Promise.race([
+      new Promise<string>((resolve, reject) => {
+        let buf = ''
+        this.innerSok.on('data', (data) => {
+          buf += data.toString()
+          if (buf.includes(until)) {
+            resolve(buf)
+          }
+        })
+        this.innerSok.on('error', reject)
+        this.innerSok.on('end', () => resolve(buf))
+      }),
+      this.setTimeoutPromise(timeout),
+    ])
+  }
+
+  async close(timeout = TIMEOUT): Promise<void> {
     this.innerSok.end()
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error('Timeout'))
-      }, timeout)
-
-      this.innerSok.on('end', () => {
-        resolve()
-      })
-      this.innerSok.on('error', (err) => {
-        reject(err)
-      })
-    })
+    return Promise.race([
+      new Promise<void>((resolve, reject) => {
+        this.innerSok.on('end', resolve)
+        this.innerSok.on('error', reject)
+      }),
+      this.setTimeoutPromise(timeout),
+    ])
   }
 }
