@@ -17,6 +17,8 @@ export default defineConfig({
   retries: 3,
   // Artifacts folder where screenshots, videos, and traces are stored.
   outputDir: 'test-results/',
+  // Run all tests in parallel.
+  fullyParallel: true,
 
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
-    "dev": "docker compose up -d && next dev && docker compose down",
+    "dev": "docker compose up -d && next dev --turbo && docker compose down",
     "build": "next build",
     "build:local": "npm run build && cp -r .next/static .next/standalone/.next/",
     "build:analyze": "ANALYZE=true next build",
