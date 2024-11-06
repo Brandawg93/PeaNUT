@@ -19,3 +19,6 @@ export async function GET() {
   const data = await nut.getNetVersion()
   return NextResponse.json(data)
 }
+
+// forces the route handler to be dynamic
+export const dynamic = 'force-dynamic'

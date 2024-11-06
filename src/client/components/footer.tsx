@@ -20,7 +20,7 @@ export default function Footer({ updated }: Props) {
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/brandawg93/peanut/releases').then((res) => {
+    fetch('https://api.github.com/repos/brandawg93/peanut/releases', { cache: 'force-cache' }).then((res) => {
       res.json().then((json) => {
         const version = json.find((r: any) => r.name === `v${pJson.version}`)
         if (!version) return
