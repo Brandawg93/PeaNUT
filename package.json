@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
-    "dev": "docker compose up -d && next dev && docker compose down",
+    "dev": "docker compose up -d && next dev --turbo && docker compose down",
     "build": "next build",
     "build:local": "npm run build && cp -r .next/static .next/standalone/.next/",
     "build:analyze": "ANALYZE=true next build",
@@ -39,7 +39,7 @@
     "i18next-resources-to-backend": "^1.2.1",
     "js-yaml": "^4.1.0",
     "ldrs": "^1.0.2",
-    "next": "^14.2.17",
+    "next": "^15.0.2",
     "next-i18next": "^15.3.1",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",

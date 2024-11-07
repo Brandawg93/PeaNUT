@@ -2,7 +2,6 @@
 
 /* global window */
 import React, { createContext, useEffect, useState } from 'react'
-import { ThemeProvider as MaterialProvider } from '@material-tailwind/react'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: 'light' | 'dark' | 'system') => {} })
@@ -57,9 +56,5 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     else setTheme('system')
   }, [])
 
-  return (
-    <MaterialProvider>
-      <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
-    </MaterialProvider>
-  )
+  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
 }
