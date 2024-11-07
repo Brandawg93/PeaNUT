@@ -65,6 +65,9 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
   )
+  const [wattHours, setwattHours] = useState<boolean>(
+    typeof window !== 'undefined' ? localStorage.getItem('wattHours') === 'true' : false
+  )
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { isLoading, data, refetch } = useQuery({
@@ -166,29 +169,60 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     })
   }
 
+  const toggleWattHours = () => {
+    setwattHours((prev) => {
+      localStorage.setItem('wattHours', (!prev).toString())
+      return !prev
+    })
+  }
+
   const currentLoad = () => {
     if (vars['ups.load']) {
       if (vars['ups.realpower.nominal'] && wattsOrPercent) {
         const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
         return (
           <Kpi
-            onClick={() => toggleWattsOrPercent()}
+            onClick={toggleWattsOrPercent}
             text={`${roundIfNeeded(currentWattage)}W`}
             description={`${t('currentLoad')} (W)`}
           />
         )
-      } else {
+      }
+      return (
+        <Gauge
+          onClick={toggleWattsOrPercent}
+          percentage={+vars['ups.load'].value}
+          title={`${t('currentLoad')} (%)`}
+          invert
+        />
+      )
+    }
+    return <Kpi text='N/A' description={t('currentLoad')} />
+  }
+
+  const currentWh = () => {
+    if (vars['battery.charge']) {
+      if (vars['ups.load'] && vars['ups.realpower.nominal'] && wattHours) {
+        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
+        const capacity = (+vars['battery.runtime'].value / 3600) * currentWattage
         return (
-          <Gauge
-            onClick={() => toggleWattsOrPercent()}
-            percentage={+vars['ups.load'].value}
-            title={`${t('currentLoad')} (%)`}
-            invert
+          <Kpi
+            onClick={toggleWattHours}
+            text={`${roundIfNeeded(capacity)}Wh`}
+            description={`${t('batteryCharge')} (Wh)`}
           />
         )
       }
+      return (
+        <Gauge
+          onClick={toggleWattHours}
+          percentage={+vars['battery.charge']?.value}
+          title={`${t('batteryCharge')} (%)`}
+        />
+      )
+    } else {
+      return <Kpi text='N/A' description={t('batteryCharge')} />
     }
-    return <Kpi text='N/A' description={t('currentLoad')} />
   }
 
   return (
@@ -239,9 +273,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           </div>
           <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
             <div className='mb-4'>{currentLoad()}</div>
-            <div className='mb-4'>
-              <Gauge percentage={+vars['battery.charge']?.value} title={t('batteryCharge')} />
-            </div>
+            <div className='mb-4'>{currentWh()}</div>
             <div className='mb-4'>
               <Runtime runtime={+vars['battery.runtime']?.value} />
             </div>
