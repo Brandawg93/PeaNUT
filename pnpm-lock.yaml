@@ -30,8 +30,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(chart.js@4.4.6)
       i18next:
-        specifier: ^23.16.4
-        version: 23.16.4
+        specifier: ^23.16.5
+        version: 23.16.5
       i18next-browser-languagedetector:
         specifier: ^8.0.0
         version: 8.0.0
@@ -45,11 +45,11 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       next:
-        specifier: ^15.0.2
-        version: 15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^15.0.3
+        version: 15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-i18next:
         specifier: ^15.3.1
-        version: 15.3.1(i18next@23.16.4)(next@15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-i18next@15.1.0(i18next@23.16.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        version: 15.3.1(i18next@23.16.5)(next@15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-i18next@15.1.1(i18next@23.16.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -60,8 +60,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       react-i18next:
-        specifier: ^15.1.0
-        version: 15.1.0(i18next@23.16.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^15.1.1
+        version: 15.1.1(i18next@23.16.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-toastify:
         specifier: ^10.0.6
         version: 10.0.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -76,11 +76,11 @@ importers:
         specifier: ^9.14.0
         version: 9.14.0
       '@next/bundle-analyzer':
-        specifier: ^15.0.2
-        version: 15.0.2
+        specifier: ^15.0.3
+        version: 15.0.3
       '@next/eslint-plugin-next':
-        specifier: ^15.0.2
-        version: 15.0.2
+        specifier: ^15.0.3
+        version: 15.0.3
       '@playwright/test':
         specifier: ^1.48.2
         version: 1.48.2
@@ -143,7 +143,7 @@ importers:
         version: 29.7.0
       next-swagger-doc:
         specifier: ^0.4.1
-        version: 0.4.1(next@15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(openapi-types@12.1.3)
+        version: 0.4.1(next@15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(openapi-types@12.1.3)
       postcss:
         specifier: ^8.4.47
         version: 8.4.47
@@ -163,8 +163,8 @@ importers:
         specifier: ^36.0.1
         version: 36.0.1(stylelint@16.10.0(typescript@5.6.3))
       swagger-ui-react:
-        specifier: ^5.18.1
-        version: 5.18.1(@types/react@18.2.42)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.18.2
+        version: 5.18.2(@types/react@18.2.42)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwindcss:
         specifier: ^3.4.14
         version: 3.4.14(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))
@@ -785,59 +785,59 @@ packages:
   '@motionone/utils@10.16.3':
     resolution: {integrity: sha512-WNWDksJIxQkaI9p9Z9z0+K27xdqISGNFy1SsWVGaiedTHq0iaT6iZujby8fT/ZnZxj1EOaxJtSfUPCFNU5CRoA==}
 
-  '@next/bundle-analyzer@15.0.2':
-    resolution: {integrity: sha512-bV566k+rDsaqXSUgHBof0iMIDx5DWtLx/98jvYtqb9x85e+WJzv+8cpDvbjtxQMf7nFC/LUkPmpruj1cOKfz4A==}
+  '@next/bundle-analyzer@15.0.3':
+    resolution: {integrity: sha512-x7ZNvpoQPO0C5ZG//qVp21Qs3v6+C8LBJmdu9DKj4/NmjlnwoQ7dqRZ/nKZcwVhkFT7BHf+Qd5FaeHq9IDJvDQ==}
 
-  '@next/env@15.0.2':
-    resolution: {integrity: sha512-c0Zr0ModK5OX7D4ZV8Jt/wqoXtitLNPwUfG9zElCZztdaZyNVnN40rDXVZ/+FGuR4CcNV5AEfM6N8f+Ener7Dg==}
+  '@next/env@15.0.3':
+    resolution: {integrity: sha512-t9Xy32pjNOvVn2AS+Utt6VmyrshbpfUMhIjFO60gI58deSo/KgLOp31XZ4O+kY/Is8WAGYwA5gR7kOb1eORDBA==}
 
-  '@next/eslint-plugin-next@15.0.2':
-    resolution: {integrity: sha512-R9Jc7T6Ge0txjmqpPwqD8vx6onQjynO9JT73ArCYiYPvSrwYXepH/UY/WdKDY8JPWJl72sAE4iGMHPeQ5xdEWg==}
+  '@next/eslint-plugin-next@15.0.3':
+    resolution: {integrity: sha512-3Ln/nHq2V+v8uIaxCR6YfYo7ceRgZNXfTd3yW1ukTaFbO+/I8jNakrjYWODvG9BuR2v5kgVtH/C8r0i11quOgw==}
 
-  '@next/swc-darwin-arm64@15.0.2':
-    resolution: {integrity: sha512-GK+8w88z+AFlmt+ondytZo2xpwlfAR8U6CRwXancHImh6EdGfHMIrTSCcx5sOSBei00GyLVL0ioo1JLKTfprgg==}
+  '@next/swc-darwin-arm64@15.0.3':
+    resolution: {integrity: sha512-s3Q/NOorCsLYdCKvQlWU+a+GeAd3C8Rb3L1YnetsgwXzhc3UTWrtQpB/3eCjFOdGUj5QmXfRak12uocd1ZiiQw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@15.0.2':
-    resolution: {integrity: sha512-KUpBVxIbjzFiUZhiLIpJiBoelqzQtVZbdNNsehhUn36e2YzKHphnK8eTUW1s/4aPy5kH/UTid8IuVbaOpedhpw==}
+  '@next/swc-darwin-x64@15.0.3':
+    resolution: {integrity: sha512-Zxl/TwyXVZPCFSf0u2BNj5sE0F2uR6iSKxWpq4Wlk/Sv9Ob6YCKByQTkV2y6BCic+fkabp9190hyrDdPA/dNrw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-linux-arm64-gnu@15.0.2':
-    resolution: {integrity: sha512-9J7TPEcHNAZvwxXRzOtiUvwtTD+fmuY0l7RErf8Yyc7kMpE47MIQakl+3jecmkhOoIyi/Rp+ddq7j4wG6JDskQ==}
+  '@next/swc-linux-arm64-gnu@15.0.3':
+    resolution: {integrity: sha512-T5+gg2EwpsY3OoaLxUIofmMb7ohAUlcNZW0fPQ6YAutaWJaxt1Z1h+8zdl4FRIOr5ABAAhXtBcpkZNwUcKI2fw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-musl@15.0.2':
-    resolution: {integrity: sha512-BjH4ZSzJIoTTZRh6rG+a/Ry4SW0HlizcPorqNBixBWc3wtQtj4Sn9FnRZe22QqrPnzoaW0ctvSz4FaH4eGKMww==}
+  '@next/swc-linux-arm64-musl@15.0.3':
+    resolution: {integrity: sha512-WkAk6R60mwDjH4lG/JBpb2xHl2/0Vj0ZRu1TIzWuOYfQ9tt9NFsIinI1Epma77JVgy81F32X/AeD+B2cBu/YQA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-x64-gnu@15.0.2':
-    resolution: {integrity: sha512-i3U2TcHgo26sIhcwX/Rshz6avM6nizrZPvrDVDY1bXcLH1ndjbO8zuC7RoHp0NSK7wjJMPYzm7NYL1ksSKFreA==}
+  '@next/swc-linux-x64-gnu@15.0.3':
+    resolution: {integrity: sha512-gWL/Cta1aPVqIGgDb6nxkqy06DkwJ9gAnKORdHWX1QBbSZZB+biFYPFti8aKIQL7otCE1pjyPaXpFzGeG2OS2w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-musl@15.0.2':
-    resolution: {integrity: sha512-AMfZfSVOIR8fa+TXlAooByEF4OB00wqnms1sJ1v+iu8ivwvtPvnkwdzzFMpsK5jA2S9oNeeQ04egIWVb4QWmtQ==}
+  '@next/swc-linux-x64-musl@15.0.3':
+    resolution: {integrity: sha512-QQEMwFd8r7C0GxQS62Zcdy6GKx999I/rTO2ubdXEe+MlZk9ZiinsrjwoiBL5/57tfyjikgh6GOU2WRQVUej3UA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-win32-arm64-msvc@15.0.2':
-    resolution: {integrity: sha512-JkXysDT0/hEY47O+Hvs8PbZAeiCQVxKfGtr4GUpNAhlG2E0Mkjibuo8ryGD29Qb5a3IOnKYNoZlh/MyKd2Nbww==}
+  '@next/swc-win32-arm64-msvc@15.0.3':
+    resolution: {integrity: sha512-9TEp47AAd/ms9fPNgtgnT7F3M1Hf7koIYYWCMQ9neOwjbVWJsHZxrFbI3iEDJ8rf1TDGpmHbKxXf2IFpAvheIQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@15.0.2':
-    resolution: {integrity: sha512-foaUL0NqJY/dX0Pi/UcZm5zsmSk5MtP/gxx3xOPyREkMFN+CTjctPfu3QaqrQHinaKdPnMWPJDKt4VjDfTBe/Q==}
+  '@next/swc-win32-x64-msvc@15.0.3':
+    resolution: {integrity: sha512-VNAz+HN4OGgvZs6MOoVfnn41kBzT+M+tB+OK4cww6DNyWS6wKaDpaAm/qLeOUbnMh0oVx1+mg0uoYARF69dJyA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -866,8 +866,8 @@ packages:
   '@polka/url@1.0.0-next.24':
     resolution: {integrity: sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==}
 
-  '@scarf/scarf@1.3.0':
-    resolution: {integrity: sha512-lHKK8M5CTcpFj2hZDB3wIjb0KAbEOgDmiJGDv1WBRfQgRm/a8/XMEkG/N1iM01xgbUDsPQwi42D+dFo1XPAKew==}
+  '@scarf/scarf@1.4.0':
+    resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -880,9 +880,6 @@ packages:
 
   '@swagger-api/apidom-ast@1.0.0-alpha.10':
     resolution: {integrity: sha512-f4Y9t1oBlnsvMoLPCykzn5LRrmARiaPzorocQkMFTkYUPb7RKA4zCuWi67hH4iDVsVvkPutgew19XyJiI3OF9Q==}
-
-  '@swagger-api/apidom-ast@1.0.0-alpha.5':
-    resolution: {integrity: sha512-ZH3xryzmwd8OvUdOJH4ujNAyQMXN6NCrRT0HGR8z9TnA0nFPFoOAswq7317mCn77VJmViu/tpCuvmRS0a9BROg==}
 
   '@swagger-api/apidom-core@1.0.0-alpha.10':
     resolution: {integrity: sha512-4uXIN8cLigD1SZUDhmrEwW+1zbrB6bbD9Hlpo/BF74t/Nh4ZoEOUXv1oR/8QXB9AsIkdO65FdDHyaPzyGbjMiQ==}
@@ -902,9 +899,6 @@ packages:
   '@swagger-api/apidom-ns-json-schema-draft-4@1.0.0-alpha.10':
     resolution: {integrity: sha512-sNj4pAmxEfFYIqRcP9A7/gjNMaa7nu1pWT6gTMXtYROyo4XrChc3wit8F76WJEFIiEPLrPs2SrnnA5GIHM7EnA==}
 
-  '@swagger-api/apidom-ns-json-schema-draft-4@1.0.0-alpha.5':
-    resolution: {integrity: sha512-aDmcpGikL5JZmDTg7J6EJfLFjtUmX/MfduS4hQeopFCkw91dZsqxO10j7KEiRVVuJBuGStbYoHI5aIsQTlebzA==}
-
   '@swagger-api/apidom-ns-json-schema-draft-6@1.0.0-alpha.5':
     resolution: {integrity: sha512-ylh96E59aaV1VDv9sDrNwpTmjVT6vmOSncpmytlc0ynb374dwZkLZ63Hd30rcMFAhKmg5aYOG+i5O1QXKFYz8A==}
 
@@ -916,9 +910,6 @@ packages:
 
   '@swagger-api/apidom-ns-openapi-3-0@1.0.0-alpha.10':
     resolution: {integrity: sha512-zF2tPojJBGmQ/GuX+QJ0BhBWmnC+ET8Zah9utKpYWFFjqG/Wl6YzWpyrEflXpfGFzDFgoo+R+/3QvzScbPssqg==}
-
-  '@swagger-api/apidom-ns-openapi-3-0@1.0.0-alpha.5':
-    resolution: {integrity: sha512-UAOGZaGMDVRQ10l8OgXCAfxS9PxGoCW66o/vFmhPfrK8NwU1GEo6sYHYoo1mflNMHCN2eVYyM5LxA+qYm0SJgQ==}
 
   '@swagger-api/apidom-ns-openapi-3-1@1.0.0-alpha.10':
     resolution: {integrity: sha512-/7o+/Z2LelLcOdDSeY8O467Tjmr4yp0c8T4l13+zoQlaJFCzoeJqUUzP/dyqLPxqSeSMOez7uXnYpii6F8uYcA==}
@@ -2310,8 +2301,8 @@ packages:
   i18next-resources-to-backend@1.2.1:
     resolution: {integrity: sha512-okHbVA+HZ7n1/76MsfhPqDou0fptl2dAlhRDu2ideXloRRduzHsqDOznJBef+R3DFZnbvWoBW+KxJ7fnFjd6Yw==}
 
-  i18next@23.16.4:
-    resolution: {integrity: sha512-9NIYBVy9cs4wIqzurf7nLXPyf3R78xYbxExVqHLK9od3038rjpyOEzW+XB130kZ1N4PZ9inTtJ471CRJ4Ituyg==}
+  i18next@23.16.5:
+    resolution: {integrity: sha512-KTlhE3EP9x6pPTAW7dy0WKIhoCpfOGhRQlO+jttQLgzVaoOjWwBWramu7Pp0i+8wDNduuzXfe3kkVbzrKyrbTA==}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -2956,16 +2947,16 @@ packages:
     peerDependencies:
       next: '>=9'
 
-  next@15.0.2:
-    resolution: {integrity: sha512-rxIWHcAu4gGSDmwsELXacqAPUk+j8dV/A9cDF5fsiCMpkBDYkO2AEaL1dfD+nNmDiU6QMCFN8Q30VEKapT9UHQ==}
-    engines: {node: '>=18.18.0'}
+  next@15.0.3:
+    resolution: {integrity: sha512-ontCbCRKJUIoivAdGB34yCaOcPgYXr9AAkV/IwqFfWWTXEPUgLYkSkqBhIk9KK7gGmgjc64B+RdoeIDM13Irnw==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
       '@playwright/test': ^1.41.2
       babel-plugin-react-compiler: '*'
-      react: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
-      react-dom: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
+      react: ^18.2.0 || 19.0.0-rc-66855b96-20241106
+      react-dom: ^18.2.0 || 19.0.0-rc-66855b96-20241106
       sass: ^1.3.0
     peerDependenciesMeta:
       '@opentelemetry/api':
@@ -3397,8 +3388,8 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
-  react-i18next@15.1.0:
-    resolution: {integrity: sha512-zj3nJynMnZsy2gPZiOTC7XctCY5eQGqT3tcKMmfJWC9FMvgd+960w/adq61j8iPzpwmsXejqID9qC3Mqu1Xu2Q==}
+  react-i18next@15.1.1:
+    resolution: {integrity: sha512-R/Vg9wIli2P3FfeI8o1eNJUJue5LWpFsQePCHdQDmX0Co3zkr6kdT8gAseb/yGeWbNz1Txc4bKDQuZYsC0kQfw==}
     peerDependencies:
       i18next: '>= 23.2.3'
       react: '>= 16.8.0'
@@ -3821,8 +3812,8 @@ packages:
   svg-tags@1.0.0:
     resolution: {integrity: sha512-ovssysQTa+luh7A5Weu3Rta6FJlFBBbInjOh722LIt6klpU2/HtdUbszju/G4devcvk8PGt7FCLv5wftu3THUA==}
 
-  swagger-client@3.30.1:
-    resolution: {integrity: sha512-3V/wZ6s6nkIG+rfkODzfO/0pjV3/x0aZxovocvC6seOz/TN2LctS0Cu6oW1zMUgcNbwpdybjWUTikCbhlB7EEw==}
+  swagger-client@3.31.0:
+    resolution: {integrity: sha512-hVYift5XB8nOgNJVl6cbNtVTVPT2Fdx2wCOcIvuAFcyq0Mwe6+70ezoZ5WfiaIAzzwWfq72jyaLeg8TViGNSmw==}
 
   swagger-jsdoc@6.2.8:
     resolution: {integrity: sha512-VPvil1+JRpmJ55CgAtn8DIcpBs0bL5L3q5bVQvF4tAW/k/9JYSj7dCpaYCAv5rufe0vcCbBRQXGvzpkWjvLklQ==}
@@ -3833,8 +3824,8 @@ packages:
     resolution: {integrity: sha512-nF7oMeL4KypldrQhac8RyHerJeGPD1p2xDh900GPvc+Nk7nWP6jX2FcC7WmkinMoAmoO774+AFXcWsW8gMWEIg==}
     engines: {node: '>=10'}
 
-  swagger-ui-react@5.18.1:
-    resolution: {integrity: sha512-g3RkgvbMav9D173q8GUHa+P9sfEBYIliBuwbRGmC7fnDp0w5WQ2ATM79V2ukyWAj8RSPQro+KADrHwvk3tARbg==}
+  swagger-ui-react@5.18.2:
+    resolution: {integrity: sha512-vpW7AmkRYdz578iq7C5WrPsg6reBgRzj5xL/fIYR6KTfvY3lvBchpzegFaqg09LWDoL3U2MZvIgOS/1Q9kSJ9g==}
     peerDependencies:
       react: '>=16.8.0 <19'
       react-dom: '>=16.8.0 <19'
@@ -4976,41 +4967,41 @@ snapshots:
       hey-listen: 1.0.8
       tslib: 2.6.2
 
-  '@next/bundle-analyzer@15.0.2':
+  '@next/bundle-analyzer@15.0.3':
     dependencies:
       webpack-bundle-analyzer: 4.10.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@next/env@15.0.2': {}
+  '@next/env@15.0.3': {}
 
-  '@next/eslint-plugin-next@15.0.2':
+  '@next/eslint-plugin-next@15.0.3':
     dependencies:
       fast-glob: 3.3.1
 
-  '@next/swc-darwin-arm64@15.0.2':
+  '@next/swc-darwin-arm64@15.0.3':
     optional: true
 
-  '@next/swc-darwin-x64@15.0.2':
+  '@next/swc-darwin-x64@15.0.3':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@15.0.2':
+  '@next/swc-linux-arm64-gnu@15.0.3':
     optional: true
 
-  '@next/swc-linux-arm64-musl@15.0.2':
+  '@next/swc-linux-arm64-musl@15.0.3':
     optional: true
 
-  '@next/swc-linux-x64-gnu@15.0.2':
+  '@next/swc-linux-x64-gnu@15.0.3':
     optional: true
 
-  '@next/swc-linux-x64-musl@15.0.2':
+  '@next/swc-linux-x64-musl@15.0.3':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@15.0.2':
+  '@next/swc-win32-arm64-msvc@15.0.3':
     optional: true
 
-  '@next/swc-win32-x64-msvc@15.0.2':
+  '@next/swc-win32-x64-msvc@15.0.3':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -5033,7 +5024,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.24': {}
 
-  '@scarf/scarf@1.3.0': {}
+  '@scarf/scarf@1.4.0': {}
 
   '@sinclair/typebox@0.27.8': {}
 
@@ -5053,16 +5044,6 @@ snapshots:
       ramda: 0.30.1
       ramda-adjunct: 5.0.1(ramda@0.30.1)
       unraw: 3.0.0
-
-  '@swagger-api/apidom-ast@1.0.0-alpha.5':
-    dependencies:
-      '@babel/runtime-corejs3': 7.24.7
-      '@swagger-api/apidom-error': 1.0.0-alpha.10
-      '@types/ramda': 0.30.0
-      ramda: 0.30.1
-      ramda-adjunct: 5.0.1(ramda@0.30.1)
-      unraw: 3.0.0
-    optional: true
 
   '@swagger-api/apidom-core@1.0.0-alpha.10':
     dependencies:
@@ -5122,23 +5103,12 @@ snapshots:
       ramda-adjunct: 5.0.1(ramda@0.30.1)
       ts-mixer: 6.0.4
 
-  '@swagger-api/apidom-ns-json-schema-draft-4@1.0.0-alpha.5':
-    dependencies:
-      '@babel/runtime-corejs3': 7.24.7
-      '@swagger-api/apidom-ast': 1.0.0-alpha.5
-      '@swagger-api/apidom-core': 1.0.0-alpha.10
-      '@types/ramda': 0.30.0
-      ramda: 0.30.1
-      ramda-adjunct: 5.0.1(ramda@0.30.1)
-      ts-mixer: 6.0.4
-    optional: true
-
   '@swagger-api/apidom-ns-json-schema-draft-6@1.0.0-alpha.5':
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
       '@swagger-api/apidom-core': 1.0.0-alpha.10
       '@swagger-api/apidom-error': 1.0.0-alpha.10
-      '@swagger-api/apidom-ns-json-schema-draft-4': 1.0.0-alpha.5
+      '@swagger-api/apidom-ns-json-schema-draft-4': 1.0.0-alpha.10
       '@types/ramda': 0.30.0
       ramda: 0.30.1
       ramda-adjunct: 5.0.1(ramda@0.30.1)
@@ -5162,7 +5132,7 @@ snapshots:
       '@babel/runtime-corejs3': 7.24.7
       '@swagger-api/apidom-core': 1.0.0-alpha.10
       '@swagger-api/apidom-error': 1.0.0-alpha.10
-      '@swagger-api/apidom-ns-json-schema-draft-4': 1.0.0-alpha.5
+      '@swagger-api/apidom-ns-json-schema-draft-4': 1.0.0-alpha.10
       '@types/ramda': 0.30.0
       ramda: 0.30.1
       ramda-adjunct: 5.0.1(ramda@0.30.1)
@@ -5179,18 +5149,6 @@ snapshots:
       ramda: 0.30.1
       ramda-adjunct: 5.0.1(ramda@0.30.1)
       ts-mixer: 6.0.4
-
-  '@swagger-api/apidom-ns-openapi-3-0@1.0.0-alpha.5':
-    dependencies:
-      '@babel/runtime-corejs3': 7.24.7
-      '@swagger-api/apidom-core': 1.0.0-alpha.10
-      '@swagger-api/apidom-error': 1.0.0-alpha.10
-      '@swagger-api/apidom-ns-json-schema-draft-4': 1.0.0-alpha.5
-      '@types/ramda': 0.30.0
-      ramda: 0.30.1
-      ramda-adjunct: 5.0.1(ramda@0.30.1)
-      ts-mixer: 6.0.4
-    optional: true
 
   '@swagger-api/apidom-ns-openapi-3-1@1.0.0-alpha.10':
     dependencies:
@@ -5262,7 +5220,7 @@ snapshots:
   '@swagger-api/apidom-parser-adapter-json@1.0.0-alpha.5':
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
-      '@swagger-api/apidom-ast': 1.0.0-alpha.5
+      '@swagger-api/apidom-ast': 1.0.0-alpha.10
       '@swagger-api/apidom-core': 1.0.0-alpha.10
       '@swagger-api/apidom-error': 1.0.0-alpha.10
       '@types/ramda': 0.30.0
@@ -5288,7 +5246,7 @@ snapshots:
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
       '@swagger-api/apidom-core': 1.0.0-alpha.10
-      '@swagger-api/apidom-ns-openapi-3-0': 1.0.0-alpha.5
+      '@swagger-api/apidom-ns-openapi-3-0': 1.0.0-alpha.10
       '@swagger-api/apidom-parser-adapter-json': 1.0.0-alpha.5
       '@types/ramda': 0.30.0
       ramda: 0.30.1
@@ -5321,7 +5279,7 @@ snapshots:
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
       '@swagger-api/apidom-core': 1.0.0-alpha.10
-      '@swagger-api/apidom-ns-openapi-3-0': 1.0.0-alpha.5
+      '@swagger-api/apidom-ns-openapi-3-0': 1.0.0-alpha.10
       '@swagger-api/apidom-parser-adapter-yaml-1-2': 1.0.0-alpha.5
       '@types/ramda': 0.30.0
       ramda: 0.30.1
@@ -5364,7 +5322,7 @@ snapshots:
   '@swagger-api/apidom-parser-adapter-yaml-1-2@1.0.0-alpha.5':
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
-      '@swagger-api/apidom-ast': 1.0.0-alpha.5
+      '@swagger-api/apidom-ast': 1.0.0-alpha.10
       '@swagger-api/apidom-core': 1.0.0-alpha.10
       '@swagger-api/apidom-error': 1.0.0-alpha.10
       '@types/ramda': 0.30.0
@@ -5390,7 +5348,7 @@ snapshots:
       '@swagger-api/apidom-json-pointer': 1.0.0-alpha.10
       '@swagger-api/apidom-ns-asyncapi-2': 1.0.0-alpha.5
       '@swagger-api/apidom-ns-openapi-2': 1.0.0-alpha.5
-      '@swagger-api/apidom-ns-openapi-3-0': 1.0.0-alpha.5
+      '@swagger-api/apidom-ns-openapi-3-0': 1.0.0-alpha.10
       '@swagger-api/apidom-ns-openapi-3-1': 1.0.0-alpha.10
       '@swagger-api/apidom-ns-workflows-1': 1.0.0-alpha.5
       '@swagger-api/apidom-parser-adapter-api-design-systems-json': 1.0.0-alpha.5
@@ -6964,7 +6922,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.23.6
 
-  i18next@23.16.4:
+  i18next@23.16.5:
     dependencies:
       '@babel/runtime': 7.25.6
 
@@ -7756,31 +7714,31 @@ snapshots:
 
   neotraverse@0.6.18: {}
 
-  next-i18next@15.3.1(i18next@23.16.4)(next@15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-i18next@15.1.0(i18next@23.16.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+  next-i18next@15.3.1(i18next@23.16.5)(next@15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-i18next@15.1.1(i18next@23.16.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.24.7
       '@types/hoist-non-react-statics': 3.3.5
       core-js: 3.34.0
       hoist-non-react-statics: 3.3.2
-      i18next: 23.16.4
+      i18next: 23.16.5
       i18next-fs-backend: 2.3.2
-      next: 15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
-      react-i18next: 15.1.0(i18next@23.16.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-i18next: 15.1.1(i18next@23.16.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  next-swagger-doc@0.4.1(next@15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(openapi-types@12.1.3):
+  next-swagger-doc@0.4.1(next@15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(openapi-types@12.1.3):
     dependencies:
       '@types/swagger-jsdoc': 6.0.4
       cleye: 1.3.2
       isarray: 2.0.5
-      next: 15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       swagger-jsdoc: 6.2.8(openapi-types@12.1.3)
     transitivePeerDependencies:
       - openapi-types
 
-  next@15.0.2(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.0.3(@babel/core@7.23.6)(@playwright/test@1.48.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@next/env': 15.0.2
+      '@next/env': 15.0.3
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.13
       busboy: 1.6.0
@@ -7790,14 +7748,14 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       styled-jsx: 5.1.6(@babel/core@7.23.6)(react@18.3.1)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.0.2
-      '@next/swc-darwin-x64': 15.0.2
-      '@next/swc-linux-arm64-gnu': 15.0.2
-      '@next/swc-linux-arm64-musl': 15.0.2
-      '@next/swc-linux-x64-gnu': 15.0.2
-      '@next/swc-linux-x64-musl': 15.0.2
-      '@next/swc-win32-arm64-msvc': 15.0.2
-      '@next/swc-win32-x64-msvc': 15.0.2
+      '@next/swc-darwin-arm64': 15.0.3
+      '@next/swc-darwin-x64': 15.0.3
+      '@next/swc-linux-arm64-gnu': 15.0.3
+      '@next/swc-linux-arm64-musl': 15.0.3
+      '@next/swc-linux-x64-gnu': 15.0.3
+      '@next/swc-linux-x64-musl': 15.0.3
+      '@next/swc-win32-arm64-msvc': 15.0.3
+      '@next/swc-win32-x64-msvc': 15.0.3
       '@playwright/test': 1.48.2
       sharp: 0.33.5
     transitivePeerDependencies:
@@ -8172,11 +8130,11 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
-  react-i18next@15.1.0(i18next@23.16.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-i18next@15.1.1(i18next@23.16.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.25.6
       html-parse-stringify: 3.0.1
-      i18next: 23.16.4
+      i18next: 23.16.5
       react: 18.3.1
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
@@ -8663,10 +8621,10 @@ snapshots:
 
   svg-tags@1.0.0: {}
 
-  swagger-client@3.30.1:
+  swagger-client@3.31.0:
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
-      '@scarf/scarf': 1.3.0
+      '@scarf/scarf': 1.4.0
       '@swagger-api/apidom-core': 1.0.0-alpha.10
       '@swagger-api/apidom-error': 1.0.0-alpha.10
       '@swagger-api/apidom-json-pointer': 1.0.0-alpha.10
@@ -8703,11 +8661,11 @@ snapshots:
     transitivePeerDependencies:
       - openapi-types
 
-  swagger-ui-react@5.18.1(@types/react@18.2.42)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  swagger-ui-react@5.18.2(@types/react@18.2.42)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
       '@braintree/sanitize-url': 7.0.4
-      '@scarf/scarf': 1.3.0
+      '@scarf/scarf': 1.4.0
       base64-js: 1.5.1
       classnames: 2.5.1
       css.escape: 1.5.1
@@ -8736,7 +8694,7 @@ snapshots:
       reselect: 5.1.1
       serialize-error: 8.1.0
       sha.js: 2.4.11
-      swagger-client: 3.30.1
+      swagger-client: 3.31.0
       url-parse: 1.5.10
       xml: 1.0.1
       xml-but-prettier: 1.0.1
