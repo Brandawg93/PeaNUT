@@ -2,6 +2,7 @@
 
 /* global window */
 import React, { createContext, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 type themeContextType = {
   theme: 'light' | 'dark' | 'system'
@@ -24,6 +25,7 @@ export const getCurrentTheme = (): 'light' | 'dark' | 'system' => {
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
   const [matches, setMatches] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
@@ -64,10 +66,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
   }, [])
 
   useEffect(() => {
-    document.body.style.backgroundColor = getCurrentTheme() === 'dark' ? '#000' : '#fff'
-    document
-      .querySelector('.swagger-ui')
-      ?.setAttribute('style', `background-color: ${getCurrentTheme() === 'dark' ? '#fff' : '#000'}`)
+    document.body.style.backgroundColor = pathname !== '/api/docs' && getCurrentTheme() === 'dark' ? '#000' : '#fff'
   }, [theme, matches])
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>

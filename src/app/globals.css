@@ -15,6 +15,7 @@ code {
 }
 
 .swagger-ui {
+  background-color: white;
   position: absolute;
   width: 100%;
 }
