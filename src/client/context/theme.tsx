@@ -3,8 +3,15 @@
 /* global window */
 import React, { createContext, useEffect, useState } from 'react'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: 'light' | 'dark' | 'system') => {} })
+type themeContextType = {
+  theme: 'light' | 'dark' | 'system'
+  setTheme: (theme: 'light' | 'dark' | 'system') => void
+}
+
+export const ThemeContext = createContext<themeContextType>({
+  theme: 'system',
+  setTheme: () => {},
+})
 
 export const getCurrentTheme = (): 'light' | 'dark' | 'system' => {
   if (localStorage.theme === 'dark') return 'dark'
