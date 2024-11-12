@@ -6,10 +6,12 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 type Props = {
   onClick: () => void
-  onRefreshChange: (value: string) => void
-  refreshInterval: string
+  onRefreshChange: (value: number) => void
+  refreshInterval: number
   disabled: boolean
 }
+
+const intervals = [0, 1, 3, 5, 10, 30]
 
 export default function Refresh(props: Props) {
   const { onClick, onRefreshChange, refreshInterval, disabled } = props
@@ -17,12 +19,12 @@ export default function Refresh(props: Props) {
   const { t } = useTranslation(lng)
 
   const handleSelect = (event: any) => {
-    const value = event.target.value
+    const value = event.target.value as number
     onRefreshChange(value)
-    localStorage.setItem('refreshInterval', value)
+    localStorage.setItem('refreshInterval', `${value}`)
   }
 
-  const isActive = (value: string) => {
+  const isActive = (value: number) => {
     return refreshInterval === value ? 'bg-blue-700 text-white' : ''
   }
 
@@ -47,24 +49,16 @@ export default function Refresh(props: Props) {
           </Button>
         </MenuHandler>
         <MenuList className='border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
-          <MenuItem className={`text-lg font-semibold ${isActive('0')}`} value={'0'} onClick={handleSelect}>
-            off
-          </MenuItem>
-          <MenuItem className={`text-lg font-semibold ${isActive('1')}`} value={'1'} onClick={handleSelect}>
-            1s
-          </MenuItem>
-          <MenuItem className={`text-lg font-semibold ${isActive('3')}`} value={'3'} onClick={handleSelect}>
-            3s
-          </MenuItem>
-          <MenuItem className={`text-lg font-semibold ${isActive('5')}`} value={'5'} onClick={handleSelect}>
-            5s
-          </MenuItem>
-          <MenuItem className={`text-lg font-semibold ${isActive('10')}`} value={'10'} onClick={handleSelect}>
-            10s
-          </MenuItem>
-          <MenuItem className={`text-lg font-semibold ${isActive('30')}`} value={'30'} onClick={handleSelect}>
-            30s
-          </MenuItem>
+          {intervals.map((value) => (
+            <MenuItem
+              key={value}
+              className={`text-lg font-semibold ${isActive(value)}`}
+              value={value}
+              onClick={handleSelect}
+            >
+              {value === 0 ? 'off' : `${value}s`}
+            </MenuItem>
+          ))}
         </MenuList>
       </Menu>
     </>

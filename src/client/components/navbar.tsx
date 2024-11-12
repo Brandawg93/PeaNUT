@@ -26,13 +26,13 @@ export default function NavBar(props: Props) {
   const { onRefreshClick, onRefetch, onDeviceChange, onDisconnect, devices, disableRefresh } = props
   const [device, setDevice] = useState(devices[0])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [refreshInterval, setRefreshInterval] = useState(localStorage.getItem('refreshInterval') || '0')
+  const [refreshInterval, setRefreshInterval] = useState<number>(Number(localStorage.getItem('refreshInterval')) || 0)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    if (+refreshInterval > 0) {
-      const interval = setInterval(() => onRefetch(), +refreshInterval * 1000)
+    if (refreshInterval > 0) {
+      const interval = setInterval(() => onRefetch(), refreshInterval * 1000)
       return () => clearInterval(interval)
     }
   }, [refreshInterval])
