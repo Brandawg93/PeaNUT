@@ -63,5 +63,12 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     else setTheme('system')
   }, [])
 
+  useEffect(() => {
+    document.body.style.backgroundColor = getCurrentTheme() === 'dark' ? '#000' : '#fff'
+    document
+      .querySelector('.swagger-ui')
+      ?.setAttribute('style', `background-color: ${getCurrentTheme() === 'dark' ? '#fff' : '#000'}`)
+  }, [theme, matches])
+
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
 }
