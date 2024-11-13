@@ -46,6 +46,16 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
   const pathname = usePathname()
 
   useEffect(() => {
+    // Initialize theme based on stored preference
+    const storedTheme = localStorage.getItem('theme')
+    if (storedTheme === 'dark' || storedTheme === 'light') {
+      setPreference(storedTheme)
+      setTheme(storedTheme)
+    } else {
+      setPreference('system')
+    }
+
+    // Add listener for system theme
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     const listener = () => {
       if (preference === 'system') {
@@ -60,25 +70,16 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       }
     }
 
-    media.addEventListener('change', listener)
     listener()
+    media.addEventListener('change', listener)
     return () => media.removeEventListener('change', listener)
-  }, [preference])
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme')
-    if (storedTheme === 'dark' || storedTheme === 'light') {
-      setPreference(storedTheme)
-      setTheme(storedTheme)
-    } else {
-      setPreference('system')
-    }
   }, [])
 
   useEffect(() => {
     document.body.style.backgroundColor = pathname !== '/api/docs' && theme === 'dark' ? '#000' : '#fff'
   }, [theme, pathname])
 
+  // Update theme based on preference
   useEffect(() => {
     setCurrentTheme(preference)
     if (preference === 'system') {
