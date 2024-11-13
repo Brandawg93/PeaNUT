@@ -42,7 +42,7 @@ const setCurrentTheme = (newTheme: 'light' | 'dark' | 'system') => {
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreference] = useState<'light' | 'dark' | 'system'>('system')
-  const [theme, setTheme] = useState<'light' | 'dark'>(getCurrentTheme())
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const pathname = usePathname()
 
   useEffect(() => {
@@ -53,6 +53,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       setTheme(storedTheme)
     } else {
       setPreference('system')
+      setTheme(getCurrentTheme())
     }
 
     // Add listener for system theme

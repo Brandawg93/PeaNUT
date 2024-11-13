@@ -13,7 +13,11 @@ export default function Loader() {
       helix.register()
     }
     getLoader()
-    setColor(theme === 'dark' ? 'white' : 'black')
   }, [])
+
+  useEffect(() => {
+    setColor(theme === 'dark' ? 'white' : 'black')
+  }, [theme])
+
   return <l-helix size={100} speed={2.5} color={color} />
 }
