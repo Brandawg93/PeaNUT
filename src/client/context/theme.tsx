@@ -2,9 +2,17 @@
 
 /* global window */
 import React, { createContext, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const ThemeContext = createContext({ theme: 'system', setTheme: (theme: 'light' | 'dark' | 'system') => {} })
+type themeContextType = {
+  theme: 'light' | 'dark' | 'system'
+  setTheme: (theme: 'light' | 'dark' | 'system') => void
+}
+
+export const ThemeContext = createContext<themeContextType>({
+  theme: 'system',
+  setTheme: () => {},
+})
 
 export const getCurrentTheme = (): 'light' | 'dark' | 'system' => {
   if (localStorage.theme === 'dark') return 'dark'
@@ -17,6 +25,7 @@ export const getCurrentTheme = (): 'light' | 'dark' | 'system' => {
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
   const [matches, setMatches] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
@@ -55,6 +64,10 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     else if (localStorage.theme === 'light') setTheme('light')
     else setTheme('system')
   }, [])
+
+  useEffect(() => {
+    document.body.style.backgroundColor = pathname !== '/api/docs' && getCurrentTheme() === 'dark' ? '#000' : '#fff'
+  }, [theme, matches])
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
 }
