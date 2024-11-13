@@ -5,33 +5,23 @@ import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outl
 import { ThemeContext } from '@/client/context/theme'
 
 export default function DayNightSwitch() {
-  const { theme, setTheme } = useContext(ThemeContext)
+  const { preference, setPreference } = useContext(ThemeContext)
 
   const updateTheme = useCallback(
     (newTheme: 'light' | 'dark' | 'system') => {
-      if (newTheme === 'system') {
-        localStorage.removeItem('theme')
-        document.documentElement.classList.remove('light', 'dark')
-        if (window.matchMedia('(prefers-color-scheme: light)').matches) document.documentElement.classList.add('light')
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark')
-      } else {
-        localStorage.theme = newTheme
-        document.documentElement.classList.remove('light', 'dark')
-        document.documentElement.classList.add(newTheme)
-      }
-      setTheme(newTheme)
+      setPreference(newTheme)
     },
-    [setTheme]
+    [preference]
   )
 
   const handleLight = useCallback(() => updateTheme('light'), [updateTheme])
   const handleDark = useCallback(() => updateTheme('dark'), [updateTheme])
   const handleSystem = useCallback(() => updateTheme('system'), [updateTheme])
 
-  const isActive = (value: string) => (theme === value ? 'bg-gray-200 dark:bg-gray-800' : 'bg-transparent')
+  const isActive = (value: string) => (preference === value ? 'bg-gray-200 dark:bg-gray-800' : 'bg-transparent')
 
   const iconClass = (value: string) =>
-    theme === value
+    preference === value
       ? 'text-black dark:text-white'
       : 'text-gray-800 hover:text-black dark:text-gray-300 dark:hover:text-white'
 

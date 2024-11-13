@@ -6,9 +6,9 @@ import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { Card, Input, Button } from '@material-tailwind/react'
-import { getCurrentTheme } from '@/client/context/theme'
 
 import { LanguageContext } from '@/client/context/language'
+import { ThemeContext } from '@/client/context/theme'
 import logo from '@/app/icon.svg'
 import { setSettings, testConnection } from '@/app/actions'
 
@@ -21,6 +21,7 @@ export default function Connect(props: Props) {
   const [port, setPort] = React.useState<number>(3493)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
+  const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
 
   const { onConnect } = props
@@ -79,7 +80,7 @@ export default function Connect(props: Props) {
       className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
       data-testid='wrapper'
     >
-      <ToastContainer position='top-center' theme={getCurrentTheme()} />
+      <ToastContainer position='top-center' theme={theme} />
       <div className='mb-8 flex justify-center'>
         <Image alt='' src={logo} width='100' height='100' className='d-inline-block align-top' />
       </div>
@@ -96,7 +97,7 @@ export default function Connect(props: Props) {
               value={server}
               onChange={(e) => setServer(e.target.value)}
               className='w-full px-3 py-2'
-              color={getCurrentTheme() === 'light' ? 'black' : 'white'}
+              color={theme === 'light' ? 'black' : 'white'}
               data-testid='server'
               crossOrigin=''
             />
@@ -109,7 +110,7 @@ export default function Connect(props: Props) {
               value={port}
               onChange={(e) => setPort(+e.target.value)}
               className='w-full px-3 py-2'
-              color={getCurrentTheme() === 'light' ? 'black' : 'white'}
+              color={theme === 'light' ? 'black' : 'white'}
               data-testid='port'
               min={0}
               max={65535}

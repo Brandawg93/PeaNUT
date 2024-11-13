@@ -5,25 +5,16 @@ import { ChevronUpDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@hero
 import { ThemeContext } from '@/client/context/theme'
 
 export default function DayNightSwitch() {
-  const { theme, setTheme } = useContext<{
-    theme: 'light' | 'dark' | 'system'
-    setTheme: (theme: 'light' | 'dark' | 'system') => void
-  }>(ThemeContext)
+  const { preference, setPreference } = useContext(ThemeContext)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
-  const updateThemeClass = (newTheme: 'light' | 'dark' | 'system') => {
-    document.documentElement.classList.remove('light', 'dark')
-    if (newTheme !== 'system') {
-      document.documentElement.classList.add(newTheme)
-    } else {
-      if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-        document.documentElement.classList.add('light')
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark')
-      }
-    }
-  }
+  const updateTheme = useCallback(
+    (newTheme: 'light' | 'dark' | 'system') => {
+      setPreference(newTheme)
+    },
+    [preference]
+  )
 
   const handleSelect = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     const eventKey = event.target.value
@@ -33,23 +24,9 @@ export default function DayNightSwitch() {
     if (eventKey === 'system') handleSystem()
   }, [])
 
-  const handleLight = useCallback(() => {
-    localStorage.theme = 'light'
-    setTheme('light')
-    updateThemeClass('light')
-  }, [setTheme])
-
-  const handleDark = useCallback(() => {
-    localStorage.theme = 'dark'
-    setTheme('dark')
-    updateThemeClass('dark')
-  }, [setTheme])
-
-  const handleSystem = useCallback(() => {
-    localStorage.removeItem('theme')
-    setTheme('system')
-    updateThemeClass('system')
-  }, [setTheme])
+  const handleLight = useCallback(() => updateTheme('light'), [updateTheme])
+  const handleDark = useCallback(() => updateTheme('dark'), [updateTheme])
+  const handleSystem = useCallback(() => updateTheme('system'), [updateTheme])
 
   const iconMap = {
     light: <SunIcon className='h-6 w-6 stroke-2' />,
@@ -62,11 +39,13 @@ export default function DayNightSwitch() {
       className='relative inline-block h-full w-full rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'
       data-testid='daynightmobile'
     >
-      <div className='absolute left-0 z-0 ml-2 mr-2 inline-flex h-full flex-col justify-center'>{iconMap[theme]}</div>
+      <div className='absolute left-0 z-0 ml-2 mr-2 inline-flex h-full flex-col justify-center'>
+        {iconMap[preference]}
+      </div>
       <div className='inline'>
         <select
           data-testid='select'
-          value={theme}
+          value={preference}
           onChange={handleSelect}
           className='relative z-10 h-9 appearance-none bg-transparent pl-11 pr-5 outline-none'
         >

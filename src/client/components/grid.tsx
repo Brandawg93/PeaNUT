@@ -9,7 +9,7 @@ import { CheckCircleIcon, PencilSquareIcon, XCircleIcon, InformationCircleIcon }
 import { ToastContainer, toast } from 'react-toastify'
 
 import { LanguageContext } from '@/client/context/language'
-import { getCurrentTheme } from '@/client/context/theme'
+import { ThemeContext } from '@/client/context/theme'
 import { DEVICE, VARS } from '@/common/types'
 import { getAllVarDescriptions, saveVar } from '@/app/actions'
 
@@ -25,6 +25,7 @@ type Props = {
 export default function NutGrid(props: Props) {
   const { data } = props
   const lng = useContext<string>(LanguageContext)
+  const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
   const [edit, setEdit] = useState<number>(-1)
   const ref = useRef<any>(null)
@@ -91,7 +92,7 @@ export default function NutGrid(props: Props) {
       className='border-neutral-300 w-full overflow-auto border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='grid'
     >
-      <ToastContainer position='top-center' theme={getCurrentTheme()} />
+      <ToastContainer position='top-center' theme={theme} />
       <table className='w-full min-w-max table-auto text-left'>
         <thead>
           <tr className='grid-row'>
