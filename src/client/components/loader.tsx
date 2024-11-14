@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { getCurrentTheme } from '../context/theme'
+import React, { useEffect, useContext } from 'react'
+import { ThemeContext } from '@/client/context/theme'
 
 export default function Loader() {
   const [color, setColor] = React.useState('black')
+  const { theme } = useContext(ThemeContext)
 
   useEffect(() => {
     async function getLoader() {
@@ -12,7 +13,11 @@ export default function Loader() {
       helix.register()
     }
     getLoader()
-    setColor(getCurrentTheme() === 'dark' ? 'white' : 'black')
   }, [])
+
+  useEffect(() => {
+    setColor(theme === 'dark' ? 'white' : 'black')
+  }, [theme])
+
   return <l-helix size={100} speed={2.5} color={color} />
 }
