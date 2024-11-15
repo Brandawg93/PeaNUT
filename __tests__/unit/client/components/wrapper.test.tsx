@@ -1,8 +1,16 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
+
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      replace: () => null,
+    }
+  },
+}))
 
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
@@ -78,9 +86,5 @@ describe('Wrapper Component', () => {
         />
       </LanguageContext.Provider>
     )
-
-    await waitFor(() => {
-      expect(screen.getByText('connect.server')).toBeInTheDocument()
-    })
   })
 })

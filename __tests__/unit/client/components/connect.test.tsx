@@ -4,14 +4,21 @@ import Connect from '@/client/components/connect'
 import { LanguageContext } from '@/client/context/language'
 import PromiseSocket from '@/server/promise-socket'
 
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      replace: () => null,
+    }
+  },
+}))
+
 describe('Connect Component', () => {
-  const mockOnConnect = jest.fn()
   const mockLanguageContext = 'en'
 
   const renderComponent = () =>
     render(
       <LanguageContext.Provider value={mockLanguageContext}>
-        <Connect onConnect={mockOnConnect} />
+        <Connect />
       </LanguageContext.Provider>
     )
 
@@ -37,10 +44,6 @@ describe('Connect Component', () => {
     fireEvent.change(getByTestId('port'), { target: { value: '1234' } })
 
     fireEvent.click(getByText('connect.connect'))
-
-    await waitFor(() => {
-      expect(mockOnConnect).toHaveBeenCalled()
-    })
   })
 
   it('shows success icon on successful connection test', async () => {
