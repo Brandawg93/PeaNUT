@@ -92,7 +92,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const loadingWrapper = (
     <div
       className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-      data-testid='wrapper'
+      data-testid='loading-wrapper'
     >
       <Loader />
     </div>

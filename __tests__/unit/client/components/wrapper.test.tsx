@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
@@ -47,6 +47,17 @@ describe('Wrapper Component', () => {
     updated: '2023-10-01T00:00:00Z',
   }
 
+  const renderComponent = (checkSettingsAction: boolean, getDevicesAction = {}, disconnectAction = null) =>
+    render(
+      <LanguageContext.Provider value='en'>
+        <Wrapper
+          checkSettingsAction={jest.fn().mockResolvedValue(checkSettingsAction)}
+          getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
+          disconnectAction={jest.fn().mockResolvedValue(disconnectAction)}
+        />
+      </LanguageContext.Provider>
+    )
+
   beforeEach(() => {
     ;(useQuery as jest.Mock).mockReturnValue({
       isLoading: false,
@@ -62,29 +73,15 @@ describe('Wrapper Component', () => {
       refetch: jest.fn(),
     })
 
-    render(
-      <LanguageContext.Provider value='en'>
-        <Wrapper
-          checkSettingsAction={jest.fn().mockResolvedValue(true)}
-          getDevicesAction={jest.fn().mockResolvedValue({})}
-          disconnectAction={jest.fn().mockResolvedValue(null)}
-        />
-      </LanguageContext.Provider>
-    )
-
-    const wrapper = await screen.findByTestId('wrapper')
+    const { findByTestId } = renderComponent(true)
+    const wrapper = await findByTestId('loading-wrapper')
     expect(wrapper).toBeInTheDocument()
   })
 
   it('renders error state', async () => {
-    render(
-      <LanguageContext.Provider value='en'>
-        <Wrapper
-          checkSettingsAction={jest.fn().mockResolvedValue(false)}
-          getDevicesAction={jest.fn().mockResolvedValue({})}
-          disconnectAction={jest.fn().mockResolvedValue(null)}
-        />
-      </LanguageContext.Provider>
-    )
+    const { queryByText } = renderComponent(false)
+    await waitFor(() => {
+      expect(queryByText('connect.test')).not.toBeInTheDocument()
+    })
   })
 })

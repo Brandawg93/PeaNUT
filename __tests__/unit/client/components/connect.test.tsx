@@ -34,7 +34,7 @@ describe('Connect Component', () => {
 
   it('renders without crashing', () => {
     const { getByTestId } = renderComponent()
-    expect(getByTestId('wrapper')).toBeInTheDocument()
+    expect(getByTestId('login-wrapper')).toBeInTheDocument()
   })
 
   it('calls setSettings and onConnect on form submit', async () => {

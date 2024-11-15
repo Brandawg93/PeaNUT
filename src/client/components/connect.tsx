@@ -74,7 +74,7 @@ export default function Connect() {
   return (
     <div
       className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-      data-testid='wrapper'
+      data-testid='login-wrapper'
     >
       <ToastContainer position='top-center' theme={theme} />
       <div className='mb-8 flex justify-center'>
