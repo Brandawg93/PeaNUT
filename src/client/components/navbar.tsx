@@ -73,6 +73,7 @@ export default function NavBar(props: Props) {
       variant='gradient'
       color='gray'
       className='sticky top-0 z-10 mb-4 flex h-max max-w-full justify-center rounded-none bg-gradient-to-t from-gray-300 to-gray-100 px-4 py-2 lg:px-8 lg:py-4 dark:from-gray-950 dark:to-gray-900'
+      data-testid='navbar'
     >
       <div className='container'>
         <div className='flex items-center justify-between'>
@@ -99,6 +100,7 @@ export default function NavBar(props: Props) {
             <div className='hidden lg:block'>
               <Button
                 variant='filled'
+                data-testid='disconnect-button'
                 title={t('sidebar.disconnect')}
                 className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
                 onClick={() => onDisconnect()}
