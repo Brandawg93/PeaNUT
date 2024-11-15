@@ -1,12 +1,19 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { useQuery } from '@tanstack/react-query'
+import * as ReactQuery from '@tanstack/react-query'
 import Page from '@/app/page'
 import { checkSettings } from '@/app/actions'
 
-jest.mock('@tanstack/react-query', () => ({
-  useQuery: jest.fn(),
-}))
+const queryClient = new ReactQuery.QueryClient()
+
+jest.mock('@tanstack/react-query', () => {
+  const original: typeof ReactQuery = jest.requireActual('@tanstack/react-query')
+
+  return {
+    ...original,
+    useQuery: jest.fn(),
+  }
+})
 
 jest.mock('react-chartjs-2', () => ({
   Line: () => null,
@@ -51,7 +58,7 @@ describe('Page', () => {
   }
 
   beforeEach(() => {
-    ;(useQuery as jest.Mock).mockReturnValue({
+    ;(ReactQuery.useQuery as jest.Mock).mockReturnValue({
       isLoading: false,
       data: mockDevicesData,
       refetch: jest.fn(),
@@ -60,7 +67,11 @@ describe('Page', () => {
   })
 
   it('renders a heading', async () => {
-    render(<Page />)
+    render(
+      <ReactQuery.QueryClientProvider client={queryClient}>
+        <Page />
+      </ReactQuery.QueryClientProvider>
+    )
 
     const wrapper = await screen.findByTestId('wrapper')
     expect(wrapper).toBeInTheDocument()
