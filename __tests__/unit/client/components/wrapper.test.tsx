@@ -1,8 +1,13 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/navigation'
+import { render } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
+
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}))
 
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
@@ -39,6 +44,17 @@ describe('Wrapper Component', () => {
     updated: '2023-10-01T00:00:00Z',
   }
 
+  const renderComponent = (checkSettingsAction: boolean, getDevicesAction = {}, disconnectAction = null) =>
+    render(
+      <LanguageContext.Provider value='en'>
+        <Wrapper
+          checkSettingsAction={jest.fn().mockResolvedValue(checkSettingsAction)}
+          getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
+          disconnectAction={jest.fn().mockResolvedValue(disconnectAction)}
+        />
+      </LanguageContext.Provider>
+    )
+
   beforeEach(() => {
     ;(useQuery as jest.Mock).mockReturnValue({
       isLoading: false,
@@ -54,33 +70,40 @@ describe('Wrapper Component', () => {
       refetch: jest.fn(),
     })
 
-    render(
-      <LanguageContext.Provider value='en'>
-        <Wrapper
-          checkSettingsAction={jest.fn().mockResolvedValue(true)}
-          getDevicesAction={jest.fn().mockResolvedValue({})}
-          disconnectAction={jest.fn().mockResolvedValue(null)}
-        />
-      </LanguageContext.Provider>
-    )
-
-    const wrapper = await screen.findByTestId('wrapper')
+    const { findByTestId } = renderComponent(true)
+    const wrapper = await findByTestId('loading-wrapper')
     expect(wrapper).toBeInTheDocument()
   })
 
   it('renders error state', async () => {
-    render(
-      <LanguageContext.Provider value='en'>
-        <Wrapper
-          checkSettingsAction={jest.fn().mockResolvedValue(false)}
-          getDevicesAction={jest.fn().mockResolvedValue({})}
-          disconnectAction={jest.fn().mockResolvedValue(null)}
-        />
-      </LanguageContext.Provider>
-    )
+    const mockRouter = {
+      replace: jest.fn(),
+    }
+    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+    const { findByTestId } = renderComponent(false)
+    const wrapper = await findByTestId('wrapper')
+    expect(wrapper).toBeInTheDocument()
+    expect(mockRouter.replace).toHaveBeenCalled()
+  })
 
-    await waitFor(() => {
-      expect(screen.getByText('connect.server')).toBeInTheDocument()
-    })
+  it('renders success state', async () => {
+    const { findByTestId } = renderComponent(true)
+    const wrapper = await findByTestId('wrapper')
+    expect(wrapper).toBeInTheDocument()
+  })
+
+  it('disconnects on handleDisconnect', async () => {
+    const mockRouter = {
+      replace: jest.fn(),
+    }
+    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+    const { findByTestId } = renderComponent(true)
+    const navbar = await findByTestId('navbar')
+    expect(navbar).toBeInTheDocument()
+    const disconnectButton = await findByTestId('disconnect-button')
+    disconnectButton.click()
+    const wrapper = await findByTestId('wrapper')
+    expect(wrapper).toBeInTheDocument()
+    expect(mockRouter.replace).toHaveBeenCalled()
   })
 })

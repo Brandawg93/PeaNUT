@@ -11,6 +11,7 @@ import {
 import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
 import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
+import { useRouter } from 'next/navigation'
 
 import NutGrid from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
@@ -19,7 +20,6 @@ import NavBar from '@/client/components/navbar'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
-import Connect from '@/client/components/connect'
 import ChartsContainer from '@/client/components/charts-container'
 
 import { LanguageContext } from '@/client/context/language'
@@ -61,7 +61,6 @@ type Props = {
 export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
-  const [settingsError, setSettingsError] = useState<boolean>(false)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
   )
@@ -70,6 +69,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   )
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
+  const router = useRouter()
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevicesAction(),
@@ -78,33 +78,25 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   useEffect(() => {
     checkSettingsAction().then((res) => {
       setSettingsLoaded(true)
-      setSettingsError(!res)
+      if (!res) {
+        router.replace('/login')
+      }
     })
   }, [])
 
-  const handleConnect = async () => {
-    await refetch()
-    setSettingsLoaded(true)
-    setSettingsError(false)
-  }
-
   const handleDisconnect = async () => {
     await disconnectAction()
-    setSettingsError(true)
+    router.replace('/login')
   }
 
   const loadingWrapper = (
     <div
       className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-      data-testid='wrapper'
+      data-testid='loading-wrapper'
     >
       <Loader />
     </div>
   )
-
-  if (settingsError) {
-    return <Connect onConnect={handleConnect} />
-  }
 
   if (data?.error) {
     let error = 'Internal Server Error'

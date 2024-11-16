@@ -63,9 +63,9 @@ export async function saveVar(device: string, varName: string, value: string) {
   }
 }
 
-export async function checkSettings() {
+export async function checkSettings(): Promise<boolean> {
   const settings = new YamlSettings(settingsFile)
-  return !!settings.get('NUT_HOST')
+  return !!(settings.get('NUT_HOST') && settings.get('NUT_PORT'))
 }
 
 export async function getSettings(key: string) {

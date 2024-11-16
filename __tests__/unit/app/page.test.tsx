@@ -6,6 +6,14 @@ import { checkSettings } from '@/app/actions'
 
 const queryClient = new ReactQuery.QueryClient()
 
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      replace: () => null,
+    }
+  },
+}))
+
 jest.mock('@tanstack/react-query', () => {
   const original: typeof ReactQuery = jest.requireActual('@tanstack/react-query')
 

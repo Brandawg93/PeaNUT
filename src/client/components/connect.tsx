@@ -3,6 +3,7 @@
 import 'react-toastify/dist/ReactToastify.css'
 import React, { useContext, useEffect } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { Card, Input, Button } from '@material-tailwind/react'
@@ -12,19 +13,14 @@ import { ThemeContext } from '@/client/context/theme'
 import logo from '@/app/icon.svg'
 import { setSettings, testConnection } from '@/app/actions'
 
-type Props = {
-  onConnect: () => void
-}
-
-export default function Connect(props: Props) {
+export default function Connect() {
   const [server, setServer] = React.useState<string>('')
   const [port, setPort] = React.useState<number>(3493)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
   const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
-
-  const { onConnect } = props
+  const router = useRouter()
 
   useEffect(() => {
     async function getLoader() {
@@ -36,9 +32,9 @@ export default function Connect(props: Props) {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    setSettings('NUT_HOST', server)
-    setSettings('NUT_PORT', port)
-    onConnect()
+    await setSettings('NUT_HOST', server)
+    await setSettings('NUT_PORT', port)
+    router.replace('/')
   }
 
   const handleTestConnection = async () => {
@@ -78,7 +74,7 @@ export default function Connect(props: Props) {
   return (
     <div
       className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-      data-testid='wrapper'
+      data-testid='login-wrapper'
     >
       <ToastContainer position='top-center' theme={theme} />
       <div className='mb-8 flex justify-center'>

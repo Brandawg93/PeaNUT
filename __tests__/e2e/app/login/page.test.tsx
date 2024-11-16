@@ -3,10 +3,10 @@ import { expect, test } from '@playwright/test'
 const hostname = process.env.HOSTNAME || 'localhost'
 const port = process.env.PORT || '3000'
 
-test.describe('Home', () => {
+test.describe('Login', () => {
   test('renders the index', async ({ page }) => {
-    await page.goto(`http://${hostname}:${port}`)
-    const grid = await page.$('[data-testid="grid"]')
+    await page.goto(`http://${hostname}:${port}/login`)
+    const grid = await page.$('[data-testid="login-wrapper"]')
 
     expect(grid).toBeDefined()
   })
