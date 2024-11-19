@@ -113,7 +113,7 @@ export default function Connect() {
               crossOrigin=''
             />
           </div>
-          <div className='flex flex-row items-center justify-between'>
+          <div className='flex flex-row justify-between'>
             <Button
               disabled={connecting}
               onClick={handleTestConnection}

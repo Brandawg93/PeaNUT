@@ -10,7 +10,7 @@ import pJson from '../../../package.json'
 import DayNightSwitch from '@/client/components/daynight'
 
 type Props = {
-  updated: Date
+  updated?: Date
 }
 
 export default function Footer({ updated }: Props) {
@@ -50,7 +50,7 @@ export default function Footer({ updated }: Props) {
   )
 
   return (
-    <>
+    <div>
       <div className='grid grid-flow-row grid-cols-2' data-testid='footer'>
         <div>
           <div className='hidden lg:block'>
@@ -65,9 +65,13 @@ export default function Footer({ updated }: Props) {
       </div>
       <div className='mb-3 grid grid-flow-row grid-cols-2 text-gray-600'>
         <div>
-          <p className='m-0 text-sm no-underline'>
-            {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
-          </p>
+          {updated ? (
+            <p className='m-0 text-sm no-underline'>
+              {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
+            </p>
+          ) : (
+            <></>
+          )}
         </div>
         <div className='text-right'>
           <Link className='m-0 text-sm no-underline' href={currentVersion.url} target='_blank' rel='noreferrer'>
@@ -77,6 +81,6 @@ export default function Footer({ updated }: Props) {
           {updateAvailableWrapper}
         </div>
       </div>
-    </>
+    </div>
   )
 }
