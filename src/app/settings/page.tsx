@@ -25,29 +25,31 @@ export default function Settings() {
       </div>
       <div className='flex flex-1 justify-center'>
         <div className='container flex flex-1 flex-col justify-between'>
-          <div className='flex flex-row'>
-            <Card className='w-96 bg-white dark:bg-gray-800'>
-              <List>
-                <ListItem
-                  selected={selected === 1}
-                  onClick={() => setSelectedItem(1)}
-                  className='active: text-black dark:text-white'
-                  style={selected === 1 ? selectedStyle : {}}
-                >
-                  Manage Servers
-                </ListItem>
-                <ListItem
-                  selected={selected === 2}
-                  onClick={() => setSelectedItem(2)}
-                  className='active: text-black dark:text-white'
-                  style={selected === 2 ? selectedStyle : {}}
-                >
-                  Influx DB v2
-                </ListItem>
-              </List>
-            </Card>
-            <div className='flex-1'>
-              <form className='w-full rounded-lg bg-white p-6 dark:bg-gray-800'>
+          <div className='flex h-full flex-row gap-2'>
+            <div>
+              <Card className='w-96 bg-white dark:bg-gray-800'>
+                <List>
+                  <ListItem
+                    selected={selected === 1}
+                    onClick={() => setSelectedItem(1)}
+                    className='active: text-black dark:text-white'
+                    style={selected === 1 ? selectedStyle : {}}
+                  >
+                    Manage Servers
+                  </ListItem>
+                  <ListItem
+                    selected={selected === 2}
+                    onClick={() => setSelectedItem(2)}
+                    className='active: text-black dark:text-white'
+                    style={selected === 2 ? selectedStyle : {}}
+                  >
+                    Influx DB v2
+                  </ListItem>
+                </List>
+              </Card>
+            </div>
+            <div className='h-full flex-1'>
+              <form className='h-full w-full rounded-lg bg-white p-6 dark:bg-gray-800'>
                 <div className='mb-4'>
                   <Input
                     type='text'
