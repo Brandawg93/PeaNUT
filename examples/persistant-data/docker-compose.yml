@@ -2,15 +2,17 @@ services:
   nut-upsd:
     image: instantlinux/nut-upsd
     container_name: nut-upsd
-    devices:
-      - /dev/bus/usb
+    volumes:
+      - ../../config:/etc/nut
+    # devices:
+    #   - /dev/bus/usb
     restart: unless-stopped
 
   peanut:
-    image: brandawg93/peanut:latest
+    image: brandawg93/peanut:local
     container_name: PeaNUT
     volumes:
-      - ${PWD}/config:/config
+      - ../../config:/config
     restart: unless-stopped
     ports:
       - 8080:8080
