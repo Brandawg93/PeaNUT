@@ -2,6 +2,14 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import NavBar from '@/client/components/navbar'
 
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      replace: () => null,
+    }
+  },
+}))
+
 const devices = [
   {
     vars: {},

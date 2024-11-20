@@ -91,19 +91,4 @@ describe('Wrapper Component', () => {
     const wrapper = await findByTestId('wrapper')
     expect(wrapper).toBeInTheDocument()
   })
-
-  it('disconnects on handleDisconnect', async () => {
-    const mockRouter = {
-      replace: jest.fn(),
-    }
-    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
-    const { findByTestId } = renderComponent(true)
-    const navbar = await findByTestId('navbar')
-    expect(navbar).toBeInTheDocument()
-    const disconnectButton = await findByTestId('disconnect-button')
-    disconnectButton.click()
-    const wrapper = await findByTestId('wrapper')
-    expect(wrapper).toBeInTheDocument()
-    expect(mockRouter.replace).toHaveBeenCalled()
-  })
 })
