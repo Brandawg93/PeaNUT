@@ -25,9 +25,14 @@
   },
   "sidebar": {
     "settings": "Settings",
+    "moreSettings": "More Settings",
     "theme": "Theme",
     "disconnect": "Disconnect",
     "refresh": "Refresh"
+  },
+  "settings": {
+    "manageServers": "Manage Servers",
+    "influxDb": "InfluxDB"
   },
   "connect": {
     "server": "Server Address",

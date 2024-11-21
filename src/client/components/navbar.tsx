@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option, IconButton, Drawer, Card, Button } from '@material-tailwind/react'
-import { Bars3Icon, XMarkIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
 import { Cog6ToothIcon } from '@heroicons/react/24/outline'
 
 import { LanguageContext } from '@/client/context/language'
@@ -25,7 +25,7 @@ type Props = {
 }
 
 export default function NavBar(props: Props) {
-  const { onRefreshClick, onRefetch, onDeviceChange, onDisconnect, devices, disableRefresh } = props
+  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
   const [device, setDevice] = useState(devices[0])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [refreshInterval, setRefreshInterval] = useState<number>(Number(localStorage.getItem('refreshInterval')) || 0)
@@ -166,17 +166,17 @@ export default function NavBar(props: Props) {
                   <div className='grid grid-flow-row grid-cols-2'>
                     <div className='flex flex-col justify-around'>
                       <Typography className='font-medium text-gray-800 dark:text-gray-300'>
-                        {t('sidebar.disconnect')}
+                        {t('sidebar.moreSettings')}
                       </Typography>
                     </div>
                     <div className='mb-3 mt-3'>
                       <Button
                         variant='filled'
-                        title={t('sidebar.disconnect')}
-                        className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
-                        onClick={() => onDisconnect()}
+                        title={t('sidebar.moreSettings')}
+                        className='text-md float-right bg-gray-400 px-4 py-2 text-black shadow-none dark:bg-gray-800 dark:text-white'
+                        onClick={() => router.push('/settings')}
                       >
-                        <ArrowRightStartOnRectangleIcon className='h-4 w-4 stroke-2 dark:text-white' />
+                        <Cog6ToothIcon className='h-6 w-6 dark:text-white' />
                       </Button>
                     </div>
                   </div>

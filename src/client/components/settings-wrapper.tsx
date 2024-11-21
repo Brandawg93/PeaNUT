@@ -1,8 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from 'react-i18next'
+import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from '@icons-pack/react-simple-icons'
 import { ServerStackIcon } from '@heroicons/react/24/outline'
 import Footer from '@/client/components/footer'
@@ -18,6 +20,8 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
   const [server, setServer] = useState<string>('')
   const [port, setPort] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
 
   const router = useRouter()
 
@@ -93,16 +97,24 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
             {selected === 1 && (
               <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
                 {settingsLoaded ? (
-                  <AddServer
-                    server={server}
-                    port={port}
-                    setServer={() => null}
-                    setPort={() => null}
-                    handleSubmit={() => null}
-                  />
+                  <div>
+                    <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    <AddServer
+                      server={server}
+                      port={port}
+                      setServer={() => null}
+                      setPort={() => null}
+                      handleSubmit={() => null}
+                    />
+                  </div>
                 ) : (
                   skeleton
                 )}
+              </div>
+            )}
+            {selected === 2 && (
+              <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
+                <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
               </div>
             )}
           </div>
