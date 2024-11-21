@@ -101,14 +101,14 @@ export default function NavBar(props: Props) {
             </div>
             &nbsp;
             <div className='hidden lg:block'>
-              <Button
+              <IconButton
                 variant='text'
-                className='text-md float-right px-3 text-black shadow-none dark:text-white'
+                className='px-3 text-black shadow-none dark:text-white'
                 title={t('sidebar.settings')}
                 onClick={() => router.push('/settings')}
               >
                 <Cog6ToothIcon className='h-6 w-6 stroke-1 dark:text-white' />
-              </Button>
+              </IconButton>
             </div>
             <IconButton variant='text' className='block lg:hidden' size='lg' onClick={openDrawer}>
               {isDrawerOpen ? (

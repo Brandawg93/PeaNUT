@@ -1,25 +1,25 @@
 'use client'
 
 import React, { useState, useEffect, useContext } from 'react'
-import { Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
+import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from '@icons-pack/react-simple-icons'
-import { ServerStackIcon } from '@heroicons/react/24/outline'
+import { ServerStackIcon, PlusIcon } from '@heroicons/react/24/outline'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: (key: string) => Promise<any>
+  setSettingsAction: (key: string, value: any) => Promise<void>
 }
 
 export default function SettingsWrapper({ checkSettingsAction, getSettingsAction }: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(1)
-  const [server, setServer] = useState<string>('')
-  const [port, setPort] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
+  const [serverList, setServerList] = useState<Array<{ host: string; port: number }>>([])
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
@@ -38,15 +38,25 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
           getSettingsAction('NUT_HOST'),
           getSettingsAction('NUT_PORT'),
         ])
-        if (settingsServer) {
-          setServer(settingsServer)
-        }
-        if (settingsPort) {
-          setPort(+settingsPort)
+        if (settingsServer && settingsPort) {
+          setServerList([{ host: settingsServer, port: settingsPort }])
         }
       }
     })
   }, [])
+
+  const handleSetServer = (value: string, index: number) => {
+    const updatedServerList = [...serverList]
+    updatedServerList[index].host = value
+    setServerList(updatedServerList)
+  }
+
+  const handleSetPort = (value: number, index: number) => {
+    const updatedServerList = [...serverList]
+    updatedServerList[index].port = value
+    setServerList(updatedServerList)
+  }
+  const handleSaveSettings = () => null
 
   const skeleton = (
     <div className='flex flex-col gap-3'>
@@ -94,29 +104,53 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
                 </List>
               </Card>
             </div>
-            {selected === 1 && (
-              <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
-                {settingsLoaded ? (
-                  <div>
-                    <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
-                    <AddServer
-                      server={server}
-                      port={port}
-                      setServer={() => null}
-                      setPort={() => null}
-                      handleSubmit={() => null}
-                    />
-                  </div>
-                ) : (
-                  skeleton
-                )}
-              </div>
-            )}
-            {selected === 2 && (
-              <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
-                <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-              </div>
-            )}
+            <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
+              {settingsLoaded ? (
+                <>
+                  {selected === 1 && (
+                    <div className='flex h-full flex-col justify-between'>
+                      <div>
+                        <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
+                        {serverList.map((server, index) => (
+                          <AddServer
+                            removable={serverList.length > 1}
+                            key={index}
+                            server={server.host}
+                            port={server.port}
+                            setServer={() => handleSetServer(server.host, index)}
+                            setPort={() => handleSetPort(server.port, index)}
+                            handleSubmit={handleSaveSettings}
+                            handleRemove={() => setServerList(serverList.filter((_, i) => i !== index))}
+                          />
+                        ))}
+                        <div className='text-center'>
+                          <Button
+                            variant='filled'
+                            title={t('settings.addServer')}
+                            className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
+                            onClick={() => setServerList([...serverList, { host: '', port: 0 }])}
+                          >
+                            <PlusIcon className='h-6 w-6 dark:text-white' />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className='flex flex-row justify-between'>
+                        <div />
+                        <Button className='shadow-none'>{t('settings.apply')}</Button>
+                      </div>
+                    </div>
+                  )}
+                  {selected === 2 && (
+                    <div>
+                      <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
+                      <div>Influx</div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                skeleton
+              )}
+            </div>
           </div>
           <Footer />
         </div>

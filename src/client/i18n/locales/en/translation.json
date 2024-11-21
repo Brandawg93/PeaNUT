@@ -32,7 +32,9 @@
   },
   "settings": {
     "manageServers": "Manage Servers",
-    "influxDb": "InfluxDB"
+    "influxDb": "InfluxDB",
+    "addServer": "Add Server",
+    "apply": "Apply"
   },
   "connect": {
     "server": "Server Address",

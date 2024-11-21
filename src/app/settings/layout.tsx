@@ -12,7 +12,7 @@ export default function SettingsLayout({
 }) {
   return (
     <div
-      className='flex h-screen flex-col bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
+      className='flex h-full min-h-screen flex-col bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
       data-testid='wrapper'
     >
       <Navbar
