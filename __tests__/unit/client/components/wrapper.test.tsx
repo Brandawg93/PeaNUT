@@ -13,11 +13,11 @@ jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
 }))
 
-jest.mock('../../../../src/client/components/footer', () => {
-  const MockFooter = () => <div data-testid='mock-footer'>Mock Footer</div>
-  MockFooter.displayName = 'MockFooter'
-  return MockFooter
-})
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve([{ name: '1.0.0' }]),
+  })
+) as jest.Mock
 
 describe('Wrapper Component', () => {
   const mockDevicesData = {
