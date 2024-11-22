@@ -11,9 +11,13 @@ import { Card, Input, Button } from '@material-tailwind/react'
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'
 import logo from '@/app/icon.svg'
-import { setSettings, testConnection } from '@/app/actions'
 
-export default function Connect() {
+type ConnectProps = {
+  testConnectionAction: (server: string, port: number) => Promise<string>
+  setSettingsAction: (key: string, value: any) => Promise<void>
+}
+
+export default function Connect({ testConnectionAction, setSettingsAction }: ConnectProps) {
   const [server, setServer] = React.useState<string>('')
   const [port, setPort] = React.useState<number>(3493)
   const [connecting, setConnecting] = React.useState<boolean>(false)
@@ -32,15 +36,15 @@ export default function Connect() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    await setSettings('NUT_HOST', server)
-    await setSettings('NUT_PORT', port)
+    await setSettingsAction('NUT_HOST', server)
+    await setSettingsAction('NUT_PORT', port)
     router.replace('/')
   }
 
   const handleTestConnection = async () => {
     if (server && port) {
       setConnecting(true)
-      const promise = testConnection(server, port)
+      const promise = testConnectionAction(server, port)
       toast.promise(promise, {
         pending: t('connect.testing'),
         success: {

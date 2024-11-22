@@ -1,5 +1,6 @@
 'use client'
 
+import 'react-toastify/dist/ReactToastify.css'
 import React, { useState, useEffect, useContext } from 'react'
 import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'
@@ -9,17 +10,26 @@ import { SiInfluxdb } from '@icons-pack/react-simple-icons'
 import { ServerStackIcon, PlusIcon } from '@heroicons/react/24/outline'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
+import AddInflux from './add-influx'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: (key: string) => Promise<any>
   setSettingsAction: (key: string, value: any) => Promise<void>
+  testConnectionAction: (server: string, port: number) => Promise<string>
 }
 
-export default function SettingsWrapper({ checkSettingsAction, getSettingsAction }: SettingsWrapperProps) {
+export default function SettingsWrapper({
+  checkSettingsAction,
+  getSettingsAction,
+  setSettingsAction,
+  testConnectionAction,
+}: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(1)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [serverList, setServerList] = useState<Array<{ host: string; port: number }>>([])
+  const [influxServer, setInfluxServer] = useState<string>('')
+  const [influxPort, setInfluxPort] = useState<number>(0)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
@@ -34,29 +44,35 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
       if (!res) {
         router.replace('/login')
       } else {
-        const [settingsServer, settingsPort] = await Promise.all([
+        const [settingsServer, settingsPort, influxHost, influxPort] = await Promise.all([
           getSettingsAction('NUT_HOST'),
           getSettingsAction('NUT_PORT'),
+          getSettingsAction('INFLUX_HOST'),
+          getSettingsAction('INFLUX_PORT'),
         ])
         if (settingsServer && settingsPort) {
           setServerList([{ host: settingsServer, port: settingsPort }])
+        }
+        if (influxHost && influxPort) {
+          setInfluxServer(influxHost)
+          setInfluxPort(influxPort)
         }
       }
     })
   }, [])
 
-  const handleSetServer = (value: string, index: number) => {
+  const handleServerChange = (server: string, port: number, index: number) => {
     const updatedServerList = [...serverList]
-    updatedServerList[index].host = value
+    updatedServerList[index].host = server
+    updatedServerList[index].port = port
     setServerList(updatedServerList)
   }
 
-  const handleSetPort = (value: number, index: number) => {
-    const updatedServerList = [...serverList]
-    updatedServerList[index].port = value
-    setServerList(updatedServerList)
+  const handleSaveServers = () => null
+  const handleSaveInflux = () => {
+    setSettingsAction('INFLUX_HOST', influxServer)
+    setSettingsAction('INFLUX_PORT', influxPort)
   }
-  const handleSaveSettings = () => null
 
   const skeleton = (
     <div className='flex flex-col gap-3'>
@@ -77,7 +93,7 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
         <div className='container flex flex-1 flex-col justify-between'>
           <div className='flex h-full flex-row gap-2'>
             <div>
-              <Card className='bg-white lg:w-96 dark:bg-gray-800'>
+              <Card className='bg-white dark:bg-gray-800'>
                 <List className='min-w-0'>
                   <ListItem
                     selected={selected === 1}
@@ -109,18 +125,17 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
                 <>
                   {selected === 1 && (
                     <div className='flex h-full flex-col justify-between'>
-                      <div>
+                      <div className='container'>
                         <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
                         {serverList.map((server, index) => (
                           <AddServer
                             removable={serverList.length > 1}
                             key={index}
-                            server={server.host}
-                            port={server.port}
-                            setServer={() => handleSetServer(server.host, index)}
-                            setPort={() => handleSetPort(server.port, index)}
-                            handleSubmit={handleSaveSettings}
+                            initialServer={server.host}
+                            initialPort={server.port}
+                            handleChange={(server, port) => handleServerChange(server, port, index)}
                             handleRemove={() => setServerList(serverList.filter((_, i) => i !== index))}
+                            testConnectionAction={testConnectionAction}
                           />
                         ))}
                         <div className='text-center'>
@@ -136,14 +151,32 @@ export default function SettingsWrapper({ checkSettingsAction, getSettingsAction
                       </div>
                       <div className='flex flex-row justify-between'>
                         <div />
-                        <Button className='shadow-none'>{t('settings.apply')}</Button>
+                        <Button onClick={handleSaveServers} className='shadow-none'>
+                          {t('settings.apply')}
+                        </Button>
                       </div>
                     </div>
                   )}
                   {selected === 2 && (
-                    <div>
-                      <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                      <div>Influx</div>
+                    <div className='flex h-full flex-col justify-between'>
+                      <div className='container'>
+                        <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
+                        <AddInflux
+                          initialServer={influxServer}
+                          initialPort={influxPort}
+                          handleChange={(server, port) => {
+                            setInfluxServer(server)
+                            setInfluxPort(port)
+                          }}
+                          testConnectionAction={testConnectionAction}
+                        />
+                      </div>
+                      <div className='flex flex-row justify-between'>
+                        <div />
+                        <Button onClick={handleSaveInflux} className='shadow-none'>
+                          {t('settings.apply')}
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </>

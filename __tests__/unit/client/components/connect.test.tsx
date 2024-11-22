@@ -14,11 +14,13 @@ jest.mock('next/navigation', () => ({
 
 describe('Connect Component', () => {
   const mockLanguageContext = 'en'
+  const mockSetSettings = jest.fn()
+  const mockTestConnection = jest.fn().mockResolvedValue('success')
 
   const renderComponent = () =>
     render(
       <LanguageContext.Provider value={mockLanguageContext}>
-        <Connect />
+        <Connect setSettingsAction={mockSetSettings} testConnectionAction={mockTestConnection} />
       </LanguageContext.Provider>
     )
 
