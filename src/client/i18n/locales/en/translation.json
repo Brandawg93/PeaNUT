@@ -39,6 +39,9 @@
   "connect": {
     "server": "Server Address",
     "port": "Port",
+    "token": "Token",
+    "org": "Organization",
+    "bucket": "Bucket",
     "connect": "Connect",
     "test": "Test",
     "success": "Connection successful",

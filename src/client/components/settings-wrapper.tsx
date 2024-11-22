@@ -29,7 +29,9 @@ export default function SettingsWrapper({
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [serverList, setServerList] = useState<Array<{ host: string; port: number }>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
-  const [influxPort, setInfluxPort] = useState<number>(0)
+  const [influxToken, setInfluxToken] = useState<string>('')
+  const [influxOrg, setInfluxOrg] = useState<string>('')
+  const [influxBucket, setInfluxBucket] = useState<string>('')
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
@@ -44,18 +46,22 @@ export default function SettingsWrapper({
       if (!res) {
         router.replace('/login')
       } else {
-        const [settingsServer, settingsPort, influxHost, influxPort] = await Promise.all([
+        const [settingsServer, settingsPort, influxHost, influxToken, influxOrg, influxBucket] = await Promise.all([
           getSettingsAction('NUT_HOST'),
           getSettingsAction('NUT_PORT'),
           getSettingsAction('INFLUX_HOST'),
-          getSettingsAction('INFLUX_PORT'),
+          getSettingsAction('INFLUX_TOKEN'),
+          getSettingsAction('INFLUX_ORG'),
+          getSettingsAction('INFLUX_BUCKET'),
         ])
         if (settingsServer && settingsPort) {
           setServerList([{ host: settingsServer, port: settingsPort }])
         }
-        if (influxHost && influxPort) {
+        if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
-          setInfluxPort(influxPort)
+          setInfluxToken(influxToken)
+          setInfluxOrg(influxOrg)
+          setInfluxBucket(influxBucket)
         }
       }
     })
@@ -71,7 +77,9 @@ export default function SettingsWrapper({
   const handleSaveServers = () => null
   const handleSaveInflux = () => {
     setSettingsAction('INFLUX_HOST', influxServer)
-    setSettingsAction('INFLUX_PORT', influxPort)
+    setSettingsAction('INFLUX_TOKEN', influxToken)
+    setSettingsAction('INFLUX_ORG', influxOrg)
+    setSettingsAction('INFLUX_BUCKET', influxBucket)
   }
 
   const skeleton = (
@@ -162,11 +170,17 @@ export default function SettingsWrapper({
                       <div className='container'>
                         <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
                         <AddInflux
-                          initialServer={influxServer}
-                          initialPort={influxPort}
-                          handleChange={(server, port) => {
+                          initialValues={{
+                            server: influxServer,
+                            token: influxToken,
+                            org: influxOrg,
+                            bucket: influxBucket,
+                          }}
+                          handleChange={(server, token, org, bucket) => {
                             setInfluxServer(server)
-                            setInfluxPort(port)
+                            setInfluxToken(token)
+                            setInfluxOrg(org)
+                            setInfluxBucket(bucket)
                           }}
                           testConnectionAction={testConnectionAction}
                         />
