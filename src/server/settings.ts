@@ -26,7 +26,7 @@ export class YamlSettings {
     this.load()
   }
 
-  private load(): void {
+  public load(): void {
     fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
     if (fs.existsSync(this.filePath)) {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
