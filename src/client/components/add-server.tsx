@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { Button, IconButton, Input } from '@material-tailwind/react'
@@ -34,7 +34,12 @@ export default function AddServer({
   const [port, setPort] = useState<number>(initialPort)
   const [username, setUsername] = useState<string | undefined>(initialUsername)
   const [password, setPassword] = useState<string | undefined>(initialPassword)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
   const [connecting, setConnecting] = useState<boolean>(false)
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
 
   const handleTestConnection = async () => {
     if (server && port) {
@@ -131,7 +136,16 @@ export default function AddServer({
           </div>
           <div className='mb-6'>
             <Input
-              type='text'
+              type={showPassword ? 'text' : 'password'}
+              icon={
+                <Button onClick={toggleShowPassword} className='relative overflow-hidden p-0' variant='text'>
+                  {showPassword ? (
+                    <EyeSlashIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                  ) : (
+                    <EyeIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                  )}
+                </Button>
+              }
               variant='outlined'
               label={t('connect.password')}
               value={password}
