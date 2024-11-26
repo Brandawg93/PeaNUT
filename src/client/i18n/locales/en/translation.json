@@ -33,6 +33,7 @@
   "settings": {
     "manageServers": "Manage Servers",
     "influxDb": "InfluxDB",
+    "influxNotice": "This will only work with Influxdb 2.x",
     "addServer": "Add Server",
     "apply": "Apply"
   },

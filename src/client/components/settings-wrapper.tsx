@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from '@icons-pack/react-simple-icons'
-import { ServerStackIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { ServerStackIcon, PlusIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
@@ -184,6 +184,10 @@ export default function SettingsWrapper({
                     <div className='flex h-full flex-col justify-between'>
                       <div className='container'>
                         <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
+                        <span className='text-sm text-gray-500'>
+                          <InformationCircleIcon className='inline-block h-4 w-4' />
+                          {t('settings.influxNotice')}
+                        </span>
                         <AddInflux
                           initialValues={{
                             server: influxServer,
