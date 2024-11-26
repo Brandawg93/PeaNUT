@@ -27,7 +27,9 @@ export default function SettingsWrapper({
 }: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(1)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
-  const [serverList, setServerList] = useState<Array<{ host: string; port: number }>>([])
+  const [serverList, setServerList] = useState<
+    Array<{ HOST: string; PORT: number; USERNAME?: string; PASSWORD?: string }>
+  >([])
   const [influxServer, setInfluxServer] = useState<string>('')
   const [influxToken, setInfluxToken] = useState<string>('')
   const [influxOrg, setInfluxOrg] = useState<string>('')
@@ -46,16 +48,15 @@ export default function SettingsWrapper({
       if (!res) {
         router.replace('/login')
       } else {
-        const [settingsServer, settingsPort, influxHost, influxToken, influxOrg, influxBucket] = await Promise.all([
-          getSettingsAction('NUT_HOST'),
-          getSettingsAction('NUT_PORT'),
+        const [servers, influxHost, influxToken, influxOrg, influxBucket] = await Promise.all([
+          getSettingsAction('NUT_SERVERS'),
           getSettingsAction('INFLUX_HOST'),
           getSettingsAction('INFLUX_TOKEN'),
           getSettingsAction('INFLUX_ORG'),
           getSettingsAction('INFLUX_BUCKET'),
         ])
-        if (settingsServer && settingsPort) {
-          setServerList([{ host: settingsServer, port: settingsPort }])
+        if (servers) {
+          setServerList([...servers])
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -67,10 +68,18 @@ export default function SettingsWrapper({
     })
   }, [])
 
-  const handleServerChange = (server: string, port: number, index: number) => {
+  const handleServerChange = (
+    server: string,
+    port: number,
+    username: string | undefined,
+    password: string | undefined,
+    index: number
+  ) => {
     const updatedServerList = [...serverList]
-    updatedServerList[index].host = server
-    updatedServerList[index].port = port
+    updatedServerList[index].HOST = server
+    updatedServerList[index].PORT = port
+    updatedServerList[index].USERNAME = username
+    updatedServerList[index].PASSWORD = password
     setServerList(updatedServerList)
   }
 
@@ -139,9 +148,13 @@ export default function SettingsWrapper({
                           <AddServer
                             removable={serverList.length > 1}
                             key={index}
-                            initialServer={server.host}
-                            initialPort={server.port}
-                            handleChange={(server, port) => handleServerChange(server, port, index)}
+                            initialServer={server.HOST}
+                            initialPort={server.PORT}
+                            initialUsername={server.USERNAME}
+                            initialPassword={server.PASSWORD}
+                            handleChange={(server, port, username, password) =>
+                              handleServerChange(server, port, username, password, index)
+                            }
                             handleRemove={() => setServerList(serverList.filter((_, i) => i !== index))}
                             testConnectionAction={testConnectionAction}
                           />
@@ -151,7 +164,7 @@ export default function SettingsWrapper({
                             variant='filled'
                             title={t('settings.addServer')}
                             className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
-                            onClick={() => setServerList([...serverList, { host: '', port: 0 }])}
+                            onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
                           >
                             <PlusIcon className='h-6 w-6 dark:text-white' />
                           </Button>

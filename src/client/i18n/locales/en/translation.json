@@ -39,6 +39,8 @@
   "connect": {
     "server": "Server Address",
     "port": "Port",
+    "username": "Username",
+    "password": "Password",
     "token": "Token",
     "org": "Organization",
     "bucket": "Bucket",

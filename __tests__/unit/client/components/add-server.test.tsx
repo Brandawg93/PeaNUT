@@ -14,6 +14,8 @@ describe('AddServer Component', () => {
         <AddServer
           initialServer='localhost'
           initialPort={8080}
+          initialUsername='admin'
+          initialPassword='nut_test'
           handleChange={mockHandleChange}
           handleRemove={mockHandleRemove}
           testConnectionAction={mockTestConnectionAction}
@@ -33,14 +35,14 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const serverInput = getByTestId('server')
     fireEvent.change(serverInput, { target: { value: 'new-server' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('new-server', 8080)
+    expect(mockHandleChange).toHaveBeenCalledWith('new-server', 8080, undefined, undefined)
   })
 
   test('calls setPort on port input change', () => {
     const { getByTestId } = renderComponent()
     const portInput = getByTestId('port')
     fireEvent.change(portInput, { target: { value: '9090' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 9090)
+    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 9090, undefined, undefined)
   })
 
   test('renders remove button when removable is true', () => {
