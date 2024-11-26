@@ -182,6 +182,7 @@ describe('Nut', () => {
   it('should set variable value', async () => {
     const nut = new Nut('localhost', 3493)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('OK\n')
+    jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
 
     await nut.setVar('ups', 'battery.charge', '90')
     expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('SET VAR ups battery.charge 90')

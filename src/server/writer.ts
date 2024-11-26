@@ -10,7 +10,6 @@ export default class Writer {
 
   constructor() {
     this.settings = new YamlSettings(settingsFile)
-    this.settings.initWithEnvVars()
   }
 
   isWriting(): boolean {

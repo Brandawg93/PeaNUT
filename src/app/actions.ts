@@ -6,9 +6,11 @@ import { YamlSettings } from '@/server/settings'
 
 const settingsFile = './config/settings.yml'
 
-async function connect() {
+async function connect(): Promise<Array<Nut>> {
   const settings = new YamlSettings(settingsFile)
-  return new Nut(settings.get('NUT_HOST'), settings.get('NUT_PORT'), settings.get('USERNAME'), settings.get('PASSWORD'))
+  return settings
+    .get('NUT_SERVERS')
+    .map((server: any) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
 }
 
 export async function testConnection(server: string, port: number) {
@@ -18,22 +20,25 @@ export async function testConnection(server: string, port: number) {
 
 export async function getDevices() {
   try {
-    const nut = await connect()
+    const nuts = await connect()
     const gridProps: Array<DEVICE> = []
-    const devices = await nut.getDevices()
-    const devicePromises = devices.map(async (device) => {
-      const [data, rwVars] = await Promise.all([nut.getData(device.name), nut.getRWVars(device.name)])
-      return {
-        vars: data,
-        rwVars,
-        description: device.description === 'Description unavailable' ? '' : device.description,
-        clients: [],
-        commands: [],
-        name: device.name,
-      }
+    const devicePromises = nuts.map(async (nut) => {
+      const devices = await nut.getDevices()
+      const devicePromises = devices.map(async (device) => {
+        const [data, rwVars] = await Promise.all([nut.getData(device.name), nut.getRWVars(device.name)])
+        return {
+          vars: data,
+          rwVars,
+          description: device.description === 'Description unavailable' ? '' : device.description,
+          clients: [],
+          commands: [],
+          name: device.name,
+        }
+      })
+      const resolvedDevices = await Promise.all(devicePromises)
+      gridProps.push(...resolvedDevices)
     })
-    const resolvedDevices = await Promise.all(devicePromises)
-    gridProps.push(...resolvedDevices)
+    await Promise.all(devicePromises)
     return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
     return { devices: undefined, updated: new Date(), error: e.message }
@@ -42,8 +47,11 @@ export async function getDevices() {
 
 export async function getAllVarDescriptions(device: string, params: string[]) {
   try {
-    const nut = await connect()
+    const nut = (await connect()).find((nut) => nut.deviceExists(device))
     const data: { [x: string]: string } = {}
+    if (!nut) {
+      return { data: undefined, error: 'Device not found' }
+    }
     const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(device, param)))
     params.forEach((param, index) => {
       data[param] = descriptions[index]
@@ -56,8 +64,14 @@ export async function getAllVarDescriptions(device: string, params: string[]) {
 
 export async function saveVar(device: string, varName: string, value: string) {
   try {
-    const nut = await connect()
-    await nut.setVar(device, varName, value)
+    const nuts = await connect()
+    const savePromises = nuts.map(async (nut) => {
+      const deviceExists = await nut.deviceExists(device)
+      if (deviceExists) {
+        await nut.setVar(device, varName, value)
+      }
+    })
+    await Promise.all(savePromises)
   } catch (e: any) {
     return { error: e.message }
   }
@@ -65,7 +79,7 @@ export async function saveVar(device: string, varName: string, value: string) {
 
 export async function checkSettings(): Promise<boolean> {
   const settings = new YamlSettings(settingsFile)
-  return !!(settings.get('NUT_HOST') && settings.get('NUT_PORT'))
+  return (settings.get('NUT_SERVERS') as Array<Nut>).length > 0
 }
 
 export async function getSettings(key: string) {
@@ -78,6 +92,13 @@ export async function setSettings(key: string, value: any) {
   settings.set(key, value)
 }
 
+export async function addServer(host: string, port: number, username?: string, password?: string) {
+  const settings = new YamlSettings(settingsFile)
+  const servers = settings.get('NUT_SERVERS') as Array<Nut>
+  servers.push(new Nut(host, port, username, password))
+  settings.set('NUT_SERVERS', servers)
+}
+
 export async function deleteSettings(key: string) {
   const settings = new YamlSettings(settingsFile)
   settings.delete(key)
@@ -85,6 +106,7 @@ export async function deleteSettings(key: string) {
 
 export async function disconnect() {
   const settings = new YamlSettings(settingsFile)
+  settings.delete('NUT_SERVERS')
   settings.delete('NUT_HOST')
   settings.delete('NUT_PORT')
   settings.delete('USERNAME')

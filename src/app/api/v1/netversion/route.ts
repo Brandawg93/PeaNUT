@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getNutInstance } from '@/app/api/utils'
+import { getNutInstances } from '@/app/api/utils'
 
 /**
  * shows the version of the network protocol currently in use.
@@ -15,8 +15,9 @@ import { getNutInstance } from '@/app/api/utils'
  *       - Version
  */
 export async function GET() {
-  const nut = await getNutInstance()
-  const data = await nut.getNetVersion()
+  const nuts = await getNutInstances()
+  const promises = await nuts.map((nut) => nut.getNetVersion())
+  const data = await Promise.all(promises)
   return NextResponse.json(data)
 }
 

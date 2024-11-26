@@ -2,10 +2,10 @@ import { expect, test } from '@playwright/test'
 
 test.describe('Netversion', () => {
   test('should get net version', async ({ request }) => {
-    const create = await request.get('/api/v1/netversion')
-    const createText = await create.text()
+    const req = await request.get('/api/v1/netversion')
+    const json = await req.json()
 
-    expect(create.status()).toBe(200)
-    expect(createText).toContain('1.3')
+    expect(req.status()).toBe(200)
+    expect(json[0]).toBe('1.3')
   })
 })

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { DEVICE } from '@/common/types'
-import { getNutInstance } from '@/app/api/utils'
+import { getSingleNutInstance } from '@/app/api/utils'
 
 type Params = {
   device: string
@@ -36,19 +36,14 @@ type Params = {
  *       - Vars
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
-  const nut = await getNutInstance()
   const { device, param } = await params
+  const nut = await getSingleNutInstance(device)
   const paramString = param
-  try {
-    const data = await nut.getType(device, param)
-    if (data === undefined) {
-      return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
-        status: 404,
-      })
-    }
-    return NextResponse.json(data)
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(`Parameter ${paramString.toString()} on device ${device} not found`, { status: 404 })
+  const data = await nut?.getType(device, param)
+  if (data === undefined) {
+    return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
+      status: 404,
+    })
   }
+  return NextResponse.json(data)
 }

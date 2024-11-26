@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { DEVICE } from '@/common/types'
-import { getNutInstance } from '@/app/api/utils'
+import { getSingleNutInstance } from '@/app/api/utils'
 
 type Params = {
   device: string
@@ -36,11 +36,11 @@ type Params = {
  *       - Vars
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
-  const nut = await getNutInstance()
   const { device, param } = await params
+  const nut = await getSingleNutInstance(device)
   const paramString = param
   try {
-    const data = await nut.getVar(device, param)
+    const data = await nut?.getVar(device, param)
     if (data === undefined) {
       return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
         status: 404,
@@ -89,15 +89,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
  *       - Vars
  */
 export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
-  const nut = await getNutInstance()
   const { device, param } = await params
+  const nut = await getSingleNutInstance(device)
   const value = await request.json()
 
   try {
-    await nut.setVar(device, param, value)
-    return NextResponse.json(`Variable ${param} on device ${device} saved successfully`)
+    const deviceExists = await nut?.deviceExists(device)
+    if (!deviceExists) {
+      return NextResponse.json(`Device ${device} not found on any instance`, { status: 404 })
+    }
+
+    // Only save the variable on the first instance that has the device
+    await nut?.setVar(device, param, value)
+    return NextResponse.json(`Variable ${param} on device ${device} saved successfully on device ${device}`)
   } catch (e) {
     console.error(e)
-    return NextResponse.json(`Failed to save variable ${param} on device ${device}`, { status: 500 })
+    return NextResponse.json(`Failed to save variable ${param} on device ${device}`, {
+      status: 500,
+    })
   }
 }

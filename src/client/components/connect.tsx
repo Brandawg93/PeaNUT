@@ -14,10 +14,10 @@ import logo from '@/app/icon.svg'
 
 type ConnectProps = {
   testConnectionAction: (server: string, port: number) => Promise<string>
-  setSettingsAction: (key: string, value: any) => Promise<void>
+  addServerAction: (host: string, port: number) => Promise<void>
 }
 
-export default function Connect({ testConnectionAction, setSettingsAction }: ConnectProps) {
+export default function Connect({ testConnectionAction, addServerAction }: ConnectProps) {
   const [server, setServer] = React.useState<string>('')
   const [port, setPort] = React.useState<number>(3493)
   const [connecting, setConnecting] = React.useState<boolean>(false)
@@ -36,8 +36,7 @@ export default function Connect({ testConnectionAction, setSettingsAction }: Con
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    await setSettingsAction('NUT_HOST', server)
-    await setSettingsAction('NUT_PORT', port)
+    await addServerAction(server, port)
     router.replace('/')
   }
 

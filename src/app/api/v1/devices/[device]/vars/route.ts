@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getNutInstance } from '@/app/api/utils'
+import { getSingleNutInstance } from '@/app/api/utils'
 
 /**
  * Retrieves data for a specific device.
@@ -24,14 +24,12 @@ import { getNutInstance } from '@/app/api/utils'
  *       - Vars
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: any }> }) {
-  const nut = await getNutInstance()
   const { device } = await params
-  try {
-    const data = await nut.getData(device)
-    const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
-    return NextResponse.json(ret)
-  } catch (e) {
-    console.error(e)
+  const nut = await getSingleNutInstance(device)
+  const data = await nut?.getData(device)
+  if (data === undefined) {
     return NextResponse.json(`Device ${device} not found`, { status: 404 })
   }
+  const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
+  return NextResponse.json(ret)
 }

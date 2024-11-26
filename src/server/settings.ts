@@ -2,13 +2,17 @@ import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
 
+type server = {
+  HOST: string | undefined
+  PORT: number
+  USERNAME: string | undefined
+  PASSWORD: string | undefined
+}
+
 const ISettings = {
-  NUT_HOST: undefined,
-  NUT_PORT: 3493,
+  NUT_SERVERS: [] as Array<server>,
   WEB_HOST: 'localhost',
   WEB_PORT: 8080,
-  USERNAME: undefined,
-  PASSWORD: undefined,
   INFLUX_HOST: undefined,
   INFLUX_TOKEN: undefined,
   INFLUX_ORG: undefined,
@@ -24,6 +28,7 @@ export class YamlSettings {
     this.filePath = filePath
     this.data = {}
     this.load()
+    this.initWithEnvVars()
   }
 
   public load(): void {
@@ -39,8 +44,21 @@ export class YamlSettings {
       const envValue = process.env[key]
       if (envValue !== undefined && this.data[key as keyof typeof ISettings] === undefined) {
         const typedKey = key as keyof typeof ISettings
-        this.data[typedKey] = typeof ISettings[typedKey] === 'number' ? Number(envValue) : envValue
+        if (typedKey === 'NUT_SERVERS') {
+          this.data[typedKey] = JSON.parse(envValue)
+        } else {
+          this.data[typedKey] = typeof ISettings[typedKey] === 'number' ? Number(envValue) : envValue
+        }
       }
+    }
+
+    // Backwards compatibility for NUT_HOST and NUT_PORT
+    const nutHost = process.env.NUT_HOST
+    const nutPort = process.env.NUT_PORT
+    const username = process.env.USERNAME
+    const password = process.env.PASSWORD
+    if (nutHost && nutPort) {
+      this.data.NUT_SERVERS = [{ HOST: nutHost, PORT: Number(nutPort), USERNAME: username, PASSWORD: password }]
     }
   }
 
@@ -49,7 +67,7 @@ export class YamlSettings {
     fs.writeFileSync(this.filePath, yamlStr, 'utf8')
   }
 
-  public initWithEnvVars(): void {
+  private initWithEnvVars(): void {
     this.loadFromEnvVars()
     this.save()
   }
