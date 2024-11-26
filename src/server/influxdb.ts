@@ -1,11 +1,22 @@
 import { InfluxDB, Point, HttpError } from '@influxdata/influxdb-client'
+import { PingAPI } from '@influxdata/influxdb-client-apis'
 import { DEVICE } from '@/common/types'
 
 export default class InfluxWriter {
   private writeApi: ReturnType<InfluxDB['getWriteApi']>
+  private url: string
+  private token: string
 
   constructor(url: string, token: string, org: string, bucket: string) {
+    this.url = url
+    this.token = token
     this.writeApi = new InfluxDB({ url, token }).getWriteApi(org, bucket, 's')
+  }
+
+  async testConnection() {
+    const influx = new InfluxDB({ url: this.url, token: this.token })
+    const ping = new PingAPI(influx)
+    return ping.getPing()
   }
 
   writePoint(device: DEVICE, timestamp?: Date | number) {

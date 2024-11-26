@@ -8,10 +8,10 @@ import { Button, Input } from '@material-tailwind/react'
 type AddInfluxProps = {
   initialValues: { server: string; token: string; org: string; bucket: string }
   handleChange: (server: string, token: string, org: string, bucket: string) => void
-  testConnectionAction: (server: string, port: number) => Promise<string>
+  testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
 }
 
-export default function AddInflux({ initialValues, handleChange, testConnectionAction }: AddInfluxProps) {
+export default function AddInflux({ initialValues, handleChange, testInfluxConnectionAction }: AddInfluxProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useContext(ThemeContext)
@@ -24,7 +24,7 @@ export default function AddInflux({ initialValues, handleChange, testConnectionA
   const handleTestConnection = async () => {
     if (server && token) {
       setConnecting(true)
-      const promise = testConnectionAction(server, 80)
+      const promise = testInfluxConnectionAction(server, token, org, bucket)
       toast.promise(promise, {
         pending: t('connect.testing'),
         success: {

@@ -22,6 +22,7 @@ const mockCheckSettingsAction = jest.fn()
 const mockGetSettingsAction = jest.fn()
 const mockSetSettingsAction = jest.fn()
 const mockTestConnectionAction = jest.fn().mockResolvedValue('success')
+const mockTestInfluxConnectionAction = jest.fn()
 
 const renderComponent = () =>
   render(
@@ -31,6 +32,7 @@ const renderComponent = () =>
         getSettingsAction={mockGetSettingsAction}
         setSettingsAction={mockSetSettingsAction}
         testConnectionAction={mockTestConnectionAction}
+        testInfluxConnectionAction={mockTestInfluxConnectionAction}
       />
     </LanguageContext.Provider>
   )

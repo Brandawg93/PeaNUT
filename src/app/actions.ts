@@ -1,5 +1,6 @@
 'use server'
 
+import InfluxWriter from '@/server/influxdb'
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings } from '@/server/settings'
@@ -16,6 +17,11 @@ async function connect(): Promise<Array<Nut>> {
 export async function testConnection(server: string, port: number) {
   const nut = new Nut(server, port)
   return await nut.testConnection()
+}
+
+export async function testInfluxConnection(host: string, token: string, org: string, bucket: string) {
+  const influxdata = new InfluxWriter(host, token, org, bucket)
+  return await influxdata.testConnection()
 }
 
 export async function getDevices() {

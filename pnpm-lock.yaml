@@ -20,6 +20,9 @@ importers:
       '@influxdata/influxdb-client':
         specifier: ^1.35.0
         version: 1.35.0
+      '@influxdata/influxdb-client-apis':
+        specifier: ^1.35.0
+        version: 1.35.0(@influxdata/influxdb-client@1.35.0)
       '@material-tailwind/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -663,6 +666,11 @@ packages:
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [win32]
+
+  '@influxdata/influxdb-client-apis@1.35.0':
+    resolution: {integrity: sha512-+7h6smVPHYBge2rNKgYh/5k+SriYvPMsoJDfbUiQt1vJtpWnElwgBDLDl7Cr6d9XPC+FCI9GP4GQEMv7y8WxdA==}
+    peerDependencies:
+      '@influxdata/influxdb-client': '*'
 
   '@influxdata/influxdb-client@1.35.0':
     resolution: {integrity: sha512-woWMi8PDpPQpvTsRaUw4Ig+nOGS/CWwAwS66Fa1Vr/EkW+NEwxI8YfPBsdBMn33jK2Y86/qMiiuX/ROHIkJLTw==}
@@ -4804,6 +4812,10 @@ snapshots:
 
   '@img/sharp-win32-x64@0.33.5':
     optional: true
+
+  '@influxdata/influxdb-client-apis@1.35.0(@influxdata/influxdb-client@1.35.0)':
+    dependencies:
+      '@influxdata/influxdb-client': 1.35.0
 
   '@influxdata/influxdb-client@1.35.0': {}
 

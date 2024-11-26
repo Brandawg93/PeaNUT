@@ -17,6 +17,7 @@ type SettingsWrapperProps = {
   getSettingsAction: (key: string) => Promise<any>
   setSettingsAction: (key: string, value: any) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
+  testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
 }
 
 export default function SettingsWrapper({
@@ -24,6 +25,7 @@ export default function SettingsWrapper({
   getSettingsAction,
   setSettingsAction,
   testConnectionAction,
+  testInfluxConnectionAction,
 }: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(1)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
@@ -195,7 +197,7 @@ export default function SettingsWrapper({
                             setInfluxOrg(org)
                             setInfluxBucket(bucket)
                           }}
-                          testConnectionAction={testConnectionAction}
+                          testInfluxConnectionAction={testInfluxConnectionAction}
                         />
                       </div>
                       <div className='flex flex-row justify-between'>

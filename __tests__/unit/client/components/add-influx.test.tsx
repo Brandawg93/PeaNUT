@@ -21,7 +21,7 @@ const renderComponent = (lng = 'en') => {
       <AddInflux
         initialValues={initialValues}
         handleChange={mockHandleChange}
-        testConnectionAction={mockTestConnectionAction}
+        testInfluxConnectionAction={mockTestConnectionAction}
       />
     </LanguageContext.Provider>
   )
@@ -73,7 +73,14 @@ describe('AddInflux Component', () => {
 
     fireEvent.click(screen.getByText('connect.test'))
 
-    await waitFor(() => expect(mockTestConnectionAction).toHaveBeenCalledWith(initialValues.server, 80))
+    await waitFor(() =>
+      expect(mockTestConnectionAction).toHaveBeenCalledWith(
+        initialValues.server,
+        initialValues.token,
+        initialValues.org,
+        initialValues.bucket
+      )
+    )
     await waitFor(() => expect(screen.getByText('connect.success')).toBeInTheDocument())
   })
 
@@ -83,7 +90,14 @@ describe('AddInflux Component', () => {
 
     fireEvent.click(screen.getByText('connect.test'))
 
-    await waitFor(() => expect(mockTestConnectionAction).toHaveBeenCalledWith(initialValues.server, 80))
+    await waitFor(() =>
+      expect(mockTestConnectionAction).toHaveBeenCalledWith(
+        initialValues.server,
+        initialValues.token,
+        initialValues.org,
+        initialValues.bucket
+      )
+    )
     await waitFor(() => expect(screen.getByText('connect.error')).toBeInTheDocument())
   })
 })
