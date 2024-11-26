@@ -138,7 +138,12 @@ export default function AddServer({
             <Input
               type={showPassword ? 'text' : 'password'}
               icon={
-                <Button onClick={toggleShowPassword} className='relative overflow-hidden p-0' variant='text'>
+                <Button
+                  ripple={false}
+                  onClick={toggleShowPassword}
+                  className='relative overflow-hidden p-0'
+                  variant='text'
+                >
                   {showPassword ? (
                     <EyeSlashIcon className='h-6 w-6 stroke-1 dark:text-white' />
                   ) : (
