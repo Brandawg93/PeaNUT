@@ -37,9 +37,7 @@ export default function AddServer({
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [connecting, setConnecting] = useState<boolean>(false)
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword)
-  }
+  const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async () => {
     if (server && port) {

@@ -100,12 +100,14 @@ export async function setSettings(key: string, value: any) {
 
 export async function addServer(host: string, port: number, username?: string, password?: string) {
   const settings = new YamlSettings(settingsFile)
-  const servers = settings.get('NUT_SERVERS') as Array<{
-    HOST: string
-    PORT: number
-    USERNAME?: string
-    PASSWORD?: string
-  }>
+  const servers =
+    settings.get('NUT_SERVERS') ||
+    ([] as Array<{
+      HOST: string
+      PORT: number
+      USERNAME?: string
+      PASSWORD?: string
+    }>)
   servers.push({ HOST: host, PORT: port, USERNAME: username, PASSWORD: password })
   settings.set('NUT_SERVERS', servers)
 }

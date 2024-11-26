@@ -5,6 +5,7 @@ import React, { useContext, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { ToastContainer, toast } from 'react-toastify'
 import { Card, Input, Button } from '@material-tailwind/react'
 
@@ -20,6 +21,9 @@ type ConnectProps = {
 export default function Connect({ testConnectionAction, addServerAction }: ConnectProps) {
   const [server, setServer] = React.useState<string>('')
   const [port, setPort] = React.useState<number>(3493)
+  const [username, setUsername] = React.useState<string>('')
+  const [password, setPassword] = React.useState<string>('')
+  const [showPassword, setShowPassword] = React.useState<boolean>(false)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
   const { theme } = useContext(ThemeContext)
@@ -33,6 +37,8 @@ export default function Connect({ testConnectionAction, addServerAction }: Conne
     }
     getLoader()
   }, [])
+
+  const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
@@ -90,6 +96,7 @@ export default function Connect({ testConnectionAction, addServerAction }: Conne
         <form className='w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800' onSubmit={handleSubmit}>
           <div className='mb-4'>
             <Input
+              required
               type='text'
               variant='outlined'
               label={t('connect.server')}
@@ -103,6 +110,7 @@ export default function Connect({ testConnectionAction, addServerAction }: Conne
           </div>
           <div className='mb-6'>
             <Input
+              required
               type='number'
               variant='outlined'
               label={t('connect.port')}
@@ -113,6 +121,46 @@ export default function Connect({ testConnectionAction, addServerAction }: Conne
               data-testid='port'
               min={0}
               max={65535}
+              crossOrigin=''
+            />
+          </div>
+          <div className='mb-6'>
+            <Input
+              type='text'
+              variant='outlined'
+              label={t('connect.username')}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className='w-full px-3 py-2'
+              color={theme === 'light' ? 'black' : 'white'}
+              data-testid='username'
+              crossOrigin=''
+            />
+          </div>
+          <div className='mb-6'>
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              icon={
+                <Button
+                  ripple={false}
+                  onClick={toggleShowPassword}
+                  className='relative overflow-hidden p-0'
+                  variant='text'
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                  ) : (
+                    <EyeIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                  )}
+                </Button>
+              }
+              variant='outlined'
+              label={t('connect.password')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className='w-full px-3 py-2'
+              color={theme === 'light' ? 'black' : 'white'}
+              data-testid='password'
               crossOrigin=''
             />
           </div>

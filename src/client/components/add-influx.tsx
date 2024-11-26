@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { Button, Input } from '@material-tailwind/react'
@@ -19,7 +20,10 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
   const [token, setToken] = useState<string>(initialValues.token)
   const [org, setOrg] = useState<string>(initialValues.org)
   const [bucket, setBucket] = useState<string>(initialValues.bucket)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
   const [connecting, setConnecting] = useState<boolean>(false)
+
+  const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async () => {
     if (server && token) {
@@ -66,7 +70,21 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
           </div>
           <div className='mb-6'>
             <Input
-              type='text'
+              type={showPassword ? 'text' : 'password'}
+              icon={
+                <Button
+                  ripple={false}
+                  onClick={toggleShowPassword}
+                  className='relative overflow-hidden p-0'
+                  variant='text'
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                  ) : (
+                    <EyeIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                  )}
+                </Button>
+              }
               variant='outlined'
               label={t('connect.token')}
               value={token}
