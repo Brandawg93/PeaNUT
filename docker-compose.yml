@@ -6,6 +6,5 @@ services:
       - ./config:/etc/nut
     environment:
       - API_PASSWORD=nut_test
-    restart: unless-stopped
     ports:
       - 3493:3493
