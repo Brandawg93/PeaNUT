@@ -137,6 +137,7 @@ export default function AddServer({
               type={showPassword ? 'text' : 'password'}
               icon={
                 <Button
+                  data-testid='toggle-password'
                   ripple={false}
                   onClick={toggleShowPassword}
                   className='relative overflow-hidden p-0'

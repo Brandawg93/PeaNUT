@@ -100,4 +100,49 @@ describe('AddInflux Component', () => {
     )
     await waitFor(() => expect(screen.getByText('connect.error')).toBeInTheDocument())
   })
+
+  test('toggles password visibility', () => {
+    renderComponent()
+
+    const toggleButton = screen.getByTestId('show-password')
+    const passwordInput = screen.getByTestId('token')
+
+    // Initially password should be hidden
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    // Click to show password
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'text')
+
+    // Click to hide password again
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'password')
+  })
+
+  test('disables test connection button while connecting', async () => {
+    mockTestConnectionAction.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 500)))
+    renderComponent()
+
+    const testButton = screen.getByText('connect.test')
+    fireEvent.click(testButton)
+
+    expect(testButton).toBeDisabled()
+
+    await waitFor(() => expect(testButton).not.toBeDisabled())
+  })
+
+  test('does not call test connection action if server or token is empty', () => {
+    renderComponent()
+
+    fireEvent.change(screen.getByTestId('server'), { target: { value: '' } })
+    fireEvent.click(screen.getByText('connect.test'))
+
+    expect(mockTestConnectionAction).not.toHaveBeenCalled()
+
+    fireEvent.change(screen.getByTestId('server'), { target: { value: initialValues.server } })
+    fireEvent.change(screen.getByTestId('token'), { target: { value: '' } })
+    fireEvent.click(screen.getByText('connect.test'))
+
+    expect(mockTestConnectionAction).not.toHaveBeenCalled()
+  })
 })

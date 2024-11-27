@@ -73,6 +73,7 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
               type={showPassword ? 'text' : 'password'}
               icon={
                 <Button
+                  data-testid='show-password'
                   ripple={false}
                   onClick={toggleShowPassword}
                   className='relative overflow-hidden p-0'

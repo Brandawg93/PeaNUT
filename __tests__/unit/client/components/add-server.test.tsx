@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import AddServer from '@/client/components/add-server'
 import { LanguageContext } from '@/client/context/language'
 
@@ -56,5 +56,48 @@ describe('AddServer Component', () => {
     const removeButton = getByTitle('settings.remove')
     fireEvent.click(removeButton)
     expect(mockHandleRemove).toHaveBeenCalled()
+  })
+
+  test('calls setUsername on username input change', () => {
+    const { getByTestId } = renderComponent()
+    const usernameInput = getByTestId('username')
+    fireEvent.change(usernameInput, { target: { value: 'new-user' } })
+    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 8080, 'new-user', 'nut_test')
+  })
+
+  test('calls setPassword on password input change', () => {
+    const { getByTestId } = renderComponent()
+    const passwordInput = getByTestId('password')
+    fireEvent.change(passwordInput, { target: { value: 'new-password' } })
+    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 8080, 'admin', 'new-password')
+  })
+
+  test('toggles password visibility', () => {
+    const { getByTestId } = renderComponent()
+    const toggleButton = getByTestId('toggle-password')
+    const passwordInput = getByTestId('password')
+
+    // Initially password should be hidden
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    // Click to show password
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'text')
+
+    // Click again to hide password
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'password')
+  })
+
+  test('calls testConnectionAction on test connection button click', async () => {
+    mockTestConnectionAction.mockResolvedValue('Success')
+    const { getByText } = renderComponent()
+    const testButton = getByText('connect.test')
+    fireEvent.click(testButton)
+    expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080)
+
+    expect(testButton).toBeDisabled()
+
+    await waitFor(() => expect(testButton).not.toBeDisabled())
   })
 })
