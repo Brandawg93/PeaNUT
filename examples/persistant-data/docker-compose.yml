@@ -15,8 +15,6 @@ services:
     ports:
       - 8080:8080
     environment:
-      - NUT_HOST=nut-upsd
-      - NUT_PORT=3493
       - WEB_PORT=8080
       - INFLUX_HOST=http://influxdb:8086
       - INFLUX_TOKEN=super_secret_token

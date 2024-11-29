@@ -15,8 +15,6 @@ services:
     volumes:
       - /path/to/config:/config
     environment:
-      - NUT_HOST=nut-upsd
-      - NUT_PORT=3493
       - WEB_PORT=8080
 
 networks:
