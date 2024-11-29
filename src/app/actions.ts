@@ -4,6 +4,7 @@ import InfluxWriter from '@/server/influxdb'
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings } from '@/server/settings'
+import { server } from '@/common/types'
 
 const settingsFile = './config/settings.yml'
 
@@ -98,17 +99,9 @@ export async function setSettings(key: string, value: any) {
   settings.set(key, value)
 }
 
-export async function addServer(host: string, port: number, username?: string, password?: string) {
+export async function updateServers(servers: Array<server>) {
   const settings = new YamlSettings(settingsFile)
-  const servers =
-    settings.get('NUT_SERVERS') ||
-    ([] as Array<{
-      HOST: string
-      PORT: number
-      USERNAME?: string
-      PASSWORD?: string
-    }>)
-  servers.push({ HOST: host, PORT: port, USERNAME: username, PASSWORD: password })
+
   settings.set('NUT_SERVERS', servers)
 }
 

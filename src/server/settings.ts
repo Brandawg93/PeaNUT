@@ -1,13 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
-
-type server = {
-  HOST: string | undefined
-  PORT: number
-  USERNAME: string | undefined
-  PASSWORD: string | undefined
-}
+import { server } from '../common/types'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
@@ -58,7 +52,15 @@ export class YamlSettings {
     const username = process.env.USERNAME
     const password = process.env.PASSWORD
     if (nutHost && nutPort) {
-      this.data.NUT_SERVERS = [{ HOST: nutHost, PORT: Number(nutPort), USERNAME: username, PASSWORD: password }]
+      const existingServer = (this.data.NUT_SERVERS || []).find(
+        (server: server) => server.HOST === nutHost && server.PORT === Number(nutPort)
+      )
+      if (!existingServer) {
+        this.data.NUT_SERVERS = [
+          ...(this.data.NUT_SERVERS || []),
+          { HOST: nutHost, PORT: Number(nutPort), USERNAME: username, PASSWORD: password },
+        ]
+      }
     }
   }
 

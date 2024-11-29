@@ -12,13 +12,14 @@ import { Card, Input, Button } from '@material-tailwind/react'
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'
 import logo from '@/app/icon.svg'
+import { server } from '@/common/types'
 
 type ConnectProps = {
   testConnectionAction: (server: string, port: number) => Promise<string>
-  addServerAction: (host: string, port: number) => Promise<void>
+  updateServersAction: (servers: Array<server>) => Promise<void>
 }
 
-export default function Connect({ testConnectionAction, addServerAction }: ConnectProps) {
+export default function Connect({ testConnectionAction, updateServersAction }: ConnectProps) {
   const [server, setServer] = React.useState<string>('')
   const [port, setPort] = React.useState<number>(3493)
   const [username, setUsername] = React.useState<string>('')
@@ -42,7 +43,7 @@ export default function Connect({ testConnectionAction, addServerAction }: Conne
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    await addServerAction(server, port)
+    await updateServersAction([{ HOST: server, PORT: port, USERNAME: username, PASSWORD: password }])
     router.replace('/')
   }
 

@@ -167,7 +167,7 @@ export default function AddServer({
             <div />
             <Button
               disabled={connecting}
-              onClick={handleTestConnection}
+              onClick={async () => handleTestConnection()}
               className='bg-red-500 font-bold text-white shadow-none hover:bg-red-700'
               type='button'
             >

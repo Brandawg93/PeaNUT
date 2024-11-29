@@ -5,17 +5,21 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import { ToastContainer, toast } from 'react-toastify'
+import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from '@icons-pack/react-simple-icons'
 import { ServerStackIcon, PlusIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
+import { server } from '@/common/types'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: (key: string) => Promise<any>
   setSettingsAction: (key: string, value: any) => Promise<void>
+  updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
 }
@@ -24,20 +28,20 @@ export default function SettingsWrapper({
   checkSettingsAction,
   getSettingsAction,
   setSettingsAction,
+  updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
 }: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(1)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
-  const [serverList, setServerList] = useState<
-    Array<{ HOST: string; PORT: number; USERNAME?: string; PASSWORD?: string }>
-  >([])
+  const [serverList, setServerList] = useState<Array<server>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
   const [influxToken, setInfluxToken] = useState<string>('')
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
+  const { theme } = useContext(ThemeContext)
 
   const router = useRouter()
 
@@ -85,12 +89,24 @@ export default function SettingsWrapper({
     setServerList(updatedServerList)
   }
 
-  const handleSaveServers = () => null
-  const handleSaveInflux = () => {
-    setSettingsAction('INFLUX_HOST', influxServer)
-    setSettingsAction('INFLUX_TOKEN', influxToken)
-    setSettingsAction('INFLUX_ORG', influxOrg)
-    setSettingsAction('INFLUX_BUCKET', influxBucket)
+  const handleServerRemove = async (index: number) => {
+    const updatedServerList = serverList.filter((_, i) => i !== index)
+    setServerList(updatedServerList)
+    await updateServersAction(updatedServerList)
+  }
+
+  const handleSaveServers = async () => {
+    await updateServersAction(serverList)
+    toast.success(t('settings.serversSaved'))
+  }
+
+  const handleSaveInflux = async () => {
+    await Promise.all([
+      setSettingsAction('INFLUX_HOST', influxServer),
+      setSettingsAction('INFLUX_TOKEN', influxToken),
+      setSettingsAction('INFLUX_ORG', influxOrg),
+      setSettingsAction('INFLUX_BUCKET', influxBucket),
+    ])
   }
 
   const skeleton = (
@@ -103,6 +119,7 @@ export default function SettingsWrapper({
 
   return (
     <div className='flex flex-1 flex-col pl-3 pr-3' data-testid='settings-wrapper'>
+      <ToastContainer position='top-center' theme={theme} />
       <div className='flex justify-center'>
         <div className='container'>
           <h1 className='mb-4 text-2xl font-bold'>Settings</h1>
@@ -157,7 +174,7 @@ export default function SettingsWrapper({
                             handleChange={(server, port, username, password) =>
                               handleServerChange(server, port, username, password, index)
                             }
-                            handleRemove={() => setServerList(serverList.filter((_, i) => i !== index))}
+                            handleRemove={() => handleServerRemove(index)}
                             testConnectionAction={testConnectionAction}
                           />
                         ))}
@@ -174,7 +191,7 @@ export default function SettingsWrapper({
                       </div>
                       <div className='flex flex-row justify-between'>
                         <div />
-                        <Button onClick={handleSaveServers} className='shadow-none'>
+                        <Button onClick={async () => await handleSaveServers()} className='shadow-none'>
                           {t('settings.apply')}
                         </Button>
                       </div>

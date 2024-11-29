@@ -17,3 +17,10 @@ export type DEVICE = {
   commands: Array<string>
   clients: Array<string>
 }
+
+export type server = {
+  HOST: string
+  PORT: number
+  USERNAME?: string
+  PASSWORD?: string
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import Connect from '@/client/components/connect'
-import { addServer, testConnection } from '../actions'
+import { updateServers, testConnection } from '../actions'
 
 export default function Login() {
-  return <Connect addServerAction={addServer} testConnectionAction={testConnection} />
+  return <Connect updateServersAction={updateServers} testConnectionAction={testConnection} />
 }

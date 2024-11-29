@@ -21,6 +21,7 @@ global.fetch = jest.fn(() =>
 const mockCheckSettingsAction = jest.fn()
 const mockGetSettingsAction = jest.fn()
 const mockSetSettingsAction = jest.fn()
+const mockUpdateServersAction = jest.fn()
 const mockTestConnectionAction = jest.fn().mockResolvedValue('success')
 const mockTestInfluxConnectionAction = jest.fn()
 
@@ -31,6 +32,7 @@ const renderComponent = () =>
         checkSettingsAction={mockCheckSettingsAction}
         getSettingsAction={mockGetSettingsAction}
         setSettingsAction={mockSetSettingsAction}
+        updateServersAction={mockUpdateServersAction}
         testConnectionAction={mockTestConnectionAction}
         testInfluxConnectionAction={mockTestInfluxConnectionAction}
       />
