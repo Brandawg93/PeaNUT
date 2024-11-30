@@ -110,7 +110,13 @@ export default function NavBar(props: Props) {
                 <Cog6ToothIcon className='h-6 w-6 stroke-1 dark:text-white' />
               </IconButton>
             </div>
-            <IconButton variant='text' className='block lg:hidden' size='lg' onClick={openDrawer}>
+            <IconButton
+              variant='text'
+              data-testid={isDrawerOpen ? 'close-drawer' : 'open-drawer'}
+              className='block lg:hidden'
+              size='lg'
+              onClick={openDrawer}
+            >
               {isDrawerOpen ? (
                 <XMarkIcon className='h-8 w-8 stroke-2 dark:text-white' />
               ) : (

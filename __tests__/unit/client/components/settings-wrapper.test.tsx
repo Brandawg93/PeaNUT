@@ -56,17 +56,6 @@ describe('SettingsWrapper', () => {
     })
   })
 
-  // it('redirects to login if settings check fails', async () => {
-  //   const router = useRouter()
-  //   mockCheckSettingsAction.mockResolvedValue(false)
-
-  //   renderComponent()
-
-  //   await waitFor(() => {
-  //     expect(router.replace).toHaveBeenCalledWith('/login')
-  //   })
-  // })
-
   it('loads server settings if settings check passes', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
     mockGetSettingsAction.mockResolvedValueOnce('localhost')
@@ -76,8 +65,6 @@ describe('SettingsWrapper', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Manage Servers')).toBeInTheDocument()
-      // expect(screen.getByText('localhost')).toBeInTheDocument()
-      // expect(screen.getByText('8080')).toBeInTheDocument()
     })
   })
 
@@ -93,10 +80,27 @@ describe('SettingsWrapper', () => {
     })
 
     fireEvent.click(screen.getByTitle('settings.addServer'))
+  })
 
-    // await waitFor(() => {
-    //   expect(screen.getAllByText('localhost').length).toBe(1)
-    //   expect(screen.getAllByText('8080').length).toBe(1)
-    // })
+  it('handles server change correctly', async () => {
+    mockCheckSettingsAction.mockResolvedValue(true)
+    mockGetSettingsAction.mockResolvedValueOnce([{ HOST: 'localhost', PORT: 8080 }])
+    mockGetSettingsAction.mockResolvedValueOnce('influxHost')
+    mockGetSettingsAction.mockResolvedValueOnce('influxToken')
+    mockGetSettingsAction.mockResolvedValueOnce('influxOrg')
+    mockGetSettingsAction.mockResolvedValueOnce('influxBucket')
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+    })
+
+    const serverInput = screen.getByDisplayValue('localhost')
+    fireEvent.change(serverInput, { target: { value: 'newhost' } })
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('newhost')).toBeInTheDocument()
+    })
   })
 })

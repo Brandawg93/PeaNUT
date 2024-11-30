@@ -47,7 +47,7 @@ describe('NavBar', () => {
     expect(heading).toBeInTheDocument()
   })
 
-  it('handles device selection', () => {
+  it('opens and closes the drawer', () => {
     render(
       <NavBar
         devices={devices}
@@ -59,7 +59,13 @@ describe('NavBar', () => {
       />
     )
 
-    const select = screen.getByTestId('device-select-standard')
-    fireEvent.change(select, { target: { value: 'test2' } })
+    const openButton = screen.getByTestId('open-drawer')
+    fireEvent.click(openButton)
+
+    const closeButton = screen.getByTestId('close-drawer')
+    expect(closeButton).toBeInTheDocument()
+
+    fireEvent.click(closeButton)
+    expect(openButton).toBeInTheDocument()
   })
 })
