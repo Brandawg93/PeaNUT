@@ -22,7 +22,7 @@ const device: DEVICE = {
       value: '0',
     },
   },
-  rwVars: [],
+  rwVars: ['input.voltage'],
   commands: [],
   description: 'test',
   clients: [],

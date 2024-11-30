@@ -20,7 +20,6 @@ Install using Docker
 
 ```bash
 docker run -v ${PWD}/config:/config -p 8080:8080 --restart unless-stopped \
---env NUT_HOST=nut-upsd --env NUT_PORT=3493 \
 --env WEB_PORT=8080 brandawg93/peanut
 ```
 
@@ -37,8 +36,6 @@ services:
     ports:
       - 8080:8080
     environment:
-      - NUT_HOST=localhost
-      - NUT_PORT=3493
       - WEB_PORT=8080
 ```
 
@@ -61,12 +58,8 @@ _Note:_ Environment variables are not required and used for first time setup onl
 
 | Variable        | Default   | Description                   |
 | --------------- | --------- | ----------------------------- |
-| NUT_HOST        | localhost | Host of NUT server            |
-| NUT_PORT        | 3493      | Port of NUT server            |
 | WEB_HOST        | localhost | Hostname of web server        |
 | WEB_PORT        | 8080      | Port of web server            |
-| USERNAME        | undefined | Optional but required to edit |
-| PASSWORD        | undefined | Optional but required to edit |
 | BASE_PATH       | undefined | Base path for reverse proxy   |
 | INFLUX_HOST     | undefined | Host for Influx server        |
 | INFLUX_TOKEN    | undefined | Token for Influx server       |

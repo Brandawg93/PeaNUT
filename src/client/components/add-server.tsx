@@ -1,51 +1,43 @@
-'use client'
-
-import 'react-toastify/dist/ReactToastify.css'
-import React, { useContext, useEffect } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { ToastContainer, toast } from 'react-toastify'
-import { Card, Input, Button } from '@material-tailwind/react'
-
-import { LanguageContext } from '@/client/context/language'
+import { XMarkIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { ThemeContext } from '@/client/context/theme'
-import logo from '@/app/icon.svg'
-import { server } from '@/common/types'
+import { LanguageContext } from '@/client/context/language'
+import { Button, IconButton, Input } from '@material-tailwind/react'
 
-type ConnectProps = {
+type AddServerProps = {
+  initialServer: string
+  initialPort: number
+  initialUsername: string | undefined
+  initialPassword: string | undefined
+  handleChange: (server: string, port: number, username?: string, password?: string) => void
+  handleRemove: () => void
   testConnectionAction: (server: string, port: number) => Promise<string>
-  updateServersAction: (servers: Array<server>) => Promise<void>
+  removable?: boolean
 }
 
-export default function Connect({ testConnectionAction, updateServersAction }: ConnectProps) {
-  const [server, setServer] = React.useState<string>('')
-  const [port, setPort] = React.useState<number>(3493)
-  const [username, setUsername] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-  const [showPassword, setShowPassword] = React.useState<boolean>(false)
-  const [connecting, setConnecting] = React.useState<boolean>(false)
+export default function AddServer({
+  initialServer,
+  initialPort,
+  initialUsername,
+  initialPassword,
+  handleChange,
+  handleRemove,
+  testConnectionAction,
+  removable,
+}: AddServerProps) {
   const lng = useContext<string>(LanguageContext)
-  const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
-
-  useEffect(() => {
-    async function getLoader() {
-      const { dotPulse } = await import('ldrs')
-      dotPulse.register()
-    }
-    getLoader()
-  }, [])
+  const { theme } = useContext(ThemeContext)
+  const [server, setServer] = useState<string>(initialServer)
+  const [port, setPort] = useState<number>(initialPort)
+  const [username, setUsername] = useState<string | undefined>(initialUsername)
+  const [password, setPassword] = useState<string | undefined>(initialPassword)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [connecting, setConnecting] = useState<boolean>(false)
 
   const toggleShowPassword = () => setShowPassword(!showPassword)
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
-    await updateServersAction([{ HOST: server, PORT: port, USERNAME: username, PASSWORD: password }])
-    router.replace('/')
-  }
 
   const handleTestConnection = async () => {
     if (server && port) {
@@ -69,32 +61,25 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
     }
   }
 
-  const getTestButton = () => {
-    if (connecting) {
-      return (
-        <div>
-          <l-dot-pulse size={33} speed={1.3} color='white'></l-dot-pulse>
-        </div>
-      )
-    } else {
-      return <>{t('connect.test')}</>
-    }
-  }
-
   return (
-    <div
-      className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
-      data-testid='login-wrapper'
-    >
+    <div className='mb-4 w-full rounded-lg bg-gray-200 pb-6 pl-6 dark:bg-gray-600'>
       <ToastContainer position='top-center' theme={theme} />
-      <div className='mb-8 flex justify-center'>
-        <Image alt='' src={logo} width='100' height='100' className='d-inline-block align-top' />
-      </div>
-      <div>
-        <h1 className='mb-4 text-4xl font-bold'>PeaNUT</h1>
-      </div>
-      <Card className='border-neutral-300 relative flex flex-row justify-around border border-solid border-gray-300 shadow-md dark:border-gray-800 dark:bg-gray-950'>
-        <form className='w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800' onSubmit={handleSubmit}>
+      {removable ? (
+        <div className='h-12'>
+          <IconButton
+            variant='text'
+            className='text-md float-right px-3 text-black shadow-none dark:text-white'
+            title={t('settings.remove')}
+            onClick={handleRemove}
+          >
+            <XMarkIcon className='h-6 w-6 stroke-1 dark:text-white' />
+          </IconButton>
+        </div>
+      ) : (
+        <div className='pt-6' />
+      )}
+      <div className='pr-6'>
+        <form className='w-full'>
           <div className='mb-4'>
             <Input
               required
@@ -102,7 +87,10 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               variant='outlined'
               label={t('connect.server')}
               value={server}
-              onChange={(e) => setServer(e.target.value)}
+              onChange={(e) => {
+                setServer(e.target.value)
+                handleChange(e.target.value, port, username, password)
+              }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
               data-testid='server'
@@ -116,7 +104,10 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               variant='outlined'
               label={t('connect.port')}
               value={port}
-              onChange={(e) => setPort(+e.target.value)}
+              onChange={(e) => {
+                setPort(+e.target.value)
+                handleChange(server, +e.target.value, username, password)
+              }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
               data-testid='port'
@@ -131,7 +122,10 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               variant='outlined'
               label={t('connect.username')}
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                setUsername(e.target.value)
+                handleChange(server, port, e.target.value, password)
+              }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
               data-testid='username'
@@ -143,6 +137,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               type={showPassword ? 'text' : 'password'}
               icon={
                 <Button
+                  data-testid='toggle-password'
                   ripple={false}
                   onClick={toggleShowPassword}
                   className='relative overflow-hidden p-0'
@@ -158,7 +153,10 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               variant='outlined'
               label={t('connect.password')}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                handleChange(server, port, username, e.target.value)
+              }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
               data-testid='password'
@@ -166,24 +164,18 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
             />
           </div>
           <div className='flex flex-row justify-between'>
+            <div />
             <Button
               disabled={connecting}
-              onClick={handleTestConnection}
-              className='bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700'
+              onClick={async () => handleTestConnection()}
+              className='bg-red-500 font-bold text-white shadow-none hover:bg-red-700'
               type='button'
             >
-              {getTestButton()}
-            </Button>
-            <Button
-              disabled={connecting}
-              className='bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700'
-              type='submit'
-            >
-              {t('connect.connect')}
+              {t('connect.test')}
             </Button>
           </div>
         </form>
-      </Card>
+      </div>
     </div>
   )
 }

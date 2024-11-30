@@ -46,40 +46,33 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'setup environment',
-      testMatch: /global\.setup\.ts/,
-    },
-    {
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
       },
-      dependencies: ['setup environment'],
     },
-    // {
-    //   name: 'Desktop Firefox',
-    //   use: {
-    //     ...devices['Desktop Firefox'],
-    //   },
-    // },
-    // {
-    //   name: 'Desktop Safari',
-    //   use: {
-    //     ...devices['Desktop Safari'],
-    //   },
-    // },
+    {
+      name: 'Desktop Firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+      },
+    },
+    {
+      name: 'Desktop Safari',
+      use: {
+        ...devices['Desktop Safari'],
+      },
+    },
     // Test against mobile viewports.
     {
       name: 'Mobile Chrome',
       use: {
         ...devices['Pixel 5'],
       },
-      dependencies: ['setup environment'],
     },
     {
       name: 'Mobile Safari',
       use: devices['iPhone 12'],
-      dependencies: ['setup environment'],
     },
   ],
 })

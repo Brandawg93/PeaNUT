@@ -2,7 +2,7 @@ import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
 
-const gaugeChartText = {
+export const gaugeChartText = {
   id: 'gaugeChartText',
   afterDatasetsDraw: (chart: any) => {
     const {

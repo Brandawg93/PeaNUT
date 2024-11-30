@@ -48,7 +48,7 @@ export default function Refresh(props: Props) {
             <ChevronDownIcon className='h-4 w-4 stroke-[2px]' />
           </Button>
         </MenuHandler>
-        <MenuList className='border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
+        <MenuList className='min-w-0 border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
           {intervals.map((value) => (
             <MenuItem
               key={value}

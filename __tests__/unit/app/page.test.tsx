@@ -9,7 +9,7 @@ const queryClient = new ReactQuery.QueryClient()
 jest.mock('next/navigation', () => ({
   useRouter() {
     return {
-      replace: () => null,
+      replace: jest.fn(),
     }
   },
 }))
@@ -40,7 +40,7 @@ global.fetch = jest.fn(() =>
   })
 ) as jest.Mock
 
-describe('Page', () => {
+describe('Home Page', () => {
   const mockDevicesData = {
     devices: [
       {

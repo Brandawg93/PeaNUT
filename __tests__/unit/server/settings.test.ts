@@ -28,20 +28,6 @@ describe('YamlSettings', () => {
     })
   })
 
-  describe('initWithEnvVars', () => {
-    it('should load settings from environment variables and save', () => {
-      process.env.NUT_PORT = '1234'
-      process.env.WEB_HOST = 'example.com'
-      const saveSpy = jest.spyOn(yamlSettings as any, 'save')
-
-      yamlSettings.initWithEnvVars()
-
-      expect(yamlSettings.get('NUT_PORT')).toBe(1234)
-      expect(yamlSettings.get('WEB_HOST')).toBe('example.com')
-      expect(saveSpy).toHaveBeenCalled()
-    })
-  })
-
   describe('get', () => {
     it('should return the value for a given key', () => {
       yamlSettings.set('testKey', 'testValue')

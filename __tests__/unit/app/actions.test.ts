@@ -43,10 +43,7 @@ beforeAll(() => {
   jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: string) => {
     const settings = {
-      NUT_HOST: 'localhost',
-      NUT_PORT: '3493',
-      USERNAME: 'user',
-      PASSWORD: 'pass',
+      NUT_SERVERS: [{ host: 'localhost', port: 3493, username: 'user', password: 'pass' }],
     }
     return settings[key as keyof typeof settings]
   })
@@ -56,13 +53,6 @@ beforeAll(() => {
 
 describe('actions', () => {
   it('gets devices', async () => {
-    const data = await getDevices()
-    expect(data.devices).toEqual(result)
-  })
-
-  it('gets devices without env variables', async () => {
-    process.env.NUT_HOST = ''
-    process.env.NUT_PORT = ''
     const data = await getDevices()
     expect(data.devices).toEqual(result)
   })
@@ -87,8 +77,8 @@ describe('actions', () => {
   })
 
   it('gets settings', async () => {
-    const data = await getSettings('NUT_HOST')
-    expect(data).toBe('localhost')
+    const data = await getSettings('NUT_SERVERS')
+    expect(data[0].host).toBe('localhost')
   })
 
   it('sets settings', async () => {

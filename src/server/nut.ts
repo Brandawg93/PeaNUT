@@ -24,6 +24,11 @@ export class Nut {
       .map((line) => callback(line))
   }
 
+  public async deviceExists(device: string): Promise<boolean> {
+    const devices = await this.getDevices()
+    return devices.some((d) => d.name === device)
+  }
+
   private async getCommand(command: string, until?: string, checkCredentials = false): Promise<string> {
     const socket = new PromiseSocket()
     try {
@@ -219,9 +224,11 @@ export class Nut {
   }
 
   public async setVar(device = 'UPS', variable: string, value: string): Promise<void> {
-    const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n', true)
-    if (data !== 'OK\n') {
-      throw new Error('Invalid response')
+    if (await this.deviceExists(device)) {
+      const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n', true)
+      if (data !== 'OK\n') {
+        throw new Error('Invalid response')
+      }
     }
   }
 }
