@@ -5,8 +5,6 @@ import { server } from '../common/types'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
-  WEB_HOST: 'localhost',
-  WEB_PORT: 8080,
   INFLUX_HOST: undefined,
   INFLUX_TOKEN: undefined,
   INFLUX_ORG: undefined,
@@ -20,7 +18,7 @@ export class YamlSettings {
 
   constructor(filePath: string) {
     this.filePath = filePath
-    this.data = {}
+    this.data = { ...ISettings }
     this.load()
     this.initWithEnvVars()
   }
@@ -29,7 +27,10 @@ export class YamlSettings {
     fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
     if (fs.existsSync(this.filePath)) {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
-      this.data = load(fileContents) || {}
+      this.data = load(fileContents) || { ...ISettings }
+    }
+    if (!this.data.NUT_SERVERS) {
+      this.data.NUT_SERVERS = []
     }
   }
 
