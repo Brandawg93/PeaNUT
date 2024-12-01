@@ -48,7 +48,7 @@
     "connect": "Connetti",
     "test": "Verificare",
     "success": "Connessione riuscita",
-    "error": "Connessione fallita. Controlla i log per maggiori informazioni.",
+    "error": "Connessione fallita. Controlla i file di registro per maggiori informazioni.",
     "testing": "Verifica della connessione in corso..."
   },
   "theme": {
