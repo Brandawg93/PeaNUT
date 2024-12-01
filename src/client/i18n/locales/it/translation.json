@@ -25,17 +25,30 @@
   },
   "sidebar": {
     "settings": "Impostazioni",
+    "moreSettings": "Altre impostazioni",
     "theme": "Tema",
     "disconnect": "Disconnetto",
     "refresh": "Aggiorna"
   },
+  "settings": {
+    "manageServers": "Gestisci server",
+    "influxDb": "InfluxDB",
+    "influxNotice": "Questo funzionerà solo con InfluxDB 2.x",
+    "addServer": "Aggiungi server",
+    "apply": "Applica"
+  },
   "connect": {
     "server": "Server",
     "port": "Porta",
+    "username": "Nome utente",
+    "password": "Password",
+    "token": "Token",
+    "org": "Organizzazione",
+    "bucket": "Bucket",
     "connect": "Connetti",
     "test": "Verificare",
     "success": "Connessione riuscita",
-    "error": "Connessione fallita. Controlla i log per maggiori informazioni.",
+    "error": "Connessione fallita. Controlla i file di registro per maggiori informazioni.",
     "testing": "Verifica della connessione in corso..."
   },
   "theme": {

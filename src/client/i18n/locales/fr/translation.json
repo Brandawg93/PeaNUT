@@ -25,13 +25,26 @@
   },
   "sidebar": {
     "settings": "Paramètres",
+    "moreSettings": "Plus de paramètres",
     "theme": "Thème",
     "disconnect": "Déconnecter",
     "refresh": "Rafraîchir"
   },
+  "settings": {
+    "manageServers": "Gérer les serveurs",
+    "influxDb": "InfluxDB",
+    "influxNotice": "Cela ne fonctionnera qu'avec InfluxDB 2.x",
+    "addServer": "Ajouter un serveur",
+    "apply": "Appliquer"
+  },
   "connect": {
     "server": "Serveur",
     "port": "Port",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "token": "Jeton",
+    "org": "Organisation",
+    "bucket": "Seau",
     "connect": "Connecter",
     "test": "Tester",
     "success": "Connexion réussie",
