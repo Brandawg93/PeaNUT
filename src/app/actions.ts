@@ -86,7 +86,7 @@ export async function saveVar(device: string, varName: string, value: string) {
 
 export async function checkSettings(): Promise<boolean> {
   const settings = new YamlSettings(settingsFile)
-  return (settings.get('NUT_SERVERS') as Array<Nut>).length > 0
+  return !!settings.get('NUT_SERVERS') || [].length > 0
 }
 
 export async function getSettings(key: string) {
