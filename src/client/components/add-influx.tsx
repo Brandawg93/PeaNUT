@@ -7,9 +7,15 @@ import { LanguageContext } from '@/client/context/language'
 import { Button, Input } from '@material-tailwind/react'
 
 type AddInfluxProps = {
-  initialValues: { server: string; token: string; org: string; bucket: string }
-  handleChange: (server: string, token: string, org: string, bucket: string) => void
-  testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
+  initialValues: { server: string; token: string; org: string; bucket: string; interval: number }
+  handleChange: (server: string, token: string, org: string, bucket: string, interval: number) => void
+  testInfluxConnectionAction: (
+    server: string,
+    token: string,
+    org: string,
+    bucket: string,
+    interval: number
+  ) => Promise<void>
 }
 
 export default function AddInflux({ initialValues, handleChange, testInfluxConnectionAction }: AddInfluxProps) {
@@ -20,6 +26,7 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
   const [token, setToken] = useState<string>(initialValues.token)
   const [org, setOrg] = useState<string>(initialValues.org)
   const [bucket, setBucket] = useState<string>(initialValues.bucket)
+  const [interval, setInterval] = useState<number>(initialValues.interval)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [connecting, setConnecting] = useState<boolean>(false)
 
@@ -28,7 +35,7 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
   const handleTestConnection = async () => {
     if (server && token) {
       setConnecting(true)
-      const promise = testInfluxConnectionAction(server, token, org, bucket)
+      const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
       toast.promise(promise, {
         pending: t('connect.testing'),
         success: {
@@ -54,13 +61,14 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
         <form className='w-full'>
           <div className='mb-4'>
             <Input
+              required
               type='text'
               variant='outlined'
               label={t('connect.server')}
               value={server}
               onChange={(e) => {
                 setServer(e.target.value)
-                handleChange(e.target.value, token, org, bucket)
+                handleChange(e.target.value, token, org, bucket, interval)
               }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
@@ -70,6 +78,7 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
           </div>
           <div className='mb-6'>
             <Input
+              required
               type={showPassword ? 'text' : 'password'}
               icon={
                 <Button
@@ -91,7 +100,7 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
               value={token}
               onChange={(e) => {
                 setToken(e.target.value)
-                handleChange(server, e.target.value, org, bucket)
+                handleChange(server, e.target.value, org, bucket, interval)
               }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
@@ -101,13 +110,14 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
           </div>
           <div className='mb-6'>
             <Input
+              required
               type='text'
               variant='outlined'
               label={t('connect.org')}
               value={org}
               onChange={(e) => {
                 setOrg(e.target.value)
-                handleChange(server, token, e.target.value, bucket)
+                handleChange(server, token, e.target.value, bucket, interval)
               }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
@@ -117,17 +127,34 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
           </div>
           <div className='mb-6'>
             <Input
+              required
               type='text'
               variant='outlined'
               label={t('connect.bucket')}
               value={bucket}
               onChange={(e) => {
                 setBucket(e.target.value)
-                handleChange(server, token, org, e.target.value)
+                handleChange(server, token, org, e.target.value, interval)
               }}
               className='w-full px-3 py-2'
               color={theme === 'light' ? 'black' : 'white'}
               data-testid='bucket'
+              crossOrigin=''
+            />
+          </div>
+          <div className='mb-6'>
+            <Input
+              type='number'
+              variant='outlined'
+              label={t('settings.influxInterval')}
+              value={interval}
+              onChange={(e) => {
+                setInterval(+e.target.value)
+                handleChange(server, token, org, bucket, +e.target.value)
+              }}
+              className='w-full px-3 py-2'
+              color={theme === 'light' ? 'black' : 'white'}
+              data-testid='interval'
               crossOrigin=''
             />
           </div>
