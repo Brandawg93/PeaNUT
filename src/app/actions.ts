@@ -3,7 +3,7 @@
 import InfluxWriter from '@/server/influxdb'
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
-import { YamlSettings } from '@/server/settings'
+import { YamlSettings, SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
 
 const settingsFile = './config/settings.yml'
@@ -89,12 +89,12 @@ export async function checkSettings(): Promise<boolean> {
   return !!settings.get('NUT_SERVERS') || [].length > 0
 }
 
-export async function getSettings(key: string) {
+export async function getSettings<K extends keyof SettingsType>(key: K): Promise<SettingsType[K]> {
   const settings = new YamlSettings(settingsFile)
   return settings.get(key)
 }
 
-export async function setSettings(key: string, value: any) {
+export async function setSettings<K extends keyof SettingsType>(key: K, value: SettingsType[K]): Promise<void> {
   const settings = new YamlSettings(settingsFile)
   settings.set(key, value)
 }
@@ -105,7 +105,7 @@ export async function updateServers(servers: Array<server>) {
   settings.set('NUT_SERVERS', servers)
 }
 
-export async function deleteSettings(key: string) {
+export async function deleteSettings(key: keyof SettingsType) {
   const settings = new YamlSettings(settingsFile)
   settings.delete(key)
 }
@@ -113,10 +113,6 @@ export async function deleteSettings(key: string) {
 export async function disconnect() {
   const settings = new YamlSettings(settingsFile)
   settings.delete('NUT_SERVERS')
-  settings.delete('NUT_HOST')
-  settings.delete('NUT_PORT')
-  settings.delete('USERNAME')
-  settings.delete('PASSWORD')
   settings.delete('INFLUX_HOST')
   settings.delete('INFLUX_TOKEN')
   settings.delete('INFLUX_ORG')

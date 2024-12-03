@@ -11,7 +11,7 @@ import {
   deleteSettings,
   disconnect,
 } from '@/app/actions'
-import { YamlSettings } from '@/server/settings'
+import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 
 const vars: VARS = {}
@@ -41,9 +41,9 @@ beforeAll(() => {
   jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
   jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
   jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
-  jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: string) => {
+  jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ host: 'localhost', port: 3493, username: 'user', password: 'pass' }],
+      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }],
     }
     return settings[key as keyof typeof settings]
   })
@@ -78,25 +78,22 @@ describe('actions', () => {
 
   it('gets settings', async () => {
     const data = await getSettings('NUT_SERVERS')
-    expect(data[0].host).toBe('localhost')
+    expect(data[0].HOST).toBe('localhost')
   })
 
   it('sets settings', async () => {
-    await setSettings('NUT_HOST', '127.0.0.1')
-    expect(YamlSettings.prototype.set).toHaveBeenCalledWith('NUT_HOST', '127.0.0.1')
+    await setSettings('INFLUX_INTERVAL', 10)
+    expect(YamlSettings.prototype.set).toHaveBeenCalledWith('INFLUX_INTERVAL', 10)
   })
 
   it('deletes settings', async () => {
-    await deleteSettings('NUT_HOST')
-    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('NUT_HOST')
+    await deleteSettings('INFLUX_INTERVAL')
+    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('INFLUX_INTERVAL')
   })
 
   it('disconnects', async () => {
     await disconnect()
-    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('NUT_HOST')
-    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('NUT_PORT')
-    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('USERNAME')
-    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('PASSWORD')
+    expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('NUT_SERVERS')
     expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('INFLUX_HOST')
     expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('INFLUX_TOKEN')
     expect(YamlSettings.prototype.delete).toHaveBeenCalledWith('INFLUX_ORG')
