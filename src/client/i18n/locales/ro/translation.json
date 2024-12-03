@@ -1,0 +1,59 @@
+{
+  "noDevicesError": "Nu s-au găsit dispozitive pe acest server.",
+  "updateAvailable": "Actualizare disponibilă",
+  "device": "Dispozitiv",
+  "manufacturer": "Producător",
+  "model": "Model",
+  "serial": "Serie",
+  "currentLoad": "Sarcină curentă",
+  "batteryCharge": "Nivelul de încărcare",
+  "batteryRuntime": "Durata de funcționare",
+  "lastUpdated": "Ultima actualizare",
+  "docs": "Documentație API",
+  "lineChart": {
+    "inputVoltage": "Tensiune de intrare",
+    "outputVoltage": "Tensiune de ieșire",
+    "nominalInputVoltage": "Tensiune nominală de intrare"
+  },
+  "wattsChart": {
+    "realpower": "Putere reală",
+    "nominalRealpower": "Putere nominală"
+  },
+  "grid": {
+    "key": "Cheie",
+    "value": "Valoare"
+  },
+  "sidebar": {
+    "settings": "Setări",
+    "moreSettings": "Setări suplimentare",
+    "theme": "Temă",
+    "disconnect": "Deconectare",
+    "refresh": "Actualizare"
+  },
+  "settings": {
+    "manageServers": "Gestionare servere",
+    "influxDb": "InfluxDB",
+    "influxNotice": "Funcționează doar cu InfluxDB 2.x",
+    "addServer": "Adăugare server",
+    "apply": "Aplică"
+  },
+  "connect": {
+    "server": "Adresa serverului",
+    "port": "Port",
+    "username": "Nume de utilizator",
+    "password": "Parolă",
+    "token": "Cheie de acces",
+    "org": "Organizație",
+    "bucket": "Bucket",
+    "connect": "Conectare",
+    "test": "Test",
+    "success": "Conexiune reușită",
+    "error": "Conexiune eșuată. Verificați logurile pentru mai multe informații.",
+    "testing": "Se verifică conexiunea..."
+  },
+  "theme": {
+    "dark": "Întunecat",
+    "light": "Luminos",
+    "system": "Sistem"
+  }
+}
