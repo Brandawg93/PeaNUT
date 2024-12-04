@@ -1,59 +1,59 @@
 {
-  "noDevicesError": "Nu s-au găsit dispozitive pe acest server.",
-  "updateAvailable": "Actualizare disponibilă",
-  "device": "Dispozitiv",
-  "manufacturer": "Producător",
+  "noDevicesError": "No devices found on this server.",
+  "updateAvailable": "Update Available",
+  "device": "Device",
+  "manufacturer": "Manufacturer",
   "model": "Model",
-  "serial": "Serie",
-  "currentLoad": "Sarcină curentă",
-  "batteryCharge": "Nivelul de încărcare",
-  "batteryRuntime": "Durata de funcționare",
-  "lastUpdated": "Ultima actualizare",
-  "docs": "Documentație API",
+  "serial": "Serial",
+  "currentLoad": "Current Load",
+  "batteryCharge": "Battery Charge",
+  "batteryRuntime": "Battery Runtime",
+  "lastUpdated": "Last Updated",
+  "docs": "API Docs",
   "lineChart": {
-    "inputVoltage": "Tensiune de intrare",
-    "outputVoltage": "Tensiune de ieșire",
-    "nominalInputVoltage": "Tensiune nominală de intrare"
+    "inputVoltage": "Input Voltage",
+    "outputVoltage": "Output Voltage",
+    "nominalInputVoltage": "Nominal Input Voltage"
   },
   "wattsChart": {
-    "realpower": "Putere reală",
-    "nominalRealpower": "Putere nominală"
+    "realpower": "Realpower",
+    "nominalRealpower": "Nominal Realpower"
   },
   "grid": {
-    "key": "Cheie",
-    "value": "Valoare"
+    "key": "Key",
+    "value": "Value"
   },
   "sidebar": {
-    "settings": "Setări",
-    "moreSettings": "Setări suplimentare",
-    "theme": "Temă",
-    "disconnect": "Deconectare",
-    "refresh": "Actualizare"
+    "settings": "Settings",
+    "moreSettings": "More Settings",
+    "theme": "Theme",
+    "disconnect": "Disconnect",
+    "refresh": "Refresh"
   },
   "settings": {
-    "manageServers": "Gestionare servere",
+    "manageServers": "Manage Servers",
     "influxDb": "InfluxDB",
-    "influxNotice": "Funcționează doar cu InfluxDB 2.x",
-    "addServer": "Adăugare server",
-    "apply": "Aplică"
+    "influxNotice": "This will only work with Influxdb 2.x",
+    "addServer": "Add Server",
+    "apply": "Apply"
   },
   "connect": {
-    "server": "Adresa serverului",
+    "server": "Server Address",
     "port": "Port",
-    "username": "Nume de utilizator",
-    "password": "Parolă",
-    "token": "Cheie de acces",
-    "org": "Organizație",
+    "username": "Username",
+    "password": "Password",
+    "token": "Token",
+    "org": "Organization",
     "bucket": "Bucket",
-    "connect": "Conectare",
+    "connect": "Connect",
     "test": "Test",
-    "success": "Conexiune reușită",
-    "error": "Conexiune eșuată. Verificați logurile pentru mai multe informații.",
-    "testing": "Se verifică conexiunea..."
+    "success": "Connection successful",
+    "error": "Connection failed. Check the logs for more info.",
+    "testing": "Testing connection..."
   },
   "theme": {
-    "dark": "Întunecat",
-    "light": "Luminos",
-    "system": "Sistem"
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
   }
 }
