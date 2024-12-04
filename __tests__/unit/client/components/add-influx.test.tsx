@@ -12,6 +12,7 @@ const initialValues = {
   token: 'test-token',
   org: 'test-org',
   bucket: 'test-bucket',
+  interval: 10,
 }
 
 const renderComponent = (lng = 'en') => {
@@ -49,7 +50,8 @@ describe('AddInflux Component', () => {
       'http://new-server',
       initialValues.token,
       initialValues.org,
-      initialValues.bucket
+      initialValues.bucket,
+      initialValues.interval
     )
 
     fireEvent.change(screen.getByTestId('token'), { target: { value: 'new-token' } })
@@ -57,14 +59,27 @@ describe('AddInflux Component', () => {
       'http://new-server',
       'new-token',
       initialValues.org,
-      initialValues.bucket
+      initialValues.bucket,
+      initialValues.interval
     )
 
     fireEvent.change(screen.getByTestId('org'), { target: { value: 'new-org' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('http://new-server', 'new-token', 'new-org', initialValues.bucket)
+    expect(mockHandleChange).toHaveBeenCalledWith(
+      'http://new-server',
+      'new-token',
+      'new-org',
+      initialValues.bucket,
+      initialValues.interval
+    )
 
     fireEvent.change(screen.getByTestId('bucket'), { target: { value: 'new-bucket' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('http://new-server', 'new-token', 'new-org', 'new-bucket')
+    expect(mockHandleChange).toHaveBeenCalledWith(
+      'http://new-server',
+      'new-token',
+      'new-org',
+      'new-bucket',
+      initialValues.interval
+    )
   })
 
   test('displays toast messages on test connection', async () => {
@@ -78,7 +93,8 @@ describe('AddInflux Component', () => {
         initialValues.server,
         initialValues.token,
         initialValues.org,
-        initialValues.bucket
+        initialValues.bucket,
+        initialValues.interval
       )
     )
     await waitFor(() => expect(screen.getByText('connect.success')).toBeInTheDocument())
@@ -95,7 +111,8 @@ describe('AddInflux Component', () => {
         initialValues.server,
         initialValues.token,
         initialValues.org,
-        initialValues.bucket
+        initialValues.bucket,
+        initialValues.interval
       )
     )
     await waitFor(() => expect(screen.getByText('connect.error')).toBeInTheDocument())
