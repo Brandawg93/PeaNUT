@@ -12,7 +12,7 @@ async function connect(): Promise<Array<Nut>> {
   const settings = new YamlSettings(settingsFile)
   return settings
     .get('NUT_SERVERS')
-    .map((server: any) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+    .map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
 }
 
 export async function testConnection(server: string, port: number) {

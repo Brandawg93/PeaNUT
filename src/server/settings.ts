@@ -40,7 +40,7 @@ export class YamlSettings {
   private loadFromEnvVars(): void {
     let key: keyof SettingsType
     for (key in ISettings) {
-      const envValue = process.env[key] as any
+      const envValue = process.env[key as string]
       if (envValue !== undefined && this.data[key] === undefined) {
         if (key === 'NUT_SERVERS') {
           this.data[key] = JSON.parse(envValue)

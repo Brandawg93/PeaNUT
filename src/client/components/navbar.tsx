@@ -52,7 +52,7 @@ export default function NavBar(props: Props) {
   const openDrawer = () => setIsDrawerOpen(!isDrawerOpen)
   const closeDrawer = () => setIsDrawerOpen(false)
 
-  const dropdown = (variant: any = 'standard') => (
+  const dropdown = (variant: 'standard' | 'outlined' = 'standard') => (
     <Select
       variant={variant}
       className='dark:text-gray-300'
