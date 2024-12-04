@@ -54,18 +54,15 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-_Note:_ Environment variables are not required and used for first time setup only.
-
 | Variable        | Default   | Description                   |
 | --------------- | --------- | ----------------------------- |
 | WEB_HOST        | localhost | Hostname of web server        |
 | WEB_PORT        | 8080      | Port of web server            |
 | BASE_PATH       | undefined | Base path for reverse proxy   |
-| INFLUX_HOST     | undefined | Host for Influx server        |
-| INFLUX_TOKEN    | undefined | Token for Influx server       |
-| INFLUX_ORG      | undefined | Org for influx server         |
-| INFLUX_BUCKET   | undefined | Bucket for influx server      |
-| INFLUX_INTERVAL | 10        | Inverval for Influx ingestion |
+
+## Configuration
+
+Configuration is primarily done via the UI, but manual configuration can be done via the `/cnofig/settings.yml` file within the container. More information can be found on the [wiki](https://github.com/Brandawg93/PeaNUT/wiki/YAML-Configuration).
 
 ## API
 
