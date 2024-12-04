@@ -54,11 +54,11 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-| Variable        | Default   | Description                   |
-| --------------- | --------- | ----------------------------- |
-| WEB_HOST        | localhost | Hostname of web server        |
-| WEB_PORT        | 8080      | Port of web server            |
-| BASE_PATH       | undefined | Base path for reverse proxy   |
+| Variable  | Default   | Description                 |
+| --------- | --------- | --------------------------- |
+| WEB_HOST  | localhost | Hostname of web server      |
+| WEB_PORT  | 8080      | Port of web server          |
+| BASE_PATH | undefined | Base path for reverse proxy |
 
 ## Configuration
 
