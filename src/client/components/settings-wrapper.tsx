@@ -40,6 +40,7 @@ export default function SettingsWrapper({
   const [influxToken, setInfluxToken] = useState<string>('')
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
+  const [influxInterval, setInfluxInterval] = useState<number>(10)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useContext(ThemeContext)
@@ -107,6 +108,7 @@ export default function SettingsWrapper({
       setSettingsAction('INFLUX_TOKEN', influxToken),
       setSettingsAction('INFLUX_ORG', influxOrg),
       setSettingsAction('INFLUX_BUCKET', influxBucket),
+      setSettingsAction('INFLUX_INTERVAL', influxInterval),
     ])
   }
 
@@ -212,12 +214,14 @@ export default function SettingsWrapper({
                             token: influxToken,
                             org: influxOrg,
                             bucket: influxBucket,
+                            interval: influxInterval,
                           }}
-                          handleChange={(server, token, org, bucket) => {
+                          handleChange={(server, token, org, bucket, interval) => {
                             setInfluxServer(server)
                             setInfluxToken(token)
                             setInfluxOrg(org)
                             setInfluxBucket(bucket)
+                            setInfluxInterval(interval)
                           }}
                           testInfluxConnectionAction={testInfluxConnectionAction}
                         />
