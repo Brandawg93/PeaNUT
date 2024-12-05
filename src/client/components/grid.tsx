@@ -128,7 +128,7 @@ export default function NutGrid(props: Props) {
     columnHelper.display({
       id: 'actions',
       cell: ({ row }) => {
-        const isRW = data.rwVars?.includes(row.id)
+        const isRW = data.rwVars?.includes(row.original.key)
         return isRW ? (
           <Typography className='mb-0 font-normal dark:text-white'>
             <IconButton
