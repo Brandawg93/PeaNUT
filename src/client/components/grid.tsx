@@ -7,10 +7,11 @@ import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@mat
 import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon, PencilSquareIcon, XCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 import { ToastContainer, toast } from 'react-toastify'
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'
-import { DEVICE, VARS } from '@/common/types'
+import { DEVICE } from '@/common/types'
 import { getAllVarDescriptions, saveVar } from '@/app/actions'
 
 type TableProps = {
@@ -36,9 +37,10 @@ export default function NutGrid(props: Props) {
 
   const anyRW = data.rwVars?.length > 0
 
-  let result = useMemo<Array<TableProps>>(() => [], [])
-  result = Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A' }))
-  result.shift()
+  const result = useMemo<TableProps[]>(
+    () => Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A' })),
+    []
+  )
 
   if (!data) {
     return null
@@ -87,80 +89,101 @@ export default function NutGrid(props: Props) {
     </>
   )
 
+  const columnHelper = createColumnHelper<TableProps>()
+  const columns = [
+    columnHelper.accessor('key', {
+      id: 'key',
+      cell: (info) => (
+        <div className='flex justify-between'>
+          <Typography className='mb-0 inline font-normal dark:text-white'>{info.getValue()}</Typography>
+          <Tooltip
+            className='border border-gray-400 bg-gray-300 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
+            content={
+              <Typography>
+                {(descriptions?.data && descriptions.data[info.getValue()]) || 'Descripion Unavailable'}
+              </Typography>
+            }
+            placement='right'
+          >
+            <InformationCircleIcon className='mt-1 inline h-4 w-4' />
+          </Tooltip>
+        </div>
+      ),
+      header: () => (
+        <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t('grid.key')}</Typography>
+      ),
+    }),
+    columnHelper.accessor('value', {
+      id: 'value',
+      cell: (info) =>
+        edit === info.row.index ? (
+          editinput(info.row.getValue('key'), info.getValue().toString())
+        ) : (
+          <Typography className='mb-0 font-normal dark:text-white'>{info.getValue() || ' '}</Typography>
+        ),
+      header: () => (
+        <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t('grid.value')}</Typography>
+      ),
+    }),
+    columnHelper.display({
+      id: 'actions',
+      cell: ({ row }) => {
+        const isRW = data.rwVars?.includes(row.id)
+        return isRW ? (
+          <Typography className='mb-0 font-normal dark:text-white'>
+            <IconButton
+              disabled={edit === row.index}
+              onClick={() => handleEdit(row.index)}
+              variant='filled'
+              className='bg-gray-100 shadow-none dark:border-gray-500 dark:bg-gray-800 dark:text-gray-100'
+            >
+              <PencilSquareIcon className='h-4 w-4 text-gray-800 dark:text-gray-100' />
+            </IconButton>
+          </Typography>
+        ) : null
+      },
+    }),
+  ].filter((column) => column.id !== 'actions' || anyRW) // Hide actions column if there are no RW vars
+
+  const table = useReactTable({
+    data: result,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
   return (
     <Card
       className='border-neutral-300 w-full overflow-auto border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='grid'
     >
       <ToastContainer position='top-center' theme={theme} />
-      <table className='w-full min-w-max table-auto text-left'>
+      <table>
         <thead>
-          <tr className='grid-row'>
-            {Object.keys(result[0]).map((head: string) => {
-              return (
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
                 <th
-                  key={head}
-                  className={`border-neutral-300 border-b border-r bg-gray-400 p-3 dark:border-gray-600 dark:bg-gray-700`}
+                  key={header.id}
+                  className='bg-gray-400 p-3 text-left outline outline-[0.5px] outline-gray-300 dark:bg-gray-700 dark:outline-gray-800'
                 >
-                  <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>
-                    {t(`grid.${head}`)}
-                  </Typography>
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
-              )
-            })}
-            {anyRW ? (
-              <th className='border-neutral-300 w-[65px] border-b bg-gray-400 p-3 dark:border-gray-600 dark:bg-gray-700'>
-                <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>&nbsp;</Typography>
-              </th>
-            ) : null}
-          </tr>
+              ))}
+            </tr>
+          ))}
         </thead>
         <tbody>
-          {result.map(({ key, value }, index: number) => {
-            const isLast = index === result.length - 1
-            const lastClass = isLast ? '' : 'border-b dark:border-gray-800'
-            const isRW = data.rwVars?.includes(key as keyof VARS)
+          {table.getRowModel().rows.map((row, index) => {
             return (
-              <tr key={key} aria-rowindex={index} className='grid-row'>
-                <td className={`p-3 ${lastClass} border-neutral-300 w-1/2 border-r dark:border-gray-800`}>
-                  <div className='flex justify-between'>
-                    <Typography className='mb-0 inline font-normal dark:text-white'>{key}</Typography>
-                    <Tooltip
-                      className='border border-gray-400 bg-gray-300 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
-                      content={
-                        <Typography>
-                          {(descriptions?.data && descriptions.data[key]) || 'Descripion Unavailable'}
-                        </Typography>
-                      }
-                      placement='right'
-                    >
-                      <InformationCircleIcon className='mt-1 inline h-4 w-4' />
-                    </Tooltip>
-                  </div>
-                </td>
-                <td className={`p-3 ${lastClass} border-neutral-300 border-r dark:border-gray-800`}>
-                  {edit === index ? (
-                    editinput(key, value.toString())
-                  ) : (
-                    <Typography className='mb-0 font-normal dark:text-white'>{value || ' '}</Typography>
-                  )}
-                </td>
-                {anyRW ? (
-                  <td className={`p-3 ${lastClass} border-neutral-300 w-[65px]`}>
-                    {isRW ? (
-                      <Typography className='mb-0 font-normal dark:text-white'>
-                        <IconButton
-                          disabled={edit === index}
-                          onClick={() => handleEdit(index)}
-                          variant='filled'
-                          className='bg-gray-100 shadow-none dark:border-gray-500 dark:bg-gray-800 dark:text-gray-100'
-                        >
-                          <PencilSquareIcon className='h-4 w-4 text-gray-800 dark:text-gray-100' />
-                        </IconButton>
-                      </Typography>
-                    ) : null}
+              <tr key={row.id} aria-rowindex={index}>
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    className='w-1/2 p-3 outline outline-[0.5px] outline-gray-300 dark:outline-gray-800'
+                    key={cell.id}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
-                ) : null}
+                ))}
               </tr>
             )
           })}
@@ -169,3 +192,5 @@ export default function NutGrid(props: Props) {
     </Card>
   )
 }
+
+export const MemoizedGrid = React.memo(NutGrid, (prev, next) => prev.data === next.data) as typeof NutGrid

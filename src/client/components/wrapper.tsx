@@ -13,7 +13,7 @@ import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 
-import NutGrid from '@/client/components/grid'
+import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
 import NavBar from '@/client/components/navbar'
@@ -261,7 +261,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           </div>
           <ChartsContainer vars={vars} data={data} name={ups.name} />
           <div className='mb-4'>
-            <NutGrid data={ups} />
+            <MemoizedGrid data={ups} />
           </div>
           <Footer updated={data.updated} />
         </div>
