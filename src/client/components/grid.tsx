@@ -39,7 +39,7 @@ export default function NutGrid(props: Props) {
 
   const result = useMemo<TableProps[]>(
     () => Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A' })),
-    []
+    [data.vars]
   )
 
   if (!data) {
@@ -193,4 +193,4 @@ export default function NutGrid(props: Props) {
   )
 }
 
-export const MemoizedGrid = React.memo(NutGrid, (prev, next) => prev.data === next.data) as typeof NutGrid
+export const MemoizedGrid = React.memo(NutGrid, (prev, next) => prev.data.vars === next.data.vars) as typeof NutGrid
