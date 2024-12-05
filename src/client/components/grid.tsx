@@ -1,7 +1,7 @@
 'use client'
 
 import 'react-toastify/dist/ReactToastify.css'
-import React, { useState, useMemo, useContext, useRef } from 'react'
+import React, { useState, useMemo, useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +29,6 @@ export default function NutGrid(props: Props) {
   const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
   const [edit, setEdit] = useState<number>(-1)
-  const ref = useRef<any>(null)
   const { data: descriptions } = useQuery({
     queryKey: ['deviceDescriptions', data.name, data.vars],
     queryFn: () => getAllVarDescriptions(data.name, Object.keys(data.vars)),
@@ -54,14 +53,14 @@ export default function NutGrid(props: Props) {
     setEdit(-1)
   }
 
-  const handleSave = async (key: string) => {
+  const handleSave = async (key: string, value: string) => {
     try {
-      const res = await saveVar(data.name, key, ref.current.value)
+      const res = await saveVar(data.name, key, value)
       if (res?.error) {
         toast.error(res.error)
         return
       }
-      if (ref.current) data.vars[key].value = ref.current.value
+      data.vars[key].value = value
       handleClose()
     } catch (e: any) {
       toast.error(e.message)
@@ -72,13 +71,12 @@ export default function NutGrid(props: Props) {
     <>
       <div className='flex'>
         <input
-          ref={ref}
           type={Number.isNaN(+value) ? 'text' : 'number'}
           className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
           defaultValue={value}
         />
         <ButtonGroup size='sm' variant='text' className='divide-none'>
-          <Button className='px-2' onClick={async () => await handleSave(key)} variant='text'>
+          <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='text'>
             <CheckCircleIcon className='h-6 w-6 text-green-500' />
           </Button>
           <Button className='px-2' variant='text' onClick={() => handleClose()}>
