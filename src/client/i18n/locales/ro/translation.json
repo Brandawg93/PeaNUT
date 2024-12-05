@@ -34,6 +34,7 @@
     "manageServers": "Gestionare servere",
     "influxDb": "InfluxDB",
     "influxNotice": "Funcționează doar cu InfluxDB 2.x",
+    "influxInterval": "Influx Interval (s)",
     "addServer": "Adăugare server",
     "apply": "Aplică"
   },
