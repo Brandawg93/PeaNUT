@@ -30,7 +30,7 @@ export default function NutGrid(props: Props) {
   const [edit, setEdit] = useState<number>(-1)
   const ref = useRef<any>(null)
   const { data: descriptions } = useQuery({
-    queryKey: ['deviceDescriptions'],
+    queryKey: ['deviceDescriptions', data.name, data.vars],
     queryFn: () => getAllVarDescriptions(data.name, Object.keys(data.vars)),
   })
 

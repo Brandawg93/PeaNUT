@@ -7,6 +7,7 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactPlugin from 'eslint-plugin-react'
 import prettier from 'eslint-plugin-prettier'
 import nextPlugin from '@next/eslint-plugin-next'
+import pluginQuery from '@tanstack/eslint-plugin-query'
 
 export default [
   {
@@ -29,6 +30,7 @@ export default [
   },
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  ...pluginQuery.configs['flat/recommended'],
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...fixupConfigRules(pluginReactConfig),
