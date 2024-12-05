@@ -13,12 +13,13 @@ import { ServerStackIcon, PlusIcon, InformationCircleIcon } from '@heroicons/rea
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
+import { SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
-  getSettingsAction: (key: string) => Promise<any>
-  setSettingsAction: (key: string, value: any) => Promise<void>
+  getSettingsAction: <K extends keyof SettingsType>(key: K) => Promise<any>
+  setSettingsAction: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => Promise<void>
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>

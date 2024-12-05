@@ -5,16 +5,18 @@ import { server } from '../common/types'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
-  INFLUX_HOST: undefined,
-  INFLUX_TOKEN: undefined,
-  INFLUX_ORG: undefined,
-  INFLUX_BUCKET: undefined,
+  INFLUX_HOST: '',
+  INFLUX_TOKEN: '',
+  INFLUX_ORG: '',
+  INFLUX_BUCKET: '',
   INFLUX_INTERVAL: 10,
 }
 
+export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
+
 export class YamlSettings {
   private filePath: string
-  private data: Partial<Record<keyof typeof ISettings, any>>
+  private data: SettingsType
 
   constructor(filePath: string) {
     this.filePath = filePath
@@ -27,7 +29,8 @@ export class YamlSettings {
     fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
     if (fs.existsSync(this.filePath)) {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
-      this.data = load(fileContents) || { ...ISettings }
+      const fileData = load(fileContents) as SettingsType
+      this.data = { ...ISettings, ...fileData }
     }
     if (!this.data.NUT_SERVERS) {
       this.data.NUT_SERVERS = []
@@ -35,14 +38,16 @@ export class YamlSettings {
   }
 
   private loadFromEnvVars(): void {
-    for (const key in ISettings) {
-      const envValue = process.env[key]
-      if (envValue !== undefined && this.data[key as keyof typeof ISettings] === undefined) {
-        const typedKey = key as keyof typeof ISettings
-        if (typedKey === 'NUT_SERVERS') {
-          this.data[typedKey] = JSON.parse(envValue)
+    let key: keyof SettingsType
+    for (key in ISettings) {
+      const envValue = process.env[key as string]
+      if (envValue !== undefined && this.data[key] === undefined) {
+        if (key === 'NUT_SERVERS') {
+          this.data[key] = JSON.parse(envValue)
+        } else if (key === 'INFLUX_INTERVAL') {
+          this.data[key] = Number(envValue)
         } else {
-          this.data[typedKey] = typeof ISettings[typedKey] === 'number' ? Number(envValue) : envValue
+          this.data[key] = envValue
         }
       }
     }
@@ -75,21 +80,21 @@ export class YamlSettings {
     this.save()
   }
 
-  public get(key: string): any {
-    return this.data[key as keyof typeof ISettings]
+  public get<K extends keyof SettingsType>(key: K): SettingsType[K] {
+    return this.data[key]
   }
 
-  public set(key: string, value: any): void {
-    this.data[key as keyof typeof ISettings] = value
+  public set<K extends keyof SettingsType>(key: K, value: SettingsType[K]): void {
+    this.data[key] = value
     this.save()
   }
 
-  public delete(key: string): void {
-    delete this.data[key as keyof typeof ISettings]
+  public delete(key: keyof SettingsType): void {
+    delete this.data[key]
     this.save()
   }
 
-  public getAll(): any {
+  public getAll(): SettingsType {
     return this.data
   }
 }

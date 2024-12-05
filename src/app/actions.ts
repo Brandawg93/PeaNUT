@@ -3,8 +3,8 @@
 import InfluxWriter from '@/server/influxdb'
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
-import { YamlSettings } from '@/server/settings'
-import { server } from '@/common/types'
+import { YamlSettings, SettingsType } from '@/server/settings'
+import { server, DeviceData, VarDescription } from '@/common/types'
 
 const settingsFile = './config/settings.yml'
 
@@ -12,7 +12,7 @@ async function connect(): Promise<Array<Nut>> {
   const settings = new YamlSettings(settingsFile)
   return settings
     .get('NUT_SERVERS')
-    .map((server: any) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+    .map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
 }
 
 export async function testConnection(server: string, port: number) {
@@ -25,7 +25,7 @@ export async function testInfluxConnection(host: string, token: string, org: str
   return await influxdata.testConnection()
 }
 
-export async function getDevices() {
+export async function getDevices(): Promise<DeviceData> {
   try {
     const nuts = await connect()
     const gridProps: Array<DEVICE> = []
@@ -48,11 +48,11 @@ export async function getDevices() {
     await Promise.all(devicePromises)
     return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
-    return { devices: undefined, updated: new Date(), error: e.message }
+    return { devices: undefined, updated: new Date(), error: e?.message || 'Unknown error' }
   }
 }
 
-export async function getAllVarDescriptions(device: string, params: string[]) {
+export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
     const nut = (await connect()).find((nut) => nut.deviceExists(device))
     const data: { [x: string]: string } = {}
@@ -65,7 +65,7 @@ export async function getAllVarDescriptions(device: string, params: string[]) {
     })
     return { data, error: undefined }
   } catch (e: any) {
-    return { data: undefined, error: e.message }
+    return { data: undefined, error: e?.message || 'Unknown error' }
   }
 }
 
@@ -79,8 +79,9 @@ export async function saveVar(device: string, varName: string, value: string) {
       }
     })
     await Promise.all(savePromises)
+    return { error: undefined }
   } catch (e: any) {
-    return { error: e.message }
+    return { error: e?.message || 'Unknown error' }
   }
 }
 
@@ -89,12 +90,12 @@ export async function checkSettings(): Promise<boolean> {
   return !!settings.get('NUT_SERVERS') || [].length > 0
 }
 
-export async function getSettings(key: string) {
+export async function getSettings<K extends keyof SettingsType>(key: K): Promise<SettingsType[K]> {
   const settings = new YamlSettings(settingsFile)
   return settings.get(key)
 }
 
-export async function setSettings(key: string, value: any) {
+export async function setSettings<K extends keyof SettingsType>(key: K, value: SettingsType[K]): Promise<void> {
   const settings = new YamlSettings(settingsFile)
   settings.set(key, value)
 }
@@ -105,7 +106,7 @@ export async function updateServers(servers: Array<server>) {
   settings.set('NUT_SERVERS', servers)
 }
 
-export async function deleteSettings(key: string) {
+export async function deleteSettings(key: keyof SettingsType) {
   const settings = new YamlSettings(settingsFile)
   settings.delete(key)
 }
@@ -113,10 +114,6 @@ export async function deleteSettings(key: string) {
 export async function disconnect() {
   const settings = new YamlSettings(settingsFile)
   settings.delete('NUT_SERVERS')
-  settings.delete('NUT_HOST')
-  settings.delete('NUT_PORT')
-  settings.delete('USERNAME')
-  settings.delete('PASSWORD')
   settings.delete('INFLUX_HOST')
   settings.delete('INFLUX_TOKEN')
   settings.delete('INFLUX_ORG')

@@ -147,8 +147,8 @@ export default function NutGrid(props: Props) {
                 </td>
                 {anyRW ? (
                   <td className={`p-3 ${lastClass} border-neutral-300 w-[65px]`}>
-                    <Typography className='mb-0 font-normal dark:text-white'>
-                      {isRW ? (
+                    {isRW ? (
+                      <Typography className='mb-0 font-normal dark:text-white'>
                         <IconButton
                           disabled={edit === index}
                           onClick={() => handleEdit(index)}
@@ -157,8 +157,8 @@ export default function NutGrid(props: Props) {
                         >
                           <PencilSquareIcon className='h-4 w-4 text-gray-800 dark:text-gray-100' />
                         </IconButton>
-                      ) : null}
-                    </Typography>
+                      </Typography>
+                    ) : null}
                   </td>
                 ) : null}
               </tr>
