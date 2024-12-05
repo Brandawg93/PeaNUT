@@ -164,7 +164,7 @@ export default function NutGrid(props: Props) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className='bg-gray-400 p-3 text-left outline outline-[0.5px] outline-gray-300 dark:bg-gray-700 dark:outline-gray-800'
+                  className={`bg-gray-400 p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b border-gray-300 dark:border-gray-600 dark:bg-gray-700`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
@@ -178,7 +178,7 @@ export default function NutGrid(props: Props) {
               <tr key={row.id} aria-rowindex={index}>
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className='w-1/2 p-3 outline outline-[0.5px] outline-gray-300 dark:outline-gray-800'
+                    className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t border-gray-300 p-3 dark:border-gray-800`}
                     key={cell.id}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
