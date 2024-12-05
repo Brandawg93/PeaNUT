@@ -4,7 +4,7 @@ import 'chart.js/auto'
 import React from 'react'
 import { Chart } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import { VARS, DEVICE } from '@/common/types'
+import { VARS, DeviceData } from '@/common/types'
 import LineChart from '@/client/components/line-chart'
 import WattsChart from '@/client/components/watts-chart'
 
@@ -12,11 +12,7 @@ Chart.register(annotationPlugin)
 
 type Props = {
   vars: VARS
-  data: {
-    devices: DEVICE[]
-    updated: Date
-    error: undefined
-  }
+  data: DeviceData
   name: string
 }
 

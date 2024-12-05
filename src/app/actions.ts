@@ -4,7 +4,7 @@ import InfluxWriter from '@/server/influxdb'
 import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { server } from '@/common/types'
+import { server, DeviceData, VarDescription } from '@/common/types'
 
 const settingsFile = './config/settings.yml'
 
@@ -25,7 +25,7 @@ export async function testInfluxConnection(host: string, token: string, org: str
   return await influxdata.testConnection()
 }
 
-export async function getDevices() {
+export async function getDevices(): Promise<DeviceData> {
   try {
     const nuts = await connect()
     const gridProps: Array<DEVICE> = []
@@ -48,11 +48,11 @@ export async function getDevices() {
     await Promise.all(devicePromises)
     return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
-    return { devices: undefined, updated: new Date(), error: e.message }
+    return { devices: undefined, updated: new Date(), error: e?.message || 'Unknown error' }
   }
 }
 
-export async function getAllVarDescriptions(device: string, params: string[]) {
+export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
     const nut = (await connect()).find((nut) => nut.deviceExists(device))
     const data: { [x: string]: string } = {}
@@ -65,7 +65,7 @@ export async function getAllVarDescriptions(device: string, params: string[]) {
     })
     return { data, error: undefined }
   } catch (e: any) {
-    return { data: undefined, error: e.message }
+    return { data: undefined, error: e?.message || 'Unknown error' }
   }
 }
 
@@ -79,8 +79,9 @@ export async function saveVar(device: string, varName: string, value: string) {
       }
     })
     await Promise.all(savePromises)
+    return { error: undefined }
   } catch (e: any) {
-    return { error: e.message }
+    return { error: e?.message || 'Unknown error' }
   }
 }
 

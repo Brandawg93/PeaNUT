@@ -68,7 +68,7 @@ describe('actions', () => {
 
   it('saves variable', async () => {
     const data = await saveVar('ups', 'battery.charge', '100')
-    expect(data).toBeUndefined()
+    expect(data.error).toBeUndefined()
   })
 
   it('checks settings', async () => {

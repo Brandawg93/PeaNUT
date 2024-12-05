@@ -24,7 +24,7 @@ import ChartsContainer from '@/client/components/charts-container'
 
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
-import { DEVICE } from '@/common/types'
+import { DEVICE, DeviceData } from '@/common/types'
 
 const getStatus = (status: keyof typeof upsStatus) => {
   switch (status) {
@@ -42,18 +42,7 @@ const getStatus = (status: keyof typeof upsStatus) => {
 const roundIfNeeded = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100
 
 type Props = {
-  getDevicesAction: () => Promise<
-    | {
-        devices: DEVICE[]
-        updated: Date
-        error: undefined
-      }
-    | {
-        devices: undefined
-        updated: Date
-        error: any
-      }
-  >
+  getDevicesAction: () => Promise<DeviceData>
   checkSettingsAction: () => Promise<boolean>
   disconnectAction: () => Promise<void>
 }
@@ -100,7 +89,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
   if (data?.error) {
     let error = 'Internal Server Error'
-    if (data?.error.message?.includes('ECONNREFUSED')) {
+    if (data?.error.includes('ECONNREFUSED')) {
       error = 'Connection refused. Is NUT server running?'
     }
     if (data?.error.includes('ENOTFOUND')) {

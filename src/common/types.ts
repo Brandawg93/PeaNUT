@@ -18,9 +18,20 @@ export type DEVICE = {
   clients: Array<string>
 }
 
+export type DeviceData = {
+  devices: Array<DEVICE> | undefined
+  updated: Date
+  error: string | undefined
+}
+
 export type server = {
   HOST: string
   PORT: number
   USERNAME?: string
   PASSWORD?: string
+}
+
+export type VarDescription = {
+  data: { [x: string]: string } | undefined
+  error: string | undefined
 }
