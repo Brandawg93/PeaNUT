@@ -11,8 +11,7 @@ import {
   InformationCircleIcon,
   ChevronRightIcon,
   ChevronDownIcon,
-  Bars4Icon,
-  BarsArrowDownIcon,
+  ArrowUturnDownIcon,
 } from '@heroicons/react/24/outline'
 import { ToastContainer, toast } from 'react-toastify'
 import {
@@ -77,7 +76,7 @@ export default function NutGrid(props: Props) {
   const { t } = useTranslation(lng)
   const [edit, setEdit] = useState<number>(-1)
   const [useTreeData, setUseTreeData] = useState<boolean>(false)
-  const [expanded, setExpanded] = useState<ExpandedState>({})
+  const [expanded, setExpanded] = useState<ExpandedState>(true)
   const anyRW = data.rwVars?.length > 0
 
   const hierarchicalData = useMemo<HierarchicalTableProps[]>(
@@ -183,13 +182,24 @@ export default function NutGrid(props: Props) {
       },
       header: () => (
         <div className='flex items-center justify-between'>
-          <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t('grid.key')}</Typography>{' '}
+          <button disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
+            {useTreeData && (
+              <div className='flex h-[28px] flex-col justify-center'>
+                {table.getIsAllRowsExpanded() ? (
+                  <ChevronDownIcon className='h-4 w-4 dark:text-white' />
+                ) : (
+                  <ChevronRightIcon className='h-4 w-4 dark:text-white' />
+                )}
+              </div>
+            )}
+            <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t('grid.key')}</Typography>
+          </button>
           <IconButton
             onClick={() => setUseTreeData(!useTreeData)}
             variant='text'
             className='shadow-none dark:text-gray-100'
           >
-            {useTreeData ? <BarsArrowDownIcon className='h-4 w-4' /> : <Bars4Icon className='h-4 w-4' />}
+            <ArrowUturnDownIcon className={`${useTreeData ? '-rotate-90' : 'rotate-0'} h-4 w-4`} />
           </IconButton>
         </div>
       ),
