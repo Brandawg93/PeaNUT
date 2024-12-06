@@ -49,8 +49,8 @@ export default function AddServer({
         })
         try {
           await promise
-        } catch (error) {
-          console.error(error)
+        } catch {
+          // Do nothing
         }
       })
     }

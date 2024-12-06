@@ -43,8 +43,8 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
         })
         try {
           await promise
-        } catch (error) {
-          console.error(error)
+        } catch {
+          // Do nothing
         }
       })
     }
