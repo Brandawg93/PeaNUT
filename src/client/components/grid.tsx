@@ -81,7 +81,7 @@ export default function NutGrid({ data }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
-  const [edit, setEdit] = useState<number>(-1)
+  const [edit, setEdit] = useState<string>('')
   const [useTreeData, setUseTreeData] = useState<boolean>(false)
   const [expanded, setExpanded] = useState<ExpandedState>(true)
   const anyRW = data.rwVars?.length > 0
@@ -104,12 +104,12 @@ export default function NutGrid({ data }: Props) {
     return null
   }
 
-  const handleEdit = (index: number) => {
-    setEdit(index)
+  const handleEdit = (key: string) => {
+    setEdit(key)
   }
 
   const handleClose = () => {
-    setEdit(-1)
+    setEdit('')
   }
 
   const handleSave = async (key: string, value: string) => {
@@ -212,7 +212,7 @@ export default function NutGrid({ data }: Props) {
     columnHelper.accessor('value', {
       id: 'value',
       cell: ({ row, getValue }) =>
-        edit === row.index ? (
+        edit === (useTreeData ? row.original.originalKey : row.original.key) ? (
           editInput(row.getValue('key'), getValue().toString())
         ) : (
           <Typography className='mb-0 font-normal dark:text-white'>{getValue() || ' '}</Typography>
@@ -229,8 +229,8 @@ export default function NutGrid({ data }: Props) {
         return isRW ? (
           <Typography className='mb-0 font-normal dark:text-white'>
             <IconButton
-              disabled={edit === row.index}
-              onClick={() => handleEdit(row.index)}
+              disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
+              onClick={() => handleEdit(useTreeData ? row.original.originalKey || '' : row.original.key)}
               variant='filled'
               className='bg-gray-100 shadow-none dark:border-gray-500 dark:bg-gray-800 dark:text-gray-100'
             >
