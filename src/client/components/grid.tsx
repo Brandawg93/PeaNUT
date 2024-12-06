@@ -69,8 +69,7 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
   return root
 }
 
-export default function NutGrid(props: Props) {
-  const { data } = props
+export default function NutGrid({ data }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { theme } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
@@ -119,24 +118,22 @@ export default function NutGrid(props: Props) {
     }
   }
 
-  const editinput = (key: string, value: string) => (
-    <>
-      <div className='flex'>
-        <input
-          type={Number.isNaN(+value) ? 'text' : 'number'}
-          className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
-          defaultValue={value}
-        />
-        <ButtonGroup size='sm' variant='text' className='divide-none'>
-          <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='text'>
-            <CheckCircleIcon className='h-6 w-6 text-green-500' />
-          </Button>
-          <Button className='px-2' variant='text' onClick={() => handleClose()}>
-            <XCircleIcon className='h-6 w-6 text-red-500' />
-          </Button>
-        </ButtonGroup>
-      </div>
-    </>
+  const editInput = (key: string, value: string) => (
+    <div className='flex'>
+      <input
+        type={Number.isNaN(+value) ? 'text' : 'number'}
+        className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
+        defaultValue={value}
+      />
+      <ButtonGroup size='sm' variant='text' className='divide-none'>
+        <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='text'>
+          <CheckCircleIcon className='h-6 w-6 text-green-500' />
+        </Button>
+        <Button className='px-2' variant='text' onClick={handleClose}>
+          <XCircleIcon className='h-6 w-6 text-red-500' />
+        </Button>
+      </ButtonGroup>
+    </div>
   )
 
   const columnHelper = createColumnHelper<HierarchicalTableProps>()
@@ -208,7 +205,7 @@ export default function NutGrid(props: Props) {
       id: 'value',
       cell: ({ row, getValue }) =>
         edit === row.index ? (
-          editinput(row.getValue('key'), getValue().toString())
+          editInput(row.getValue('key'), getValue().toString())
         ) : (
           <Typography className='mb-0 font-normal dark:text-white'>{getValue() || ' '}</Typography>
         ),
@@ -278,20 +275,18 @@ export default function NutGrid(props: Props) {
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row, index) => {
-            return (
-              <tr key={row.id} aria-rowindex={index}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t border-gray-300 p-3 dark:border-gray-800`}
-                    key={cell.id}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            )
-          })}
+          {table.getRowModel().rows.map((row, index) => (
+            <tr key={row.id} aria-rowindex={index}>
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t border-gray-300 p-3 dark:border-gray-800`}
+                  key={cell.id}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </Card>
