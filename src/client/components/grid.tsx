@@ -224,8 +224,8 @@ export default function NutGrid({ data }: Props) {
     columnHelper.display({
       id: 'actions',
       cell: ({ row }) => {
-        const originalKey = row.original.originalKey || ''
-        const isRW = data.rwVars?.includes(originalKey)
+        const key = useTreeData ? row.original.originalKey || '' : row.original.key
+        const isRW = data.rwVars?.includes(key)
         return isRW ? (
           <Typography className='mb-0 font-normal dark:text-white'>
             <IconButton
