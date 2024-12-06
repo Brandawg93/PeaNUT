@@ -39,6 +39,7 @@ interface TableProps {
 }
 
 interface HierarchicalTableProps extends TableProps {
+  originalKey?: string
   children?: HierarchicalTableProps[]
 }
 
@@ -53,11 +54,18 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
       let existingItem = currentLevel.find((item) => item.key === part)
 
       if (!existingItem) {
-        existingItem = { key: part, value: index === keyParts.length - 1 ? value : '', description: '', children: [] }
+        existingItem = {
+          originalKey: key,
+          key: part,
+          value: index === keyParts.length - 1 ? value : '',
+          description: '',
+          children: [],
+        }
         currentLevel.push(existingItem)
       }
 
       if (index === keyParts.length - 1) {
+        existingItem.originalKey = key // Save the original key
         existingItem.value = value // Assign the value at the last part
         existingItem.description = description || '' // Assign the description if available
       }
@@ -216,7 +224,8 @@ export default function NutGrid({ data }: Props) {
     columnHelper.display({
       id: 'actions',
       cell: ({ row }) => {
-        const isRW = data.rwVars?.includes(row.original.key)
+        const originalKey = row.original.originalKey || ''
+        const isRW = data.rwVars?.includes(originalKey)
         return isRW ? (
           <Typography className='mb-0 font-normal dark:text-white'>
             <IconButton
