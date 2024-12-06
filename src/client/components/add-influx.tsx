@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
@@ -28,28 +28,24 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
   const [bucket, setBucket] = useState<string>(initialValues.bucket)
   const [interval, setInterval] = useState<number>(initialValues.interval)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [connecting, setConnecting] = useState<boolean>(false)
+  const [connecting, startTransition] = useTransition()
 
   const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async () => {
-    if (server && token) {
-      setConnecting(true)
-      const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
-      toast.promise(promise, {
-        pending: t('connect.testing'),
-        success: {
-          render() {
-            setConnecting(false)
-            return t('connect.success')
-          },
-        },
-        error: {
-          render() {
-            setConnecting(false)
-            return t('connect.error')
-          },
-        },
+    if (server && token && org && bucket) {
+      startTransition(async () => {
+        const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
+        toast.promise(promise, {
+          pending: t('connect.testing'),
+          success: t('connect.success'),
+          error: t('connect.error'),
+        })
+        try {
+          await promise
+        } catch (error) {
+          console.error(error)
+        }
       })
     }
   }
