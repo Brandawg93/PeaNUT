@@ -1,5 +1,6 @@
 export type VAR = {
   value: string | number
+  description?: string
   type?: string
   enum?: Array<string>
   range?: Array<string>
