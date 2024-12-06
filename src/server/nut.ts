@@ -122,12 +122,12 @@ export class Nut {
     const promises = lines.map(async (line) => {
       const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
       const value = line.split('"')[1].trim()
-      const type = await this.getType(device, key)
+      const [description, type] = await Promise.all([this.getVarDescription(device, key), this.getType(device, key)])
       if (type.includes('NUMBER') && !isNaN(+value)) {
         const num = +value
-        vars[key] = { value: num ? num : value }
+        vars[key] = { value: num ? num : value, description }
       } else {
-        vars[key] = { value }
+        vars[key] = { value, description }
       }
     })
     await Promise.all(promises)
