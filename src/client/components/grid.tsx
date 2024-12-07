@@ -55,7 +55,7 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
 
       if (!existingItem) {
         existingItem = {
-          originalKey: key,
+          originalKey: keyParts.slice(0, index + 1).join('.'),
           key: part,
           value: index === keyParts.length - 1 ? value : '',
           description: '',
