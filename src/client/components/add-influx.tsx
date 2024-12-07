@@ -9,6 +9,7 @@ import { Button, Input } from '@material-tailwind/react'
 type AddInfluxProps = {
   initialValues: { server: string; token: string; org: string; bucket: string; interval: number }
   handleChange: (server: string, token: string, org: string, bucket: string, interval: number) => void
+  handleClear: () => void
   testInfluxConnectionAction: (
     server: string,
     token: string,
@@ -18,7 +19,12 @@ type AddInfluxProps = {
   ) => Promise<void>
 }
 
-export default function AddInflux({ initialValues, handleChange, testInfluxConnectionAction }: AddInfluxProps) {
+export default function AddInflux({
+  initialValues,
+  handleChange,
+  handleClear,
+  testInfluxConnectionAction,
+}: AddInfluxProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useContext(ThemeContext)
@@ -48,6 +54,15 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
         }
       })
     }
+  }
+
+  const handleClearForm = () => {
+    setServer('')
+    setToken('')
+    setOrg('')
+    setBucket('')
+    setInterval(10)
+    handleClear()
   }
 
   return (
@@ -155,7 +170,14 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
             />
           </div>
           <div className='flex flex-row justify-between'>
-            <div />
+            <Button
+              disabled={connecting}
+              onClick={async () => handleClearForm()}
+              className='font-bold text-white shadow-none'
+              type='button'
+            >
+              {t('connect.clear')}
+            </Button>
             <Button
               disabled={connecting}
               onClick={async () => handleTestConnection()}
