@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify'
 
 const mockHandleChange = jest.fn()
 const mockTestConnectionAction = jest.fn()
+const mockHandleClear = jest.fn()
 
 const initialValues = {
   server: 'http://localhost',
@@ -22,6 +23,7 @@ const renderComponent = (lng = 'en') => {
       <AddInflux
         initialValues={initialValues}
         handleChange={mockHandleChange}
+        handleClear={mockHandleClear}
         testInfluxConnectionAction={mockTestConnectionAction}
       />
     </LanguageContext.Provider>

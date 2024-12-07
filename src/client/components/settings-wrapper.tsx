@@ -20,6 +20,7 @@ type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: <K extends keyof SettingsType>(key: K) => Promise<any>
   setSettingsAction: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => Promise<void>
+  deleteSettingsAction: (key: keyof SettingsType) => Promise<void>
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
@@ -29,6 +30,7 @@ export default function SettingsWrapper({
   checkSettingsAction,
   getSettingsAction,
   setSettingsAction,
+  deleteSettingsAction,
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
@@ -56,12 +58,13 @@ export default function SettingsWrapper({
       if (!res) {
         router.replace('/login')
       } else {
-        const [servers, influxHost, influxToken, influxOrg, influxBucket] = await Promise.all([
+        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval] = await Promise.all([
           getSettingsAction('NUT_SERVERS'),
           getSettingsAction('INFLUX_HOST'),
           getSettingsAction('INFLUX_TOKEN'),
           getSettingsAction('INFLUX_ORG'),
           getSettingsAction('INFLUX_BUCKET'),
+          getSettingsAction('INFLUX_INTERVAL'),
         ])
         if (servers) {
           setServerList([...servers])
@@ -71,6 +74,9 @@ export default function SettingsWrapper({
           setInfluxToken(influxToken)
           setInfluxOrg(influxOrg)
           setInfluxBucket(influxBucket)
+        }
+        if (influxInterval) {
+          setInfluxInterval(influxInterval)
         }
       }
     })
@@ -99,7 +105,7 @@ export default function SettingsWrapper({
 
   const handleSaveServers = async () => {
     await updateServersAction(serverList)
-    toast.success(t('settings.serversSaved'))
+    toast.success(t('settings.saved'))
   }
 
   const handleSaveInflux = async () => {
@@ -110,6 +116,7 @@ export default function SettingsWrapper({
       setSettingsAction('INFLUX_BUCKET', influxBucket),
       setSettingsAction('INFLUX_INTERVAL', influxInterval),
     ])
+    toast.success(t('settings.saved'))
   }
 
   const skeleton = (
@@ -222,6 +229,18 @@ export default function SettingsWrapper({
                             setInfluxOrg(org)
                             setInfluxBucket(bucket)
                             setInfluxInterval(interval)
+                          }}
+                          handleClear={() => {
+                            setInfluxServer('')
+                            setInfluxToken('')
+                            setInfluxOrg('')
+                            setInfluxBucket('')
+                            setInfluxInterval(10)
+                            deleteSettingsAction('INFLUX_HOST')
+                            deleteSettingsAction('INFLUX_TOKEN')
+                            deleteSettingsAction('INFLUX_ORG')
+                            deleteSettingsAction('INFLUX_BUCKET')
+                            setSettingsAction('INFLUX_INTERVAL', 10)
                           }}
                           testInfluxConnectionAction={testInfluxConnectionAction}
                         />

@@ -5,6 +5,7 @@ import {
   getSettings,
   setSettings,
   updateServers,
+  deleteSettings,
   testConnection,
   testInfluxConnection,
 } from '@/app/actions'
@@ -15,6 +16,7 @@ export default function Settings() {
       checkSettingsAction={checkSettings}
       getSettingsAction={getSettings}
       setSettingsAction={setSettings}
+      deleteSettingsAction={deleteSettings}
       updateServersAction={updateServers}
       testConnectionAction={testConnection}
       testInfluxConnectionAction={testInfluxConnection}

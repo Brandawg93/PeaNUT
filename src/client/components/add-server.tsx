@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { XMarkIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
@@ -35,28 +35,23 @@ export default function AddServer({
   const [username, setUsername] = useState<string | undefined>(initialUsername)
   const [password, setPassword] = useState<string | undefined>(initialPassword)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [connecting, setConnecting] = useState<boolean>(false)
-
+  const [connecting, startTransition] = useTransition()
   const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async () => {
     if (server && port) {
-      setConnecting(true)
-      const promise = testConnectionAction(server, port)
-      toast.promise(promise, {
-        pending: t('connect.testing'),
-        success: {
-          render() {
-            setConnecting(false)
-            return t('connect.success')
-          },
-        },
-        error: {
-          render() {
-            setConnecting(false)
-            return t('connect.error')
-          },
-        },
+      startTransition(async () => {
+        const promise = testConnectionAction(server, port)
+        toast.promise(promise, {
+          pending: t('connect.testing'),
+          success: t('connect.success'),
+          error: t('connect.error'),
+        })
+        try {
+          await promise
+        } catch {
+          // Do nothing
+        }
       })
     }
   }

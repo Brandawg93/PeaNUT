@@ -36,7 +36,8 @@
     "influxNotice": "This will only work with Influxdb 2.x",
     "influxInterval": "Influx Interval (s)",
     "addServer": "Add Server",
-    "apply": "Apply"
+    "apply": "Apply",
+    "saved": "Changes saved"
   },
   "connect": {
     "server": "Server Address",
@@ -47,6 +48,7 @@
     "org": "Organization",
     "bucket": "Bucket",
     "connect": "Connect",
+    "clear": "Clear",
     "test": "Test",
     "success": "Connection successful",
     "error": "Connection failed. Check the logs for more info.",

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
@@ -9,6 +9,7 @@ import { Button, Input } from '@material-tailwind/react'
 type AddInfluxProps = {
   initialValues: { server: string; token: string; org: string; bucket: string; interval: number }
   handleChange: (server: string, token: string, org: string, bucket: string, interval: number) => void
+  handleClear: () => void
   testInfluxConnectionAction: (
     server: string,
     token: string,
@@ -18,7 +19,12 @@ type AddInfluxProps = {
   ) => Promise<void>
 }
 
-export default function AddInflux({ initialValues, handleChange, testInfluxConnectionAction }: AddInfluxProps) {
+export default function AddInflux({
+  initialValues,
+  handleChange,
+  handleClear,
+  testInfluxConnectionAction,
+}: AddInfluxProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useContext(ThemeContext)
@@ -28,30 +34,35 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
   const [bucket, setBucket] = useState<string>(initialValues.bucket)
   const [interval, setInterval] = useState<number>(initialValues.interval)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [connecting, setConnecting] = useState<boolean>(false)
+  const [connecting, startTransition] = useTransition()
 
   const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async () => {
-    if (server && token) {
-      setConnecting(true)
-      const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
-      toast.promise(promise, {
-        pending: t('connect.testing'),
-        success: {
-          render() {
-            setConnecting(false)
-            return t('connect.success')
-          },
-        },
-        error: {
-          render() {
-            setConnecting(false)
-            return t('connect.error')
-          },
-        },
+    if (server && token && org && bucket) {
+      startTransition(async () => {
+        const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
+        toast.promise(promise, {
+          pending: t('connect.testing'),
+          success: t('connect.success'),
+          error: t('connect.error'),
+        })
+        try {
+          await promise
+        } catch {
+          // Do nothing
+        }
       })
     }
+  }
+
+  const handleClearForm = () => {
+    setServer('')
+    setToken('')
+    setOrg('')
+    setBucket('')
+    setInterval(10)
+    handleClear()
   }
 
   return (
@@ -159,7 +170,14 @@ export default function AddInflux({ initialValues, handleChange, testInfluxConne
             />
           </div>
           <div className='flex flex-row justify-between'>
-            <div />
+            <Button
+              disabled={connecting}
+              onClick={async () => handleClearForm()}
+              className='font-bold text-white shadow-none'
+              type='button'
+            >
+              {t('connect.clear')}
+            </Button>
             <Button
               disabled={connecting}
               onClick={async () => handleTestConnection()}

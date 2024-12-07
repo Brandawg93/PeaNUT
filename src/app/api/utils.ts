@@ -8,5 +8,11 @@ export const getNutInstances = async (): Promise<Array<Nut>> => {
 }
 
 export const getSingleNutInstance = async (device: string): Promise<Nut | undefined> => {
-  return (await getNutInstances()).find((nut) => nut.deviceExists(device))
+  const nuts = await getNutInstances()
+  for (const nut of nuts) {
+    if (await nut.deviceExists(device)) {
+      return nut
+    }
+  }
+  return undefined
 }
