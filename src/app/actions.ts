@@ -46,6 +46,13 @@ export async function getDevices(): Promise<DeviceData> {
       gridProps.push(...resolvedDevices)
     })
     await Promise.all(devicePromises)
+    const deviceNames = new Set<string>()
+    for (const device of gridProps) {
+      if (deviceNames.has(device.name)) {
+        throw new Error(`Duplicate device name found: ${device.name}`)
+      }
+      deviceNames.add(device.name)
+    }
     return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
     return { devices: undefined, updated: new Date(), error: e?.message || 'Unknown error' }
