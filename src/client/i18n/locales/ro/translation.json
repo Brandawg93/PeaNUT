@@ -36,7 +36,8 @@
     "influxNotice": "Funcționează doar cu InfluxDB 2.x",
     "influxInterval": "Influx Interval (s)",
     "addServer": "Adăugare server",
-    "apply": "Aplică"
+    "apply": "Aplică",
+    "saved": "Changes saved"
   },
   "connect": {
     "server": "Adresa serverului",
@@ -47,6 +48,7 @@
     "org": "Organizație",
     "bucket": "Bucket",
     "connect": "Conectare",
+    "clear": "Clear",
     "test": "Test",
     "success": "Conexiune reușită",
     "error": "Conexiune eșuată. Verificați logurile pentru mai multe informații.",
