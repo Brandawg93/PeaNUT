@@ -36,7 +36,8 @@
     "influxNotice": "Esto solo funcionará con InfluxDB 2.x",
     "influxInterval": "Influx Interval (s)",
     "addServer": "Agregar Servidor",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "saved": "Changes saved"
   },
   "connect": {
     "server": "Servidor",
@@ -47,6 +48,7 @@
     "org": "Organización",
     "bucket": "Bucket",
     "connect": "Conectar",
+    "clear": "Clear",
     "test": "Probar",
     "success": "Conexión exitosa",
     "error": "Conexión fallida. Verifique los registros para más información.",
