@@ -62,7 +62,7 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Configuration
 
-Configuration is primarily done via the UI, but manual configuration can be done via the `/cnofig/settings.yml` file within the container. More information can be found on the [wiki](https://github.com/Brandawg93/PeaNUT/wiki/YAML-Configuration).
+Configuration is primarily done via the UI, but manual configuration can be done via the `/config/settings.yml` file within the container. More information can be found on the [wiki](https://github.com/Brandawg93/PeaNUT/wiki/YAML-Configuration).
 
 ## API
 
