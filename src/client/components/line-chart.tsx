@@ -73,6 +73,13 @@ export default function LineChart(props: Props) {
           animation: {
             duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
           },
+          scales: {
+            y: {
+              ticks: {
+                callback: (tickValue: string | number) => `${tickValue}V`,
+              },
+            },
+          },
           maintainAspectRatio: false,
           plugins: {
             annotation: {

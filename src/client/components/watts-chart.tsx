@@ -61,6 +61,13 @@ export default function WattsChart(props: Props) {
           animation: {
             duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
           },
+          scales: {
+            y: {
+              ticks: {
+                callback: (tickValue: string | number) => `${tickValue}W`,
+              },
+            },
+          },
           maintainAspectRatio: false,
           plugins: {
             annotation: {
