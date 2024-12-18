@@ -1,6 +1,5 @@
 'use client'
 
-import 'react-toastify/dist/ReactToastify.css'
 import React, { useState, useEffect, useContext } from 'react'
 import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'

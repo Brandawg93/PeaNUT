@@ -1,6 +1,5 @@
 'use client'
 
-import 'react-toastify/dist/ReactToastify.css'
 import React, { useContext, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'

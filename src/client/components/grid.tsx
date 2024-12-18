@@ -1,6 +1,5 @@
 'use client'
 
-import 'react-toastify/dist/ReactToastify.css'
 import React, { useState, useMemo, useContext } from 'react'
 import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
