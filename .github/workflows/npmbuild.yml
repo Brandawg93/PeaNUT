@@ -10,33 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.0
-      - uses: actions/setup-node@v4.1.0
-        with:
-          node-version: 22
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
           run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup nextjs cache
         with:
           path: |
-            ${{ env.STORE_PATH }}
             ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-      - name: Cache Docker images.
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
-
-      - name: Install dependencies
-        run: pnpm i
 
       - name: Get installed Playwright version
         id: playwright-version
@@ -51,7 +43,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
+      - name: Cache Docker images.
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
       - name: Install Playwright's dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Build and test
