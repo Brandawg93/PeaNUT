@@ -74,9 +74,6 @@ importers:
       react-toastify:
         specifier: ^11.0.1
         version: 11.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      tailwindcss-animated:
-        specifier: ^1.1.2
-        version: 1.1.2(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2)))
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.4
@@ -3972,11 +3969,6 @@ packages:
 
   tailwind-merge@1.8.1:
     resolution: {integrity: sha512-+fflfPxvHFr81hTJpQ3MIwtqgvefHZFUHFiIHpVIRXvG/nX9+gu2P7JNlFu2bfDMJ+uHhi/pUgzaYacMoXv+Ww==}
-
-  tailwindcss-animated@1.1.2:
-    resolution: {integrity: sha512-SI4owS5ojserhgEYIZA/uFVdNjU2GMB2P3sjtjmFA52VxoUi+Hht6oR5+RdT+CxrX9cNNYEa+vbTWHvN9zbj3w==}
-    peerDependencies:
-      tailwindcss: '>=3.1.0'
 
   tailwindcss@3.4.17:
     resolution: {integrity: sha512-w33E2aCvSDP0tW9RZuNXadXlkHXqFzSkQew/aIa2i/Sj8fThxwovwlXHSPXTbAHwEIhBFXAedUhP2tueAKP8Og==}
@@ -8973,10 +8965,6 @@ snapshots:
       strip-ansi: 6.0.1
 
   tailwind-merge@1.8.1: {}
-
-  tailwindcss-animated@1.1.2(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2))):
-    dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2))
 
   tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2)):
     dependencies:

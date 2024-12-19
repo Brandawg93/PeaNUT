@@ -48,8 +48,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.2.0",
-    "react-toastify": "^11.0.1",
-    "tailwindcss-animated": "^1.1.2"
+    "react-toastify": "^11.0.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",

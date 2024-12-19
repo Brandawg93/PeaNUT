@@ -5,6 +5,19 @@ export default withMT({
   darkMode: 'selector',
   theme: {
     extend: {
+      animation: {
+        fade: 'fade 1s ease 0s 1 both',
+      },
+      keyframes: {
+        fade: {
+          '0%': {
+            opacity: '0',
+          },
+          '100%': {
+            opacity: '1',
+          },
+        },
+      },
       colors: {
         gray: {
           950: '#030712',
@@ -16,6 +29,4 @@ export default withMT({
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animated')],
 })
