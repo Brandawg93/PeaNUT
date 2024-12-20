@@ -58,5 +58,7 @@
     "dark": "Dark",
     "light": "Light",
     "system": "System"
-  }
+  },
+  "serverNotFound": "Host not found. Check your settings.",
+  "serverRefused": "Connection refused. Is NUT server running?"
 }

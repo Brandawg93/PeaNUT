@@ -58,5 +58,7 @@
     "dark": "Scuro",
     "light": "Chiaro",
     "system": "Sistema"
-  }
+  },
+  "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?",
+  "serverNotFound": "Host non trovato. \nControlla le tue impostazioni."
 }

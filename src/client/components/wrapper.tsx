@@ -90,10 +90,10 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   if (data?.error) {
     let error = 'Internal Server Error'
     if (data?.error.includes('ECONNREFUSED')) {
-      error = 'Connection refused. Is NUT server running?'
+      error = t('serverRefused')
     }
     if (data?.error.includes('ENOTFOUND')) {
-      error = 'Host not found. Check your settings.'
+      error = t('serverNotFound')
     }
 
     console.error(error)

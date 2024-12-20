@@ -58,5 +58,7 @@
     "dark": "Întunecat",
     "light": "Luminos",
     "system": "Sistem"
-  }
+  },
+  "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?",
+  "serverNotFound": "Gazda nu a fost găsită. \nVerificați setările dvs."
 }
