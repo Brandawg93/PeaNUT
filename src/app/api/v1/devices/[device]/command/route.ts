@@ -39,7 +39,7 @@ type Params = {
 export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device } = await params
   const nut = await getSingleNutInstance(device)
-  const value = await request.json()
+  const value = await request.text()
 
   try {
     const deviceExists = await nut?.deviceExists(device)
