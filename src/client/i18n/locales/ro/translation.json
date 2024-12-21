@@ -37,7 +37,7 @@
     "influxInterval": "Influx Interval (s)",
     "addServer": "Adăugare server",
     "apply": "Aplică",
-    "saved": "Changes saved"
+    "saved": "Modificările au fost salvate"
   },
   "connect": {
     "server": "Adresa serverului",
@@ -48,7 +48,7 @@
     "org": "Organizație",
     "bucket": "Bucket",
     "connect": "Conectare",
-    "clear": "Clear",
+    "clear": "Clar",
     "test": "Test",
     "success": "Conexiune reușită",
     "error": "Conexiune eșuată. Verificați logurile pentru mai multe informații.",
@@ -59,6 +59,6 @@
     "light": "Luminos",
     "system": "Sistem"
   },
-  "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?",
-  "serverNotFound": "Gazda nu a fost găsită. \nVerificați setările dvs."
+  "serverNotFound": "Gazda nu a fost găsită. \nVerificați setările dvs.",
+  "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?"
 }
