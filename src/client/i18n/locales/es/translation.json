@@ -37,7 +37,7 @@
     "influxInterval": "Influx Interval (s)",
     "addServer": "Agregar Servidor",
     "apply": "Aplicar",
-    "saved": "Changes saved"
+    "saved": "Cambios guardados"
   },
   "connect": {
     "server": "Servidor",
@@ -48,7 +48,7 @@
     "org": "Organización",
     "bucket": "Bucket",
     "connect": "Conectar",
-    "clear": "Clear",
+    "clear": "Claro",
     "test": "Probar",
     "success": "Conexión exitosa",
     "error": "Conexión fallida. Verifique los registros para más información.",

@@ -181,6 +181,13 @@ export class Nut {
     return data.split('"')[1].trim()
   }
 
+  public async runCommand(device = 'UPS', command: string): Promise<void> {
+    const data = await this.getCommand(`INSTCMD ${device} ${command}`, '\n', true)
+    if (data !== 'OK\n') {
+      throw new Error('Invalid response')
+    }
+  }
+
   public async getVar(device = 'UPS', variable: string): Promise<string> {
     const data = await this.getCommand(`GET VAR ${device} ${variable}`, '\n')
     if (!data.startsWith('VAR')) {
