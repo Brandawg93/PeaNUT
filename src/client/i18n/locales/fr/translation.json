@@ -37,7 +37,7 @@
     "influxInterval": "Influx Interval (s)",
     "addServer": "Ajouter un serveur",
     "apply": "Appliquer",
-    "saved": "Changes saved"
+    "saved": "Modifications enregistrées"
   },
   "connect": {
     "server": "Serveur",
@@ -48,7 +48,7 @@
     "org": "Organisation",
     "bucket": "Seau",
     "connect": "Connecter",
-    "clear": "Clear",
+    "clear": "Clair",
     "test": "Tester",
     "success": "Connexion réussie",
     "error": "Échec de la connexion. Vérifiez les journaux pour plus d'informations.",
@@ -59,6 +59,6 @@
     "light": "Clair",
     "system": "Système"
   },
-  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
-  "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres."
+  "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
+  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?"
 }

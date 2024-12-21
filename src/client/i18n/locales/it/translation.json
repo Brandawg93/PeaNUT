@@ -37,7 +37,7 @@
     "influxInterval": "Influx Interval (s)",
     "addServer": "Aggiungi server",
     "apply": "Applica",
-    "saved": "Changes saved"
+    "saved": "Modifiche salvate"
   },
   "connect": {
     "server": "Server",
@@ -48,7 +48,7 @@
     "org": "Organizzazione",
     "bucket": "Bucket",
     "connect": "Connetti",
-    "clear": "Clear",
+    "clear": "Chiaro",
     "test": "Verificare",
     "success": "Connessione riuscita",
     "error": "Connessione fallita. Controlla i file di registro per maggiori informazioni.",
@@ -59,6 +59,6 @@
     "light": "Chiaro",
     "system": "Sistema"
   },
-  "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?",
-  "serverNotFound": "Host non trovato. \nControlla le tue impostazioni."
+  "serverNotFound": "Host non trovato. \nControlla le tue impostazioni.",
+  "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?"
 }
