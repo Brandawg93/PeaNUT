@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { DEVICE } from '@/common/types'
 import { getSingleNutInstance } from '@/app/api/utils'
 
 type Params = {
   device: string
-  param: keyof DEVICE
+  param: string
 }
 
 /**
  * Saves value for a specific var.
  *
  * @swagger
- * /api/v1/devices/{device}/command:
+ * /api/v1/devices/{device}/command/{param}:
  *   post:
  *     summary: Run command on device
  *     parameters:
@@ -21,13 +20,12 @@ type Params = {
  *         description: The ID of the device
  *         schema:
  *           type: string
- *     requestBody:
- *       description: The command to run
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: string
+ *       - in: path
+ *         name: param
+ *         required: true
+ *         description: The command to run
+ *         schema:
+ *           type: string
  *     responses:
  *       '200':
  *         description: Successful response with command run
@@ -37,9 +35,8 @@ type Params = {
  *       - Devices
  */
 export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
-  const { device } = await params
+  const { device, param } = await params
   const nut = await getSingleNutInstance(device)
-  const value = await request.text()
 
   try {
     const deviceExists = await nut?.deviceExists(device)
@@ -48,11 +45,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<P
     }
 
     // Only save the variable on the first instance that has the device
-    await nut?.runCommand(device, value)
-    return NextResponse.json(`Command ${value} on device ${device} run successfully on device ${device}`)
+    await nut?.runCommand(device, param)
+    return NextResponse.json(`Command ${param} on device ${device} run successfully on device ${device}`)
   } catch (e) {
     console.error(e)
-    return NextResponse.json(`Failed to run command ${value} on device ${device}`, {
+    return NextResponse.json(`Failed to run command ${param} on device ${device}`, {
       status: 500,
     })
   }
