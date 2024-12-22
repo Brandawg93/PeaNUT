@@ -81,7 +81,7 @@ Configuration is primarily done via the UI, but manual configuration can be done
 
 ## Homepage Support
 
-For information about how to set up Homepage, check the [Homepage docs](https://gethomepage.dev/latest/widgets/services/peanut/).
+For information about how to set up Homepage, check the [Homepage docs](https://gethomepage.dev/widgets/services/peanut/).
 
 Ex:
 
