@@ -20,7 +20,9 @@ export default class PromiseSocket {
         this.innerSok.on('error', reject)
       }),
       this.setTimeoutPromise(timeout),
-    ])
+    ]).then(() => {
+      this.innerSok.removeAllListeners('error')
+    })
   }
 
   async write(data: string, timeout = TIMEOUT): Promise<void> {
@@ -36,7 +38,9 @@ export default class PromiseSocket {
         this.innerSok.on('error', reject)
       }),
       this.setTimeoutPromise(timeout),
-    ])
+    ]).then(() => {
+      this.innerSok.removeAllListeners('error')
+    })
   }
 
   async readAll(command: string, until: string = `END ${command}`, timeout = TIMEOUT): Promise<string> {
@@ -53,7 +57,12 @@ export default class PromiseSocket {
         this.innerSok.on('end', () => resolve(buf))
       }),
       this.setTimeoutPromise(timeout),
-    ])
+    ]).then((buf) => {
+      this.innerSok.removeAllListeners('data')
+      this.innerSok.removeAllListeners('error')
+      this.innerSok.removeAllListeners('end')
+      return buf
+    })
   }
 
   async close(timeout = TIMEOUT): Promise<void> {
