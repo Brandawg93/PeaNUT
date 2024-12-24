@@ -59,6 +59,6 @@
     "light": "Claro",
     "system": "Sistema"
   },
-  "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?",
-  "serverNotFound": "Anfitrión no encontrado. \nVerifique su configuración."
+  "serverNotFound": "Anfitrión no encontrado. \nVerifique su configuración.",
+  "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?"
 }

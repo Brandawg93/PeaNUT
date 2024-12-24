@@ -59,6 +59,6 @@
     "light": "Clair",
     "system": "Système"
   },
-  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
-  "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres."
+  "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
+  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?"
 }
