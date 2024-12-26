@@ -1,5 +1,6 @@
 **/node_modules
 **/.next
+**/.swc
 **/.env
 **/.gitignore
 **/docker-compose*
