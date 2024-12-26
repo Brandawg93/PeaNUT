@@ -12,6 +12,8 @@ __tests__/
 config/
 examples/
 images/
+test_results/
+coverage/
 scripts/
 README.md
 CONTRIBUTING.md
