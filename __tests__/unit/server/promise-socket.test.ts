@@ -7,6 +7,8 @@ jest.mock('net', () => {
     write: jest.fn(),
     on: jest.fn(),
     removeAllListeners: jest.fn(),
+    listenerCount: jest.fn(),
+    off: jest.fn(),
     end: jest.fn(),
   }
   return { Socket: jest.fn(() => mSocket) }

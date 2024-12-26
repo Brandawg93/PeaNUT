@@ -1,6 +1,7 @@
 import { Socket } from 'net'
 
 const TIMEOUT = 10000
+const MAX_LISTENERS = 9
 
 export default class PromiseSocket {
   private innerSok: Socket = new Socket()
@@ -17,7 +18,9 @@ export default class PromiseSocket {
     return Promise.race([
       new Promise<void>((resolve, reject) => {
         this.innerSok.connect(port, host, resolve)
-        this.innerSok.on('error', reject)
+        if (this.innerSok.listenerCount('error') < MAX_LISTENERS) {
+          this.innerSok.once('error', reject)
+        }
       }),
       this.setTimeoutPromise(timeout),
     ])
@@ -33,7 +36,9 @@ export default class PromiseSocket {
             resolve()
           }
         })
-        this.innerSok.on('error', reject)
+        if (this.innerSok.listenerCount('error') < MAX_LISTENERS) {
+          this.innerSok.once('error', reject)
+        }
       }),
       this.setTimeoutPromise(timeout),
     ])
@@ -43,14 +48,18 @@ export default class PromiseSocket {
     return Promise.race([
       new Promise<string>((resolve, reject) => {
         let buf = ''
-        this.innerSok.on('data', (data) => {
+        const onData = (data: any) => {
           buf += data.toString()
           if (buf.includes(until)) {
+            this.innerSok.off('data', onData)
+            this.innerSok.off('end', onData)
             resolve(buf)
           }
-        })
-        this.innerSok.on('error', reject)
-        this.innerSok.on('end', () => resolve(buf))
+        }
+        this.innerSok.on('data', onData)
+        if (this.innerSok.listenerCount('error') < MAX_LISTENERS) {
+          this.innerSok.once('error', reject)
+        }
       }),
       this.setTimeoutPromise(timeout),
     ])

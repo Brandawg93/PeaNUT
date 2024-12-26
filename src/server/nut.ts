@@ -29,7 +29,7 @@ export class Nut {
     return devices.some((d) => d.name === device)
   }
 
-  private async getCommand(command: string, until?: string, checkCredentials = false): Promise<string> {
+  private async getConnection(checkCredentials = false): Promise<PromiseSocket> {
     const socket = new PromiseSocket()
     try {
       await socket.connect(this.port, this.host)
@@ -39,10 +39,29 @@ export class Nut {
     if (checkCredentials) {
       await this.checkCredentials(socket)
     }
-    await socket.write(command)
-    const data = await socket.readAll(command, until)
+    return socket
+  }
+
+  private async closeConnection(socket: PromiseSocket) {
     await socket.write('LOGOUT')
     await socket.close()
+  }
+
+  private async getCommand(
+    command: string,
+    until?: string,
+    checkCredentials = false,
+    socket?: PromiseSocket
+  ): Promise<string> {
+    // use existing socket if it exists, otherwise establish a new connection
+    const connection = socket || (await this.getConnection(checkCredentials))
+    await connection.write(command)
+    const data = await connection.readAll(command, until)
+    // if we opened a new connection, close it
+    if (!socket) {
+      await connection.write('LOGOUT')
+      await connection.close()
+    }
     if (data.startsWith('ERR')) {
       throw new Error(`Invalid response: ${data}`)
     }
@@ -111,26 +130,28 @@ export class Nut {
   }
 
   public async getData(device = 'UPS'): Promise<VARS> {
+    const socket = await this.getConnection()
     const command = `LIST VAR ${device}`
-    const data = await this.getCommand(command)
+    const data = await this.getCommand(command, undefined, false, socket)
     if (!data.startsWith(`BEGIN ${command}\n`)) {
       console.log('data: ', data)
       throw new Error('Invalid response')
     }
     const vars: VARS = {}
     const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
-    const promises = lines.map(async (line) => {
+    for await (const line of lines) {
       const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
       const value = line.split('"')[1].trim()
-      const [description, type] = await Promise.all([this.getVarDescription(device, key), this.getType(device, key)])
+      const description = await this.getVarDescription(device, key, socket)
+      const type = await this.getType(device, key, socket)
       if (type.includes('NUMBER') && !isNaN(+value)) {
         const num = +value
         vars[key] = { value: num ? num : value, description }
       } else {
         vars[key] = { value, description }
       }
-    })
-    await Promise.all(promises)
+    }
+    await this.closeConnection(socket)
     return Object.keys(vars)
       .sort()
       .reduce((finalObject: VARS, key) => {
@@ -196,8 +217,8 @@ export class Nut {
     return data.split('"')[1].trim()
   }
 
-  public async getVarDescription(device = 'UPS', variable: string): Promise<string> {
-    const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n')
+  public async getVarDescription(device = 'UPS', variable: string, socket?: PromiseSocket): Promise<string> {
+    const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n', false, socket)
     if (!data.startsWith('DESC')) {
       throw new Error('Invalid response')
     }
@@ -222,8 +243,8 @@ export class Nut {
     return ranges
   }
 
-  public async getType(device = 'UPS', variable: string): Promise<string> {
-    const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n')
+  public async getType(device = 'UPS', variable: string, socket?: PromiseSocket): Promise<string> {
+    const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n', false, socket)
     if (!data.startsWith('TYPE')) {
       throw new Error('Invalid response')
     }
