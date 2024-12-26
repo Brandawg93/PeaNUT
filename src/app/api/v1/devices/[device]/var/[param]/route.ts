@@ -91,7 +91,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
 export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
   const nut = await getSingleNutInstance(device)
-  const value = await request.json()
+  const value = await request.text()
 
   try {
     const deviceExists = await nut?.deviceExists(device)

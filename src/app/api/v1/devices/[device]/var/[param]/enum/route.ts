@@ -8,12 +8,12 @@ type Params = {
 }
 
 /**
- * Retrieves description for a specific var.
+ * Retrieves enum values for a specific var.
  *
  * @swagger
- * /api/v1/devices/{device}/var/{param}/description:
+ * /api/v1/devices/{device}/var/{param}/enum:
  *   get:
- *     summary: Retrieve var description
+ *     summary: Retrieve var enum values
  *     parameters:
  *       - in: path
  *         name: device
@@ -29,7 +29,7 @@ type Params = {
  *           type: string
  *     responses:
  *       '200':
- *         description: Successful response with var description
+ *         description: Successful response with var enum
  *       '404':
  *         description: Var not found
  *     tags:
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
   const { device, param } = await params
   const nut = await getSingleNutInstance(device)
   const paramString = param
-  const data = await nut?.getVarDescription(device, param)
+  const data = await nut?.getEnum(device, param)
   if (data === undefined) {
     return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
       status: 404,

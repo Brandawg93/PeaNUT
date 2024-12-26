@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { DEVICE } from '@/common/types'
 import { getSingleNutInstance } from '@/app/api/utils'
 
 type Params = {
   device: string
-  param: keyof DEVICE
+  param: string
 }
 
 /**
- * Retrieves description for a specific var.
+ * Retrieves description for a specific command.
  *
  * @swagger
- * /api/v1/devices/{device}/var/{param}/description:
+ * /api/v1/devices/{device}/command/{param}/description:
  *   get:
- *     summary: Retrieve var description
+ *     summary: Retrieve command description
  *     parameters:
  *       - in: path
  *         name: device
@@ -29,17 +28,17 @@ type Params = {
  *           type: string
  *     responses:
  *       '200':
- *         description: Successful response with var description
+ *         description: Successful response with command description
  *       '404':
  *         description: Var not found
  *     tags:
- *       - Vars
+ *       - Devices
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
   const nut = await getSingleNutInstance(device)
   const paramString = param
-  const data = await nut?.getVarDescription(device, param)
+  const data = await nut?.getCommandDescription(device, param)
   if (data === undefined) {
     return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
       status: 404,
