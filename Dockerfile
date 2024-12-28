@@ -39,8 +39,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 
-RUN corepack enable pnpm && pnpm store prune
-
 EXPOSE $WEB_PORT
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
