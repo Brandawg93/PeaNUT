@@ -92,9 +92,6 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.18.1"
   },
-  "resolutions": {
-    "@types/react": "18.2.42"
-  },
   "lint-staged": {
     "*": "eslint"
   }
