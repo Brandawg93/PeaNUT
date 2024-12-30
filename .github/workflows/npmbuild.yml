@@ -60,7 +60,8 @@ jobs:
 
       - name: Build and test
         run: |
-          pnpm run precheck
+          pnpm run type-check
+          pnpm run lint
           pnpm run test:all
           pnpm run build
         env:

@@ -11,13 +11,13 @@
     "start": "HOSTNAME=$WEB_HOST PORT=$WEB_PORT node server.js",
     "start:local": "node .next/standalone/server.js",
     "type-check": "tsc --noEmit",
-    "lint": "eslint",
+    "lint": "next lint --dir .",
     "lint:fix": "npm run lint -- --fix",
     "stylelint": "stylelint \"**/*.{css,scss}\"",
     "stylelint:fix": "npm run stylelint -- --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "precheck": "concurrently \"npm run type-check\" \"npm run lint\" \"npm run format\"",
+    "precheck": "concurrently \"npm run type-check\" \"lint-staged\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test && docker compose down",
@@ -38,6 +38,7 @@
     "@mui/x-charts": "^7.23.2",
     "@tanstack/react-query": "^5.62.8",
     "@tanstack/react-table": "^8.20.6",
+    "chokidar": "^4.0.3",
     "i18next": "^24.1.2",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-resources-to-backend": "^1.2.1",
@@ -49,7 +50,8 @@
     "react-dom": "^19.0.0",
     "react-i18next": "^15.2.0",
     "react-icons": "^5.4.0",
-    "react-toastify": "^11.0.1"
+    "react-toastify": "^11.0.1",
+    "toad-scheduler": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",
@@ -64,7 +66,7 @@
     "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.10.2",
-    "@types/react": "19.0.2",
+    "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@types/swagger-ui-react": "^4.18.3",
     "autoprefixer": "^10.4.20",
@@ -78,6 +80,7 @@
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.2.11",
     "next-swagger-doc": "^0.4.1",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
@@ -91,9 +94,6 @@
     "ts-node": "^10.9.2",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.18.1"
-  },
-  "resolutions": {
-    "@types/react": "18.2.42"
   },
   "lint-staged": {
     "*": "eslint"
