@@ -97,6 +97,5 @@
   },
   "lint-staged": {
     "*": "eslint"
-  },
-  "packageManager": "pnpm@9.15.0"
+  }
 }
