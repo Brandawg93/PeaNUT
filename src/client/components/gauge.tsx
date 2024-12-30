@@ -22,7 +22,7 @@ type Props = {
 
 export default function Gauge(props: Props) {
   const { percentage, invert, title, onClick } = props
-  const { theme: systemTheme } = useContext(ThemeContext)
+  const { theme } = useContext(ThemeContext)
 
   return (
     <Card
@@ -45,15 +45,9 @@ export default function Gauge(props: Props) {
               fontFamily: 'sans-serif',
               transform: 'translate(0, -15%)',
             },
-            [`& .${gaugeClasses.valueText} text`]: {
-              fill: systemTheme === 'light' ? '#000' : '#fff',
-            },
             [`& .${gaugeClasses.valueArc}`]: {
-              fill: getColor(percentage, systemTheme, invert),
-              stroke: systemTheme === 'light' ? '#fff' : '#000',
-            },
-            [`& .${gaugeClasses.referenceArc}`]: {
-              fill: systemTheme === 'light' ? '#cccccc' : '#363941',
+              fill: getColor(percentage, theme, invert),
+              stroke: theme === 'light' ? '#fff' : '#000',
             },
           }}
         />
