@@ -3,10 +3,6 @@ import { render } from '@testing-library/react'
 import WattsChart from '@/client/components/watts-chart'
 import { DEVICE } from '@/common/types'
 
-jest.mock('react-chartjs-2', () => ({
-  Line: () => null,
-}))
-
 const device: DEVICE = {
   vars: {
     'ups.realpower': {

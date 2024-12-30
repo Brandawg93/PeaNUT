@@ -1,14 +1,9 @@
 'use client'
 
-import 'chart.js/auto'
 import React from 'react'
-import { Chart } from 'chart.js'
-import annotationPlugin from 'chartjs-plugin-annotation'
 import { VARS, DeviceData } from '@/common/types'
 import LineChart from '@/client/components/line-chart'
 import WattsChart from '@/client/components/watts-chart'
-
-Chart.register(annotationPlugin)
 
 type Props = {
   vars: VARS

@@ -3,10 +3,6 @@ import { render } from '@testing-library/react'
 import LineChart from '@/client/components/line-chart'
 import { DEVICE } from '@/common/types'
 
-jest.mock('react-chartjs-2', () => ({
-  Line: () => null,
-}))
-
 const device: DEVICE = {
   vars: {
     'input.voltage': {
