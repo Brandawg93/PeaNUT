@@ -1,5 +1,5 @@
 import { ToadScheduler, SimpleIntervalJob, Task } from 'toad-scheduler'
-import fs from 'fs'
+import chokidar from 'chokidar'
 import { YamlSettings } from '@/server/settings'
 import { getDevices } from '@/app/actions'
 import InfluxWriter from '@/server/influxdb'
@@ -51,17 +51,17 @@ const addOrUpdateJob = (interval: number) => {
 addOrUpdateJob(influxInterval)
 
 // Define the task to check and update the interval
-fs.watch(settingsFile, (eventType) => {
-  if (eventType === 'change') {
-    const newSettings = new YamlSettings(settingsFile)
-    const newInfluxHost = newSettings.get('INFLUX_HOST')
-    const newInfluxToken = newSettings.get('INFLUX_TOKEN')
-    const newInfluxOrg = newSettings.get('INFLUX_ORG')
-    const newInfluxBucket = newSettings.get('INFLUX_BUCKET')
-    const newInterval = newSettings.get('INFLUX_INTERVAL') || 10
+const watcher = chokidar.watch(settingsFile)
 
-    if (newInfluxHost && newInfluxToken && newInfluxOrg && newInfluxBucket) {
-      addOrUpdateJob(newInterval)
-    }
+watcher.on('change', () => {
+  const newSettings = new YamlSettings(settingsFile)
+  const newInfluxHost = newSettings.get('INFLUX_HOST')
+  const newInfluxToken = newSettings.get('INFLUX_TOKEN')
+  const newInfluxOrg = newSettings.get('INFLUX_ORG')
+  const newInfluxBucket = newSettings.get('INFLUX_BUCKET')
+  const newInterval = newSettings.get('INFLUX_INTERVAL') || 10
+
+  if (newInfluxHost && newInfluxToken && newInfluxOrg && newInfluxBucket) {
+    addOrUpdateJob(newInterval)
   }
 })

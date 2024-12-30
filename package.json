@@ -37,6 +37,7 @@
     "@tanstack/react-table": "^8.20.6",
     "chart.js": "^4.4.7",
     "chartjs-plugin-annotation": "^3.1.0",
+    "chokidar": "^4.0.3",
     "i18next": "^24.1.2",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-resources-to-backend": "^1.2.1",
