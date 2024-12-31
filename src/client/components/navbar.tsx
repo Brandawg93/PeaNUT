@@ -14,6 +14,7 @@ import logo from '@/app/icon.svg'
 import Refresh from '@/client/components/refresh'
 import DayNightSwitch from '@/client/components/daynight/mobile'
 import { DEVICE } from '@/common/types'
+import LanguageSwitcher from './language-switcher'
 
 type Props = {
   onRefreshClick: () => void
@@ -101,13 +102,17 @@ export default function NavBar(props: Props) {
             </div>
             &nbsp;
             <div className='hidden lg:block'>
+              <LanguageSwitcher />
+            </div>
+            &nbsp;
+            <div className='hidden lg:block'>
               <IconButton
                 variant='text'
-                className='px-3 text-black shadow-none dark:text-white'
+                className='px-3 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
                 title={t('sidebar.settings')}
                 onClick={() => router.push('/settings')}
               >
-                <Cog6ToothIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                <Cog6ToothIcon className='h-6 w-6 stroke-2 dark:text-white' />
               </IconButton>
             </div>
             <IconButton
