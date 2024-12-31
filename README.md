@@ -75,6 +75,8 @@ Configuration is primarily done via the UI, but manual configuration can be done
 | `GET /api/v1/devices/[ups]/var/[param]/description` | Retrieves description for a single parameter of the specified UPS device |
 | `GET /api/v1/devices/[ups]/var/[param]/type`        | Retrieves type for a single parameter of the specified UPS device        |
 | `GET /api/v1/devices/[ups]/commands`                | Retrieves available commands for the specified UPS device                |
+| `POST /api/v1/devices/[ups]/command/[command]`      | Executes a given command for the specified UPS device                    |
+| `GET /api/v1/devices/[ups]/command/[command]/description`      | Retrieves description for a single command of the specified UPS device device                    |
 | `GET /api/v1/devices/[ups]/description`             | Retrieves the description for the specified UPS device                   |
 | `GET /api/v1/devices/[ups]/clients`                 | Retrieves the connected clients for the specified UPS device             |
 | `GET /api/v1/devices/[ups]/rwvars`                  | Retrieves writable variables for the specified UPS device                |
