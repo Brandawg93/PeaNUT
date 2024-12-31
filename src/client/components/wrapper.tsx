@@ -12,6 +12,8 @@ import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/
 import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
@@ -23,6 +25,7 @@ import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/charts-container'
 
 import { LanguageContext } from '@/client/context/language'
+import { ThemeContext } from '@/client/context/theme'
 import { upsStatus } from '@/common/constants'
 import { DEVICE, DeviceData } from '@/common/types'
 
@@ -59,6 +62,12 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
+  const { theme } = useContext(ThemeContext)
+  const materialTheme = createTheme({
+    palette: {
+      mode: theme,
+    },
+  })
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevicesAction(),
@@ -207,65 +216,68 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   }
 
   return (
-    <div
-      className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
-      data-testid='wrapper'
-    >
-      <NavBar
-        disableRefresh={isLoading}
-        onRefreshClick={() => refetch()}
-        onRefetch={() => refetch()}
-        onDeviceChange={(name: string) =>
-          data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
-        }
-        onDisconnect={handleDisconnect}
-        devices={data.devices}
-      />
-      <div className='flex justify-center pl-3 pr-3'>
-        <div className='container'>
-          <div className='flex flex-row justify-between'>
-            <div>
-              {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
-                <>
-                  <p className='m-0'>
-                    {t('manufacturer')}: {vars['ups.mfr']?.value}
-                  </p>
-                  <p className='m-0'>
-                    {t('model')}: {vars['ups.model']?.value}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className='m-0'>
-                    {t('device')}: {ups.description}
-                  </p>
-                </>
-              )}
-              <p>
-                {t('serial')}: {vars['device.serial']?.value}
-              </p>
+    <ThemeProvider theme={materialTheme}>
+      <CssBaseline />
+      <div
+        className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
+        data-testid='wrapper'
+      >
+        <NavBar
+          disableRefresh={isLoading}
+          onRefreshClick={() => refetch()}
+          onRefetch={() => refetch()}
+          onDeviceChange={(name: string) =>
+            data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
+          }
+          onDisconnect={handleDisconnect}
+          devices={data.devices}
+        />
+        <div className='flex justify-center pl-3 pr-3'>
+          <div className='container'>
+            <div className='flex flex-row justify-between'>
+              <div>
+                {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
+                  <>
+                    <p className='m-0'>
+                      {t('manufacturer')}: {vars['ups.mfr']?.value}
+                    </p>
+                    <p className='m-0'>
+                      {t('model')}: {vars['ups.model']?.value}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className='m-0'>
+                      {t('device')}: {ups.description}
+                    </p>
+                  </>
+                )}
+                <p>
+                  {t('serial')}: {vars['device.serial']?.value}
+                </p>
+              </div>
+              <div>
+                <p className='text-2xl font-semibold'>
+                  {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
+                  &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus]}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className='text-2xl font-semibold'>
-                {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
-                &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus]}
-              </p>
+            <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+              <div className='mb-4'>{currentLoad()}</div>
+              <div className='mb-4'>{currentWh()}</div>
+              <div className='mb-4'>
+                <Runtime runtime={+vars['battery.runtime']?.value} />
+              </div>
             </div>
-          </div>
-          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-            <div className='mb-4'>{currentLoad()}</div>
-            <div className='mb-4'>{currentWh()}</div>
+            <ChartsContainer vars={vars} data={data} name={ups.name} />
             <div className='mb-4'>
-              <Runtime runtime={+vars['battery.runtime']?.value} />
+              <MemoizedGrid data={ups} />
             </div>
+            <Footer updated={data.updated} />
           </div>
-          <ChartsContainer vars={vars} data={data} name={ups.name} />
-          <div className='mb-4'>
-            <MemoizedGrid data={ups} />
-          </div>
-          <Footer updated={data.updated} />
         </div>
       </div>
-    </div>
+    </ThemeProvider>
   )
 }

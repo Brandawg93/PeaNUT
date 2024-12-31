@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useRef, useContext } from 'react'
-import { Line } from 'react-chartjs-2'
 import { Card } from '@material-tailwind/react'
-
+import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer'
+import { ChartsLegend } from '@mui/x-charts/ChartsLegend'
+import { ChartsGrid } from '@mui/x-charts/ChartsGrid'
+import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
+import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'
+import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis'
+import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
@@ -39,65 +44,40 @@ export default function LineChart(props: Props) {
       className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='line'
     >
-      <Line
-        className='dark:hue-rotate-180 dark:invert'
-        data={{
-          labels: inputVoltageData.map(() => ''),
-          datasets: [
-            {
-              label: t('lineChart.inputVoltage'),
-              data: inputVoltageData,
-              fill: false,
-              borderColor: 'rgb(8, 143, 143)',
-              tension: 0.1,
-            },
-            {
-              label: t('lineChart.outputVoltage'),
-              data: outputVoltageData,
-              fill: false,
-              borderColor: 'rgb(255, 83, 73)',
-              tension: 0.1,
-            },
-            {
-              label: t('lineChart.nominalInputVoltage'),
-              data: [],
-              borderColor: 'black',
-              borderDash: [6, 6],
-              borderDashOffset: 0,
-              borderWidth: 3,
-              backgroundColor: 'rgb(0, 0, 0, 0)',
-            },
-          ],
-        }}
-        options={{
-          animation: {
-            duration: window.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 1000 : 0,
+      <ResponsiveChartContainer
+        height={300}
+        series={[
+          { data: inputVoltageData, label: t('lineChart.inputVoltage'), type: 'line' },
+          { data: outputVoltageData, label: t('lineChart.outputVoltage'), type: 'line' },
+        ]}
+        xAxis={[{ scaleType: 'point', data: inputVoltageData.map((value, index) => index) }]}
+        yAxis={[
+          {
+            scaleType: 'linear',
+            valueFormatter: (value: number) => `${value}V`,
+            min: inputVoltageNominal
+              ? Math.min(...inputVoltageData, ...outputVoltageData, inputVoltageNominal)
+              : Math.min(...inputVoltageData, ...outputVoltageData),
+            max: inputVoltageNominal
+              ? Math.max(...inputVoltageData, ...outputVoltageData, inputVoltageNominal)
+              : Math.max(...inputVoltageData, ...outputVoltageData),
           },
-          scales: {
-            y: {
-              ticks: {
-                callback: (tickValue: string | number) => `${tickValue}V`,
-              },
-            },
-          },
-          maintainAspectRatio: false,
-          plugins: {
-            annotation: {
-              annotations: {
-                nominal: {
-                  type: 'line',
-                  borderColor: 'black',
-                  borderDash: [6, 6],
-                  borderDashOffset: 0,
-                  borderWidth: 3,
-                  scaleID: 'y',
-                  value: inputVoltageNominal,
-                },
-              },
-            },
-          },
-        }}
-      />
+        ]}
+      >
+        <LinePlot />
+        <MarkPlot />
+        {inputVoltageNominal && (
+          <ChartsReferenceLine
+            y={inputVoltageNominal}
+            label={t('lineChart.nominalInputVoltage')}
+            lineStyle={{ stroke: 'red', strokeDasharray: '10 5' }}
+          />
+        )}
+        <ChartsXAxis disableTicks disableLine tickLabelStyle={{ display: 'none' }} />
+        <ChartsYAxis />
+        <ChartsLegend />
+        <ChartsGrid horizontal vertical />
+      </ResponsiveChartContainer>
     </Card>
   )
 }

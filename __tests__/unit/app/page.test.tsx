@@ -23,11 +23,6 @@ jest.mock('@tanstack/react-query', () => {
   }
 })
 
-jest.mock('react-chartjs-2', () => ({
-  Line: () => null,
-  Doughnut: () => null,
-}))
-
 jest.mock('../../../src/app/actions', () => ({
   getDevices: jest.fn(),
   checkSettings: jest.fn(),
