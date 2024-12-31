@@ -26,7 +26,7 @@ export default function LanguageSwitcher() {
   const isActive = (value: string) => {
     return i18next.language === value ? 'bg-blue-700 text-white' : ''
   }
-  console.log(i18n.languages)
+
   return (
     <Menu>
       <MenuHandler>
