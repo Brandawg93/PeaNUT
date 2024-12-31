@@ -18,6 +18,7 @@ export default function Refresh(props: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [isOpen, setIsOpen] = React.useState(false)
+  const [effect, setEffect] = React.useState(false)
 
   const handleSelect = (event: any) => {
     const value = event.target.value as number
@@ -36,10 +37,14 @@ export default function Refresh(props: Props) {
         variant='filled'
         title={t('sidebar.refresh')}
         className='text-md inline-flex w-1/2 justify-center rounded-r-none border-r bg-gray-400 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
-        onClick={onClick}
+        onClick={() => {
+          setEffect(true)
+          onClick()
+        }}
+        onAnimationEnd={() => setEffect(false)}
         disabled={disabled}
       >
-        <ArrowPathIcon className='h-4 w-4 stroke-2' />
+        <ArrowPathIcon className={`h-4 w-4 stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
       </Button>
       <Menu open={isOpen} handler={setIsOpen}>
         <MenuHandler>

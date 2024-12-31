@@ -7,6 +7,7 @@ export default withMT({
     extend: {
       animation: {
         fade: 'fade 1s ease 0s 1 both',
+        'spin-once': 'spin 500ms linear 0s 1',
       },
       keyframes: {
         fade: {
@@ -15,6 +16,14 @@ export default withMT({
           },
           '100%': {
             opacity: '1',
+          },
+        },
+        spin: {
+          '0%': {
+            transform: 'rotate(0deg)',
+          },
+          '100%': {
+            transform: 'rotate(180deg)',
           },
         },
       },
