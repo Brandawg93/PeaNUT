@@ -39,16 +39,18 @@ export default function LanguageSwitcher() {
         </IconButton>
       </MenuHandler>
       <MenuList className='min-w-0 border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
-        {languages.map((language) => (
-          <MenuItem
-            key={language.value}
-            className={`text-lg font-semibold ${isActive(language.value)}`}
-            value={language.value}
-            onClick={handleSelect}
-          >
-            {language.flag}&nbsp;{language.label}
-          </MenuItem>
-        ))}
+        <ul className='grid grid-cols-2 gap-1 outline-none outline-0'>
+          {languages.map((language) => (
+            <MenuItem
+              key={language.value}
+              className={`${isActive(language.value)}`}
+              value={language.value}
+              onClick={handleSelect}
+            >
+              {language.flag}&nbsp;{language.label}
+            </MenuItem>
+          ))}
+        </ul>
       </MenuList>
     </Menu>
   )
