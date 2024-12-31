@@ -28,7 +28,8 @@
     "moreSettings": "More Settings",
     "theme": "Theme",
     "disconnect": "Disconnect",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "language": "Language"
   },
   "settings": {
     "manageServers": "Manage Servers",

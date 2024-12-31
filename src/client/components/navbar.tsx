@@ -15,6 +15,7 @@ import Refresh from '@/client/components/refresh'
 import DayNightSwitch from '@/client/components/daynight/mobile'
 import { DEVICE } from '@/common/types'
 import LanguageSwitcher from './language-switcher'
+import MobileLanguageSwitcher from './language-switcher/mobile'
 
 type Props = {
   onRefreshClick: () => void
@@ -171,6 +172,17 @@ export default function NavBar(props: Props) {
                     </div>
                     <div className='mb-3 mt-3'>
                       <DayNightSwitch />
+                    </div>
+                  </div>
+                  <hr />
+                  <div className='grid grid-flow-row grid-cols-2'>
+                    <div className='flex flex-col justify-around'>
+                      <Typography className='font-medium text-gray-800 dark:text-gray-300'>
+                        {t('sidebar.language')}
+                      </Typography>
+                    </div>
+                    <div className='mb-3 mt-3'>
+                      <MobileLanguageSwitcher />
                     </div>
                   </div>
                   <hr />

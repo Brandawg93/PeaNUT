@@ -36,25 +36,21 @@ export default function DayNightSwitch() {
 
   return (
     <div
-      className='relative inline-block h-full w-full rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'
+      className='relative flex h-full w-full flex-row justify-between rounded-md border border-gray-300 text-gray-800 hover:text-black dark:border-gray-800 dark:text-gray-300 dark:hover:text-white'
       data-testid='daynightmobile'
     >
-      <div className='absolute left-0 z-0 ml-2 mr-2 inline-flex h-full flex-col justify-center'>
-        {iconMap[preference]}
-      </div>
-      <div className='inline'>
-        <select
-          data-testid='select'
-          value={preference}
-          onChange={handleSelect}
-          className='relative z-10 h-9 appearance-none bg-transparent pl-11 pr-5 outline-none'
-        >
-          <option value='light'>{t('theme.light')}</option>
-          <option value='dark'>{t('theme.dark')}</option>
-          <option value='system'>{t('theme.system')}</option>
-        </select>
-      </div>
-      <div className='absolute right-0 z-0 inline-flex h-full flex-col justify-center'>
+      <div className='ml-2 mr-2 inline-flex h-full flex-col justify-center'>{iconMap[preference]}</div>
+      <select
+        data-testid='select'
+        value={preference}
+        onChange={handleSelect}
+        className='h-9 appearance-none bg-transparent outline-none'
+      >
+        <option value='light'>{t('theme.light')}</option>
+        <option value='dark'>{t('theme.dark')}</option>
+        <option value='system'>{t('theme.system')}</option>
+      </select>
+      <div className='inline-flex h-full flex-col justify-center'>
         <ChevronUpDownIcon className='h-5 w-5' />
       </div>
     </div>
