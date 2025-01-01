@@ -25,7 +25,6 @@
   },
   "sidebar": {
     "settings": "Einstellungen",
-    "moreSettings": "Weitere Einstellungen",
     "theme": "Thema",
     "disconnect": "Trennen",
     "refresh": "Aktualisieren",
@@ -58,7 +57,8 @@
   "theme": {
     "dark": "Dunkel",
     "light": "Hell",
-    "system": "System"
+    "system": "System",
+    "title": "Thema"
   },
   "serverNotFound": "Host nicht gefunden. \nÜberprüfen Sie Ihre Einstellungen.",
   "serverRefused": "Verbindung abgelehnt. \nLäuft der NUT-Server?"

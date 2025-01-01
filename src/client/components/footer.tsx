@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
 import pJson from '../../../package.json'
-import DayNightSwitch from '@/client/components/daynight'
 
 type Props = {
   updated?: Date
@@ -52,11 +51,7 @@ export default function Footer({ updated }: Props) {
   return (
     <div>
       <div className='grid grid-flow-row grid-cols-2' data-testid='footer'>
-        <div>
-          <div className='hidden lg:block'>
-            <DayNightSwitch />
-          </div>
-        </div>
+        <div />
         <div className='mt-6 text-right text-gray-600'>
           <Link
             className='text-sm underline hover:text-gray-800 dark:hover:text-gray-400'

@@ -271,7 +271,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
               </div>
             </div>
             <ChartsContainer vars={vars} data={data} name={ups.name} />
-            <div className='mb-4'>
+            <div>
               <MemoizedGrid data={ups} />
             </div>
             <Footer updated={data.updated} />

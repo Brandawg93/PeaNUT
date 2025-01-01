@@ -36,7 +36,7 @@ export default function Refresh(props: Props) {
       <Button
         variant='filled'
         title={t('sidebar.refresh')}
-        className='text-md inline-flex w-1/2 justify-center rounded-r-none border-r bg-gray-400 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
+        className='text-md inline-flex justify-center rounded-r-none border-r bg-gray-400 px-3 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
         onClick={() => {
           setEffect(true)
           onClick()
@@ -50,7 +50,7 @@ export default function Refresh(props: Props) {
         <MenuHandler>
           <Button
             variant='filled'
-            className='text-md inline-flex w-1/2 justify-center rounded-l-none bg-gray-400 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
+            className='text-md inline-flex justify-center rounded-l-none bg-gray-400 px-3 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
           >
             <ChevronDownIcon className={`h-4 w-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()} />
           </Button>

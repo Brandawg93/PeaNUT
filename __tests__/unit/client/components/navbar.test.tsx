@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import NavBar from '@/client/components/navbar'
 
 jest.mock('next/navigation', () => ({
@@ -45,27 +45,5 @@ describe('NavBar', () => {
     const heading = screen.getByText('PeaNUT')
 
     expect(heading).toBeInTheDocument()
-  })
-
-  it('opens and closes the drawer', () => {
-    render(
-      <NavBar
-        devices={devices}
-        onRefreshClick={() => {}}
-        onRefetch={() => {}}
-        onDeviceChange={() => {}}
-        onDisconnect={() => {}}
-        disableRefresh={false}
-      />
-    )
-
-    const openButton = screen.getByTestId('open-drawer')
-    fireEvent.click(openButton)
-
-    const closeButton = screen.getByTestId('close-drawer')
-    expect(closeButton).toBeInTheDocument()
-
-    fireEvent.click(closeButton)
-    expect(openButton).toBeInTheDocument()
   })
 })
