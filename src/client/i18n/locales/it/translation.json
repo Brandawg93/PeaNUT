@@ -25,10 +25,9 @@
   },
   "sidebar": {
     "settings": "Impostazioni",
-    "moreSettings": "Altre impostazioni",
-    "theme": "Tema",
     "disconnect": "Disconnetto",
-    "refresh": "Aggiorna"
+    "refresh": "Aggiorna",
+    "language": "Lingua"
   },
   "settings": {
     "manageServers": "Gestisci server",
@@ -57,7 +56,8 @@
   "theme": {
     "dark": "Scuro",
     "light": "Chiaro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "title": "Tema"
   },
   "serverNotFound": "Host non trovato. \nControlla le tue impostazioni.",
   "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?"

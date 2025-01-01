@@ -25,10 +25,9 @@
   },
   "sidebar": {
     "settings": "Setări",
-    "moreSettings": "Setări suplimentare",
-    "theme": "Temă",
     "disconnect": "Deconectare",
-    "refresh": "Actualizare"
+    "refresh": "Actualizare",
+    "language": "Limbă"
   },
   "settings": {
     "manageServers": "Gestionare servere",
@@ -57,7 +56,8 @@
   "theme": {
     "dark": "Întunecat",
     "light": "Luminos",
-    "system": "Sistem"
+    "system": "Sistem",
+    "title": "Temă"
   },
   "serverNotFound": "Gazda nu a fost găsită. \nVerificați setările dvs.",
   "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?"

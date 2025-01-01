@@ -25,10 +25,9 @@
   },
   "sidebar": {
     "settings": "Settings",
-    "moreSettings": "More Settings",
-    "theme": "Theme",
     "disconnect": "Disconnect",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "language": "Language"
   },
   "settings": {
     "manageServers": "Manage Servers",
@@ -57,7 +56,8 @@
   "theme": {
     "dark": "Dark",
     "light": "Light",
-    "system": "System"
+    "system": "System",
+    "title": "Theme"
   },
   "serverNotFound": "Host not found. Check your settings.",
   "serverRefused": "Connection refused. Is NUT server running?"

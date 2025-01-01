@@ -1,15 +1,25 @@
 'use client'
 
-import React from 'react'
-import { Navbar, Typography } from '@material-tailwind/react'
+import React, { useContext } from 'react'
+import { useRouter } from 'next/navigation'
+import { IconButton, Navbar, Typography } from '@material-tailwind/react'
+import { Cog6ToothIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import logo from '@/app/icon.svg'
+import LanguageSwitcher from '@/client/components/language-switcher'
+import { LanguageContext } from '@/client/context/language'
+import { useTranslation } from 'react-i18next'
+import DayNightSwitch from '@/client/components/daynight'
 
 export default function SettingsLayout({
   children, // will be a page or nested layout
 }: {
   children: React.ReactNode
 }) {
+  const lng = useContext<string>(LanguageContext)
+  const { t } = useTranslation(lng)
+  const router = useRouter()
+
   return (
     <div
       className='flex h-full min-h-screen flex-col bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
@@ -30,6 +40,26 @@ export default function SettingsLayout({
               <Image alt='' src={logo} width='30' height='30' className='d-inline-block align-top' />
               &nbsp;PeaNUT
             </Typography>
+            <div className='flex items-center'>
+              <div>
+                <DayNightSwitch />
+              </div>
+              &nbsp;
+              <div>
+                <LanguageSwitcher />
+              </div>
+              &nbsp;
+              <div>
+                <IconButton
+                  variant='text'
+                  className='px-3 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
+                  title={t('sidebar.settings')}
+                  onClick={() => router.push('/settings')}
+                >
+                  <Cog6ToothIcon className='h-6 w-6 stroke-2 dark:text-white' />
+                </IconButton>
+              </div>
+            </div>
           </div>
         </div>
       </Navbar>
