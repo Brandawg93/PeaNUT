@@ -20,7 +20,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . /app
 
-RUN npm run build && rm -rf .next/standalone/.next/cache
+RUN corepack enable pnpm && pnpm run build && rm -rf .next/standalone/.next/cache
 
 FROM node:22-alpine AS runner
 
