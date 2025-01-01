@@ -36,7 +36,7 @@ export default function Footer({ updated }: Props) {
 
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link
-      className='text-neutral-500 no-underline-text m-0 text-sm'
+      className='text-neutral-500 no-underline-text m-0 text-sm hover:text-gray-800 dark:hover:text-gray-400'
       href={updateAvailable.url}
       target='_blank'
       rel='noreferrer'
@@ -58,7 +58,12 @@ export default function Footer({ updated }: Props) {
           </div>
         </div>
         <div className='mt-6 text-right text-gray-600'>
-          <Link className='text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+          <Link
+            className='text-sm underline hover:text-gray-800 dark:hover:text-gray-400'
+            href='/api/docs'
+            target='_blank'
+            rel='noreferrer'
+          >
             {t('docs')}
           </Link>
         </div>
@@ -74,7 +79,12 @@ export default function Footer({ updated }: Props) {
           )}
         </div>
         <div className='text-right'>
-          <Link className='m-0 text-sm no-underline' href={currentVersion.url} target='_blank' rel='noreferrer'>
+          <Link
+            className='m-0 text-sm no-underline hover:text-gray-800 dark:hover:text-gray-400'
+            href={currentVersion.url}
+            target='_blank'
+            rel='noreferrer'
+          >
             {currentVersion.version}
             &nbsp;({currentVersion.created.toLocaleDateString()})
           </Link>

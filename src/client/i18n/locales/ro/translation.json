@@ -28,7 +28,8 @@
     "moreSettings": "Setări suplimentare",
     "theme": "Temă",
     "disconnect": "Deconectare",
-    "refresh": "Actualizare"
+    "refresh": "Actualizare",
+    "language": "Limbă"
   },
   "settings": {
     "manageServers": "Gestionare servere",
