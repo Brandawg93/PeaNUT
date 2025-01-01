@@ -82,7 +82,7 @@ export default function NavBar(props: Props) {
             className='flex cursor-pointer py-1.5 text-xl font-medium text-black no-underline dark:text-white'
           >
             <Image alt='' src={logo} width='30' height='30' className='d-inline-block align-top' />
-            <span className='hidden sm:block'>&nbsp;PeaNUT</span>
+            <span className={devices.length > 1 ? 'hidden sm:block' : 'block'}>&nbsp;PeaNUT</span>
           </Typography>
           <div className='flex items-center'>
             <div>{devices.length > 1 ? dropdown() : null}</div>
