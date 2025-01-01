@@ -47,15 +47,13 @@ export default function NavBar(props: Props) {
     }
   }
 
-  const dropdown = (variant: 'standard' | 'outlined' = 'standard') => (
+  const dropdown = () => (
     <Select
-      variant={variant}
       className='dark:text-gray-300'
       menuProps={{ className: 'dark:bg-gray-900 dark:border-gray-800 dark:text-white' }}
       labelProps={{ className: 'dark:text-gray-300' }}
       containerProps={{ className: 'min-w-[150px]' }}
       label='Select Device'
-      data-testid={`device-select-${variant}`}
       onChange={handleSelect}
       value={device.name}
     >
