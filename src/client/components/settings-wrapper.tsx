@@ -165,7 +165,7 @@ export default function SettingsWrapper({
                 </List>
               </Card>
             </div>
-            <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
+            <div className='flex h-full flex-1 flex-col gap-3 overflow-auto rounded-lg bg-white p-3 dark:bg-gray-800'>
               {settingsLoaded ? (
                 <>
                   {selected === 1 && (
