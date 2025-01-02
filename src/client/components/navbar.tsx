@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option, IconButton } from '@material-tailwind/react'
-import { Cog6ToothIcon } from '@heroicons/react/24/outline'
+import { HiOutlineCog6Tooth } from 'react-icons/hi2'
 
 import { LanguageContext } from '@/client/context/language'
 import logo from '@/app/icon.svg'
@@ -109,7 +109,7 @@ export default function NavBar(props: Props) {
                 title={t('sidebar.settings')}
                 onClick={() => router.push('/settings')}
               >
-                <Cog6ToothIcon className='h-6 w-6 stroke-2 dark:text-white' />
+                <HiOutlineCog6Tooth className='h-6 w-6 stroke-2 dark:text-white' />
               </IconButton>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { Button, Input } from '@material-tailwind/react'
@@ -100,9 +100,9 @@ export default function AddInflux({
                   variant='text'
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                    <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
                   ) : (
-                    <EyeIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                    <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
                   )}
                 </Button>
               }

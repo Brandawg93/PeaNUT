@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import { HiOutlineExclamationCircle } from 'react-icons/hi2'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
@@ -41,7 +41,7 @@ export default function Footer({ updated }: Props) {
       rel='noreferrer'
     >
       &nbsp;
-      <ExclamationCircleIcon className='inline-block h-4 w-4' />
+      <HiOutlineExclamationCircle className='inline-block h-4 w-4' />
       &nbsp;{t('updateAvailable')}: {updateAvailable.version}
     </Link>
   ) : (

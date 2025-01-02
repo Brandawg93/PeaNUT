@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { HiOutlineChevronDown, HiOutlineArrowPath } from 'react-icons/hi2'
 import React, { useContext } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
@@ -44,7 +44,7 @@ export default function Refresh(props: Props) {
         onAnimationEnd={() => setEffect(false)}
         disabled={disabled}
       >
-        <ArrowPathIcon className={`h-4 w-4 stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
+        <HiOutlineArrowPath className={`h-4 w-4 stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
       </Button>
       <Menu open={isOpen} handler={setIsOpen}>
         <MenuHandler>
@@ -52,7 +52,9 @@ export default function Refresh(props: Props) {
             variant='filled'
             className='text-md inline-flex justify-center rounded-l-none bg-gray-400 px-3 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
           >
-            <ChevronDownIcon className={`h-4 w-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()} />
+            <HiOutlineChevronDown
+              className={`h-4 w-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()}
+            />
           </Button>
         </MenuHandler>
         <MenuList className='min-w-0 border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
