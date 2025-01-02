@@ -3,12 +3,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  CheckIcon,
-  ExclamationTriangleIcon,
-  ExclamationCircleIcon,
-  ArrowRightStartOnRectangleIcon,
-} from '@heroicons/react/24/outline'
-import { ExclamationCircleIcon as ExclamationCircleIconSolid } from '@heroicons/react/24/solid'
+  HiOutlineCheck,
+  HiOutlineExclamationTriangle,
+  HiExclamationCircle,
+  HiOutlineExclamationCircle,
+  HiOutlineArrowRightStartOnRectangle,
+} from 'react-icons/hi2'
 import { Button } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
@@ -32,11 +32,11 @@ import { DEVICE, DeviceData } from '@/common/types'
 const getStatus = (status: keyof typeof upsStatus) => {
   switch (status) {
     case 'OL':
-      return <CheckIcon className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
+      return <HiOutlineCheck className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
     case 'OB':
-      return <ExclamationTriangleIcon className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400' />
+      return <HiOutlineExclamationTriangle className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400' />
     case 'LB':
-      return <ExclamationCircleIcon className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400' />
+      return <HiOutlineExclamationCircle className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400' />
     default:
       return <></>
   }
@@ -113,7 +113,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
         data-testid='wrapper'
       >
         <div>
-          <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
+          <HiExclamationCircle className='mb-4 text-8xl text-red-600' />
           <p>{error}</p>
         </div>
         <div>
@@ -123,7 +123,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
             className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
             onClick={async () => await handleDisconnect()}
           >
-            <ArrowRightStartOnRectangleIcon className='h-4 w-4 stroke-2 dark:text-white' />
+            <HiOutlineArrowRightStartOnRectangle className='h-4 w-4 stroke-2 dark:text-white' />
           </Button>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
         data-testid='wrapper'
       >
         <div>
-          <ExclamationCircleIconSolid className='mb-4 text-8xl text-red-600' />
+          <HiExclamationCircle className='mb-4 text-8xl text-red-600' />
           <p>{t('noDevicesError')}</p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useContext, useCallback } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
-import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline'
+import { HiOutlineSun, HiOutlineMoon, HiOutlineComputerDesktop } from 'react-icons/hi2'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'
@@ -31,11 +31,11 @@ export default function DayNightSwitch() {
     const iconProps = 'h-6 w-6 stroke-2 dark:text-white'
     switch (theme) {
       case 'light':
-        return <SunIcon className={iconProps} />
+        return <HiOutlineSun className={iconProps} />
       case 'dark':
-        return <MoonIcon className={iconProps} />
+        return <HiOutlineMoon className={iconProps} />
       case 'system':
-        return <ComputerDesktopIcon className={iconProps} />
+        return <HiOutlineComputerDesktop className={iconProps} />
       default:
         return null
     }

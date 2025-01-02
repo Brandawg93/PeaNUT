@@ -21,6 +21,8 @@ global.fetch = jest.fn(() =>
 const mockCheckSettingsAction = jest.fn()
 const mockGetSettingsAction = jest.fn()
 const mockSetSettingsAction = jest.fn()
+const mockExportSettingsAction = jest.fn()
+const mockImportSettingsAction = jest.fn()
 const mockDeleteSettingsAction = jest.fn()
 const mockUpdateServersAction = jest.fn()
 const mockTestConnectionAction = jest.fn().mockResolvedValue('success')
@@ -33,6 +35,8 @@ const renderComponent = () =>
         checkSettingsAction={mockCheckSettingsAction}
         getSettingsAction={mockGetSettingsAction}
         setSettingsAction={mockSetSettingsAction}
+        exportSettingsAction={mockExportSettingsAction}
+        importSettingsAction={mockImportSettingsAction}
         deleteSettingsAction={mockDeleteSettingsAction}
         updateServersAction={mockUpdateServersAction}
         testConnectionAction={mockTestConnectionAction}
@@ -66,7 +70,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
   })
 
@@ -78,7 +82,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByTitle('settings.addServer'))
@@ -95,7 +99,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
 
     const serverInput = screen.getByDisplayValue('localhost')

@@ -1,4 +1,4 @@
-import { LanguageIcon } from '@heroicons/react/24/outline'
+import { HiOutlineLanguage } from 'react-icons/hi2'
 import React, { useContext } from 'react'
 import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
@@ -35,7 +35,7 @@ export default function LanguageSwitcher() {
           title={t('sidebar.language')}
           className='px-3 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
         >
-          <LanguageIcon className='h-6 w-6 stroke-2 dark:text-white' />
+          <HiOutlineLanguage className='h-6 w-6 stroke-2 dark:text-white' />
         </IconButton>
       </MenuHandler>
       <MenuList className='min-w-0 border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>

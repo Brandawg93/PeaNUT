@@ -1,7 +1,7 @@
 import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
-import { XMarkIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { Button, IconButton, Input } from '@material-tailwind/react'
@@ -67,7 +67,7 @@ export default function AddServer({
             title={t('settings.remove')}
             onClick={handleRemove}
           >
-            <XMarkIcon className='h-6 w-6 stroke-1 dark:text-white' />
+            <HiOutlineXMark className='h-6 w-6 stroke-1 dark:text-white' />
           </IconButton>
         </div>
       ) : (
@@ -139,9 +139,9 @@ export default function AddServer({
                   variant='text'
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                    <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
                   ) : (
-                    <EyeIcon className='h-6 w-6 stroke-1 dark:text-white' />
+                    <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
                   )}
                 </Button>
               }
