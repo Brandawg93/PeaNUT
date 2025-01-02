@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /** @type {import('next').NextConfig} */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
+
+const removeImports = require('next-remove-imports')()
 
 const nextConfig = {
   output: 'standalone',
@@ -11,6 +13,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: { esmExternals: true },
 }
 
-module.exports = process.env.ANALYZE === 'true' ? withBundleAnalyzer(nextConfig) : nextConfig
+module.exports =
+  process.env.ANALYZE === 'true' ? withBundleAnalyzer(removeImports(nextConfig)) : removeImports(nextConfig)

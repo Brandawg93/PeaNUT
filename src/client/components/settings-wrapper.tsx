@@ -5,10 +5,14 @@ import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
+import CodeMirror from '@uiw/react-codemirror'
+import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode'
+import { yaml } from '@codemirror/lang-yaml'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
-import { ServerStackIcon, PlusIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
+import { ServerStackIcon, PlusIcon, InformationCircleIcon, CodeBracketIcon } from '@heroicons/react/24/outline'
+import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
@@ -19,6 +23,8 @@ type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: <K extends keyof SettingsType>(key: K) => Promise<any>
   setSettingsAction: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => Promise<void>
+  exportSettingsAction: () => Promise<string>
+  importSettingsAction: (settings: string) => Promise<void>
   deleteSettingsAction: (key: keyof SettingsType) => Promise<void>
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
@@ -29,12 +35,15 @@ export default function SettingsWrapper({
   checkSettingsAction,
   getSettingsAction,
   setSettingsAction,
+  exportSettingsAction,
+  importSettingsAction,
   deleteSettingsAction,
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
 }: SettingsWrapperProps) {
-  const [selected, setSelected] = useState<number>(1)
+  const [selected, setSelected] = useState<number>(0)
+  const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [serverList, setServerList] = useState<Array<server>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
@@ -81,6 +90,14 @@ export default function SettingsWrapper({
     })
   }, [])
 
+  useEffect(() => {
+    if (selected === 2) {
+      exportSettingsAction().then((res) => {
+        setConfig(res)
+      })
+    }
+  }, [selected])
+
   const handleServerChange = (
     server: string,
     port: number,
@@ -107,6 +124,11 @@ export default function SettingsWrapper({
     toast.success(t('settings.saved'))
   }
 
+  const handleSettingsImport = async () => {
+    await importSettingsAction(config)
+    toast.success(t('settings.saved'))
+  }
+
   const handleSaveInflux = async () => {
     await Promise.all([
       setSettingsAction('INFLUX_HOST', influxServer),
@@ -118,6 +140,10 @@ export default function SettingsWrapper({
     toast.success(t('settings.saved'))
   }
 
+  const handleCodeChange = (value: string) => {
+    setConfig(value)
+  }
+
   const skeleton = (
     <div className='flex flex-col gap-3'>
       <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
@@ -126,49 +152,47 @@ export default function SettingsWrapper({
     </div>
   )
 
+  const menuItems = [
+    { label: t('settings.manageServers'), Icon: ServerStackIcon },
+    { label: t('settings.influxDb'), Icon: SiInfluxdb },
+    { label: t('settings.configExport'), Icon: CodeBracketIcon },
+  ]
+
   return (
     <div className='flex flex-1 flex-col pl-3 pr-3' data-testid='settings-wrapper'>
       <ToastContainer position='top-center' theme={theme} />
       <div className='flex justify-center'>
         <div className='container'>
-          <h1 className='mb-4 text-2xl font-bold'>Settings</h1>
+          <h1 className='mb-4 text-2xl font-bold'>{t('sidebar.settings')}</h1>
         </div>
       </div>
       <div className='flex flex-1 justify-center'>
-        <div className='container flex flex-1 flex-col justify-between'>
-          <div className='flex h-full flex-row gap-2'>
+        <div className='container flex flex-col justify-between'>
+          <div className='flex flex-row gap-2'>
             <div>
               <Card className='bg-white dark:bg-gray-800'>
                 <List className='min-w-0'>
-                  <ListItem
-                    selected={selected === 1}
-                    onClick={() => setSelectedItem(1)}
-                    className='active: text-black hover:text-black dark:text-white'
-                    style={selected === 1 ? selectedStyle : {}}
-                  >
-                    <ListItemPrefix className='mr-0 lg:mr-4'>
-                      <ServerStackIcon className='h-6 w-6' style={selected === 1 ? { color: 'black' } : {}} />
-                    </ListItemPrefix>
-                    <span className='hidden lg:block'>Manage Servers</span>
-                  </ListItem>
-                  <ListItem
-                    selected={selected === 2}
-                    onClick={() => setSelectedItem(2)}
-                    className='active: text-black hover:fill-black dark:fill-white dark:text-white'
-                    style={selected === 2 ? selectedStyle : {}}
-                  >
-                    <ListItemPrefix className='mr-0 lg:mr-4'>
-                      <SiInfluxdb className='fill-inherit' style={selected === 2 ? selectedStyle : {}} />
-                    </ListItemPrefix>
-                    <span className='hidden lg:block'>InfluxDB v2</span>
-                  </ListItem>
+                  {menuItems.map(({ label, Icon }, index) => (
+                    <ListItem
+                      key={index}
+                      selected={selected === index}
+                      onClick={() => setSelectedItem(index)}
+                      className='active: text-black hover:text-black dark:text-white'
+                      style={selected === index ? selectedStyle : {}}
+                    >
+                      <ListItemPrefix className='mr-0 lg:mr-4'>
+                        <Icon className='h-6 w-6' style={selected === index ? { color: 'black' } : {}} />
+                      </ListItemPrefix>
+                      <span className='hidden lg:block'>{label}</span>
+                    </ListItem>
+                  ))}
                 </List>
               </Card>
             </div>
             <div className='flex h-full w-full flex-1 flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800'>
               {settingsLoaded ? (
                 <>
-                  {selected === 1 && (
+                  {selected === 0 && (
                     <div className='flex h-full flex-col justify-between'>
                       <div className='container'>
                         <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
@@ -200,13 +224,13 @@ export default function SettingsWrapper({
                       </div>
                       <div className='flex flex-row justify-between'>
                         <div />
-                        <Button onClick={async () => await handleSaveServers()} className='shadow-none'>
+                        <Button onClick={handleSaveServers} className='shadow-none'>
                           {t('settings.apply')}
                         </Button>
                       </div>
                     </div>
                   )}
-                  {selected === 2 && (
+                  {selected === 1 && (
                     <div className='flex h-full flex-col justify-between'>
                       <div className='container'>
                         <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
@@ -248,6 +272,45 @@ export default function SettingsWrapper({
                         <div />
                         <Button onClick={handleSaveInflux} className='shadow-none'>
                           {t('settings.apply')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {selected === 2 && (
+                    <div className='flex h-full flex-col justify-between'>
+                      <div className='container'>
+                        <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
+                        <span>{t('settings.configExportNotice')}</span>
+                      </div>
+                      <div className='mb-2 border border-gray-400 dark:border-gray-600'>
+                        <CodeMirror
+                          theme={theme === 'dark' ? vscodeDark : vscodeLight}
+                          value={config}
+                          extensions={[yaml()]}
+                          onChange={handleCodeChange}
+                        />
+                      </div>
+                      <div className='flex flex-row'>
+                        <Button onClick={handleSettingsImport} className='flex shadow-none'>
+                          <AiOutlineSave className='h-4 w-4' />
+                          &nbsp;
+                          <span className='self-center'>{t('settings.save')}</span>
+                        </Button>
+                        &nbsp;
+                        <Button
+                          onClick={async () => {
+                            const a = document.createElement('a')
+                            const text = await exportSettingsAction()
+                            const file = new Blob([text], { type: 'application/yaml' })
+                            a.href = URL.createObjectURL(file)
+                            a.download = 'peanut_config.yaml'
+                            a.click()
+                          }}
+                          className='flex shadow-none'
+                        >
+                          <AiOutlineDownload className='h-4 w-4' />
+                          &nbsp;
+                          <span className='self-center'>{t('settings.download')}</span>
                         </Button>
                       </div>
                     </div>

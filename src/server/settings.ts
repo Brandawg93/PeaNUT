@@ -97,4 +97,14 @@ export class YamlSettings {
   public getAll(): SettingsType {
     return this.data
   }
+
+  public export(): string {
+    return dump(this.data)
+  }
+
+  public import(contents: string): void {
+    const fileData = load(contents) as SettingsType
+    this.data = { ...ISettings, ...fileData }
+    this.save()
+  }
 }
