@@ -27,7 +27,7 @@
     "settings": "Setări",
     "disconnect": "Deconectare",
     "refresh": "Actualizare",
-    "language": "Limbă"
+    "language": "Language"
   },
   "settings": {
     "manageServers": "Gestionare servere",
@@ -57,7 +57,7 @@
     "dark": "Întunecat",
     "light": "Luminos",
     "system": "Sistem",
-    "title": "Temă"
+    "title": "Theme"
   },
   "serverNotFound": "Gazda nu a fost găsită. \nVerificați setările dvs.",
   "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?"
