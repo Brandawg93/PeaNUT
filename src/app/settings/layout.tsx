@@ -3,7 +3,7 @@
 import React, { useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { IconButton, Navbar, Typography } from '@material-tailwind/react'
-import { Cog6ToothIcon } from '@heroicons/react/24/outline'
+import { HiOutlineCog6Tooth } from 'react-icons/hi2'
 import Image from 'next/image'
 import logo from '@/app/icon.svg'
 import LanguageSwitcher from '@/client/components/language-switcher'
@@ -56,7 +56,7 @@ export default function SettingsLayout({
                   title={t('sidebar.settings')}
                   onClick={() => router.push('/settings')}
                 >
-                  <Cog6ToothIcon className='h-6 w-6 stroke-2 dark:text-white' />
+                  <HiOutlineCog6Tooth className='h-6 w-6 stroke-2 dark:text-white' />
                 </IconButton>
               </div>
             </div>

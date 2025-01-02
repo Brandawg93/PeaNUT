@@ -4,14 +4,14 @@ import React, { useState, useMemo, useContext } from 'react'
 import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import {
-  CheckCircleIcon,
-  PencilSquareIcon,
-  XCircleIcon,
-  InformationCircleIcon,
-  ChevronRightIcon,
-  ChevronDownIcon,
-  ArrowUturnDownIcon,
-} from '@heroicons/react/24/outline'
+  HiOutlineCheckCircle,
+  HiOutlinePencilSquare,
+  HiOutlineXCircle,
+  HiOutlineInformationCircle,
+  HiOutlineChevronRight,
+  HiOutlineChevronDown,
+  HiOutlineArrowUturnDown,
+} from 'react-icons/hi2'
 import { ToastContainer, toast } from 'react-toastify'
 import {
   createColumnHelper,
@@ -134,10 +134,10 @@ export default function NutGrid({ data }: Props) {
       />
       <ButtonGroup size='sm' variant='text' className='divide-none'>
         <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='text'>
-          <CheckCircleIcon className='h-6 w-6 text-green-500' />
+          <HiOutlineCheckCircle className='h-6 w-6 text-green-500' />
         </Button>
         <Button className='px-2' variant='text' onClick={handleClose}>
-          <XCircleIcon className='h-6 w-6 text-red-500' />
+          <HiOutlineXCircle className='h-6 w-6 text-red-500' />
         </Button>
       </ButtonGroup>
     </div>
@@ -160,9 +160,9 @@ export default function NutGrid({ data }: Props) {
               {row.getCanExpand() && (
                 <div className='flex h-full flex-col justify-center'>
                   {row.getIsExpanded() ? (
-                    <ChevronDownIcon className='h-4 w-4' />
+                    <HiOutlineChevronDown className='h-4 w-4' />
                   ) : (
-                    <ChevronRightIcon className='h-4 w-4' />
+                    <HiOutlineChevronRight className='h-4 w-4' />
                   )}
                 </div>
               )}
@@ -178,7 +178,7 @@ export default function NutGrid({ data }: Props) {
                 content={<Typography>{row.original.description}</Typography>}
                 placement='right'
               >
-                <InformationCircleIcon className='mt-1 inline h-4 w-4' />
+                <HiOutlineInformationCircle className='mt-1 inline h-4 w-4' />
               </Tooltip>
             )}
           </div>
@@ -190,9 +190,9 @@ export default function NutGrid({ data }: Props) {
             {useTreeData && (
               <div className='flex h-[28px] flex-col justify-center'>
                 {table.getIsAllRowsExpanded() ? (
-                  <ChevronDownIcon className='h-4 w-4 dark:text-white' />
+                  <HiOutlineChevronDown className='h-4 w-4 dark:text-white' />
                 ) : (
-                  <ChevronRightIcon className='h-4 w-4 dark:text-white' />
+                  <HiOutlineChevronRight className='h-4 w-4 dark:text-white' />
                 )}
               </div>
             )}
@@ -203,7 +203,7 @@ export default function NutGrid({ data }: Props) {
             variant='text'
             className='shadow-none dark:text-gray-100'
           >
-            <ArrowUturnDownIcon className={`${useTreeData ? '-rotate-90' : 'rotate-0'} h-4 w-4`} />
+            <HiOutlineArrowUturnDown className={`${useTreeData ? '-rotate-90' : 'rotate-0'} h-4 w-4`} />
           </IconButton>
         </div>
       ),
@@ -233,7 +233,7 @@ export default function NutGrid({ data }: Props) {
               variant='filled'
               className='bg-gray-100 shadow-none dark:border-gray-500 dark:bg-gray-800 dark:text-gray-100'
             >
-              <PencilSquareIcon className='h-4 w-4 text-gray-800 dark:text-gray-100' />
+              <HiOutlinePencilSquare className='h-4 w-4 text-gray-800 dark:text-gray-100' />
             </IconButton>
           </Typography>
         ) : null

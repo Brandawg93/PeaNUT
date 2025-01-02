@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
-import { ServerStackIcon, PlusIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
+import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle } from 'react-icons/hi2'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
@@ -147,7 +147,7 @@ export default function SettingsWrapper({
                     style={selected === 1 ? selectedStyle : {}}
                   >
                     <ListItemPrefix className='mr-0 lg:mr-4'>
-                      <ServerStackIcon className='h-6 w-6' style={selected === 1 ? { color: 'black' } : {}} />
+                      <HiOutlineServerStack className='h-6 w-6' style={selected === 1 ? { color: 'black' } : {}} />
                     </ListItemPrefix>
                     <span className='hidden lg:block'>Manage Servers</span>
                   </ListItem>
@@ -194,7 +194,7 @@ export default function SettingsWrapper({
                             className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
                             onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
                           >
-                            <PlusIcon className='h-6 w-6 dark:text-white' />
+                            <HiOutlinePlus className='h-6 w-6 dark:text-white' />
                           </Button>
                         </div>
                       </div>
@@ -211,7 +211,7 @@ export default function SettingsWrapper({
                       <div className='container'>
                         <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
                         <span className='text-sm text-gray-500'>
-                          <InformationCircleIcon className='inline-block h-4 w-4' />
+                          <HiOutlineInformationCircle className='inline-block h-4 w-4' />
                           {t('settings.influxNotice')}
                         </span>
                         <AddInflux
