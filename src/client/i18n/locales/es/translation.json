@@ -27,7 +27,7 @@
     "settings": "Configuraciones",
     "disconnect": "Desconectar",
     "refresh": "Actualizar",
-    "language": "Idioma"
+    "language": "Language"
   },
   "settings": {
     "manageServers": "Gestionar Servidores",
@@ -57,7 +57,7 @@
     "dark": "Oscuro",
     "light": "Claro",
     "system": "Sistema",
-    "title": "Tema"
+    "title": "Theme"
   },
   "serverNotFound": "Anfitrión no encontrado. \nVerifique su configuración.",
   "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?"
