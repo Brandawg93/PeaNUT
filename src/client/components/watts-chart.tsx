@@ -54,7 +54,7 @@ export default function WattsChart(props: Props) {
         yAxis={[
           {
             scaleType: 'linear',
-            valueFormatter: (value: number) => `${value}V`,
+            valueFormatter: (value: number) => `${value}W`,
           },
         ]}
       >
