@@ -66,7 +66,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
   })
 
@@ -78,7 +78,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByTitle('settings.addServer'))
@@ -95,7 +95,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('Manage Servers')).toBeInTheDocument()
+      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
 
     const serverInput = screen.getByDisplayValue('localhost')
