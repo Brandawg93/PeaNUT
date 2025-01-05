@@ -7,6 +7,7 @@ import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'
 import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis'
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis'
+import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
@@ -47,20 +48,24 @@ export default function LineChart(props: Props) {
       <ResponsiveChartContainer
         height={300}
         series={[
-          { data: inputVoltageData, label: t('lineChart.inputVoltage'), type: 'line' },
-          { data: outputVoltageData, label: t('lineChart.outputVoltage'), type: 'line' },
+          {
+            data: inputVoltageData,
+            label: t('lineChart.inputVoltage'),
+            type: 'line',
+            valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          },
+          {
+            data: outputVoltageData,
+            label: t('lineChart.outputVoltage'),
+            type: 'line',
+            valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          },
         ]}
         xAxis={[{ scaleType: 'point', data: inputVoltageData.map((value, index) => index) }]}
         yAxis={[
           {
             scaleType: 'linear',
             valueFormatter: (value: number) => `${value}V`,
-            min: inputVoltageNominal
-              ? Math.min(...inputVoltageData, ...outputVoltageData, inputVoltageNominal)
-              : Math.min(...inputVoltageData, ...outputVoltageData),
-            max: inputVoltageNominal
-              ? Math.max(...inputVoltageData, ...outputVoltageData, inputVoltageNominal)
-              : Math.max(...inputVoltageData, ...outputVoltageData),
           },
         ]}
       >
@@ -76,6 +81,7 @@ export default function LineChart(props: Props) {
         <ChartsXAxis disableTicks disableLine tickLabelStyle={{ display: 'none' }} />
         <ChartsYAxis />
         <ChartsLegend />
+        <ChartsTooltip trigger='item' />
         <ChartsGrid horizontal vertical />
       </ResponsiveChartContainer>
     </Card>
