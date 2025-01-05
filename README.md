@@ -7,6 +7,7 @@
 A Tiny Dashboard for Network UPS Tools
 
 [![PayPal](https://img.shields.io/badge/paypal-donate-blue?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=CEYYGVB7ZZ764&item_name=peanut&currency_code=USD&source=url)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/brandawg93)](https://github.com/Brandawg93)
 ![Docker Pulls](https://img.shields.io/docker/pulls/brandawg93/peanut)
 [![Crowdin](https://badges.crowdin.net/nut-dashboard/localized.svg)](https://crowdin.com/project/nut-dashboard)
 
@@ -125,6 +126,12 @@ widget:
         - any: true
           to: Unknown
 ```
+
+## FAQ
+
+__Question:__ Chokidar is using lots of resources on my machine.
+
+__Answer:__ If you are using a Networked File Share, please see [#142](https://github.com/Brandawg93/PeaNUT/issues/142).
 
 ## Tested Devices
 
