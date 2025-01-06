@@ -1,0 +1,11 @@
+/* stylelint-disable selector-class-pattern */
+.MuiChartsLegend-series-nominalInputVoltage .MuiChartsLegend-mark {
+  fill: transparent;
+  stroke: #f44336;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 2;
+}
+
+.MuiChartsLegend-series-nominalInputVoltage .MuiChartsLegend-itemBackground {
+  cursor: unset !important;
+}
