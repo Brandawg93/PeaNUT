@@ -54,6 +54,10 @@ addOrUpdateJob(influxInterval)
 const watcher = chokidar.watch(settingsFile)
 
 watcher.on('change', () => {
+  // Temporarily unwatch the file
+  watcher.unwatch(settingsFile)
+
+  // Instantiate YamlSettings
   const newSettings = new YamlSettings(settingsFile)
   const newInfluxHost = newSettings.get('INFLUX_HOST')
   const newInfluxToken = newSettings.get('INFLUX_TOKEN')
@@ -64,4 +68,7 @@ watcher.on('change', () => {
   if (newInfluxHost && newInfluxToken && newInfluxOrg && newInfluxBucket) {
     addOrUpdateJob(newInterval)
   }
+
+  // Watch the file again
+  watcher.add(settingsFile)
 })
