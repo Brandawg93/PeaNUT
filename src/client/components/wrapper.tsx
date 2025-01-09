@@ -22,7 +22,7 @@ import NavBar from '@/client/components/navbar'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
-import ChartsContainer from '@/client/components/charts-container'
+import ChartsContainer from '@/client/components/line-charts/charts-container'
 
 import { LanguageContext } from '@/client/context/language'
 import { ThemeContext } from '@/client/context/theme'

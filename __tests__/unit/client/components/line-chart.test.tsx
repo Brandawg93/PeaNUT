@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import LineChart from '@/client/components/line-chart'
+import VoltsChart from '@/client/components/line-charts/volts-chart'
 import { DEVICE } from '@/common/types'
 
 const device: DEVICE = {
@@ -29,7 +29,7 @@ describe('Line', () => {
   it('renders', () => {
     const vars = device.vars
     const { getByTestId } = render(
-      <LineChart
+      <VoltsChart
         id={device.name}
         inputVoltage={+vars['input.voltage'].value}
         inputVoltageNominal={+vars['input.voltage.nominal']?.value}
@@ -38,6 +38,6 @@ describe('Line', () => {
       />
     )
 
-    expect(getByTestId('line')).toBeInTheDocument()
+    expect(getByTestId('volts-chart')).toBeInTheDocument()
   })
 })

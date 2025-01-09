@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import WattsChart from '@/client/components/watts-chart'
+import WattsChart from '@/client/components/line-charts/watts-chart'
 import { DEVICE } from '@/common/types'
 
 const device: DEVICE = {
@@ -34,6 +34,6 @@ describe('Gauge', () => {
       />
     )
 
-    expect(getByTestId('watts')).toBeInTheDocument()
+    expect(getByTestId('watts-chart')).toBeInTheDocument()
   })
 })

@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { VARS, DeviceData } from '@/common/types'
-import LineChart from '@/client/components/line-chart'
-import WattsChart from '@/client/components/watts-chart'
+import VoltsChart from '@/client/components/line-charts/volts-chart'
+import WattsChart from '@/client/components/line-charts/watts-chart'
 
 type Props = {
   vars: VARS
@@ -14,7 +14,7 @@ type Props = {
 export default function ChartsContainer({ vars, data, name }: Props) {
   const voltageWrapper = vars['input.voltage'] ? (
     <div className='mb-4'>
-      <LineChart
+      <VoltsChart
         id={name}
         inputVoltage={+vars['input.voltage'].value}
         inputVoltageNominal={+vars['input.voltage.nominal']?.value}
