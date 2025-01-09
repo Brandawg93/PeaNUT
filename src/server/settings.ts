@@ -22,7 +22,6 @@ export class YamlSettings {
     this.filePath = filePath
     this.data = { ...ISettings }
     this.load()
-    this.initWithEnvVars()
   }
 
   public load(): void {
@@ -31,6 +30,9 @@ export class YamlSettings {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
       const fileData = load(fileContents) as SettingsType
       this.data = { ...ISettings, ...fileData }
+    } else {
+      this.loadFromEnvVars()
+      this.save()
     }
     if (!this.data.NUT_SERVERS) {
       this.data.NUT_SERVERS = []
@@ -73,11 +75,6 @@ export class YamlSettings {
   private save(): void {
     const yamlStr = dump(this.data)
     fs.writeFileSync(this.filePath, yamlStr, 'utf8')
-  }
-
-  private initWithEnvVars(): void {
-    this.loadFromEnvVars()
-    this.save()
   }
 
   public get<K extends keyof SettingsType>(key: K): SettingsType[K] {

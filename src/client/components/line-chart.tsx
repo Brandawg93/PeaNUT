@@ -7,8 +7,10 @@ import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'
 import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis'
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis'
+import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
+import './charts.css'
 
 type Props = {
   id: string
@@ -24,7 +26,24 @@ export default function LineChart(props: Props) {
   const { t } = useTranslation(lng)
   const [inputVoltageData, setInputVoltageData] = useState<Array<number>>([])
   const [outputVoltageData, setOutputVoltageData] = useState<Array<number>>([])
+  const [showInputVoltage, setShowInputVoltage] = useState<boolean>(true)
+  const [showOutputVoltage, setShowOutputVoltage] = useState<boolean>(true)
   const prevDataRef = useRef(id)
+
+  const handleLegendClick = (id: string | number) => {
+    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>, selector: string) => {
+      setter((prev) => {
+        document.querySelector(selector)?.setAttribute('style', `text-decoration: ${prev ? 'line-through' : 'none'}`)
+        return !prev
+      })
+    }
+
+    if (id === 'inputVoltage') {
+      toggleVisibility(setShowInputVoltage, `.MuiChartsLegend-series-${id}`)
+    } else if (id === 'outputVoltage') {
+      toggleVisibility(setShowOutputVoltage, `.MuiChartsLegend-series-${id}`)
+    }
+  }
 
   useEffect(() => {
     if (id !== prevDataRef.current) {
@@ -47,35 +66,45 @@ export default function LineChart(props: Props) {
       <ResponsiveChartContainer
         height={300}
         series={[
-          { data: inputVoltageData, label: t('lineChart.inputVoltage'), type: 'line' },
-          { data: outputVoltageData, label: t('lineChart.outputVoltage'), type: 'line' },
+          {
+            id: 'inputVoltage',
+            data: showInputVoltage ? inputVoltageData : [],
+            label: t('lineChart.inputVoltage'),
+            type: 'line',
+            color: 'rgb(75, 192, 192)',
+            valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          },
+          {
+            id: 'outputVoltage',
+            data: showOutputVoltage ? outputVoltageData : [],
+            label: t('lineChart.outputVoltage'),
+            type: 'line',
+            color: 'rgb(255 99 132)',
+            valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          },
+          {
+            id: 'nominalInputVoltage',
+            data: [],
+            label: t('lineChart.nominalInputVoltage'),
+            type: 'line',
+          },
         ]}
         xAxis={[{ scaleType: 'point', data: inputVoltageData.map((value, index) => index) }]}
         yAxis={[
           {
-            scaleType: 'linear',
             valueFormatter: (value: number) => `${value}V`,
-            min: inputVoltageNominal
-              ? Math.min(...inputVoltageData, ...outputVoltageData, inputVoltageNominal)
-              : Math.min(...inputVoltageData, ...outputVoltageData),
-            max: inputVoltageNominal
-              ? Math.max(...inputVoltageData, ...outputVoltageData, inputVoltageNominal)
-              : Math.max(...inputVoltageData, ...outputVoltageData),
           },
         ]}
       >
         <LinePlot />
         <MarkPlot />
         {inputVoltageNominal && (
-          <ChartsReferenceLine
-            y={inputVoltageNominal}
-            label={t('lineChart.nominalInputVoltage')}
-            lineStyle={{ stroke: 'red', strokeDasharray: '10 5' }}
-          />
+          <ChartsReferenceLine y={inputVoltageNominal} lineStyle={{ stroke: 'red', strokeDasharray: '10 5' }} />
         )}
         <ChartsXAxis disableTicks disableLine tickLabelStyle={{ display: 'none' }} />
         <ChartsYAxis />
-        <ChartsLegend />
+        <ChartsLegend onItemClick={(e, context) => handleLegendClick(context.seriesId)} />
+        <ChartsTooltip trigger='item' />
         <ChartsGrid horizontal vertical />
       </ResponsiveChartContainer>
     </Card>
