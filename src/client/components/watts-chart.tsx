@@ -7,6 +7,7 @@ import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'
 import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis'
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis'
+import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
@@ -41,14 +42,19 @@ export default function WattsChart(props: Props) {
     >
       <ResponsiveChartContainer
         height={300}
-        series={[{ data: dataPoints, label: t('wattsChart.realpower'), type: 'line' }]}
+        series={[
+          {
+            data: dataPoints,
+            label: t('wattsChart.realpower'),
+            type: 'line',
+            valueFormatter: (v) => (v === null ? '' : `${v}W`),
+          },
+        ]}
         xAxis={[{ scaleType: 'point', data: dataPoints.map((value, index) => index) }]}
         yAxis={[
           {
             scaleType: 'linear',
-            valueFormatter: (value: number) => `${value}V`,
-            min: realpowerNominal ? Math.min(...dataPoints, realpowerNominal) : Math.min(...dataPoints),
-            max: realpowerNominal ? Math.max(...dataPoints, realpowerNominal) : Math.max(...dataPoints),
+            valueFormatter: (value: number) => `${value}W`,
           },
         ]}
       >
@@ -64,6 +70,7 @@ export default function WattsChart(props: Props) {
         <ChartsXAxis disableTicks disableLine tickLabelStyle={{ display: 'none' }} />
         <ChartsYAxis />
         <ChartsLegend />
+        <ChartsTooltip trigger='item' />
         <ChartsGrid horizontal vertical />
       </ResponsiveChartContainer>
     </Card>
