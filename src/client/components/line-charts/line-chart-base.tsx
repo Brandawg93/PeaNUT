@@ -9,8 +9,6 @@ import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip'
 import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
 import { ChartsLegend, ChartsLegendProps } from '@mui/x-charts/ChartsLegend'
 
-const CHART_HEIGHT = 300
-
 type Props = {
   id: string
   referenceLineValue?: number
@@ -25,7 +23,7 @@ export default function LineChart(props: ResponsiveChartContainerProps & ChartsL
       className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid={id}
     >
-      <ResponsiveChartContainer height={CHART_HEIGHT} {...props}>
+      <ResponsiveChartContainer {...props}>
         <LinePlot />
         <MarkPlot />
         {referenceLineValue && (
@@ -37,7 +35,16 @@ export default function LineChart(props: ResponsiveChartContainerProps & ChartsL
         )}
         <ChartsXAxis disableTicks disableLine tickLabelStyle={{ display: 'none' }} />
         <ChartsYAxis />
-        <ChartsLegend onItemClick={onItemClick} />
+        <ChartsLegend
+          onItemClick={onItemClick}
+          slotProps={{
+            legend: {
+              direction: 'row',
+              position: { vertical: 'top', horizontal: 'middle' },
+              padding: 0,
+            },
+          }}
+        />
         <ChartsTooltip trigger='item' />
         <ChartsGrid horizontal vertical />
       </ResponsiveChartContainer>
