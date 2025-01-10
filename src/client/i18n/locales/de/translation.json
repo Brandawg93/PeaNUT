@@ -27,7 +27,7 @@
     "settings": "Einstellungen",
     "disconnect": "Trennen",
     "refresh": "Aktualisieren",
-    "language": "Sprache"
+    "language": "Language"
   },
   "settings": {
     "manageServers": "Server verwalten",
@@ -57,7 +57,7 @@
     "dark": "Dunkel",
     "light": "Hell",
     "system": "System",
-    "title": "Thema"
+    "title": "Theme"
   },
   "serverNotFound": "Host nicht gefunden. \nÜberprüfen Sie Ihre Einstellungen.",
   "serverRefused": "Verbindung abgelehnt. \nLäuft der NUT-Server?"

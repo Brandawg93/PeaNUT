@@ -27,7 +27,7 @@
     "settings": "Paramètres",
     "disconnect": "Déconnecter",
     "refresh": "Rafraîchir",
-    "language": "Langue"
+    "language": "Language"
   },
   "settings": {
     "manageServers": "Gérer les serveurs",
@@ -57,7 +57,7 @@
     "dark": "Sombre",
     "light": "Clair",
     "system": "Système",
-    "title": "Thème"
+    "title": "Theme"
   },
   "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
   "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?"
