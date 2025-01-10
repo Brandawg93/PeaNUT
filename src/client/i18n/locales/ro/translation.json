@@ -10,7 +10,7 @@
   "batteryRuntime": "Durata de funcționare",
   "lastUpdated": "Ultima actualizare",
   "docs": "Documentație API",
-  "lineChart": {
+  "voltsChart": {
     "inputVoltage": "Tensiune de intrare",
     "outputVoltage": "Tensiune de ieșire",
     "nominalInputVoltage": "Tensiune nominală de intrare"

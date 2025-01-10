@@ -46,20 +46,27 @@ export default function WattsChart(props: Props) {
       id='watts-chart'
       onItemClick={(e, context) => handleLegendClick(context.seriesId)}
       referenceLineValue={realpowerNominal}
+      referenceLineLabel={t('wattsChart.nominalRealpower')}
       series={[
         {
           id: 'realPower',
           data: showRealPower ? dataPoints : [],
-          label: t('lineChart.inputVoltage'),
+          label: t('wattsChart.realpower'),
           type: 'line',
           color: 'rgb(75, 192, 192)',
-          valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          valueFormatter: (v) => (v === null ? '' : `${v}W`),
         },
       ]}
       xAxis={[{ scaleType: 'point', data: dataPoints.map((value, index) => index) }]}
       yAxis={[
         {
-          valueFormatter: (value: number) => `${value}V`,
+          domainLimit: (min: number, max: number) => {
+            return {
+              min: realpowerNominal ? Math.min(min, realpowerNominal) : min,
+              max: realpowerNominal ? Math.max(max, realpowerNominal) : max,
+            }
+          },
+          valueFormatter: (value: number) => `${value}W`,
         },
       ]}
     />

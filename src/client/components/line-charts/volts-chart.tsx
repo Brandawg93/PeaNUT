@@ -55,11 +55,12 @@ export default function VoltsChart(props: Props) {
       id='volts-chart'
       onItemClick={(e, context) => handleLegendClick(context.seriesId)}
       referenceLineValue={inputVoltageNominal}
+      referenceLineLabel={t('voltsChart.nominalInputVoltage')}
       series={[
         {
           id: 'inputVoltage',
           data: showInputVoltage ? inputVoltageData : [],
-          label: t('lineChart.inputVoltage'),
+          label: t('voltsChart.inputVoltage'),
           type: 'line',
           color: 'rgb(75, 192, 192)',
           valueFormatter: (v) => (v === null ? '' : `${v}V`),
@@ -67,7 +68,7 @@ export default function VoltsChart(props: Props) {
         {
           id: 'outputVoltage',
           data: showOutputVoltage ? outputVoltageData : [],
-          label: t('lineChart.outputVoltage'),
+          label: t('voltsChart.outputVoltage'),
           type: 'line',
           color: 'rgb(255 99 132)',
           valueFormatter: (v) => (v === null ? '' : `${v}V`),
@@ -76,6 +77,12 @@ export default function VoltsChart(props: Props) {
       xAxis={[{ scaleType: 'point', data: inputVoltageData.map((value, index) => index) }]}
       yAxis={[
         {
+          domainLimit: (min: number, max: number) => {
+            return {
+              min: inputVoltageNominal ? Math.min(min, inputVoltageNominal) : min,
+              max: inputVoltageNominal ? Math.max(max, inputVoltageNominal) : max,
+            }
+          },
           valueFormatter: (value: number) => `${value}V`,
         },
       ]}

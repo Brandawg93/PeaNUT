@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Card } from '@material-tailwind/react'
 import { ResponsiveChartContainer, ResponsiveChartContainerProps } from '@mui/x-charts/ResponsiveChartContainer'
 import { ChartsGrid } from '@mui/x-charts/ChartsGrid'
@@ -7,8 +7,6 @@ import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis'
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis'
 import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip'
 import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
-import { useTranslation } from 'react-i18next'
-import { LanguageContext } from '../../context/language'
 import { ChartsLegend, ChartsLegendProps } from '@mui/x-charts/ChartsLegend'
 
 const CHART_HEIGHT = 300
@@ -16,12 +14,11 @@ const CHART_HEIGHT = 300
 type Props = {
   id: string
   referenceLineValue?: number
+  referenceLineLabel?: string
 }
 
 export default function LineChart(props: ResponsiveChartContainerProps & ChartsLegendProps & Props) {
-  const { referenceLineValue, onItemClick, id } = props
-  const lng = useContext<string>(LanguageContext)
-  const { t } = useTranslation(lng)
+  const { referenceLineValue, referenceLineLabel, onItemClick, id } = props
 
   return (
     <Card
@@ -34,7 +31,7 @@ export default function LineChart(props: ResponsiveChartContainerProps & ChartsL
         {referenceLineValue && (
           <ChartsReferenceLine
             y={referenceLineValue}
-            label={t('lineChart.nominalInputVoltage')}
+            label={referenceLineLabel}
             lineStyle={{ stroke: 'red', strokeDasharray: '10 5' }}
           />
         )}

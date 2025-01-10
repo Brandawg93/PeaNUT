@@ -10,7 +10,7 @@
   "batteryRuntime": "Battery Runtime",
   "lastUpdated": "Last Updated",
   "docs": "API Docs",
-  "lineChart": {
+  "voltsChart": {
     "inputVoltage": "Input Voltage",
     "outputVoltage": "Output Voltage",
     "nominalInputVoltage": "Nominal Input Voltage"
