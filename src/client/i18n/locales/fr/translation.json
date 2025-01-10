@@ -10,7 +10,7 @@
   "batteryRuntime": "Autonomie de la batterie",
   "lastUpdated": "Dernière mise à jour",
   "docs": "Docs API",
-  "lineChart": {
+  "voltsChart": {
     "inputVoltage": "Tension d'entrée",
     "outputVoltage": "Tension de sortie",
     "nominalInputVoltage": "Tension d'entrée nominale"
