@@ -234,7 +234,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
         />
         <div className='flex justify-center pl-3 pr-3'>
           <div className='container'>
-            <div className='flex flex-row justify-between'>
+            <div className='mb-4 flex flex-row justify-between'>
               <div>
                 {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
                   <>
