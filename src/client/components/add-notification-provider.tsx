@@ -82,8 +82,9 @@ export default function AddNotificationProvider({
                 setName(newName)
                 handleChange(newName, triggers, config)
               }}
-              className='w-full px-3 py-2'
-              //   color={theme === 'light' ? 'black' : 'white'}
+              className='w-full px-3 py-2 dark:text-gray-300'
+              menuProps={{ className: 'dark:bg-gray-700 dark:border-gray-800 dark:text-white' }}
+              labelProps={{ className: 'dark:text-gray-300' }}
               data-testid={name}
             >
               {NotificationProviders.map((np, npIndex) => (
@@ -139,8 +140,9 @@ export default function AddNotificationProvider({
                     setTriggers([...triggers])
                     handleChange(name, triggers, config)
                   }}
-                  className='w-full px-3 py-2'
-                  // color={theme === 'light' ? 'black' : 'white'}
+                  className='w-full px-3 py-2 dark:text-gray-300'
+                  menuProps={{ className: 'dark:bg-gray-700 dark:border-gray-800 dark:text-white' }}
+                  labelProps={{ className: 'dark:text-gray-300' }}
                   data-testid={`${name}-trigger-operation`}
                 >
                   {NotificationTriggerOperations.map((op, opIndex) => (

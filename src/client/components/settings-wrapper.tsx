@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
-import { SiInfluxdb, SiImessage } from 'react-icons/si'
-import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle } from 'react-icons/hi2'
+import { SiInfluxdb } from 'react-icons/si'
+import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle, HiOutlineBellAlert } from 'react-icons/hi2'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddNotificationProvider from '@/client/components/add-notification-provider'
@@ -167,7 +167,7 @@ export default function SettingsWrapper({
   const menuItems = [
     { label: t('settings.manageServers'), Icon: HiOutlineServerStack },
     { label: t('settings.influxDb'), Icon: SiInfluxdb },
-    { label: t('settings.manageNotifications'), Icon: SiImessage },
+    { label: t('settings.manageNotifications'), Icon: HiOutlineBellAlert },
   ]
 
   return (
