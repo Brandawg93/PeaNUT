@@ -9,7 +9,7 @@
   "batteryCharge": "Carica della batteria",
   "batteryRuntime": "Durata della batteria",
   "lastUpdated": "Ultimo aggiornamento",
-  "docs": "Documenti API",
+  "docs": "Documentazione API",
   "voltsChart": {
     "inputVoltage": "Tensione d'ingresso",
     "outputVoltage": "Tensione di uscita",
@@ -25,7 +25,7 @@
   },
   "sidebar": {
     "settings": "Impostazioni",
-    "disconnect": "Disconnetto",
+    "disconnect": "Disconnetti",
     "refresh": "Aggiorna",
     "language": "Lingua"
   },
@@ -47,8 +47,8 @@
     "org": "Organizzazione",
     "bucket": "Bucket",
     "connect": "Connetti",
-    "clear": "Chiaro",
-    "test": "Verificare",
+    "clear": "Svuota campi",
+    "test": "Test",
     "success": "Connessione riuscita",
     "error": "Connessione fallita. Controlla i file di registro per maggiori informazioni.",
     "testing": "Verifica della connessione in corso..."
