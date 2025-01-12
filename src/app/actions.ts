@@ -1,10 +1,12 @@
 'use server'
 
 import InfluxWriter from '@/server/influxdb'
-import { DEVICE } from '@/common/types'
+import { DEVICE, NotificationProviders, NotifierSettings } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
 import { server, DeviceData, VarDescription } from '@/common/types'
+import { Notifier } from '@/server/notifications/notifier'
+import { NotifierFactory } from '@/server/notifications/notifier-factory'
 
 const settingsFile = './config/settings.yml'
 
@@ -111,6 +113,19 @@ export async function updateServers(servers: Array<server>) {
   const settings = new YamlSettings(settingsFile)
 
   settings.set('NUT_SERVERS', servers)
+}
+
+export async function testNotificationProvider(
+  name: (typeof NotificationProviders)[number],
+  config: { [x: string]: string } | undefined
+) {
+  const notificationProvider: Notifier = NotifierFactory({ name, triggers: [], config })
+  return await notificationProvider.sendTestNotification()
+}
+
+export async function updateNotificationProviders(notificationProviders: Array<NotifierSettings>) {
+  const settings = new YamlSettings(settingsFile)
+  settings.set('NOTIFICATION_PROVIDERS', notificationProviders)
 }
 
 export async function deleteSettings(key: keyof SettingsType) {

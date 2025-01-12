@@ -7,13 +7,14 @@ import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
-import { SiInfluxdb } from 'react-icons/si'
+import { SiInfluxdb, SiImessage } from 'react-icons/si'
 import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle } from 'react-icons/hi2'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
+import AddNotificationProvider from '@/client/components/add-notification-provider'
 import AddInflux from './add-influx'
 import { SettingsType } from '@/server/settings'
-import { server } from '@/common/types'
+import { NotificationProviders, NotificationTrigger, NotifierSettings, server } from '@/common/types'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
@@ -23,6 +24,11 @@ type SettingsWrapperProps = {
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
+  updateNotificationProvidersAction: (newNotificationProviders: Array<NotifierSettings>) => Promise<void>
+  testNotificationProviderAction: (
+    name: (typeof NotificationProviders)[number],
+    config: { [x: string]: string } | undefined
+  ) => Promise<string>
 }
 
 export default function SettingsWrapper({
@@ -33,6 +39,8 @@ export default function SettingsWrapper({
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
+  updateNotificationProvidersAction,
+  testNotificationProviderAction,
 }: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
@@ -42,6 +50,7 @@ export default function SettingsWrapper({
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
   const [influxInterval, setInfluxInterval] = useState<number>(10)
+  const [notificationProvidersList, setNotificationProvidersList] = useState<Array<NotifierSettings>>([])
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useContext(ThemeContext)
@@ -57,16 +66,21 @@ export default function SettingsWrapper({
       if (!res) {
         router.replace('/login')
       } else {
-        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval] = await Promise.all([
-          getSettingsAction('NUT_SERVERS'),
-          getSettingsAction('INFLUX_HOST'),
-          getSettingsAction('INFLUX_TOKEN'),
-          getSettingsAction('INFLUX_ORG'),
-          getSettingsAction('INFLUX_BUCKET'),
-          getSettingsAction('INFLUX_INTERVAL'),
-        ])
+        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, notificationProviders] =
+          await Promise.all([
+            getSettingsAction('NUT_SERVERS'),
+            getSettingsAction('INFLUX_HOST'),
+            getSettingsAction('INFLUX_TOKEN'),
+            getSettingsAction('INFLUX_ORG'),
+            getSettingsAction('INFLUX_BUCKET'),
+            getSettingsAction('INFLUX_INTERVAL'),
+            getSettingsAction('NOTIFICATION_PROVIDERS'),
+          ])
         if (servers) {
           setServerList([...servers])
+        }
+        if (notificationProviders) {
+          setNotificationProvidersList([...notificationProviders])
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -118,6 +132,30 @@ export default function SettingsWrapper({
     toast.success(t('settings.saved'))
   }
 
+  const handleNotificationProviderChange = (
+    name: (typeof NotificationProviders)[number],
+    triggers: Array<NotificationTrigger>,
+    config: { [x: string]: string } | undefined,
+    index: number
+  ) => {
+    const updatedNotificationProvidersList = [...notificationProvidersList]
+    updatedNotificationProvidersList[index].name = name
+    updatedNotificationProvidersList[index].triggers = triggers
+    updatedNotificationProvidersList[index].config = config
+    setNotificationProvidersList(updatedNotificationProvidersList)
+  }
+
+  const handleNotificationProviderRemove = async (index: number) => {
+    const updatedNotificationProvidersList = notificationProvidersList.filter((_, i) => i !== index)
+    setNotificationProvidersList(updatedNotificationProvidersList)
+    await updateNotificationProvidersAction(updatedNotificationProvidersList)
+  }
+
+  const handleSaveNotificationProviders = async () => {
+    await updateNotificationProvidersAction(notificationProvidersList)
+    toast.success(t('settings.saved'))
+  }
+
   const skeleton = (
     <div className='flex flex-col gap-3'>
       <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
@@ -129,6 +167,7 @@ export default function SettingsWrapper({
   const menuItems = [
     { label: t('settings.manageServers'), Icon: HiOutlineServerStack },
     { label: t('settings.influxDb'), Icon: SiInfluxdb },
+    { label: t('settings.manageNotifications'), Icon: SiImessage },
   ]
 
   return (
@@ -244,6 +283,47 @@ export default function SettingsWrapper({
                       <div className='flex flex-row justify-between'>
                         <div />
                         <Button onClick={handleSaveInflux} className='shadow-none'>
+                          {t('settings.apply')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {selected === 2 && (
+                    <div className='flex h-full flex-col justify-between'>
+                      <div className='container'>
+                        <h2 className='mb-4 text-xl font-bold'>{t('settings.manageNotifications')}</h2>
+                        {notificationProvidersList.map((notificationProvider, index) => (
+                          <AddNotificationProvider
+                            key={index}
+                            initialName={notificationProvider.name}
+                            initialTriggers={notificationProvider.triggers}
+                            initialConfig={notificationProvider.config}
+                            handleChange={(name, triggers, config) =>
+                              handleNotificationProviderChange(name, triggers, config, index)
+                            }
+                            handleRemove={() => handleNotificationProviderRemove(index)}
+                            testNotificationProviderAction={testNotificationProviderAction}
+                          />
+                        ))}
+                        <div className='text-center'>
+                          <Button
+                            variant='filled'
+                            title={t('notification.buttonAdd')}
+                            className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
+                            onClick={() =>
+                              setNotificationProvidersList([
+                                ...notificationProvidersList,
+                                { name: 'stdout', triggers: [] },
+                              ])
+                            }
+                          >
+                            <HiOutlinePlus className='h-6 w-6 dark:text-white' />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className='flex flex-row justify-between'>
+                        <div />
+                        <Button onClick={handleSaveNotificationProviders} className='shadow-none'>
                           {t('settings.apply')}
                         </Button>
                       </div>
