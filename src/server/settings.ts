@@ -43,7 +43,7 @@ export class YamlSettings {
     let key: keyof SettingsType
     for (key in ISettings) {
       const envValue = process.env[key as string]
-      if (envValue !== undefined && this.data[key] === undefined) {
+      if (envValue !== undefined && this.data[key] === ISettings[key]) {
         if (key === 'NUT_SERVERS') {
           this.data[key] = JSON.parse(envValue)
         } else if (key === 'INFLUX_INTERVAL') {

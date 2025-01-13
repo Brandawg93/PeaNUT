@@ -8,10 +8,12 @@ jest.mock('js-yaml')
 describe('YamlSettings', () => {
   const filePath = './__tests__/settings.yml'
   let yamlSettings: YamlSettings
+  const OLD_ENV = process.env
 
   beforeEach(() => {
     jest.clearAllMocks()
     yamlSettings = new YamlSettings(filePath)
+    process.env = { ...OLD_ENV }
   })
 
   describe('constructor', () => {
@@ -25,6 +27,33 @@ describe('YamlSettings', () => {
       yamlSettings = new YamlSettings(filePath)
 
       expect(Object.keys(yamlSettings.getAll())).toContain('key')
+    })
+
+    it('initializes settings with environment variables', () => {
+      process.env.NUT_HOST = 'localhost_env'
+      process.env.NUT_PORT = '8082'
+
+      const settingFromEnv1 = new YamlSettings(filePath)
+      expect(settingFromEnv1.get('NUT_SERVERS')[0].HOST).toBe('localhost_env')
+      expect(settingFromEnv1.get('NUT_SERVERS')[0].PORT).toBe(8082)
+      delete process.env.NUT_HOST
+      delete process.env.NUT_PORT
+
+      process.env.NUT_SERVERS = '[{"HOST": "localhost_env", "PORT": 8082}]'
+      const settingFromEnv2 = new YamlSettings(filePath)
+      expect(settingFromEnv2.get('NUT_SERVERS')[0].HOST).toBe('localhost_env')
+      expect(settingFromEnv2.get('NUT_SERVERS')[0].PORT).toBe(8082)
+      delete process.env.NUT_SERVERS
+
+      process.env.INFLUX_INTERVAL = '5'
+      const settingFromEnv3 = new YamlSettings(filePath)
+      expect(settingFromEnv3.get('INFLUX_INTERVAL')).toBe(5)
+      delete process.env.INFLUX_INTERVAL
+
+      process.env.INFLUX_HOST = 'localhost_env'
+      const settingFromEnv4 = new YamlSettings(filePath)
+      expect(settingFromEnv4.get('INFLUX_HOST')).toBe('localhost_env')
+      delete process.env.INFLUX_HOST
     })
   })
 
