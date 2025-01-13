@@ -23,6 +23,7 @@ export class YamlSettings {
   constructor(filePath: string) {
     this.filePath = filePath
     this.data = { ...ISettings }
+    this.loadFromEnvVars()
     this.load()
   }
 
@@ -31,9 +32,8 @@ export class YamlSettings {
     if (fs.existsSync(this.filePath)) {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
       const fileData = load(fileContents) as SettingsType
-      this.data = { ...ISettings, ...fileData }
+      this.data = { ...ISettings, ...this.data, ...fileData }
     } else {
-      this.loadFromEnvVars()
       this.save()
     }
     if (!this.data.NUT_SERVERS) {
