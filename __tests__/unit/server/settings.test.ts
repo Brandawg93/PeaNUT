@@ -29,6 +29,30 @@ describe('YamlSettings', () => {
       expect(Object.keys(yamlSettings.getAll())).toContain('key')
     })
 
+    it('should handle file read errors gracefully', () => {
+      ;(existsSync as jest.Mock).mockReturnValue(true)
+      ;(readFileSync as jest.Mock).mockImplementation(() => {
+        throw new Error('File read error')
+      })
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      yamlSettings = new YamlSettings(filePath)
+
+      expect(consoleSpy).toHaveBeenCalledWith('Error loading settings file: Error: File read error')
+      expect(yamlSettings.getAll()).toEqual(
+        expect.objectContaining({
+          NUT_SERVERS: [],
+          INFLUX_HOST: '',
+          INFLUX_TOKEN: '',
+          INFLUX_ORG: '',
+          INFLUX_BUCKET: '',
+          INFLUX_INTERVAL: 10,
+        })
+      )
+
+      consoleSpy.mockRestore()
+    })
+
     it('initializes settings with environment variables', () => {
       process.env.NUT_HOST = 'localhost_env'
       process.env.NUT_PORT = '8082'
