@@ -10,10 +10,25 @@ describe('YamlSettings', () => {
   let yamlSettings: YamlSettings
   const OLD_ENV = process.env
 
+  beforeAll(() => {
+    delete process.env.NUT_SERVERS
+    delete process.env.NUT_HOST
+    delete process.env.NUT_PORT
+    delete process.env.USERNAME
+    delete process.env.PASSWORD
+    delete process.env.INFLUX_HOST
+    delete process.env.INFLUX_TOKEN
+    delete process.env.INFLUX_ORG
+    delete process.env.INFLUX_BUCKET
+  })
+
+  afterAll(() => {
+    process.env = { ...OLD_ENV }
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
     yamlSettings = new YamlSettings(filePath)
-    process.env = { ...OLD_ENV }
   })
 
   describe('constructor', () => {
