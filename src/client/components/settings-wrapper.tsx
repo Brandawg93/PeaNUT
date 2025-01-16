@@ -5,10 +5,14 @@ import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
+import CodeMirror from '@uiw/react-codemirror'
+import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode'
+import { yaml } from '@codemirror/lang-yaml'
 import { ThemeContext } from '@/client/context/theme'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
-import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle } from 'react-icons/hi2'
+import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle, HiOutlineCodeBracket } from 'react-icons/hi2'
+import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
@@ -19,6 +23,8 @@ type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: <K extends keyof SettingsType>(key: K) => Promise<any>
   setSettingsAction: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => Promise<void>
+  exportSettingsAction: () => Promise<string>
+  importSettingsAction: (settings: string) => Promise<void>
   deleteSettingsAction: (key: keyof SettingsType) => Promise<void>
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
@@ -29,12 +35,15 @@ export default function SettingsWrapper({
   checkSettingsAction,
   getSettingsAction,
   setSettingsAction,
+  exportSettingsAction,
+  importSettingsAction,
   deleteSettingsAction,
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
 }: SettingsWrapperProps) {
   const [selected, setSelected] = useState<number>(0)
+  const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [serverList, setServerList] = useState<Array<server>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
@@ -81,6 +90,14 @@ export default function SettingsWrapper({
     })
   }, [])
 
+  useEffect(() => {
+    if (selected === 2) {
+      exportSettingsAction().then((res) => {
+        setConfig(res)
+      })
+    }
+  }, [selected])
+
   const handleServerChange = (
     server: string,
     port: number,
@@ -107,6 +124,11 @@ export default function SettingsWrapper({
     toast.success(t('settings.saved'))
   }
 
+  const handleSettingsImport = async () => {
+    await importSettingsAction(config)
+    toast.success(t('settings.saved'))
+  }
+
   const handleSaveInflux = async () => {
     await Promise.all([
       setSettingsAction('INFLUX_HOST', influxServer),
@@ -116,6 +138,10 @@ export default function SettingsWrapper({
       setSettingsAction('INFLUX_INTERVAL', influxInterval),
     ])
     toast.success(t('settings.saved'))
+  }
+
+  const handleCodeChange = (value: string) => {
+    setConfig(value)
   }
 
   const skeleton = (
@@ -129,6 +155,7 @@ export default function SettingsWrapper({
   const menuItems = [
     { label: t('settings.manageServers'), Icon: HiOutlineServerStack },
     { label: t('settings.influxDb'), Icon: SiInfluxdb },
+    { label: t('settings.configExport'), Icon: HiOutlineCodeBracket },
   ]
 
   return (
@@ -245,6 +272,45 @@ export default function SettingsWrapper({
                         <div />
                         <Button onClick={handleSaveInflux} className='shadow-none'>
                           {t('settings.apply')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {selected === 2 && (
+                    <div className='flex h-full flex-col justify-between'>
+                      <div className='container'>
+                        <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
+                        <span>{t('settings.configExportNotice')}</span>
+                      </div>
+                      <div className='mb-2 border border-gray-400 dark:border-gray-600'>
+                        <CodeMirror
+                          theme={theme === 'dark' ? vscodeDark : vscodeLight}
+                          value={config}
+                          extensions={[yaml()]}
+                          onChange={handleCodeChange}
+                        />
+                      </div>
+                      <div className='flex flex-row'>
+                        <Button onClick={handleSettingsImport} className='flex shadow-none'>
+                          <AiOutlineSave className='h-4 w-4' />
+                          &nbsp;
+                          <span className='self-center'>{t('settings.save')}</span>
+                        </Button>
+                        &nbsp;
+                        <Button
+                          onClick={async () => {
+                            const a = document.createElement('a')
+                            const text = await exportSettingsAction()
+                            const file = new Blob([text], { type: 'application/yaml' })
+                            a.href = URL.createObjectURL(file)
+                            a.download = 'peanut_config.yaml'
+                            a.click()
+                          }}
+                          className='flex shadow-none'
+                        >
+                          <AiOutlineDownload className='h-4 w-4' />
+                          &nbsp;
+                          <span className='self-center'>{t('settings.download')}</span>
                         </Button>
                       </div>
                     </div>
