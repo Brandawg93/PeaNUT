@@ -1,5 +1,6 @@
 export const upsStatus = {
   OL: 'Online',
+  'OL CHRG': 'Online Charging',
   OB: 'On Battery',
   LB: 'Low Battery',
   HB: 'High Battery',
