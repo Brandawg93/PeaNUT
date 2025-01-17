@@ -31,11 +31,21 @@ import { DEVICE, DeviceData } from '@/common/types'
 
 const getStatus = (status: keyof typeof upsStatus) => {
   if (status.startsWith('OL')) {
-    return <HiOutlineCheck className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
+    return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
   } else if (status.startsWith('OB')) {
-    return <HiOutlineExclamationTriangle className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400' />
+    return (
+      <HiOutlineExclamationTriangle
+        data-testid='triangle-icon'
+        className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400'
+      />
+    )
   } else if (status.startsWith('LB')) {
-    return <HiOutlineExclamationCircle className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400' />
+    return (
+      <HiOutlineExclamationCircle
+        data-testid='exclamation-icon'
+        className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400'
+      />
+    )
   } else {
     return <></>
   }

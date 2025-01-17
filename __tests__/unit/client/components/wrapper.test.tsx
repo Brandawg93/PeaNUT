@@ -91,4 +91,79 @@ describe('Wrapper Component', () => {
     const wrapper = await findByTestId('wrapper')
     expect(wrapper).toBeInTheDocument()
   })
+
+  it('renders status "OL CHRG"', async () => {
+    const mockDevicesDataWithStatus = {
+      ...mockDevicesData,
+      devices: [
+        {
+          ...mockDevicesData.devices[0],
+          vars: {
+            ...mockDevicesData.devices[0].vars,
+            'ups.status': { value: 'OL CHRG' },
+          },
+        },
+      ],
+    }
+
+    ;(useQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      data: mockDevicesDataWithStatus,
+      refetch: jest.fn(),
+    })
+
+    const { findByTestId } = renderComponent(true)
+    const icon = await findByTestId('check-icon')
+    expect(icon).toBeInTheDocument()
+  })
+
+  it('renders status "OB"', async () => {
+    const mockDevicesDataWithStatus = {
+      ...mockDevicesData,
+      devices: [
+        {
+          ...mockDevicesData.devices[0],
+          vars: {
+            ...mockDevicesData.devices[0].vars,
+            'ups.status': { value: 'OB' },
+          },
+        },
+      ],
+    }
+
+    ;(useQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      data: mockDevicesDataWithStatus,
+      refetch: jest.fn(),
+    })
+
+    const { findByTestId } = renderComponent(true)
+    const icon = await findByTestId('triangle-icon')
+    expect(icon).toBeInTheDocument()
+  })
+
+  it('renders status "LB"', async () => {
+    const mockDevicesDataWithStatus = {
+      ...mockDevicesData,
+      devices: [
+        {
+          ...mockDevicesData.devices[0],
+          vars: {
+            ...mockDevicesData.devices[0].vars,
+            'ups.status': { value: 'LB' },
+          },
+        },
+      ],
+    }
+
+    ;(useQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      data: mockDevicesDataWithStatus,
+      refetch: jest.fn(),
+    })
+
+    const { findByTestId } = renderComponent(true)
+    const icon = await findByTestId('exclamation-icon')
+    expect(icon).toBeInTheDocument()
+  })
 })
