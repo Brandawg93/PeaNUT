@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
-import { server } from '../common/types'
+import { server, NotifierSettings } from '../common/types'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
@@ -10,6 +10,8 @@ const ISettings = {
   INFLUX_ORG: '',
   INFLUX_BUCKET: '',
   INFLUX_INTERVAL: 10,
+  NOTIFICATION_INTERVAL: 10,
+  NOTIFICATION_PROVIDERS: [] as Array<NotifierSettings>,
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
@@ -41,6 +43,7 @@ export class YamlSettings {
     } catch (error) {
       console.error(`Error loading settings file: ${error}`)
     }
+    this.data.NOTIFICATION_PROVIDERS ??= []
 
     // Ensure NUT_SERVERS is always an array
     this.data.NUT_SERVERS ??= []
@@ -51,9 +54,9 @@ export class YamlSettings {
     for (key in ISettings) {
       const envValue = process.env[key as string]
       if (envValue !== undefined && this.data[key] === ISettings[key]) {
-        if (key === 'NUT_SERVERS') {
+        if (key === 'NUT_SERVERS' || key === 'NOTIFICATION_PROVIDERS') {
           this.data[key] = JSON.parse(envValue)
-        } else if (key === 'INFLUX_INTERVAL') {
+        } else if (key === 'INFLUX_INTERVAL' || key === 'NOTIFICATION_INTERVAL') {
           this.data[key] = Number(envValue)
         } else {
           this.data[key] = envValue

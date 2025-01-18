@@ -128,9 +128,9 @@ widget:
 
 ## FAQ
 
-__Question:__ Chokidar is using lots of resources on my machine.
+**Question:** Chokidar is using lots of resources on my machine.
 
-__Answer:__ If you are using a Networked File Share, please see [#142](https://github.com/Brandawg93/PeaNUT/issues/142).
+**Answer:** If you are using a Networked File Share, please see [#142](https://github.com/Brandawg93/PeaNUT/issues/142).
 
 ## Tested Devices
 

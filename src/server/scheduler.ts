@@ -3,6 +3,9 @@ import chokidar from 'chokidar'
 import { YamlSettings } from '@/server/settings'
 import { getDevices } from '@/app/actions'
 import InfluxWriter from '@/server/influxdb'
+import { NotifierFactory } from '@/server/notifications/notifier-factory'
+import { Notifier } from '@/server/notifications/notifier'
+import { DEVICE } from '@/common/types'
 
 const settingsFile = './config/settings.yml'
 
@@ -12,9 +15,10 @@ const scheduler = new ToadScheduler()
 
 // Get the current interval from settings or default to 10 seconds
 const influxInterval = settings.get('INFLUX_INTERVAL') || 10
+const notificationInterval = settings.get('NOTIFICATION_INTERVAL') || 10
 
 // Define the task to write data to InfluxDB
-const createTask = () =>
+const createInfluxDbTask = () =>
   new Task('influx writer', () => {
     const taskSettings = new YamlSettings(settingsFile)
     const influxHost = taskSettings.get('INFLUX_HOST')
@@ -36,19 +40,53 @@ const createTask = () =>
     }
   })
 
-const addOrUpdateJob = (interval: number) => {
-  if (scheduler.existsById('id_1')) {
-    scheduler.removeById('id_1')
+let _prevDeviceState: Array<DEVICE> | undefined
+const createNotificationTask = () =>
+  new Task('notifications', () => {
+    const taskSettings = new YamlSettings(settingsFile)
+    const notification_providers = taskSettings.get('NOTIFICATION_PROVIDERS')
+    const allNotifiers: Array<Notifier> = []
+    const allNotificationTasks: Array<Promise<void>> = []
+    for (const notifier_settings of notification_providers) {
+      const notifier = NotifierFactory(notifier_settings)
+      allNotifiers.push(notifier)
+    }
+    getDevices().then(({ devices }) => {
+      if (_prevDeviceState) {
+        for (const device of devices || []) {
+          const prevDevice = _prevDeviceState.find((d) => d.name === device.name)
+          if (!prevDevice) {
+            continue
+          }
+          for (const notifier of allNotifiers) {
+            const notifications = notifier.processTriggers(prevDevice, device)
+            for (const notification of notifications) {
+              allNotificationTasks.push(notifier.send(notification))
+            }
+          }
+        }
+        return Promise.all(allNotificationTasks).catch((error) => {
+          console.error('Error sending notifications: ', error)
+        })
+      }
+      _prevDeviceState = devices
+    })
+  })
+
+const addOrUpdateJob = (id: string, interval: number, job: Task) => {
+  if (scheduler.existsById(id)) {
+    scheduler.removeById(id)
   }
   scheduler.addSimpleIntervalJob(
-    new SimpleIntervalJob({ seconds: interval, runImmediately: true }, createTask(), {
-      id: 'id_1',
+    new SimpleIntervalJob({ seconds: interval, runImmediately: true }, job, {
+      id: id,
       preventOverrun: true,
     })
   )
 }
 
-addOrUpdateJob(influxInterval)
+addOrUpdateJob('influxdb_job', influxInterval, createInfluxDbTask())
+addOrUpdateJob('notifications_job', notificationInterval, createNotificationTask())
 
 // Define the task to check and update the interval
 const watcher = chokidar.watch(settingsFile)
@@ -62,6 +100,12 @@ watcher.on('change', () => {
   const newInterval = newSettings.get('INFLUX_INTERVAL') || 10
 
   if (newInfluxHost && newInfluxToken && newInfluxOrg && newInfluxBucket) {
-    addOrUpdateJob(newInterval)
+    addOrUpdateJob('influxdb_job', newInterval, createInfluxDbTask())
+  }
+
+  const newNotificationProviders = newSettings.get('NOTIFICATION_PROVIDERS')
+  const newNotificationInterval = newSettings.get('NOTIFICATION_INTERVAL') || 10
+  if (newNotificationProviders && newNotificationInterval) {
+    addOrUpdateJob('notifications_job', newNotificationInterval, createNotificationTask())
   }
 })
