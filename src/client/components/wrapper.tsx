@@ -268,7 +268,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
               <div>
                 <p className='text-2xl font-semibold'>
                   {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
-                  &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus]}
+                  &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
                 </p>
               </div>
             </div>
