@@ -2,7 +2,7 @@ import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { Button, Input } from '@material-tailwind/react'
 
@@ -27,7 +27,7 @@ export default function AddInflux({
 }: AddInfluxProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { theme } = useContext(ThemeContext)
+  const { theme } = useTheme()
   const [server, setServer] = useState<string>(initialValues.server)
   const [token, setToken] = useState<string>(initialValues.token)
   const [org, setOrg] = useState<string>(initialValues.org)

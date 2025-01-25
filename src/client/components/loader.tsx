@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useContext } from 'react'
-import { ThemeContext } from '@/client/context/theme'
+import React, { useEffect } from 'react'
+import { useTheme } from 'next-themes'
 
 export default function Loader() {
   const [color, setColor] = React.useState('black')
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     async function getLoader() {
@@ -16,8 +16,8 @@ export default function Loader() {
   }, [])
 
   useEffect(() => {
-    setColor(theme === 'dark' ? 'white' : 'black')
-  }, [theme])
+    setColor(resolvedTheme === 'dark' ? 'white' : 'black')
+  }, [resolvedTheme])
 
   return <l-helix size={100} speed={2.5} color={color} />
 }

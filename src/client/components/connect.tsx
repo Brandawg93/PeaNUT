@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import { Card, Input, Button } from '@material-tailwind/react'
 
 import { LanguageContext } from '@/client/context/language'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import logo from '@/app/icon.svg'
 import { server } from '@/common/types'
 
@@ -26,7 +26,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
   const { t } = useTranslation(lng)
   const router = useRouter()
 
@@ -85,7 +85,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
       className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
       data-testid='login-wrapper'
     >
-      <ToastContainer position='top-center' theme={theme} />
+      <ToastContainer position='top-center' theme={resolvedTheme} />
       <div className='mb-8 flex justify-center'>
         <Image alt='' src={logo} width='100' height='100' className='d-inline-block align-top' />
       </div>
@@ -103,7 +103,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               value={server}
               onChange={(e) => setServer(e.target.value)}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='server'
               crossOrigin=''
             />
@@ -117,7 +117,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               value={port}
               onChange={(e) => setPort(+e.target.value)}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='port'
               min={0}
               max={65535}
@@ -132,7 +132,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='username'
               crossOrigin=''
             />
@@ -159,7 +159,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='password'
               crossOrigin=''
             />

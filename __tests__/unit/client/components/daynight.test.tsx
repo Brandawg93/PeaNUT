@@ -1,7 +1,6 @@
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import DayNightSwitch from '@/client/components/daynight'
-import ThemeProvider from '@/client/context/theme'
 import LanguageProvider from '@/client/context/language'
 
 describe('Daynight', () => {
@@ -9,9 +8,7 @@ describe('Daynight', () => {
   beforeAll(() => {
     component = (
       <LanguageProvider>
-        <ThemeProvider>
-          <DayNightSwitch />
-        </ThemeProvider>
+        <DayNightSwitch />
       </LanguageProvider>
     )
   })

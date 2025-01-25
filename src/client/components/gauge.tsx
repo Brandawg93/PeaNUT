@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Gauge as GaugeChart, gaugeClasses } from '@mui/x-charts/Gauge'
 import { Card } from '@material-tailwind/react'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 
-const getColor = (value: number, theme: 'light' | 'dark', invert = false) => {
+const getColor = (value: number, theme?: string, invert = false) => {
   // value from 0 to 1
   let num = value / 100
   if (invert) {
@@ -22,7 +22,7 @@ type Props = {
 
 export default function Gauge(props: Props) {
   const { percentage, invert, title, onClick } = props
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
 
   return (
     <Card
@@ -46,8 +46,8 @@ export default function Gauge(props: Props) {
               transform: 'translate(0, -15%)',
             },
             [`& .${gaugeClasses.valueArc}`]: {
-              fill: getColor(percentage, theme, invert),
-              stroke: theme === 'light' ? '#fff' : '#000',
+              fill: getColor(percentage, resolvedTheme, invert),
+              stroke: resolvedTheme === 'light' ? '#fff' : '#000',
             },
           }}
         />

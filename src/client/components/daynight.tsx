@@ -1,33 +1,27 @@
-import React, { useContext, useCallback } from 'react'
-import { Menu, MenuHandler, MenuList, MenuItem, IconButton } from '@material-tailwind/react'
+import React, { useContext } from 'react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import { HiOutlineSun, HiOutlineMoon, HiOutlineComputerDesktop } from 'react-icons/hi2'
+import { useTheme } from 'next-themes'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
-import { ThemeContext } from '@/client/context/theme'
 
 const themes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system']
 
 export default function DayNightSwitch() {
   const lng = useContext<string>(LanguageContext)
-  const { theme, preference, setPreference } = useContext(ThemeContext)
   const { t } = useTranslation(lng)
-
-  const updateTheme = useCallback(
-    (newTheme: 'light' | 'dark' | 'system') => {
-      setPreference(newTheme)
-    },
-    [setPreference]
-  )
+  const { resolvedTheme, theme, setTheme } = useTheme()
 
   const handleSelect = (curr: 'light' | 'dark' | 'system') => {
-    updateTheme(curr)
+    setTheme(curr)
   }
 
   const isActive = (value: 'light' | 'dark' | 'system') => {
-    return preference === value ? 'bg-blue-700 text-white' : ''
+    return theme === value ? 'bg-blue-700 focus:bg-blue-700 text-white' : 'focus:bg-gray-300 focus:dark:bg-gray-700'
   }
 
-  const getThemeIcon = (theme: 'light' | 'dark' | 'system') => {
+  const getThemeIcon = (theme?: string) => {
     const iconProps = 'h-6 w-6 stroke-2 dark:text-white'
     switch (theme) {
       case 'light':
@@ -43,27 +37,31 @@ export default function DayNightSwitch() {
 
   return (
     <div data-testid='daynight'>
-      <Menu>
-        <MenuHandler>
-          <IconButton
-            variant='text'
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant='ghost'
             title={t('theme.title')}
-            className='px-3 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
+            className='px-2 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
           >
-            {getThemeIcon(theme)}
-          </IconButton>
-        </MenuHandler>
-        <MenuList className='min-w-0 border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
+            {getThemeIcon(resolvedTheme)}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className='border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
           {themes.map((curr) => (
-            <MenuItem key={curr} className={isActive(curr)} onClick={() => handleSelect(curr)}>
+            <DropdownMenuItem
+              key={curr}
+              className={`cursor-pointer rounded ${isActive(curr)}`.trim()}
+              onClick={() => handleSelect(curr)}
+            >
               <div className='flex'>
                 <div className='pr-2'>{getThemeIcon(curr)}</div>
                 <span className='self-center'>{t(`theme.${curr}`)}</span>
               </div>
-            </MenuItem>
+            </DropdownMenuItem>
           ))}
-        </MenuList>
-      </Menu>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }

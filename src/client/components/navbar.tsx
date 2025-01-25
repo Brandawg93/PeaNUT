@@ -4,7 +4,8 @@ import React, { useState, useContext, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
-import { Navbar, Typography, Select, Option, IconButton } from '@material-tailwind/react'
+import { Navbar, Typography, Select, Option } from '@material-tailwind/react'
+import { Button } from '@/components/ui/button'
 import { HiOutlineCog6Tooth } from 'react-icons/hi2'
 
 import { LanguageContext } from '@/client/context/language'
@@ -103,14 +104,15 @@ export default function NavBar(props: Props) {
             </div>
             &nbsp;
             <div>
-              <IconButton
-                variant='text'
-                className='px-3 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
+              <Button
+                variant='ghost'
+                className='px-2 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
                 title={t('sidebar.settings')}
+                aria-label={t('sidebar.settings')}
                 onClick={() => router.push('/settings')}
               >
                 <HiOutlineCog6Tooth className='h-6 w-6 stroke-2 dark:text-white' />
-              </IconButton>
+              </Button>
             </div>
           </div>
         </div>

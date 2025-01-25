@@ -25,7 +25,7 @@ import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 
 import { LanguageContext } from '@/client/context/language'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import { upsStatus } from '@/common/constants'
 import { DEVICE, DeviceData } from '@/common/types'
 
@@ -71,10 +71,10 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
   const materialTheme = createTheme({
     palette: {
-      mode: theme,
+      mode: resolvedTheme as 'light' | 'dark',
     },
   })
   const { isLoading, data, refetch } = useQuery({

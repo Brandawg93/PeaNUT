@@ -5,7 +5,7 @@ import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
 import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle } from 'react-icons/hi2'
@@ -44,8 +44,7 @@ export default function SettingsWrapper({
   const [influxInterval, setInfluxInterval] = useState<number>(10)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { theme } = useContext(ThemeContext)
-
+  const { resolvedTheme } = useTheme()
   const router = useRouter()
 
   const setSelectedItem = (value: number) => setSelected(value)
@@ -133,7 +132,7 @@ export default function SettingsWrapper({
 
   return (
     <div className='flex flex-1 flex-col pl-3 pr-3' data-testid='settings-wrapper'>
-      <ToastContainer position='top-center' theme={theme} />
+      <ToastContainer position='top-center' theme={resolvedTheme} />
       <div className='flex justify-center'>
         <div className='container'>
           <h1 className='mb-4 text-2xl font-bold'>{t('sidebar.settings')}</h1>

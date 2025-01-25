@@ -23,7 +23,7 @@ import {
 } from '@tanstack/react-table'
 
 import { LanguageContext } from '@/client/context/language'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import { DEVICE } from '@/common/types'
 import { saveVar } from '@/app/actions'
 
@@ -78,7 +78,7 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
 
 export default function NutGrid({ data }: Props) {
   const lng = useContext<string>(LanguageContext)
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
   const { t } = useTranslation(lng)
   const [edit, setEdit] = useState<string>('')
   const [useTreeData, setUseTreeData] = useState<boolean>(false)
@@ -266,7 +266,7 @@ export default function NutGrid({ data }: Props) {
       className='border-neutral-300 w-full overflow-auto border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
       data-testid='grid'
     >
-      <ToastContainer position='top-center' theme={theme} />
+      <ToastContainer position='top-center' theme={resolvedTheme} />
       <table>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

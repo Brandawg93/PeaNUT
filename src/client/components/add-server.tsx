@@ -2,7 +2,7 @@ import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
 import { HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { Button, IconButton, Input } from '@material-tailwind/react'
 
@@ -29,7 +29,7 @@ export default function AddServer({
 }: AddServerProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
   const [server, setServer] = useState<string>(initialServer)
   const [port, setPort] = useState<number>(initialPort)
   const [username, setUsername] = useState<string | undefined>(initialUsername)
@@ -58,7 +58,7 @@ export default function AddServer({
 
   return (
     <div className='mb-4 w-full rounded-lg bg-gray-200 pb-6 pl-6 dark:bg-gray-600'>
-      <ToastContainer position='top-center' theme={theme} />
+      <ToastContainer position='top-center' theme={resolvedTheme} />
       {removable ? (
         <div className='h-12'>
           <IconButton
@@ -87,7 +87,7 @@ export default function AddServer({
                 handleChange(e.target.value, port, username, password)
               }}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='server'
               crossOrigin=''
             />
@@ -104,7 +104,7 @@ export default function AddServer({
                 handleChange(server, +e.target.value, username, password)
               }}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='port'
               min={0}
               max={65535}
@@ -122,7 +122,7 @@ export default function AddServer({
                 handleChange(server, port, e.target.value, password)
               }}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='username'
               crossOrigin=''
             />
@@ -153,7 +153,7 @@ export default function AddServer({
                 handleChange(server, port, username, e.target.value)
               }}
               className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              color={resolvedTheme === 'light' ? 'black' : 'white'}
               data-testid='password'
               crossOrigin=''
             />

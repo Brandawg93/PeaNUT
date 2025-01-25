@@ -26,6 +26,7 @@ export default [
       '.husky',
       '.devcontainer',
       '.gitignore',
+      'src/components/ui/*.tsx',
     ],
   },
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
