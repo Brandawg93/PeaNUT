@@ -106,12 +106,13 @@ export default function NavBar(props: Props) {
             <div>
               <Button
                 variant='ghost'
-                className='px-2 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
+                size='lg'
+                className='px-3'
                 title={t('sidebar.settings')}
                 aria-label={t('sidebar.settings')}
                 onClick={() => router.push('/settings')}
               >
-                <HiOutlineCog6Tooth className='h-6 w-6 stroke-2 dark:text-white' />
+                <HiOutlineCog6Tooth className='!h-6 !w-6 text-black dark:text-white' />
               </Button>
             </div>
           </div>

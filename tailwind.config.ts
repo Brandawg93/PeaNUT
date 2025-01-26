@@ -1,7 +1,11 @@
 import withMT from '@material-tailwind/react/utils/withMT'
 
 export default withMT({
-  content: ['./src/client/**/*.{js,ts,jsx,tsx,mdx}', './src/app/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: [
+    './src/client/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   darkMode: ['selector'],
   theme: {
     extend: {

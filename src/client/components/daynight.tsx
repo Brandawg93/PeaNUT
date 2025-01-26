@@ -18,11 +18,11 @@ export default function DayNightSwitch() {
   }
 
   const isActive = (value: 'light' | 'dark' | 'system') => {
-    return theme === value ? 'bg-blue-700 focus:bg-blue-700 text-white' : 'focus:bg-gray-300 focus:dark:bg-gray-700'
+    return theme === value ? 'bg-secondary' : ''
   }
 
   const getThemeIcon = (theme?: string) => {
-    const iconProps = 'h-6 w-6 stroke-2 dark:text-white'
+    const iconProps = '!h-6 !w-6 text-black dark:text-white'
     switch (theme) {
       case 'light':
         return <HiOutlineSun className={iconProps} />
@@ -36,32 +36,26 @@ export default function DayNightSwitch() {
   }
 
   return (
-    <div data-testid='daynight'>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant='ghost'
-            title={t('theme.title')}
-            className='px-2 text-black shadow-none hover:bg-gray-400 dark:text-white dark:hover:bg-gray-800'
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild data-testid='daynight-trigger'>
+        <Button size='lg' variant='ghost' title={t('theme.title')} className='px-3'>
+          {getThemeIcon(resolvedTheme)}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        {themes.map((curr) => (
+          <DropdownMenuItem
+            key={curr}
+            className={`cursor-pointer ${isActive(curr)}`.trim()}
+            onClick={() => handleSelect(curr)}
           >
-            {getThemeIcon(resolvedTheme)}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className='border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
-          {themes.map((curr) => (
-            <DropdownMenuItem
-              key={curr}
-              className={`cursor-pointer rounded ${isActive(curr)}`.trim()}
-              onClick={() => handleSelect(curr)}
-            >
-              <div className='flex'>
-                <div className='pr-2'>{getThemeIcon(curr)}</div>
-                <span className='self-center'>{t(`theme.${curr}`)}</span>
-              </div>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+            <div className='flex'>
+              <div className='pr-2'>{getThemeIcon(curr)}</div>
+              <span className='self-center'>{t(`theme.${curr}`)}</span>
+            </div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
