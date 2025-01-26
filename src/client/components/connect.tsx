@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { ToastContainer, toast } from 'react-toastify'
-import { Card, Input, Button } from '@material-tailwind/react'
+import { Card } from '@/components/ui/card'
+import { Input, Button } from '@material-tailwind/react'
 
 import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
@@ -92,7 +93,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
       <div>
         <h1 className='mb-4 text-4xl font-bold'>PeaNUT</h1>
       </div>
-      <Card className='border-neutral-300 relative flex flex-row justify-around border border-solid border-gray-300 shadow-md dark:border-gray-800 dark:bg-gray-950'>
+      <Card className='relative flex flex-row justify-around border border-border-card shadow-md'>
         <form className='w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800' onSubmit={handleSubmit}>
           <div className='mb-4'>
             <Input

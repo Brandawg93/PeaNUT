@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from '@material-tailwind/react'
+import { Card } from '@/components/ui/card'
 import { ResponsiveChartContainer, ResponsiveChartContainerProps } from '@mui/x-charts/ResponsiveChartContainer'
 import { ChartsGrid } from '@mui/x-charts/ChartsGrid'
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'
@@ -19,10 +19,7 @@ export default function LineChart(props: ResponsiveChartContainerProps & ChartsL
   const { referenceLineValue, referenceLineLabel, onItemClick, id } = props
 
   return (
-    <Card
-      className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
-      data-testid={id}
-    >
+    <Card className='h-96 w-full border border-border-card p-3 shadow-none' data-testid={id}>
       <ResponsiveChartContainer {...props}>
         <LinePlot />
         <MarkPlot />

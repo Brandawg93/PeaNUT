@@ -52,6 +52,7 @@ export default withMT({
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
+          highlight: 'hsl(var(--secondary-highlight))',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
@@ -65,7 +66,10 @@ export default withMT({
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
-        border: 'hsl(var(--border))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+          card: 'hsl(var(--border-card))',
+        },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         chart: {

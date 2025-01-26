@@ -9,7 +9,7 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineArrowRightStartOnRectangle,
 } from 'react-icons/hi2'
-import { Button } from '@material-tailwind/react'
+import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -121,18 +121,17 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
         className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
         data-testid='wrapper'
       >
-        <div>
-          <HiExclamationCircle className='mb-4 text-8xl text-red-600' />
+        <div className='flex flex-col items-center'>
+          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
           <p>{error}</p>
         </div>
         <div>
           <Button
-            variant='filled'
             title={t('sidebar.disconnect')}
-            className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
+            className='bg-destructive shadow-none'
             onClick={async () => await handleDisconnect()}
           >
-            <HiOutlineArrowRightStartOnRectangle className='h-4 w-4 stroke-2 dark:text-white' />
+            <HiOutlineArrowRightStartOnRectangle className='!h-6 !w-6' />
           </Button>
         </div>
       </div>

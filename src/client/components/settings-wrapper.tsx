@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect, useContext } from 'react'
-import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
+import { Card } from '@/components/ui/card'
+import { Button, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
@@ -142,7 +143,7 @@ export default function SettingsWrapper({
         <div className='container flex flex-col justify-between'>
           <div className='flex flex-row gap-2'>
             <div>
-              <Card className='bg-white dark:bg-gray-800'>
+              <Card className='border-border-card bg-primary-foreground shadow-none'>
                 <List className='min-w-0'>
                   {menuItems.map(({ label, Icon }, index) => (
                     <ListItem
@@ -161,7 +162,7 @@ export default function SettingsWrapper({
                 </List>
               </Card>
             </div>
-            <div className='flex h-full flex-1 flex-col gap-3 overflow-auto rounded-lg bg-white p-3 dark:bg-gray-800'>
+            <div className='flex h-full flex-1 flex-col gap-3 overflow-auto rounded-lg bg-primary-foreground p-3 shadow-none'>
               {settingsLoaded ? (
                 <>
                   {selected === 0 && (

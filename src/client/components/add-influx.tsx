@@ -66,7 +66,7 @@ export default function AddInflux({
   }
 
   return (
-    <div className='mb-4 mt-1 w-full rounded-lg bg-gray-200 pb-6 pl-6 dark:bg-gray-600'>
+    <div className='mb-4 mt-1 w-full rounded-lg bg-secondary pb-6 pl-6'>
       <ToastContainer position='top-center' theme={theme} />
       <div className='pr-6 pt-6'>
         <form className='w-full'>

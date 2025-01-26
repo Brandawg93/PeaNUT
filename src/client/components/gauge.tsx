@@ -1,6 +1,6 @@
 import React from 'react'
 import { Gauge as GaugeChart, gaugeClasses } from '@mui/x-charts/Gauge'
-import { Card } from '@material-tailwind/react'
+import { Card } from '@/components/ui/card'
 import { useTheme } from 'next-themes'
 
 const getColor = (value: number, theme?: string, invert = false) => {
@@ -28,7 +28,7 @@ export default function Gauge(props: Props) {
     <Card
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 text-center shadow-none dark:border-gray-800 dark:bg-gray-950'
+      className='relative flex h-52 flex-row justify-around border border-border-card text-center shadow-none'
       data-testid='gauge'
     >
       <div className='motion-safe:animate-fade'>

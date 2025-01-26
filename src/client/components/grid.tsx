@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useState, useMemo, useContext } from 'react'
-import { Card, Typography, Button, IconButton, Tooltip, ButtonGroup } from '@material-tailwind/react'
+import { Button, IconButton, ButtonGroup } from '@material-tailwind/react'
+import { Card } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useTranslation } from 'react-i18next'
 import {
   HiOutlineCheckCircle,
@@ -166,20 +168,23 @@ export default function NutGrid({ data }: Props) {
                   )}
                 </div>
               )}
-              <Typography
-                className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} mb-0 inline font-normal dark:text-white`}
+              <span
+                className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} mb-0 inline font-normal text-primary`}
               >
                 {getValue()}
-              </Typography>
+              </span>
             </button>
             {row.original.description && (
-              <Tooltip
-                className='border border-gray-400 bg-gray-300 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
-                content={<Typography>{row.original.description}</Typography>}
-                placement='right'
-              >
-                <HiOutlineInformationCircle className='mt-1 inline h-4 w-4' />
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className='flex flex-col justify-center'>
+                    <HiOutlineInformationCircle className='h-4 w-4 text-muted-foreground' />
+                  </TooltipTrigger>
+                  <TooltipContent side='right' className='border bg-primary-foreground text-sm text-muted-foreground'>
+                    <span>{row.original.description}</span>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         )
@@ -190,19 +195,15 @@ export default function NutGrid({ data }: Props) {
             {useTreeData && (
               <div className='flex h-[28px] flex-col justify-center'>
                 {table.getIsAllRowsExpanded() ? (
-                  <HiOutlineChevronDown className='h-4 w-4 dark:text-white' />
+                  <HiOutlineChevronDown className='h-4 w-4 text-primary' />
                 ) : (
-                  <HiOutlineChevronRight className='h-4 w-4 dark:text-white' />
+                  <HiOutlineChevronRight className='h-4 w-4 text-primary' />
                 )}
               </div>
             )}
-            <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t('grid.key')}</Typography>
+            <span className='mb-0 text-lg font-semibold text-primary'>{t('grid.key')}</span>
           </button>
-          <IconButton
-            onClick={() => setUseTreeData(!useTreeData)}
-            variant='text'
-            className='shadow-none dark:text-gray-100'
-          >
+          <IconButton onClick={() => setUseTreeData(!useTreeData)} variant='text' className='text-primary shadow-none'>
             <HiOutlineArrowUturnDown className={`${useTreeData ? '-rotate-90' : 'rotate-0'} h-4 w-4`} />
           </IconButton>
         </div>
@@ -214,11 +215,9 @@ export default function NutGrid({ data }: Props) {
         edit === (useTreeData ? row.original.originalKey : row.original.key) ? (
           editInput(row.getValue('key'), getValue().toString())
         ) : (
-          <Typography className='mb-0 font-normal dark:text-white'>{getValue() || ' '}</Typography>
+          <span className='mb-0 font-normal text-primary'>{getValue() || ' '}</span>
         ),
-      header: () => (
-        <Typography className='mb-0 text-lg font-semibold text-black dark:text-white'>{t('grid.value')}</Typography>
-      ),
+      header: () => <span className='mb-0 text-lg font-semibold text-primary'>{t('grid.value')}</span>,
     }),
     columnHelper.display({
       id: 'actions',
@@ -226,7 +225,7 @@ export default function NutGrid({ data }: Props) {
         const key = useTreeData ? row.original.originalKey || '' : row.original.key
         const isRW = data.rwVars?.includes(key)
         return isRW ? (
-          <Typography className='mb-0 font-normal dark:text-white'>
+          <span className='mb-0 font-normal text-primary'>
             <IconButton
               disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
               onClick={() => handleEdit(useTreeData ? row.original.originalKey || '' : row.original.key)}
@@ -235,7 +234,7 @@ export default function NutGrid({ data }: Props) {
             >
               <HiOutlinePencilSquare className='h-4 w-4 text-gray-800 dark:text-gray-100' />
             </IconButton>
-          </Typography>
+          </span>
         ) : null
       },
     }),
@@ -262,19 +261,16 @@ export default function NutGrid({ data }: Props) {
   const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
 
   return (
-    <Card
-      className='border-neutral-300 w-full overflow-auto border border-solid border-gray-300 shadow-none dark:border-gray-800 dark:bg-gray-950'
-      data-testid='grid'
-    >
+    <Card className='w-full overflow-auto border border-border-card shadow-none' data-testid='grid'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
-      <table>
+      <table className='w-full table-auto'>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`bg-gray-400 p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b border-gray-300 dark:border-gray-600 dark:bg-gray-700`}
+                  className={`bg-gray-400 p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b dark:bg-gray-700`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
@@ -287,7 +283,7 @@ export default function NutGrid({ data }: Props) {
             <tr key={row.id} aria-rowindex={index}>
               {row.getVisibleCells().map((cell) => (
                 <td
-                  className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t border-gray-300 p-3 dark:border-gray-800`}
+                  className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t p-3`}
                   key={cell.id}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

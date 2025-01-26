@@ -24,7 +24,7 @@ export default function LanguageSwitcher() {
   }
 
   const isActive = (value: string) => {
-    return i18next.language === value ? 'bg-secondary' : ''
+    return i18next.language === value ? '!bg-secondary-highlight' : ''
   }
 
   return (

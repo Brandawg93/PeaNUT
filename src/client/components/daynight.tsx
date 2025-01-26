@@ -18,7 +18,7 @@ export default function DayNightSwitch() {
   }
 
   const isActive = (value: 'light' | 'dark' | 'system') => {
-    return theme === value ? 'bg-secondary' : ''
+    return theme === value ? '!bg-secondary-highlight' : ''
   }
 
   const getThemeIcon = (theme?: string) => {

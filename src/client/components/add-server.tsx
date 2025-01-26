@@ -57,7 +57,7 @@ export default function AddServer({
   }
 
   return (
-    <div className='mb-4 w-full rounded-lg bg-gray-200 pb-6 pl-6 dark:bg-gray-600'>
+    <div className='mb-4 w-full rounded-lg bg-secondary pb-6 pl-6'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
       {removable ? (
         <div className='h-12'>
