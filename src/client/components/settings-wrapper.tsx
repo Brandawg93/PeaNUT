@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useContext } from 'react'
-import { Card } from '@/components/ui/card'
+import { Card } from '@/client/components/ui/card'
 import { Button, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'

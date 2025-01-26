@@ -1,6 +1,6 @@
 import React from 'react'
 import { Gauge as GaugeChart, gaugeClasses } from '@mui/x-charts/Gauge'
-import { Card } from '@/components/ui/card'
+import { Card } from '@/client/components/ui/card'
 import { useTheme } from 'next-themes'
 
 const getColor = (value: number, theme?: string, invert = false) => {

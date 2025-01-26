@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { ToastContainer, toast } from 'react-toastify'
-import { Card } from '@/components/ui/card'
+import { Card } from '@/client/components/ui/card'
 import { Input, Button } from '@material-tailwind/react'
 
 import { LanguageContext } from '@/client/context/language'

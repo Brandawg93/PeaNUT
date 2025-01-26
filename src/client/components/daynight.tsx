@@ -1,6 +1,11 @@
 import React, { useContext } from 'react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/client/components/ui/dropdown-menu'
+import { Button } from '@/client/components/ui/button'
 import { HiOutlineSun, HiOutlineMoon, HiOutlineComputerDesktop } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { useTranslation } from 'react-i18next'

@@ -1,7 +1,12 @@
 import { HiOutlineLanguage } from 'react-icons/hi2'
 import React, { useContext } from 'react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/client/components/ui/dropdown-menu'
+import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import i18next from 'i18next'
 import { LanguageContext } from '@/client/context/language'

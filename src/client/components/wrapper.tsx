@@ -9,7 +9,7 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineArrowRightStartOnRectangle,
 } from 'react-icons/hi2'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { ThemeProvider, createTheme } from '@mui/material/styles'

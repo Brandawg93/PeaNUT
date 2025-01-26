@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from '@/components/ui/card'
+import { Card } from '@/client/components/ui/card'
 import { ResponsiveChartContainer, ResponsiveChartContainerProps } from '@mui/x-charts/ResponsiveChartContainer'
 import { ChartsGrid } from '@mui/x-charts/ChartsGrid'
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'

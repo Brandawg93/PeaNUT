@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState, useMemo, useContext } from 'react'
-import { Button, IconButton, ButtonGroup } from '@material-tailwind/react'
-import { Card } from '@/components/ui/card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { IconButton, ButtonGroup } from '@material-tailwind/react'
+import { Card } from '@/client/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/client/components/ui/tooltip'
+import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import {
   HiOutlineCheckCircle,
@@ -135,10 +136,10 @@ export default function NutGrid({ data }: Props) {
         defaultValue={value}
       />
       <ButtonGroup size='sm' variant='text' className='divide-none'>
-        <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='text'>
+        <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='ghost'>
           <HiOutlineCheckCircle className='h-6 w-6 text-green-500' />
         </Button>
-        <Button className='px-2' variant='text' onClick={handleClose}>
+        <Button className='px-2' variant='ghost' onClick={handleClose}>
           <HiOutlineXCircle className='h-6 w-6 text-red-500' />
         </Button>
       </ButtonGroup>
@@ -177,8 +178,10 @@ export default function NutGrid({ data }: Props) {
             {row.original.description && (
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger className='flex flex-col justify-center'>
-                    <HiOutlineInformationCircle className='h-4 w-4 text-muted-foreground' />
+                  <TooltipTrigger className='flex flex-col justify-center' asChild>
+                    <Button variant='ghost' size='icon'>
+                      <HiOutlineInformationCircle className='h-4 w-4 text-muted-foreground' />
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent side='right' className='border bg-primary-foreground text-sm text-muted-foreground'>
                     <span>{row.original.description}</span>

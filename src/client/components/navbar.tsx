@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { Navbar, Typography, Select, Option } from '@material-tailwind/react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/client/components/ui/button'
 import { HiOutlineCog6Tooth } from 'react-icons/hi2'
 
 import { LanguageContext } from '@/client/context/language'
