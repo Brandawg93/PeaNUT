@@ -146,8 +146,8 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
         className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
         data-testid='wrapper'
       >
-        <div>
-          <HiExclamationCircle className='mb-4 text-8xl text-red-600' />
+        <div className='flex flex-col items-center'>
+          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
           <p>{t('noDevicesError')}</p>
         </div>
       </div>
