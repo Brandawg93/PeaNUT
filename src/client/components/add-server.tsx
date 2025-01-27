@@ -4,7 +4,10 @@ import { ToastContainer, toast } from 'react-toastify'
 import { HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
-import { Button, IconButton, Input } from '@material-tailwind/react'
+import { Button } from '@/client/components/ui/button'
+import { Input } from '@/client/components/ui/input'
+import { Label } from '@/client/components/ui/label'
+import { Card } from '@/client/components/ui/card'
 
 type AddServerProps = {
   initialServer: string
@@ -57,18 +60,18 @@ export default function AddServer({
   }
 
   return (
-    <div className='mb-4 w-full rounded-lg bg-secondary pb-6 pl-6'>
+    <Card className='mb-4 w-full border border-border bg-card pb-6 pl-6'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
       {removable ? (
         <div className='h-12'>
-          <IconButton
-            variant='text'
+          <Button
+            variant='ghost'
             className='text-md float-right px-3 text-black shadow-none dark:text-white'
             title={t('settings.remove')}
             onClick={handleRemove}
           >
             <HiOutlineXMark className='h-6 w-6 stroke-1 dark:text-white' />
-          </IconButton>
+          </Button>
         </div>
       ) : (
         <div className='pt-6' />
@@ -76,94 +79,88 @@ export default function AddServer({
       <div className='pr-6'>
         <form className='w-full'>
           <div className='mb-4'>
+            <Label htmlFor='serverHost'>{t('connect.server')}</Label>
             <Input
               required
               type='text'
-              variant='outlined'
-              label={t('connect.server')}
+              id='serverHost'
               value={server}
               onChange={(e) => {
                 setServer(e.target.value)
                 handleChange(e.target.value, port, username, password)
               }}
-              className='w-full px-3 py-2'
-              color={resolvedTheme === 'light' ? 'black' : 'white'}
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='server'
-              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
+            <Label htmlFor='serverPort'>{t('connect.port')}</Label>
             <Input
               required
               type='number'
-              variant='outlined'
-              label={t('connect.port')}
+              id='serverPort'
               value={port}
               onChange={(e) => {
                 setPort(+e.target.value)
                 handleChange(server, +e.target.value, username, password)
               }}
-              className='w-full px-3 py-2'
-              color={resolvedTheme === 'light' ? 'black' : 'white'}
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='port'
               min={0}
               max={65535}
-              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
+            <Label htmlFor='username'>{t('connect.username')}</Label>
             <Input
               type='text'
-              variant='outlined'
-              label={t('connect.username')}
+              id='username'
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value)
                 handleChange(server, port, e.target.value, password)
               }}
-              className='w-full px-3 py-2'
-              color={resolvedTheme === 'light' ? 'black' : 'white'}
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='username'
-              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              icon={
-                <Button
-                  data-testid='toggle-password'
-                  ripple={false}
-                  onClick={toggleShowPassword}
-                  className='relative overflow-hidden p-0'
-                  variant='text'
-                >
-                  {showPassword ? (
-                    <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
-                  ) : (
-                    <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
-                  )}
-                </Button>
-              }
-              variant='outlined'
-              label={t('connect.password')}
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                handleChange(server, port, username, e.target.value)
-              }}
-              className='w-full px-3 py-2'
-              color={resolvedTheme === 'light' ? 'black' : 'white'}
-              data-testid='password'
-              crossOrigin=''
-            />
+            <Label htmlFor='password'>{t('connect.password')}</Label>
+            <div className='flex'>
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                id='password'
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  handleChange(server, port, username, e.target.value)
+                }}
+                className='z-10 rounded-r-none border-r-0 border-border-card bg-background px-3 py-2 focus:rounded focus:border-r'
+                data-testid='password'
+              />
+              <Button
+                size='icon'
+                data-testid='toggle-password'
+                onClick={toggleShowPassword}
+                className='relative overflow-hidden rounded-l-none border border-l-0 border-border-card bg-background p-0'
+                variant='ghost'
+                type='button'
+              >
+                {showPassword ? (
+                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
+                ) : (
+                  <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
+                )}
+              </Button>
+            </div>
           </div>
           <div className='flex flex-row justify-between'>
             <div />
             <Button
+              variant='destructive'
               disabled={connecting}
               onClick={async () => handleTestConnection()}
-              className='bg-red-500 font-bold text-white shadow-none hover:bg-red-700'
+              className='font-bold shadow-none'
               type='button'
             >
               {t('connect.test')}
@@ -171,6 +168,6 @@ export default function AddServer({
           </div>
         </form>
       </div>
-    </div>
+    </Card>
   )
 }

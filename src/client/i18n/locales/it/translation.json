@@ -60,5 +60,6 @@
     "title": "Tema"
   },
   "serverNotFound": "Host non trovato. \nControlla le tue impostazioni.",
-  "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?"
+  "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?",
+  "selectDevice": "Seleziona un dispositivo"
 }

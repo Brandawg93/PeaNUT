@@ -98,7 +98,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
   const loadingWrapper = (
     <div
-      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
       data-testid='loading-wrapper'
     >
       <Loader />
@@ -118,7 +118,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
         data-testid='wrapper'
       >
         <div className='flex flex-col items-center'>
@@ -143,7 +143,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   if (data.devices.length === 0) {
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
         data-testid='wrapper'
       >
         <div>
@@ -226,10 +226,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   return (
     <ThemeProvider theme={materialTheme}>
       <CssBaseline />
-      <div
-        className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
-        data-testid='wrapper'
-      >
+      <div data-testid='wrapper' className='bg-background'>
         <NavBar
           disableRefresh={isLoading}
           onRefreshClick={() => refetch()}

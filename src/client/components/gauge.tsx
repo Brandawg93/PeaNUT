@@ -28,7 +28,7 @@ export default function Gauge(props: Props) {
     <Card
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='relative flex h-52 flex-row justify-around border border-border-card text-center shadow-none'
+      className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
       data-testid='gauge'
     >
       <div className='motion-safe:animate-fade'>
@@ -47,7 +47,7 @@ export default function Gauge(props: Props) {
             },
             [`& .${gaugeClasses.valueArc}`]: {
               fill: getColor(percentage, resolvedTheme, invert),
-              stroke: resolvedTheme === 'light' ? '#fff' : '#000',
+              stroke: 'hsl(var(--primary-foreground))',
             },
           }}
         />

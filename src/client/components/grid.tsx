@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useContext } from 'react'
 import { IconButton, ButtonGroup } from '@material-tailwind/react'
 import { Card } from '@/client/components/ui/card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/client/components/ui/tooltip'
+import { Popover, PopoverContent, PopoverTrigger } from '@/client/components/ui/popover'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import {
@@ -176,18 +176,19 @@ export default function NutGrid({ data }: Props) {
               </span>
             </button>
             {row.original.description && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger className='flex flex-col justify-center' asChild>
-                    <Button variant='ghost' size='icon'>
-                      <HiOutlineInformationCircle className='h-4 w-4 text-muted-foreground' />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side='right' className='border bg-primary-foreground text-sm text-muted-foreground'>
-                    <span>{row.original.description}</span>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Popover>
+                <PopoverTrigger asChild className='flex flex-col justify-center'>
+                  <Button variant='ghost' size='icon' className='hover:bg-transparent'>
+                    <HiOutlineInformationCircle className='h-4 w-4 text-muted-foreground' />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side='right'
+                  className='border border-border-card bg-muted text-sm text-muted-foreground'
+                >
+                  <span>{row.original.description}</span>
+                </PopoverContent>
+              </Popover>
             )}
           </div>
         )
@@ -264,7 +265,7 @@ export default function NutGrid({ data }: Props) {
   const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
 
   return (
-    <Card className='w-full overflow-auto border border-border-card shadow-none' data-testid='grid'>
+    <Card className='w-full overflow-auto border border-border-card bg-card shadow-none' data-testid='grid'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
       <table className='w-full table-auto'>
         <thead>
@@ -273,7 +274,7 @@ export default function NutGrid({ data }: Props) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`bg-gray-400 p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b dark:bg-gray-700`}
+                  className={`p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b border-border-card bg-muted`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>

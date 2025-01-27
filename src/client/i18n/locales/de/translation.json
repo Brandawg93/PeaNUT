@@ -60,5 +60,6 @@
     "title": "Thema"
   },
   "serverNotFound": "Host nicht gefunden. \nÜberprüfen Sie Ihre Einstellungen.",
-  "serverRefused": "Verbindung abgelehnt. \nLäuft der NUT-Server?"
+  "serverRefused": "Verbindung abgelehnt. \nLäuft der NUT-Server?",
+  "selectDevice": "Wählen Sie ein Gerät aus"
 }

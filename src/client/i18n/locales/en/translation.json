@@ -60,5 +60,6 @@
     "title": "Theme"
   },
   "serverNotFound": "Host not found. Check your settings.",
-  "serverRefused": "Connection refused. Is NUT server running?"
+  "serverRefused": "Connection refused. Is NUT server running?",
+  "selectDevice": "Select a device"
 }

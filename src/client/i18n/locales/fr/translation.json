@@ -60,5 +60,6 @@
     "title": "Thème"
   },
   "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
-  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?"
+  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
+  "selectDevice": "Sélectionnez un appareil"
 }

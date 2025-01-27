@@ -60,5 +60,6 @@
     "title": "Tema"
   },
   "serverNotFound": "Anfitrión no encontrado. \nVerifique su configuración.",
-  "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?"
+  "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?",
+  "selectDevice": "Seleccione un dispositivo"
 }

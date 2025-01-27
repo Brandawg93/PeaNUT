@@ -45,7 +45,7 @@ export default function Kpi(props: Props) {
     <Card
       onClick={onClickHandler}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='relative flex h-52 flex-row justify-around border border-border-card text-center shadow-none'
+      className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
       data-testid='kpi'
     >
       <div

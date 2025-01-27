@@ -60,5 +60,6 @@
     "title": "Temă"
   },
   "serverNotFound": "Gazda nu a fost găsită. \nVerificați setările dvs.",
-  "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?"
+  "serverRefused": "Conexiune refuzată. \nFuncționează serverul NUT?",
+  "selectDevice": "Selectați un dispozitiv"
 }

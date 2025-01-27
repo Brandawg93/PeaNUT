@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useContext } from 'react'
 import { Card } from '@/client/components/ui/card'
-import { Button, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
+import { List, ListItem, ListItemPrefix } from '@material-tailwind/react'
+import { Button } from '@/client/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
@@ -143,7 +144,7 @@ export default function SettingsWrapper({
         <div className='container flex flex-col justify-between'>
           <div className='flex flex-row gap-2'>
             <div>
-              <Card className='border-border-card bg-primary-foreground shadow-none'>
+              <Card className='border-border bg-card shadow-none'>
                 <List className='min-w-0'>
                   {menuItems.map(({ label, Icon }, index) => (
                     <ListItem
@@ -162,7 +163,7 @@ export default function SettingsWrapper({
                 </List>
               </Card>
             </div>
-            <div className='flex h-full flex-1 flex-col gap-3 overflow-auto rounded-lg bg-primary-foreground p-3 shadow-none'>
+            <Card className='flex h-full flex-1 flex-col gap-3 overflow-auto border border-border bg-primary-foreground p-3 shadow-none'>
               {settingsLoaded ? (
                 <>
                   {selected === 0 && (
@@ -186,12 +187,12 @@ export default function SettingsWrapper({
                         ))}
                         <div className='text-center'>
                           <Button
-                            variant='filled'
+                            variant='secondary'
                             title={t('settings.addServer')}
-                            className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
+                            className='shadow-none'
                             onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
                           >
-                            <HiOutlinePlus className='h-6 w-6 dark:text-white' />
+                            <HiOutlinePlus className='!h-6 !w-6 stroke-2' />
                           </Button>
                         </div>
                       </div>
@@ -253,7 +254,7 @@ export default function SettingsWrapper({
               ) : (
                 skeleton
               )}
-            </div>
+            </Card>
           </div>
           <Footer />
         </div>

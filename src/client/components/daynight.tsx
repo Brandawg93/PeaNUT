@@ -27,7 +27,7 @@ export default function DayNightSwitch() {
   }
 
   const getThemeIcon = (theme?: string) => {
-    const iconProps = '!h-6 !w-6 text-black dark:text-white'
+    const iconProps = '!h-6 !w-6'
     switch (theme) {
       case 'light':
         return <HiOutlineSun className={iconProps} />
