@@ -117,9 +117,9 @@ export default function SettingsWrapper({
 
   const skeleton = (
     <div className='flex flex-col gap-3'>
-      <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
-      <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
-      <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
+      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
+      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
+      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
     </div>
   )
 
@@ -195,7 +195,7 @@ export default function SettingsWrapper({
               <Card className='p-4 shadow-none'>
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                  <span className='text-sm text-gray-500'>
+                  <span className='text-sm text-muted-foreground'>
                     <HiOutlineInformationCircle className='inline-block h-4 w-4' />
                     {t('settings.influxNotice')}
                   </span>
@@ -240,7 +240,11 @@ export default function SettingsWrapper({
           </Tabs>
         </div>
       </div>
-      <Footer />
+      <div className='flex justify-center'>
+        <div className='container'>
+          <Footer />
+        </div>
+      </div>
     </div>
   )
 }

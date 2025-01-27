@@ -112,9 +112,9 @@ export default function AddInflux({
                 type='button'
               >
                 {showPassword ? (
-                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
+                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1' />
                 ) : (
-                  <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
+                  <HiOutlineEye className='h-6 w-6 stroke-1' />
                 )}
               </Button>
             </div>

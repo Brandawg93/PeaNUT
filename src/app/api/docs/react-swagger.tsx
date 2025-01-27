@@ -5,7 +5,7 @@ import LanguageSwitcher from '@/client/components/language-switcher'
 import NavBar from '@/client/components/navbar'
 import { Button } from '@/client/components/ui/button'
 import { t } from 'i18next'
-import router from 'next/router'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import { HiOutlineCog6Tooth } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
@@ -18,6 +18,7 @@ type Props = {
 
 function ReactSwagger({ spec }: Props) {
   const { resolvedTheme } = useTheme()
+  const router = useRouter()
   const swaggerTheme = resolvedTheme === 'dark' ? 'invert-[0.98] hue-rotate-180' : 'invert-0 hue-rotate-0'
   return (
     <>

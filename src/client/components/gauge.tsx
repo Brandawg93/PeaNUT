@@ -52,7 +52,7 @@ export default function Gauge(props: Props) {
           }}
         />
       </div>
-      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] motion-safe:animate-fade dark:text-[#999999]'>
+      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
         {title}
       </div>
     </Card>

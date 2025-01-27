@@ -66,11 +66,11 @@ export default function AddServer({
         <div className='h-12'>
           <Button
             variant='ghost'
-            className='text-md float-right px-3 text-black shadow-none dark:text-white'
+            className='text-md float-right px-3 shadow-none'
             title={t('settings.remove')}
             onClick={handleRemove}
           >
-            <HiOutlineXMark className='h-6 w-6 stroke-1 dark:text-white' />
+            <HiOutlineXMark className='h-6 w-6 stroke-1' />
           </Button>
         </div>
       ) : (
@@ -147,9 +147,9 @@ export default function AddServer({
                 type='button'
               >
                 {showPassword ? (
-                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
+                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1' />
                 ) : (
-                  <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
+                  <HiOutlineEye className='h-6 w-6 stroke-1' />
                 )}
               </Button>
             </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useContext } from 'react'
 import { Card } from '@/client/components/ui/card'
+import { Input } from '@/client/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/client/components/ui/popover'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
@@ -129,9 +130,9 @@ export default function NutGrid({ data }: Props) {
 
   const editInput = (key: string, value: string) => (
     <div className='flex'>
-      <input
+      <Input
         type={Number.isNaN(+value) ? 'text' : 'number'}
-        className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
+        className='w-full flex-grow rounded border bg-transparent pl-2'
         defaultValue={value}
       />
       <div className='flex'>

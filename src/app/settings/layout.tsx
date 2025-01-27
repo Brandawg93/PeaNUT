@@ -39,7 +39,7 @@ export default function SettingsLayout({
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='!h-6 !w-6 text-black dark:text-white' />
+            <HiOutlineCog6Tooth className='!h-6 !w-6' />
           </Button>
         </div>
       </NavBar>
