@@ -60,7 +60,7 @@ export default function AddServer({
   }
 
   return (
-    <Card className='mb-4 w-full border border-border bg-card pb-6 pl-6'>
+    <Card className='mb-4 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
       {removable ? (
         <div className='h-12'>
