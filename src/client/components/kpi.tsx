@@ -45,12 +45,12 @@ export default function Kpi(props: Props) {
     <Card
       onClick={onClickHandler}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='border-border-card bg-card relative flex h-52 flex-row justify-around border text-center shadow-none'
+      className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
       data-testid='kpi'
     >
       <div
         style={{ width: 'calc(100% - 30px' }}
-        className='motion-safe:animate-fade flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold text-black dark:text-white'
+        className='flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold text-black motion-safe:animate-fade dark:text-white'
       >
         <div className='inline-block' ref={containerRef}>
           <div ref={spanRef} style={{ transform: `scale(${scale})` }} className='inline-block'>
@@ -58,7 +58,7 @@ export default function Kpi(props: Props) {
           </div>
         </div>
       </div>
-      <div className='motion-safe:animate-fade absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] dark:text-[#999999]'>
+      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] motion-safe:animate-fade dark:text-[#999999]'>
         {description}
       </div>
     </Card>

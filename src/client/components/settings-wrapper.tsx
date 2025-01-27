@@ -129,7 +129,7 @@ export default function SettingsWrapper({
   ]
 
   return (
-    <div className='flex flex-1 flex-col pr-3 pl-3' data-testid='settings-wrapper'>
+    <div className='flex flex-1 flex-col pl-3 pr-3' data-testid='settings-wrapper'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
       <div className='flex justify-center'>
         <div className='container'>
@@ -143,7 +143,7 @@ export default function SettingsWrapper({
               {menuItems.map(({ label, Icon, value }, index) => (
                 <TabsTrigger key={index} value={value} className='w-full justify-start'>
                   <div className='mr-0 lg:mr-4'>
-                    <Icon className='h-6! w-6!' />
+                    <Icon className='!h-6 !w-6' />
                   </div>
                   <span className='hidden lg:block'>{label}</span>
                 </TabsTrigger>
@@ -176,7 +176,7 @@ export default function SettingsWrapper({
                         className='shadow-none'
                         onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
                       >
-                        <HiOutlinePlus className='h-6! w-6! stroke-2' />
+                        <HiOutlinePlus className='!h-6 !w-6 stroke-2' />
                       </Button>
                     </div>
                   </div>

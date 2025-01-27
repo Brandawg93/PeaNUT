@@ -60,7 +60,7 @@ export default function AddServer({
   }
 
   return (
-    <Card className='border-border bg-card mb-4 w-full border pb-6 pl-6 shadow-none'>
+    <Card className='mb-4 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
       <ToastContainer position='top-center' theme={resolvedTheme} />
       {removable ? (
         <div className='h-12'>
@@ -89,7 +89,7 @@ export default function AddServer({
                 setServer(e.target.value)
                 handleChange(e.target.value, port, username, password)
               }}
-              className='border-border-card bg-background w-full px-3 py-2'
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='server'
             />
           </div>
@@ -104,7 +104,7 @@ export default function AddServer({
                 setPort(+e.target.value)
                 handleChange(server, +e.target.value, username, password)
               }}
-              className='border-border-card bg-background w-full px-3 py-2'
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='port'
               min={0}
               max={65535}
@@ -120,7 +120,7 @@ export default function AddServer({
                 setUsername(e.target.value)
                 handleChange(server, port, e.target.value, password)
               }}
-              className='border-border-card bg-background w-full px-3 py-2'
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='username'
             />
           </div>
@@ -135,14 +135,14 @@ export default function AddServer({
                   setPassword(e.target.value)
                   handleChange(server, port, username, e.target.value)
                 }}
-                className='border-border-card bg-background z-10 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
+                className='z-10 rounded-r-none border-r-0 border-border-card bg-background px-3 py-2 focus:rounded focus:border-r'
                 data-testid='password'
               />
               <Button
                 size='icon'
                 data-testid='toggle-password'
                 onClick={toggleShowPassword}
-                className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
+                className='relative overflow-hidden rounded-l-none border border-l-0 border-border-card bg-background p-0'
                 variant='ghost'
                 type='button'
               >

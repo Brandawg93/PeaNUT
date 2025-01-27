@@ -69,9 +69,9 @@ export default function AddInflux({
   }
 
   return (
-    <Card className='border-border bg-card mt-1 mb-4 w-full border pb-6 pl-6 shadow-none'>
+    <Card className='mb-4 mt-1 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
       <ToastContainer position='top-center' theme={theme} />
-      <div className='pt-6 pr-6'>
+      <div className='pr-6 pt-6'>
         <form className='w-full'>
           <div className='mb-4'>
             <Label htmlFor='influxHost'>{t('connect.server')}</Label>
@@ -84,7 +84,7 @@ export default function AddInflux({
                 setServer(e.target.value)
                 handleChange(e.target.value, token, org, bucket, interval)
               }}
-              className='border-border-card bg-background w-full px-3 py-2'
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='server'
             />
           </div>
@@ -100,14 +100,14 @@ export default function AddInflux({
                   setToken(e.target.value)
                   handleChange(server, e.target.value, org, bucket, interval)
                 }}
-                className='border-border-card bg-background z-10 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
+                className='z-10 rounded-r-none border-r-0 border-border-card bg-background px-3 py-2 focus:rounded focus:border-r'
                 data-testid='token'
               />
               <Button
                 size='icon'
                 data-testid='show-password'
                 onClick={toggleShowPassword}
-                className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
+                className='relative overflow-hidden rounded-l-none border border-l-0 border-border-card bg-background p-0'
                 variant='ghost'
                 type='button'
               >
@@ -145,7 +145,7 @@ export default function AddInflux({
                 setBucket(e.target.value)
                 handleChange(server, token, org, e.target.value, interval)
               }}
-              className='border-border-card bg-background w-full px-3 py-2'
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='bucket'
             />
           </div>
@@ -159,7 +159,7 @@ export default function AddInflux({
                 setInterval(+e.target.value)
                 handleChange(server, token, org, bucket, +e.target.value)
               }}
-              className='border-border-card bg-background w-full px-3 py-2'
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='interval'
             />
           </div>

@@ -35,7 +35,7 @@ export default function Footer({ updated }: Props) {
 
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link
-      className='no-underline-text text-muted-foreground m-0 text-sm'
+      className='no-underline-text m-0 text-sm text-muted-foreground'
       href={updateAvailable.url}
       target='_blank'
       rel='noreferrer'
@@ -52,13 +52,13 @@ export default function Footer({ updated }: Props) {
     <div>
       <div className='grid grid-flow-row grid-cols-2' data-testid='footer'>
         <div />
-        <div className='text-muted-foreground mt-6 text-right'>
-          <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+        <div className='mt-6 text-right text-muted-foreground'>
+          <Link className='text-sm text-muted-foreground underline' href='/api/docs' target='_blank' rel='noreferrer'>
             {t('docs')}
           </Link>
         </div>
       </div>
-      <div className='text-muted-foreground mb-3 grid grid-flow-row grid-cols-2'>
+      <div className='mb-3 grid grid-flow-row grid-cols-2 text-muted-foreground'>
         <div>
           {updated ? (
             <p className='m-0 text-sm no-underline'>
@@ -70,7 +70,7 @@ export default function Footer({ updated }: Props) {
         </div>
         <div className='text-right'>
           <Link
-            className='text-muted-foreground m-0 text-sm no-underline'
+            className='m-0 text-sm text-muted-foreground no-underline'
             href={currentVersion.url}
             target='_blank'
             rel='noreferrer'

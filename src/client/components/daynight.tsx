@@ -23,11 +23,11 @@ export default function DayNightSwitch() {
   }
 
   const isActive = (value: 'light' | 'dark' | 'system') => {
-    return theme === value ? 'bg-secondary-highlight!' : ''
+    return theme === value ? '!bg-secondary-highlight' : ''
   }
 
   const getThemeIcon = (theme?: string) => {
-    const iconProps = 'h-6! w-6!'
+    const iconProps = '!h-6 !w-6'
     switch (theme) {
       case 'light':
         return <HiOutlineSun className={iconProps} />

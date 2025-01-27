@@ -22,10 +22,10 @@ export default function SettingsLayout({
   const router = useRouter()
 
   return (
-    <div className='bg-background flex h-full min-h-screen flex-col' data-testid='wrapper'>
+    <div className='flex h-full min-h-screen flex-col bg-background' data-testid='wrapper'>
       <div className='flex justify-center'>
         <div className='container mt-2'>
-          <div className='border-border bg-card sticky top-0 z-10 mb-4 h-max max-w-full rounded-lg border px-4 py-2 lg:px-8 lg:py-4'>
+          <div className='sticky top-0 z-10 mb-4 h-max max-w-full rounded-lg border border-border bg-card px-4 py-2 lg:px-8 lg:py-4'>
             <div className='flex items-center justify-between'>
               <Link
                 href='/'
@@ -52,7 +52,7 @@ export default function SettingsLayout({
                     aria-label={t('sidebar.settings')}
                     onClick={() => router.push('/settings')}
                   >
-                    <HiOutlineCog6Tooth className='h-6! w-6! text-black dark:text-white' />
+                    <HiOutlineCog6Tooth className='!h-6 !w-6 text-black dark:text-white' />
                   </Button>
                 </div>
               </div>
