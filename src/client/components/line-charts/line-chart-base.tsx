@@ -19,7 +19,7 @@ export default function LineChart(props: ResponsiveChartContainerProps & ChartsL
   const { referenceLineValue, referenceLineLabel, onItemClick, id } = props
 
   return (
-    <Card className='h-96 w-full border border-border-card bg-card p-3 shadow-none' data-testid={id}>
+    <Card className='border-border-card bg-card h-96 w-full border p-3 shadow-none' data-testid={id}>
       <ResponsiveChartContainer {...props}>
         <LinePlot />
         <MarkPlot />

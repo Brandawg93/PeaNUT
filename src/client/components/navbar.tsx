@@ -51,9 +51,9 @@ export default function NavBar(props: Props) {
 
   return (
     <div className='flex justify-center'>
-      <div className='container z-10 mb-4 mt-2'>
+      <div className='z-10 container mt-2 mb-4'>
         <div
-          className='h-max max-w-full rounded-lg border border-border bg-card px-4 py-2 lg:px-8 lg:py-4'
+          className='border-border bg-card h-max max-w-full rounded-lg border px-4 py-2 lg:px-8 lg:py-4'
           data-testid='navbar'
         >
           <div className='flex items-center justify-between'>
@@ -68,7 +68,7 @@ export default function NavBar(props: Props) {
               <div>
                 {devices.length > 1 ? (
                   <Select onValueChange={handleSelect} value={device.name}>
-                    <SelectTrigger className='w-48 border-border-card'>
+                    <SelectTrigger className='border-border-card w-48'>
                       <SelectValue placeholder={t('selectDevice')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -108,7 +108,7 @@ export default function NavBar(props: Props) {
                   aria-label={t('sidebar.settings')}
                   onClick={() => router.push('/settings')}
                 >
-                  <HiOutlineCog6Tooth className='!h-6 !w-6 text-black dark:text-white' />
+                  <HiOutlineCog6Tooth className='h-6! w-6! text-black dark:text-white' />
                 </Button>
               </div>
             </div>

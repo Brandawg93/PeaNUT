@@ -84,7 +84,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
 
   return (
     <div
-      className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
+      className='bg-background absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center text-center'
       data-testid='login-wrapper'
     >
       <ToastContainer position='top-center' theme={resolvedTheme} />
@@ -94,8 +94,8 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
       <div>
         <h1 className='mb-4 text-4xl font-bold'>PeaNUT</h1>
       </div>
-      <Card className='relative flex flex-row justify-around overflow-hidden border border-border bg-card shadow-md'>
-        <form className='w-full max-w-sm bg-card p-6' onSubmit={handleSubmit}>
+      <Card className='border-border bg-card relative flex flex-row justify-around overflow-hidden border shadow-md'>
+        <form className='bg-card w-full max-w-sm p-6' onSubmit={handleSubmit}>
           <div className='mb-4'>
             <Label htmlFor='serverHost'>{t('connect.server')}</Label>
             <Input
@@ -104,7 +104,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               id='serverHost'
               value={server}
               onChange={(e) => setServer(e.target.value)}
-              className='w-full border-border-card bg-background px-3 py-2'
+              className='border-border-card bg-background w-full px-3 py-2'
               data-testid='server'
             />
           </div>
@@ -116,7 +116,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               id='serverPort'
               value={port}
               onChange={(e) => setPort(+e.target.value)}
-              className='w-full border-border-card bg-background px-3 py-2'
+              className='border-border-card bg-background w-full px-3 py-2'
               data-testid='port'
               min={0}
               max={65535}
@@ -129,7 +129,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
               id='username'
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className='w-full border-border-card bg-background px-3 py-2'
+              className='border-border-card bg-background w-full px-3 py-2'
               data-testid='username'
             />
           </div>
@@ -141,14 +141,14 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
                 id='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className='z-10 rounded-r-none border-r-0 border-border-card bg-background px-3 py-2 focus:rounded focus:border-r'
+                className='border-border-card bg-background z-10 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
                 data-testid='password'
               />
               <Button
                 size='icon'
                 data-testid='toggle-password'
                 onClick={toggleShowPassword}
-                className='relative overflow-hidden rounded-l-none border border-l-0 border-border-card bg-background p-0'
+                className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
                 variant='ghost'
                 type='button'
               >

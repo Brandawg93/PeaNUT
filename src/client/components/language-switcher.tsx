@@ -29,18 +29,18 @@ export default function LanguageSwitcher() {
   }
 
   const isActive = (value: string) => {
-    return i18next.language === value ? '!bg-secondary-highlight' : ''
+    return i18next.language === value ? 'bg-secondary-highlight!' : ''
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild data-testid='language-trigger'>
         <Button size='lg' variant='ghost' title={t('sidebar.language')} className='px-3'>
-          <HiOutlineLanguage className='!h-6 !w-6 text-black dark:text-white' />
+          <HiOutlineLanguage className='h-6! w-6! text-black dark:text-white' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <ul className='grid grid-cols-2 gap-1 outline-none outline-0'>
+        <ul className='grid grid-cols-2 gap-1 outline-hidden outline-0'>
           {languages.map((language) => (
             <DropdownMenuItem
               key={language.value}

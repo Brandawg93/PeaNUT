@@ -28,7 +28,7 @@ export default function Gauge(props: Props) {
     <Card
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
+      className='border-border-card bg-card relative flex h-52 flex-row justify-around border text-center shadow-none'
       data-testid='gauge'
     >
       <div className='motion-safe:animate-fade'>
@@ -52,7 +52,7 @@ export default function Gauge(props: Props) {
           }}
         />
       </div>
-      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] motion-safe:animate-fade dark:text-[#999999]'>
+      <div className='motion-safe:animate-fade absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] dark:text-[#999999]'>
         {title}
       </div>
     </Card>
