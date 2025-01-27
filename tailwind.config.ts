@@ -1,6 +1,4 @@
-import withMT from '@material-tailwind/react/utils/withMT'
-
-export default withMT({
+export default {
   content: [
     './src/client/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -93,4 +91,4 @@ export default withMT({
   },
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [require('tailwindcss-animate')],
-})
+}

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useMemo, useContext } from 'react'
-import { IconButton, ButtonGroup } from '@material-tailwind/react'
 import { Card } from '@/client/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/client/components/ui/popover'
 import { Button } from '@/client/components/ui/button'
@@ -135,14 +134,14 @@ export default function NutGrid({ data }: Props) {
         className='w-full flex-grow rounded border border-gray-300 bg-transparent pl-2 text-gray-800 dark:border-gray-800 dark:text-gray-100'
         defaultValue={value}
       />
-      <ButtonGroup size='sm' variant='text' className='divide-none'>
-        <Button className='px-2' onClick={async () => await handleSave(key, value)} variant='ghost'>
-          <HiOutlineCheckCircle className='h-6 w-6 text-green-500' />
+      <div className='flex'>
+        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
+          <HiOutlineCheckCircle className='!h-6 !w-6 text-green-500' />
         </Button>
-        <Button className='px-2' variant='ghost' onClick={handleClose}>
-          <HiOutlineXCircle className='h-6 w-6 text-red-500' />
+        <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
+          <HiOutlineXCircle className='!h-6 !w-6 text-red-500' />
         </Button>
-      </ButtonGroup>
+      </div>
     </div>
   )
 
@@ -207,9 +206,9 @@ export default function NutGrid({ data }: Props) {
             )}
             <span className='mb-0 text-lg font-semibold text-primary'>{t('grid.key')}</span>
           </button>
-          <IconButton onClick={() => setUseTreeData(!useTreeData)} variant='text' className='text-primary shadow-none'>
+          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='text-primary shadow-none'>
             <HiOutlineArrowUturnDown className={`${useTreeData ? '-rotate-90' : 'rotate-0'} h-4 w-4`} />
-          </IconButton>
+          </Button>
         </div>
       ),
     }),
@@ -230,14 +229,14 @@ export default function NutGrid({ data }: Props) {
         const isRW = data.rwVars?.includes(key)
         return isRW ? (
           <span className='mb-0 font-normal text-primary'>
-            <IconButton
+            <Button
               disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
               onClick={() => handleEdit(useTreeData ? row.original.originalKey || '' : row.original.key)}
-              variant='filled'
-              className='bg-gray-100 shadow-none dark:border-gray-500 dark:bg-gray-800 dark:text-gray-100'
+              variant='secondary'
+              className='shadow-none'
             >
-              <HiOutlinePencilSquare className='h-4 w-4 text-gray-800 dark:text-gray-100' />
-            </IconButton>
+              <HiOutlinePencilSquare className='!h-4 !w-4' />
+            </Button>
           </span>
         ) : null
       },

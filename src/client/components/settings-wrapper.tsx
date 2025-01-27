@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useContext } from 'react'
 import { Card } from '@/client/components/ui/card'
-import { List, ListItem, ListItemPrefix } from '@material-tailwind/react'
 import { Button } from '@/client/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { ToastContainer, toast } from 'react-toastify'
@@ -36,7 +36,6 @@ export default function SettingsWrapper({
   testConnectionAction,
   testInfluxConnectionAction,
 }: SettingsWrapperProps) {
-  const [selected, setSelected] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [serverList, setServerList] = useState<Array<server>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
@@ -48,9 +47,6 @@ export default function SettingsWrapper({
   const { t } = useTranslation(lng)
   const { resolvedTheme } = useTheme()
   const router = useRouter()
-
-  const setSelectedItem = (value: number) => setSelected(value)
-  const selectedStyle = { color: 'black', fill: 'black' }
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
@@ -128,8 +124,8 @@ export default function SettingsWrapper({
   )
 
   const menuItems = [
-    { label: t('settings.manageServers'), Icon: HiOutlineServerStack },
-    { label: t('settings.influxDb'), Icon: SiInfluxdb },
+    { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
+    { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
   ]
 
   return (
@@ -141,124 +137,110 @@ export default function SettingsWrapper({
         </div>
       </div>
       <div className='flex flex-1 justify-center'>
-        <div className='container flex flex-col justify-between'>
-          <div className='flex flex-row gap-2'>
-            <div>
-              <Card className='border-border bg-card shadow-none'>
-                <List className='min-w-0'>
-                  {menuItems.map(({ label, Icon }, index) => (
-                    <ListItem
-                      key={index}
-                      selected={selected === index}
-                      onClick={() => setSelectedItem(index)}
-                      className='active: text-black hover:text-black dark:text-white'
-                      style={selected === index ? selectedStyle : {}}
-                    >
-                      <ListItemPrefix className='mr-0 lg:mr-4'>
-                        <Icon className='h-6 w-6' style={selected === index ? { color: 'black' } : {}} />
-                      </ListItemPrefix>
-                      <span className='hidden lg:block'>{label}</span>
-                    </ListItem>
-                  ))}
-                </List>
-              </Card>
-            </div>
-            <Card className='flex h-full flex-1 flex-col gap-3 overflow-auto border border-border bg-primary-foreground p-3 shadow-none'>
+        <div className='container'>
+          <Tabs defaultValue='servers' className='flex h-full gap-4'>
+            <TabsList className='flex h-min flex-col gap-4'>
+              {menuItems.map(({ label, Icon, value }, index) => (
+                <TabsTrigger key={index} value={value} className='w-full justify-start'>
+                  <div className='mr-0 lg:mr-4'>
+                    <Icon className='!h-6 !w-6' />
+                  </div>
+                  <span className='hidden lg:block'>{label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value='servers' className='mt-0 h-full flex-1'>
               {settingsLoaded ? (
-                <>
-                  {selected === 0 && (
-                    <div className='flex h-full flex-col justify-between'>
-                      <div className='container'>
-                        <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
-                        {serverList.map((server, index) => (
-                          <AddServer
-                            removable={serverList.length > 1}
-                            key={index}
-                            initialServer={server.HOST}
-                            initialPort={server.PORT}
-                            initialUsername={server.USERNAME}
-                            initialPassword={server.PASSWORD}
-                            handleChange={(server, port, username, password) =>
-                              handleServerChange(server, port, username, password, index)
-                            }
-                            handleRemove={() => handleServerRemove(index)}
-                            testConnectionAction={testConnectionAction}
-                          />
-                        ))}
-                        <div className='text-center'>
-                          <Button
-                            variant='secondary'
-                            title={t('settings.addServer')}
-                            className='shadow-none'
-                            onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
-                          >
-                            <HiOutlinePlus className='!h-6 !w-6 stroke-2' />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className='flex flex-row justify-between'>
-                        <div />
-                        <Button onClick={handleSaveServers} className='shadow-none'>
-                          {t('settings.apply')}
-                        </Button>
-                      </div>
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    {serverList.map((server, index) => (
+                      <AddServer
+                        removable={serverList.length > 1}
+                        key={index}
+                        initialServer={server.HOST}
+                        initialPort={server.PORT}
+                        initialUsername={server.USERNAME}
+                        initialPassword={server.PASSWORD}
+                        handleChange={(server, port, username, password) =>
+                          handleServerChange(server, port, username, password, index)
+                        }
+                        handleRemove={() => handleServerRemove(index)}
+                        testConnectionAction={testConnectionAction}
+                      />
+                    ))}
+                    <div className='text-center'>
+                      <Button
+                        variant='secondary'
+                        title={t('settings.addServer')}
+                        className='shadow-none'
+                        onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
+                      >
+                        <HiOutlinePlus className='!h-6 !w-6 stroke-2' />
+                      </Button>
                     </div>
-                  )}
-                  {selected === 1 && (
-                    <div className='flex h-full flex-col justify-between'>
-                      <div className='container'>
-                        <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                        <span className='text-sm text-gray-500'>
-                          <HiOutlineInformationCircle className='inline-block h-4 w-4' />
-                          {t('settings.influxNotice')}
-                        </span>
-                        <AddInflux
-                          initialValues={{
-                            server: influxServer,
-                            token: influxToken,
-                            org: influxOrg,
-                            bucket: influxBucket,
-                            interval: influxInterval,
-                          }}
-                          handleChange={(server, token, org, bucket, interval) => {
-                            setInfluxServer(server)
-                            setInfluxToken(token)
-                            setInfluxOrg(org)
-                            setInfluxBucket(bucket)
-                            setInfluxInterval(interval)
-                          }}
-                          handleClear={() => {
-                            setInfluxServer('')
-                            setInfluxToken('')
-                            setInfluxOrg('')
-                            setInfluxBucket('')
-                            setInfluxInterval(10)
-                            deleteSettingsAction('INFLUX_HOST')
-                            deleteSettingsAction('INFLUX_TOKEN')
-                            deleteSettingsAction('INFLUX_ORG')
-                            deleteSettingsAction('INFLUX_BUCKET')
-                            setSettingsAction('INFLUX_INTERVAL', 10)
-                          }}
-                          testInfluxConnectionAction={testInfluxConnectionAction}
-                        />
-                      </div>
-                      <div className='flex flex-row justify-between'>
-                        <div />
-                        <Button onClick={handleSaveInflux} className='shadow-none'>
-                          {t('settings.apply')}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </>
+                  </div>
+                  <div className='flex flex-row justify-between'>
+                    <div />
+                    <Button onClick={handleSaveServers} className='shadow-none'>
+                      {t('settings.apply')}
+                    </Button>
+                  </div>
+                </Card>
               ) : (
                 skeleton
               )}
-            </Card>
-          </div>
-          <Footer />
+            </TabsContent>
+            <TabsContent value='influx' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
+                  <span className='text-sm text-gray-500'>
+                    <HiOutlineInformationCircle className='inline-block h-4 w-4' />
+                    {t('settings.influxNotice')}
+                  </span>
+                  <AddInflux
+                    initialValues={{
+                      server: influxServer,
+                      token: influxToken,
+                      org: influxOrg,
+                      bucket: influxBucket,
+                      interval: influxInterval,
+                    }}
+                    handleChange={(server, token, org, bucket, interval) => {
+                      setInfluxServer(server)
+                      setInfluxToken(token)
+                      setInfluxOrg(org)
+                      setInfluxBucket(bucket)
+                      setInfluxInterval(interval)
+                    }}
+                    handleClear={() => {
+                      setInfluxServer('')
+                      setInfluxToken('')
+                      setInfluxOrg('')
+                      setInfluxBucket('')
+                      setInfluxInterval(10)
+                      deleteSettingsAction('INFLUX_HOST')
+                      deleteSettingsAction('INFLUX_TOKEN')
+                      deleteSettingsAction('INFLUX_ORG')
+                      deleteSettingsAction('INFLUX_BUCKET')
+                      setSettingsAction('INFLUX_INTERVAL', 10)
+                    }}
+                    testInfluxConnectionAction={testInfluxConnectionAction}
+                  />
+                </div>
+                <div className='flex flex-row justify-between'>
+                  <div />
+                  <Button onClick={handleSaveInflux} className='shadow-none'>
+                    {t('settings.apply')}
+                  </Button>
+                </div>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
