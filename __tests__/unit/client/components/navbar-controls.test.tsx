@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import NavBar from '@/client/components/navbar'
+import NavBarControls from '@/client/components/navbar-controls'
 
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -32,7 +32,7 @@ const devices = [
 describe('NavBar', () => {
   it.skip('renders', () => {
     render(
-      <NavBar
+      <NavBarControls
         devices={devices}
         onRefreshClick={() => {}}
         onRefetch={() => {}}

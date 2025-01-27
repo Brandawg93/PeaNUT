@@ -19,6 +19,7 @@ import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
 import NavBar from '@/client/components/navbar'
+import NavBarControls from '@/client/components/navbar-controls'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
@@ -227,16 +228,18 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     <ThemeProvider theme={materialTheme}>
       <CssBaseline />
       <div data-testid='wrapper' className='bg-background'>
-        <NavBar
-          disableRefresh={isLoading}
-          onRefreshClick={() => refetch()}
-          onRefetch={() => refetch()}
-          onDeviceChange={(name: string) =>
-            data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
-          }
-          onDisconnect={handleDisconnect}
-          devices={data.devices}
-        />
+        <NavBar>
+          <NavBarControls
+            disableRefresh={isLoading}
+            onRefreshClick={() => refetch()}
+            onRefetch={() => refetch()}
+            onDeviceChange={(name: string) =>
+              data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
+            }
+            onDisconnect={handleDisconnect}
+            devices={data.devices}
+          />
+        </NavBar>
         <div className='flex justify-center pl-3 pr-3'>
           <div className='container'>
             <div className='mb-4 flex flex-row justify-between'>
