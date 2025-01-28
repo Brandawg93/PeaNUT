@@ -107,6 +107,16 @@ export async function setSettings<K extends keyof SettingsType>(key: K, value: S
   settings.set(key, value)
 }
 
+export async function exportSettings(): Promise<string> {
+  const settings = new YamlSettings(settingsFile)
+  return settings.export()
+}
+
+export async function importSettings(settings: string): Promise<void> {
+  const yamlSettings = new YamlSettings(settingsFile)
+  yamlSettings.import(settings)
+}
+
 export async function updateServers(servers: Array<server>) {
   const settings = new YamlSettings(settingsFile)
 
