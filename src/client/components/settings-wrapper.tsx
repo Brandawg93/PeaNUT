@@ -270,11 +270,11 @@ export default function SettingsWrapper({
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
                   <span>{t('settings.configExportNotice')}</span>
-                  <Accordion type='single' collapsible className='w-full'>
-                    <AccordionItem value='item-1'>
+                  <Accordion type='single' collapsible className='mb-2 w-full'>
+                    <AccordionItem value='item-1' className='w-full'>
                       <AccordionTrigger>{t('settings.viewConfig')}</AccordionTrigger>
                       <AccordionContent>
-                        <div className='mb-2 border border-gray-400 dark:border-gray-600'>
+                        <div className='mb-2 overflow-hidden rounded-lg border border-border-card'>
                           <CodeMirror
                             theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
                             value={config}
