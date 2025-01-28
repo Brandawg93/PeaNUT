@@ -1,6 +1,6 @@
 import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'sonner'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
@@ -46,7 +46,7 @@ export default function AddInflux({
       startTransition(async () => {
         const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
         toast.promise(promise, {
-          pending: t('connect.testing'),
+          loading: t('connect.testing'),
           success: t('connect.success'),
           error: t('connect.error'),
         })
@@ -70,7 +70,7 @@ export default function AddInflux({
 
   return (
     <Card className='mb-4 mt-1 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
-      <ToastContainer position='top-center' theme={theme} />
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='pr-6 pt-6'>
         <form className='w-full'>
           <div className='mb-4'>

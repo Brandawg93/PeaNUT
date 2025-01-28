@@ -36,7 +36,12 @@
     "influxInterval": "Influx Interval (s)",
     "addServer": "Adăugare server",
     "apply": "Aplică",
-    "saved": "Modificările au fost salvate"
+    "saved": "Modificările au fost salvate",
+    "configExport": "Configurare YAML",
+    "configExportNotice": "Editați manual fișierul de configurare YAML.",
+    "save": "Salva",
+    "download": "Descărcați",
+    "viewConfig": "Faceți clic pentru a vizualiza configurația."
   },
   "connect": {
     "server": "Adresa serverului",

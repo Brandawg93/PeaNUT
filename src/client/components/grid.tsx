@@ -15,7 +15,7 @@ import {
   HiOutlineChevronDown,
   HiOutlineArrowUturnDown,
 } from 'react-icons/hi2'
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'sonner'
 import {
   createColumnHelper,
   flexRender,
@@ -81,7 +81,7 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
 
 export default function NutGrid({ data }: Props) {
   const lng = useContext<string>(LanguageContext)
-  const { resolvedTheme } = useTheme()
+  const { theme } = useTheme()
   const { t } = useTranslation(lng)
   const [edit, setEdit] = useState<string>('')
   const [useTreeData, setUseTreeData] = useState<boolean>(false)
@@ -266,7 +266,7 @@ export default function NutGrid({ data }: Props) {
 
   return (
     <Card className='w-full overflow-auto border border-border-card bg-card shadow-none' data-testid='grid'>
-      <ToastContainer position='top-center' theme={resolvedTheme} />
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <table className='w-full table-auto'>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
