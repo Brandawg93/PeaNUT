@@ -40,7 +40,8 @@
     "configExport": "Configuration YAML",
     "configExportNotice": "Modifiez manuellement le fichier de configuration YAML.",
     "save": "Sauvegarder",
-    "download": "Télécharger"
+    "download": "Télécharger",
+    "viewConfig": "Cliquez pour afficher la configuration."
   },
   "connect": {
     "server": "Serveur",

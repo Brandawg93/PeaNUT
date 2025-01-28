@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/client/components/ui/accordion'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
@@ -269,14 +270,21 @@ export default function SettingsWrapper({
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
                   <span>{t('settings.configExportNotice')}</span>
-                  <div className='mb-2 border border-gray-400 dark:border-gray-600'>
-                    <CodeMirror
-                      theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
-                      value={config}
-                      extensions={[yaml()]}
-                      onChange={handleCodeChange}
-                    />
-                  </div>
+                  <Accordion type='single' collapsible className='w-full'>
+                    <AccordionItem value='item-1'>
+                      <AccordionTrigger>{t('settings.viewConfig')}</AccordionTrigger>
+                      <AccordionContent>
+                        <div className='mb-2 border border-gray-400 dark:border-gray-600'>
+                          <CodeMirror
+                            theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
+                            value={config}
+                            extensions={[yaml()]}
+                            onChange={handleCodeChange}
+                          />
+                        </div>{' '}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                   <div className='flex flex-row'>
                     <Button onClick={handleSettingsImport} className='flex shadow-none'>
                       <AiOutlineSave className='h-4 w-4' />
