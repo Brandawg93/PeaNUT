@@ -37,7 +37,7 @@ export default function Refresh(props: Props) {
   }
 
   return (
-    <>
+    <div className='flex'>
       <Button
         variant='secondary'
         title={t('sidebar.refresh')}
@@ -71,6 +71,6 @@ export default function Refresh(props: Props) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-    </>
+    </div>
   )
 }

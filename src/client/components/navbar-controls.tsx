@@ -46,7 +46,7 @@ export default function NavBarControls(props: Props) {
   }
 
   return (
-    <>
+    <div className='flex items-center justify-between space-x-2 pl-2 sm:justify-end'>
       <div>
         {devices.length > 1 ? (
           <Select onValueChange={handleSelect} value={device.name}>
@@ -63,36 +63,34 @@ export default function NavBarControls(props: Props) {
           </Select>
         ) : null}
       </div>
-      &nbsp;
-      <div>
-        <Refresh
-          disabled={disableRefresh}
-          onClick={onRefreshClick}
-          onRefreshChange={(interval) => setRefreshInterval(interval)}
-          refreshInterval={refreshInterval}
-        />
+      <div className='flex items-center space-x-2'>
+        <div>
+          <Refresh
+            disabled={disableRefresh}
+            onClick={onRefreshClick}
+            onRefreshChange={(interval) => setRefreshInterval(interval)}
+            refreshInterval={refreshInterval}
+          />
+        </div>
+        <div className='hidden sm:block'>
+          <DayNightSwitch />
+        </div>
+        <div className='hidden sm:block'>
+          <LanguageSwitcher />
+        </div>
+        <div>
+          <Button
+            variant='ghost'
+            size='lg'
+            className='px-3'
+            title={t('sidebar.settings')}
+            aria-label={t('sidebar.settings')}
+            onClick={() => router.push('/settings')}
+          >
+            <HiOutlineCog6Tooth className='!h-6 !w-6' />
+          </Button>
+        </div>
       </div>
-      &nbsp;
-      <div className='hidden sm:block'>
-        <DayNightSwitch />
-      </div>
-      &nbsp;
-      <div className='hidden sm:block'>
-        <LanguageSwitcher />
-      </div>
-      &nbsp;
-      <div>
-        <Button
-          variant='ghost'
-          size='lg'
-          className='px-3'
-          title={t('sidebar.settings')}
-          aria-label={t('sidebar.settings')}
-          onClick={() => router.push('/settings')}
-        >
-          <HiOutlineCog6Tooth className='!h-6 !w-6' />
-        </Button>
-      </div>
-    </>
+    </div>
   )
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import AddInflux from '@/client/components/add-influx'
 import { LanguageContext } from '@/client/context/language'
-import { ToastContainer } from 'react-toastify'
+import { Toaster } from 'sonner'
 
 const mockHandleChange = jest.fn()
 const mockTestConnectionAction = jest.fn()
@@ -19,7 +19,7 @@ const initialValues = {
 const renderComponent = (lng = 'en') => {
   return render(
     <LanguageContext.Provider value={lng}>
-      <ToastContainer />
+      <Toaster />
       <AddInflux
         initialValues={initialValues}
         handleChange={mockHandleChange}
@@ -99,7 +99,7 @@ describe('AddInflux Component', () => {
         initialValues.interval
       )
     )
-    await waitFor(() => expect(screen.getByText('connect.success')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getAllByText('connect.success').length).toBeGreaterThan(0))
   })
 
   test('displays error toast message on test connection failure', async () => {

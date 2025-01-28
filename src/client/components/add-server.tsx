@@ -1,6 +1,6 @@
 import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'sonner'
 import { HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
@@ -32,7 +32,7 @@ export default function AddServer({
 }: AddServerProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { resolvedTheme } = useTheme()
+  const { theme } = useTheme()
   const [server, setServer] = useState<string>(initialServer)
   const [port, setPort] = useState<number>(initialPort)
   const [username, setUsername] = useState<string | undefined>(initialUsername)
@@ -46,7 +46,7 @@ export default function AddServer({
       startTransition(async () => {
         const promise = testConnectionAction(server, port)
         toast.promise(promise, {
-          pending: t('connect.testing'),
+          loading: t('connect.testing'),
           success: t('connect.success'),
           error: t('connect.error'),
         })
@@ -61,7 +61,7 @@ export default function AddServer({
 
   return (
     <Card className='mb-4 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
-      <ToastContainer position='top-center' theme={resolvedTheme} />
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       {removable ? (
         <div className='h-12'>
           <Button

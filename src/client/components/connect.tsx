@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'sonner'
 import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Input } from '@/client/components/ui/input'
@@ -28,7 +28,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
-  const { resolvedTheme } = useTheme()
+  const { theme } = useTheme()
   const { t } = useTranslation(lng)
   const router = useRouter()
 
@@ -53,18 +53,14 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
       setConnecting(true)
       const promise = testConnectionAction(server, port)
       toast.promise(promise, {
-        pending: t('connect.testing'),
-        success: {
-          render() {
-            setConnecting(false)
-            return t('connect.success')
-          },
+        loading: t('connect.testing'),
+        success: () => {
+          setConnecting(false)
+          return t('connect.success')
         },
-        error: {
-          render() {
-            setConnecting(false)
-            return t('connect.error')
-          },
+        error: () => {
+          setConnecting(false)
+          return t('connect.error')
         },
       })
     }
@@ -87,7 +83,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
       className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
       data-testid='login-wrapper'
     >
-      <ToastContainer position='top-center' theme={resolvedTheme} />
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='mb-8 flex justify-center'>
         <Image alt='' src={logo} width='100' height='100' className='d-inline-block align-top' />
       </div>

@@ -36,7 +36,12 @@
     "influxInterval": "Influx Interval (s)",
     "addServer": "Agregar Servidor",
     "apply": "Aplicar",
-    "saved": "Cambios guardados"
+    "saved": "Cambios guardados",
+    "configExport": "Configuración YAML",
+    "configExportNotice": "Edite manualmente el archivo de configuración YAML.",
+    "save": "Ahorrar",
+    "download": "Descargar",
+    "viewConfig": "Haga clic para ver la configuración."
   },
   "connect": {
     "server": "Servidor",
