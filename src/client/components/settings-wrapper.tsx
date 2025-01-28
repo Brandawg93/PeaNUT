@@ -166,14 +166,18 @@ export default function SettingsWrapper({
       </div>
       <div className='flex flex-1 justify-center'>
         <div className='container'>
-          <Tabs defaultValue='servers' className='flex h-full gap-4' onValueChange={handleSettingsMenuChange}>
-            <TabsList className='flex h-min flex-col gap-2'>
+          <Tabs
+            defaultValue='servers'
+            className='flex h-full flex-col gap-4 md:flex-row'
+            onValueChange={handleSettingsMenuChange}
+          >
+            <TabsList className='flex h-min flex-col gap-2 sm:flex-row md:flex-col'>
               {menuItems.map(({ label, Icon, value }, index) => (
                 <TabsTrigger key={index} value={value} className='w-full justify-start'>
-                  <div className='mr-0 lg:mr-4'>
+                  <div className='mr-4'>
                     <Icon className='!h-6 !w-6' />
                   </div>
-                  <span className='hidden lg:block'>{label}</span>
+                  <span>{label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -281,7 +285,7 @@ export default function SettingsWrapper({
                             extensions={[yaml()]}
                             onChange={handleCodeChange}
                           />
-                        </div>{' '}
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
