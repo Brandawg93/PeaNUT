@@ -59,6 +59,7 @@
     "react-i18next": "^15.4.0",
     "react-icons": "^5.4.0",
     "react-toastify": "^11.0.2",
+    "recharts": "^2.15.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "toad-scheduler": "^3.0.1"
