@@ -22,27 +22,19 @@ export default function SettingsLayout({
   return (
     <div className='flex h-full min-h-screen flex-col bg-background' data-testid='wrapper'>
       <NavBar>
-        <div className='flex justify-end'>
-          <div className='hidden sm:block'>
-            <DayNightSwitch />
-          </div>
-          &nbsp;
-          <div className='hidden sm:block'>
-            <LanguageSwitcher />
-          </div>
-          &nbsp;
-          <div>
-            <Button
-              variant='ghost'
-              size='lg'
-              className='px-3'
-              title={t('sidebar.settings')}
-              aria-label={t('sidebar.settings')}
-              onClick={() => router.push('/settings')}
-            >
-              <HiOutlineCog6Tooth className='!h-6 !w-6' />
-            </Button>
-          </div>
+        <div className='flex justify-end space-x-2'>
+          <DayNightSwitch />
+          <LanguageSwitcher />
+          <Button
+            variant='ghost'
+            size='lg'
+            className='px-3'
+            title={t('sidebar.settings')}
+            aria-label={t('sidebar.settings')}
+            onClick={() => router.push('/settings')}
+          >
+            <HiOutlineCog6Tooth className='!h-6 !w-6 text-black dark:text-white' />
+          </Button>
         </div>
       </NavBar>
       {children}
