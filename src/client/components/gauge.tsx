@@ -79,25 +79,6 @@ export default function Gauge(props: Props) {
               </Pie>
             </PieChart>
           </ChartContainer>
-          {/* <GaugeChart
-          width={225}
-          height={175}
-          value={percentage}
-          startAngle={-90}
-          endAngle={90}
-          text={({ value }) => `${value}%`}
-          sx={{
-            [`& .${gaugeClasses.valueText}`]: {
-              fontSize: 45,
-              fontFamily: 'sans-serif',
-              transform: 'translate(0, -15%)',
-            },
-            [`& .${gaugeClasses.valueArc}`]: {
-              fill: getColor(percentage, resolvedTheme, invert),
-              stroke: 'hsl(var(--primary-foreground))',
-            },
-          }}
-        /> */}
         </div>
       </CardContent>
       <CardFooter className='w-full justify-center text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
