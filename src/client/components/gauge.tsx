@@ -3,6 +3,7 @@ import { ChartConfig, ChartContainer } from '@/client/components/ui/chart'
 import { Label, Pie, PieChart } from 'recharts'
 import { Card, CardContent, CardFooter } from '@/client/components/ui/card'
 import { useTheme } from 'next-themes'
+import './gauge.css'
 
 const getColor = (value: number, theme?: string, invert = false) => {
   // value from 0 to 1
@@ -40,7 +41,7 @@ export default function Gauge(props: Props) {
     <Card
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='h-52 min-w-56 overflow-hidden border border-border-card bg-card shadow-none'
+      className='h-52 min-w-56 cursor-pointer overflow-hidden border border-border-card bg-card shadow-none'
       data-testid='gauge'
     >
       <CardContent className='h-44 !p-0'>
