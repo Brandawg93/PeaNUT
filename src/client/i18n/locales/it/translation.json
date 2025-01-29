@@ -73,10 +73,26 @@
     "cancel": "Cancellare",
     "continue": "Continuare",
     "started": "Test della batteria è iniziato",
-    "loading": "Caricamento..."
+    "loading": "Caricamento...",
+    "titleQuick": "Eseguire il test della batteria rapida",
+    "titleDeep": "Esegui test profondi",
+    "descriptionQuick": "Vorresti eseguire un rapido test della batteria sull'UPS?",
+    "descriptionDeep": "Vorresti eseguire un profondo test della batteria sull'UPS?",
+    "titleDeepDeep": "Eseguire il test della batteria profonda"
   },
   "actions": {
     "performTest": "Esegui test",
-    "title": "Azioni"
+    "title": "Azioni",
+    "performTestQuick": "Esegui test rapidi",
+    "performTestDeep": "Esegui test profondi",
+    "restart": "Ricomincia",
+    "shutdown": "Fermare"
+  },
+  "shutdown": {
+    "started": "L'arresto è iniziato",
+    "titleRestart": "Eseguire il riavvio",
+    "descriptionRestart": "Vorresti riavviare l'UPS?",
+    "titleOff": "Eseguire l'arresto",
+    "descriptionOff": "Vorresti spegnere l'UPS?"
   }
 }

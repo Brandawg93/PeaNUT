@@ -73,10 +73,26 @@
     "cancel": "Anula",
     "continue": "Continua",
     "started": "A început testul bateriei",
-    "loading": "Încărcare..."
+    "loading": "Încărcare...",
+    "titleQuick": "Efectuați testul rapid al bateriei",
+    "titleDeep": "Rulează test profund",
+    "descriptionQuick": "Doriți să efectuați un test rapid al bateriei pe UPS?",
+    "descriptionDeep": "Doriți să efectuați un test profund al bateriei pe UPS?",
+    "titleDeepDeep": "Efectuați testul profund al bateriei"
   },
   "actions": {
     "performTest": "Rulează testul",
-    "title": "Acțiuni"
+    "title": "Acțiuni",
+    "performTestQuick": "Rulează test rapid",
+    "performTestDeep": "Rulează test profund",
+    "restart": "Repornire",
+    "shutdown": "Închidere"
+  },
+  "shutdown": {
+    "started": "A început oprirea",
+    "titleRestart": "Efectuați repornirea",
+    "descriptionRestart": "Doriți să reporniți UPS -urile?",
+    "titleOff": "Efectuați oprirea",
+    "descriptionOff": "Doriți să opriți UPS -urile?"
   }
 }

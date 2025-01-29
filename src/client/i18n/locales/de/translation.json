@@ -73,10 +73,26 @@
     "cancel": "Stornieren",
     "continue": "Weitermachen",
     "started": "Batterie -Test begann",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "titleQuick": "Schnellen Batterie -Test durchführen",
+    "titleDeep": "Führen Sie einen tiefen Test durch",
+    "descriptionQuick": "Möchten Sie einen schnellen Batterie -Test auf den UPS durchführen?",
+    "descriptionDeep": "Möchten Sie einen tiefen Batteriestest auf den UPS durchführen?",
+    "titleDeepDeep": "Tiefe Batterie -Test durchführen"
   },
   "actions": {
     "performTest": "Test durchführen",
-    "title": "Aktionen"
+    "title": "Aktionen",
+    "performTestQuick": "Führen Sie einen schnellen Test durch",
+    "performTestDeep": "Führen Sie einen tiefen Test durch",
+    "restart": "Neu starten",
+    "shutdown": "Abschalten"
+  },
+  "shutdown": {
+    "started": "Die Abschaltung begann",
+    "titleRestart": "Neustart durchführen",
+    "descriptionRestart": "Möchten Sie die UPS neu starten?",
+    "titleOff": "Schließung durchführen",
+    "descriptionOff": "Möchten Sie die UPS ausschalten?"
   }
 }

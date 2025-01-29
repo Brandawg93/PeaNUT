@@ -39,6 +39,9 @@ describe('Wrapper Component', () => {
           'ups.model': { value: 'Model' },
           'device.serial': { value: '123456' },
         },
+        rwVars: [],
+        clients: [],
+        commands: [],
       },
     ],
     updated: '2023-10-01T00:00:00Z',
@@ -51,7 +54,6 @@ describe('Wrapper Component', () => {
           checkSettingsAction={jest.fn().mockResolvedValue(checkSettingsAction)}
           getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
           disconnectAction={jest.fn().mockResolvedValue(disconnectAction)}
-          getAllCommandsAction={jest.fn().mockResolvedValue([])}
           runCommandAction={jest.fn().mockResolvedValue({})}
         />
       </LanguageContext.Provider>

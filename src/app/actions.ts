@@ -32,13 +32,17 @@ export async function getDevices(): Promise<DeviceData> {
     const devicePromises = nuts.map(async (nut) => {
       const devices = await nut.getDevices()
       const devicePromises = devices.map(async (device) => {
-        const [data, rwVars] = await Promise.all([nut.getData(device.name), nut.getRWVars(device.name)])
+        const [data, rwVars, commands] = await Promise.all([
+          nut.getData(device.name),
+          nut.getRWVars(device.name),
+          nut.getCommands(device.name),
+        ])
         return {
           vars: data,
           rwVars,
           description: device.description === 'Description unavailable' ? '' : device.description,
           clients: [],
-          commands: [],
+          commands,
           name: device.name,
         }
       })

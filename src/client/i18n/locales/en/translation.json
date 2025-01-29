@@ -73,10 +73,26 @@
     "cancel": "Cancel",
     "continue": "Continue",
     "started": "Battery test started",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "titleQuick": "Perform Quick Battery Test",
+    "titleDeep": "Run deep test",
+    "descriptionQuick": "Would you like to perform a quick battery test on the UPS?",
+    "descriptionDeep": "Would you like to perform a deep battery test on the UPS?",
+    "titleDeepDeep": "Perform Deep Battery Test"
   },
   "actions": {
     "performTest": "Run test",
-    "title": "Actions"
+    "title": "Actions",
+    "performTestQuick": "Run quick test",
+    "performTestDeep": "Run deep test",
+    "restart": "Restart",
+    "shutdown": "Shutdown"
+  },
+  "shutdown": {
+    "started": "Shutdown started",
+    "titleRestart": "Perform Restart",
+    "descriptionRestart": "Would you like to restart the UPS?",
+    "titleOff": "Perform Shutdown",
+    "descriptionOff": "Would you like to turn off the UPS?"
   }
 }

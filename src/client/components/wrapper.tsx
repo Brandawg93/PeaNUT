@@ -8,25 +8,8 @@ import {
   HiExclamationCircle,
   HiOutlineExclamationCircle,
   HiOutlineArrowRightStartOnRectangle,
-  HiOutlineEllipsisHorizontalCircle,
 } from 'react-icons/hi2'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/client/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/client/components/ui/alert-dialog'
-import { Toaster, toast } from 'sonner'
+
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
@@ -34,7 +17,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 
 import { MemoizedGrid } from '@/client/components/grid'
-import { SUPPORTED_COMMANDS } from '@/common/constants'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
 import NavBar from '@/client/components/navbar'
@@ -43,6 +25,7 @@ import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
+import Actions from '@/client/components/actions'
 
 import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
@@ -77,17 +60,10 @@ type Props = {
   getDevicesAction: () => Promise<DeviceData>
   checkSettingsAction: () => Promise<boolean>
   disconnectAction: () => Promise<void>
-  getAllCommandsAction: (device: string) => Promise<Array<string>>
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
 }
 
-export default function Wrapper({
-  getDevicesAction,
-  checkSettingsAction,
-  disconnectAction,
-  getAllCommandsAction,
-  runCommandAction,
-}: Props) {
+export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction, runCommandAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
@@ -96,13 +72,10 @@ export default function Wrapper({
   const [wattHours, setwattHours] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattHours') === 'true' : false
   )
-  const [isTestDialogOpen, setIsTestDialogOpen] = useState<boolean>(false)
-  const [canRunTests, setCanRunTests] = useState<boolean>(false)
-  const [preferredTestCommand, setPreferredTestCommand] = useState<string>('')
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
-  const { resolvedTheme, theme } = useTheme()
+  const { resolvedTheme } = useTheme()
   const materialTheme = createTheme({
     palette: {
       mode: resolvedTheme as 'light' | 'dark',
@@ -122,41 +95,9 @@ export default function Wrapper({
     })
   }, [])
 
-  useEffect(() => {
-    if (data?.devices) {
-      getAllCommandsAction(data.devices[preferredDevice].name).then((commands) => {
-        const testCommands = [
-          SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK,
-          SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START,
-          SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP,
-        ]
-
-        if (commands.some((command) => testCommands.includes(command))) {
-          setCanRunTests(true)
-          const preferredCommand = testCommands.find((command) => commands.includes(command))
-
-          if (preferredCommand) {
-            setPreferredTestCommand(preferredCommand)
-          }
-        }
-      })
-    }
-  }, [data?.devices && data?.devices[preferredDevice].name])
-
   const handleDisconnect = async () => {
     await disconnectAction()
     router.replace('/login')
-  }
-
-  const handleTest = async () => {
-    toast.promise(runCommandAction(ups.name, preferredTestCommand), {
-      loading: t('batteryTest.loading'),
-      success: t('batteryTest.started'),
-      error: (error) => {
-        return `Error: ${error}`
-      },
-    })
-    setIsTestDialogOpen(false)
   }
 
   const loadingWrapper = (
@@ -289,7 +230,6 @@ export default function Wrapper({
   return (
     <ThemeProvider theme={materialTheme}>
       <CssBaseline />
-      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div data-testid='wrapper' className='bg-background'>
         <NavBar>
           <NavBarControls
@@ -332,38 +272,9 @@ export default function Wrapper({
                   {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
                   &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
                 </p>
-                {canRunTests && (
-                  <div className='flex justify-end'>
-                    <AlertDialog open={isTestDialogOpen}>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t('batteryTest.title')}</AlertDialogTitle>
-                          <AlertDialogDescription>{t('batteryTest.description')}</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel onClick={() => setIsTestDialogOpen(false)}>
-                            {t('batteryTest.cancel')}
-                          </AlertDialogCancel>
-                          <AlertDialogAction onClick={async () => await handleTest()}>
-                            {t('batteryTest.continue')}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild data-testid='daynight-trigger'>
-                        <Button size='lg' variant='ghost' title={t('actions.title')} className='px-3'>
-                          <HiOutlineEllipsisHorizontalCircle className='!h-6 !w-6' />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuItem onClick={() => setIsTestDialogOpen(!isTestDialogOpen)}>
-                          {t('actions.performTest')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                )}
+                <div className='flex justify-end'>
+                  <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
+                </div>
               </div>
             </div>
             <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>

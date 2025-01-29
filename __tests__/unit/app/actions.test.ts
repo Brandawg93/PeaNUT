@@ -35,6 +35,7 @@ beforeAll(() => {
     ])
   jest.spyOn(Nut.prototype, 'getData').mockResolvedValue(vars)
   jest.spyOn(Nut.prototype, 'getRWVars').mockResolvedValue(['battery.charge'])
+  jest.spyOn(Nut.prototype, 'getCommands').mockResolvedValue([])
   jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
   jest.spyOn(Nut.prototype, 'setVar').mockResolvedValue()
   jest.spyOn(Nut.prototype, 'checkCredentials').mockResolvedValue()

@@ -73,10 +73,26 @@
     "cancel": "Cancelar",
     "continue": "Continuar",
     "started": "Prueba de batería iniciada",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "titleQuick": "Realizar una prueba de batería rápida",
+    "titleDeep": "Ejecutar una prueba profunda",
+    "descriptionQuick": "¿Le gustaría realizar una prueba de batería rápida en el UPS?",
+    "descriptionDeep": "¿Le gustaría realizar una prueba de batería profunda en el UPS?",
+    "titleDeepDeep": "Realizar una prueba de batería profunda"
   },
   "actions": {
     "performTest": "Prueba de ejecución",
-    "title": "Comportamiento"
+    "title": "Comportamiento",
+    "performTestQuick": "Ejecutar prueba rápida",
+    "performTestDeep": "Ejecutar una prueba profunda",
+    "restart": "Reanudar",
+    "shutdown": "Cerrar"
+  },
+  "shutdown": {
+    "started": "El cierre comenzó",
+    "titleRestart": "Realizar reiniciar",
+    "descriptionRestart": "¿Le gustaría reiniciar el UPS?",
+    "titleOff": "Realizar el cierre",
+    "descriptionOff": "¿Te gustaría apagar el UPS?"
   }
 }
