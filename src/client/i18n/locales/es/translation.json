@@ -66,5 +66,53 @@
   },
   "serverNotFound": "Anfitrión no encontrado. \nVerifique su configuración.",
   "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?",
-  "selectDevice": "Seleccione un dispositivo"
+  "selectDevice": "Seleccione un dispositivo",
+  "loading": "Cargando...",
+  "cancel": "Cancelar",
+  "continue": "Continuar",
+  "actions": {
+    "title": "Comportamiento",
+    "batteryTestQuick": {
+      "title": "Realizar una prueba de batería rápida",
+      "description": "¿Le gustaría realizar una prueba de batería rápida en el UPS?",
+      "successMessage": "Se inició la prueba rápida de la batería",
+      "actionText": "Ejecutar prueba rápida"
+    },
+    "batteryTestDeep": {
+      "title": "Realizar una prueba de batería profunda",
+      "description": "¿Le gustaría realizar una prueba de batería profunda en el UPS?",
+      "actionText": "Ejecutar una prueba profunda",
+      "successMessage": "Se inició una prueba de batería profunda"
+    },
+    "restart": {
+      "title": "Reanudar",
+      "description": "¿Le gustaría reiniciar el UPS?",
+      "actionText": "Reanudar",
+      "successMessage": "Reinicio"
+    },
+    "shutdown": {
+      "title": "Cerrar",
+      "description": "¿Le gustaría cerrar el UPS?",
+      "actionText": "Cerrar",
+      "successMessage": "Apagado"
+    },
+    "beeperDisable": {
+      "title": "Desactivar el pitido",
+      "description": "¿Le gustaría deshabilitar el Beeper?",
+      "actionText": "Desactivar el pitido",
+      "successMessage": "Bitero discapacitado"
+    },
+    "beeperEnable": {
+      "title": "Habilitar Beeper",
+      "description": "¿Le gustaría habilitar el Beeper?",
+      "actionText": "Habilitar Beeper",
+      "successMessage": "Beeper habilitado"
+    },
+    "beeperMute": {
+      "title": "Mute beeper",
+      "description": "¿Te gustaría silenciar el Beeper?",
+      "actionText": "Mute beeper",
+      "successMessage": "Beeper silenciado"
+    }
+  }
 }
