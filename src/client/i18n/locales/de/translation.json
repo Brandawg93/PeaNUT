@@ -67,32 +67,52 @@
   "serverNotFound": "Host nicht gefunden. \nÜberprüfen Sie Ihre Einstellungen.",
   "serverRefused": "Verbindung abgelehnt. \nLäuft der NUT-Server?",
   "selectDevice": "Wählen Sie ein Gerät aus",
-  "batteryTest": {
-    "title": "Batterietest durchführen",
-    "description": "Möchten Sie einen Batterietest auf den UPS durchführen?",
-    "cancel": "Stornieren",
-    "continue": "Weitermachen",
-    "started": "Batterie -Test begann",
-    "loading": "Laden...",
-    "titleQuick": "Schnellen Batterie -Test durchführen",
-    "titleDeep": "Führen Sie einen tiefen Test durch",
-    "descriptionQuick": "Möchten Sie einen schnellen Batterie -Test auf den UPS durchführen?",
-    "descriptionDeep": "Möchten Sie einen tiefen Batteriestest auf den UPS durchführen?",
-    "titleDeepDeep": "Tiefe Batterie -Test durchführen"
-  },
+  "loading": "Laden...",
+  "cancel": "Stornieren",
+  "continue": "Weitermachen",
   "actions": {
-    "performTest": "Test durchführen",
     "title": "Aktionen",
-    "performTestQuick": "Führen Sie einen schnellen Test durch",
-    "performTestDeep": "Führen Sie einen tiefen Test durch",
-    "restart": "Neu starten",
-    "shutdown": "Abschalten"
-  },
-  "shutdown": {
-    "started": "Die Abschaltung begann",
-    "titleRestart": "Neustart durchführen",
-    "descriptionRestart": "Möchten Sie die UPS neu starten?",
-    "titleOff": "Schließung durchführen",
-    "descriptionOff": "Möchten Sie die UPS ausschalten?"
+    "batteryTestQuick": {
+      "title": "Schnellen Batterie -Test durchführen",
+      "description": "Möchten Sie einen schnellen Batterie -Test auf den UPS durchführen?",
+      "successMessage": "Der schnelle Batteriestest begann",
+      "actionText": "Führen Sie einen schnellen Test durch"
+    },
+    "batteryTestDeep": {
+      "title": "Tiefe Batterie -Test durchführen",
+      "description": "Möchten Sie einen tiefen Batteriestest auf den UPS durchführen?",
+      "actionText": "Führen Sie einen tiefen Test durch",
+      "successMessage": "Der tiefe Batteriestest begann"
+    },
+    "restart": {
+      "title": "Neu starten",
+      "description": "Möchten Sie die UPS neu starten?",
+      "actionText": "Neu starten",
+      "successMessage": "Neu starten"
+    },
+    "shutdown": {
+      "title": "Abschalten",
+      "description": "Möchten Sie die UPS herunterfahren?",
+      "actionText": "Abschalten",
+      "successMessage": "Schließen"
+    },
+    "beeperDisable": {
+      "title": "Deaktivieren Sie Beeper",
+      "description": "Möchten Sie den Beepers deaktivieren?",
+      "actionText": "Deaktivieren Sie Beeper",
+      "successMessage": "Piepere deaktiviert"
+    },
+    "beeperEnable": {
+      "title": "BEEPER aktivieren",
+      "description": "Möchten Sie den Piepser aktivieren?",
+      "actionText": "BEEPER aktivieren",
+      "successMessage": "Peeper aktiviert"
+    },
+    "beeperMute": {
+      "title": "Stumme Beeper",
+      "description": "Möchten Sie den Piepser stummschalten?",
+      "actionText": "Stumme Beeper",
+      "successMessage": "Beeper stummgeschaltet"
+    }
   }
 }

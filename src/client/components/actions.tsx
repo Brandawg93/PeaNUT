@@ -29,67 +29,95 @@ type Props = {
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
 }
 
+type CommandConfig = {
+  command: string
+  title: string
+  description: string
+  actionText: string
+  successMessage: string
+}
+
 export default function Actions({ commands, runCommandAction, device }: Props) {
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-  const [alertData, setAlertData] = useState<{
-    title: string
-    description: string
-    action: () => Promise<void>
-  } | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [alertData, setAlertData] = useState<CommandConfig | null>(null)
   const { theme } = useTheme()
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
-  const handleTest = async (type: 'quick' | 'deep' | 'standard') => {
-    let preferredTestCommand = ''
-    if (type === 'quick' && commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK)) {
-      preferredTestCommand = SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK
-    } else if (type === 'deep' && commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP)) {
-      preferredTestCommand = SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP
-    } else if (commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START)) {
-      preferredTestCommand = SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START
-    }
-
-    toast.promise(runCommandAction(device, preferredTestCommand), {
-      loading: t('batteryTest.loading'),
-      success: t('batteryTest.started'),
-      error: (error) => {
-        return `Error: ${error}`
-      },
+  const handleCommand = async (command: string, successMessage: string) => {
+    toast.promise(runCommandAction(device, command), {
+      loading: t('loading'),
+      success: successMessage,
+      error: (error) => `Error: ${error}`,
     })
     setIsDialogOpen(false)
   }
 
-  const handleShutdown = async (type: 'restart' | 'off') => {
-    let preferredShutdownCommand = ''
-    if (type === 'restart' && commands.includes(SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_RETURN)) {
-      preferredShutdownCommand = SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_RETURN
-    } else if (type === 'off' && commands.includes(SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_STAYOFF)) {
-      preferredShutdownCommand = SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_STAYOFF
-    }
+  const getCommandConfigs = (): CommandConfig[] => [
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK,
+      title: t('actions.batteryTestQuick.title'),
+      description: t('actions.batteryTestQuick.description'),
+      actionText: t('actions.batteryTestQuick.actionText'),
+      successMessage: t('actions.batteryTestQuick.successMessage'),
+    },
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP,
+      title: t('actions.batteryTestDeep.title'),
+      description: t('actions.batteryTestDeep.description'),
+      actionText: t('actions.batteryTestDeep.actionText'),
+      successMessage: t('actions.batteryTestDeep.successMessage'),
+    },
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_RETURN,
+      title: t('actions.restart.title'),
+      description: t('actions.restart.description'),
+      actionText: t('actions.restart.actionText'),
+      successMessage: t('actions.restart.successMessage'),
+    },
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_STAYOFF,
+      title: t('actions.shutdown.title'),
+      description: t('actions.shutdown.description'),
+      actionText: t('actions.shutdown.actionText'),
+      successMessage: t('actions.shutdown.successMessage'),
+    },
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_BEEPER_DISABLE,
+      title: t('actions.beeperDisable.title'),
+      description: t('actions.beeperDisable.description'),
+      actionText: t('actions.beeperDisable.actionText'),
+      successMessage: t('actions.beeperDisable.successMessage'),
+    },
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_BEEPER_ENABLE,
+      title: t('actions.beeperEnable.title'),
+      description: t('actions.beeperEnable.description'),
+      actionText: t('actions.beeperEnable.actionText'),
+      successMessage: t('actions.beeperEnable.successMessage'),
+    },
+    {
+      command: SUPPORTED_COMMANDS.COMMAND_BEEPER_MUTE,
+      title: t('actions.beeperMute.title'),
+      description: t('actions.beeperMute.description'),
+      actionText: t('actions.beeperMute.actionText'),
+      successMessage: t('actions.beeperMute.successMessage'),
+    },
+  ]
 
-    toast.promise(runCommandAction(device, preferredShutdownCommand), {
-      loading: t('batteryTest.loading'),
-      success: t('shutdown.started'),
-      error: (error) => {
-        return `Error: ${error}`
-      },
-    })
-    setIsDialogOpen(false)
-  }
-
-  const handleDialogChange = (title: string, description: string, action: () => Promise<void>) => {
-    setAlertData({ title, description, action })
-    setIsDialogOpen(!isDialogOpen)
+  const handleDialogChange = (config: CommandConfig) => {
+    setAlertData(config)
+    setIsDialogOpen(true)
   }
 
   if (
-    !commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK) &&
-    !commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP) &&
-    !commands.includes(SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_RETURN) &&
-    !commands.includes(SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_STAYOFF)
+    !commands.some((cmd) =>
+      getCommandConfigs()
+        .map((c) => c.command)
+        .includes(cmd)
+    )
   ) {
-    return <></>
+    return null
   }
 
   return (
@@ -102,8 +130,10 @@ export default function Actions({ commands, runCommandAction, device }: Props) {
             <AlertDialogDescription>{alertData?.description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>{t('batteryTest.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={alertData?.action}>{t('batteryTest.continue')}</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => alertData && handleCommand(alertData.command, alertData.successMessage)}>
+              {t('continue')}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -114,58 +144,13 @@ export default function Actions({ commands, runCommandAction, device }: Props) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          {commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK) && (
-            <DropdownMenuItem
-              onClick={() =>
-                handleDialogChange(
-                  t('batteryTest.titleQuick'),
-                  t('batteryTest.descriptionQuick'),
-                  async () => await handleTest('quick')
-                )
-              }
-            >
-              {t('actions.performTestQuick')}
-            </DropdownMenuItem>
-          )}
-          {commands.includes(SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP) && (
-            <DropdownMenuItem
-              onClick={() =>
-                handleDialogChange(
-                  t('batteryTest.titleDeepDeep'),
-                  t('batteryTest.descriptionDeep'),
-                  async () => await handleTest('deep')
-                )
-              }
-            >
-              {t('actions.performTestDeep')}
-            </DropdownMenuItem>
-          )}
-          {commands.includes(SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_RETURN) && (
-            <DropdownMenuItem
-              onClick={() =>
-                handleDialogChange(
-                  t('shutdown.titleRestart'),
-                  t('shutdown.descriptionRestart'),
-                  async () => await handleShutdown('restart')
-                )
-              }
-            >
-              {t('actions.restart')}
-            </DropdownMenuItem>
-          )}
-          {commands.includes(SUPPORTED_COMMANDS.COMMAND_SHUTDOWN_STAYOFF) && (
-            <DropdownMenuItem
-              onClick={() =>
-                handleDialogChange(
-                  t('shutdown.titleOff'),
-                  t('shutdown.descriptionOff'),
-                  async () => await handleShutdown('off')
-                )
-              }
-            >
-              {t('actions.shutdown')}
-            </DropdownMenuItem>
-          )}
+          {getCommandConfigs()
+            .filter((config) => commands.includes(config.command))
+            .map((config) => (
+              <DropdownMenuItem key={config.command} onClick={() => handleDialogChange(config)}>
+                {config.actionText}
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

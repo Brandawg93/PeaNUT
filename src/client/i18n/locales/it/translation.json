@@ -67,32 +67,52 @@
   "serverNotFound": "Host non trovato. \nControlla le tue impostazioni.",
   "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?",
   "selectDevice": "Seleziona un dispositivo",
-  "batteryTest": {
-    "title": "Eseguire il test della batteria",
-    "description": "Vorresti eseguire un test della batteria sull'UPS?",
-    "cancel": "Cancellare",
-    "continue": "Continuare",
-    "started": "Test della batteria è iniziato",
-    "loading": "Caricamento...",
-    "titleQuick": "Eseguire il test della batteria rapida",
-    "titleDeep": "Esegui test profondi",
-    "descriptionQuick": "Vorresti eseguire un rapido test della batteria sull'UPS?",
-    "descriptionDeep": "Vorresti eseguire un profondo test della batteria sull'UPS?",
-    "titleDeepDeep": "Eseguire il test della batteria profonda"
-  },
+  "loading": "Caricamento...",
+  "cancel": "Cancellare",
+  "continue": "Continuare",
   "actions": {
-    "performTest": "Esegui test",
     "title": "Azioni",
-    "performTestQuick": "Esegui test rapidi",
-    "performTestDeep": "Esegui test profondi",
-    "restart": "Ricomincia",
-    "shutdown": "Fermare"
-  },
-  "shutdown": {
-    "started": "L'arresto è iniziato",
-    "titleRestart": "Eseguire il riavvio",
-    "descriptionRestart": "Vorresti riavviare l'UPS?",
-    "titleOff": "Eseguire l'arresto",
-    "descriptionOff": "Vorresti spegnere l'UPS?"
+    "batteryTestQuick": {
+      "title": "Eseguire il test della batteria rapida",
+      "description": "Vorresti eseguire un rapido test della batteria sull'UPS?",
+      "successMessage": "Test rapido della batteria è iniziato",
+      "actionText": "Esegui test rapidi"
+    },
+    "batteryTestDeep": {
+      "title": "Eseguire il test della batteria profonda",
+      "description": "Vorresti eseguire un profondo test della batteria sull'UPS?",
+      "actionText": "Esegui test profondi",
+      "successMessage": "Il test della batteria profonda è iniziato"
+    },
+    "restart": {
+      "title": "Ricomincia",
+      "description": "Vorresti riavviare l'UPS?",
+      "actionText": "Ricomincia",
+      "successMessage": "Riavvio"
+    },
+    "shutdown": {
+      "title": "Fermare",
+      "description": "Ti piacerebbe chiudere l'UPS?",
+      "actionText": "Fermare",
+      "successMessage": "Spegnere"
+    },
+    "beeperDisable": {
+      "title": "Disabilita un segnale acustico",
+      "description": "Vorresti disabilitare il segnale acustico?",
+      "actionText": "Disabilita un segnale acustico",
+      "successMessage": "Segondatore disabilitato"
+    },
+    "beeperEnable": {
+      "title": "Abilita un segnale acustico",
+      "description": "Vorresti abilitare il segnale acustico?",
+      "actionText": "Abilita un segnale acustico",
+      "successMessage": "Seguido abilitato"
+    },
+    "beeperMute": {
+      "title": "Muto un segnale acustico",
+      "description": "Vorresti disattivare il segnale acustico?",
+      "actionText": "Muto un segnale acustico",
+      "successMessage": "Segondatore silenzioso"
+    }
   }
 }

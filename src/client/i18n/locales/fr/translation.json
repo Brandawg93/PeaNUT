@@ -67,32 +67,52 @@
   "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
   "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
   "selectDevice": "Sélectionnez un appareil",
-  "batteryTest": {
-    "title": "Effectuer un test de batterie",
-    "description": "Souhaitez-vous effectuer un test de batterie sur les UPS?",
-    "cancel": "Annuler",
-    "continue": "Continuer",
-    "started": "Le test de batterie a commencé",
-    "loading": "Chargement...",
-    "titleQuick": "Effectuer un test de batterie rapide",
-    "titleDeep": "Exécuter un test profond",
-    "descriptionQuick": "Souhaitez-vous effectuer un test de batterie rapide sur les UPS?",
-    "descriptionDeep": "Souhaitez-vous effectuer un test de batterie en profondeur sur les UPS?",
-    "titleDeepDeep": "Effectuer un test de batterie profonde"
-  },
+  "loading": "Chargement...",
+  "cancel": "Annuler",
+  "continue": "Continuer",
   "actions": {
-    "performTest": "Test d'exécution",
     "title": "Actes",
-    "performTestQuick": "Exécutez un test rapide",
-    "performTestDeep": "Exécuter un test profond",
-    "restart": "Redémarrage",
-    "shutdown": "Fermer"
-  },
-  "shutdown": {
-    "started": "L'arrêt a commencé",
-    "titleRestart": "Effectuer un redémarrage",
-    "descriptionRestart": "Souhaitez-vous redémarrer les UPS?",
-    "titleOff": "Effectuer une fermeture",
-    "descriptionOff": "Souhaitez-vous éteindre les hauts?"
+    "batteryTestQuick": {
+      "title": "Effectuer un test de batterie rapide",
+      "description": "Souhaitez-vous effectuer un test de batterie rapide sur les UPS?",
+      "successMessage": "Le test de batterie rapide a commencé",
+      "actionText": "Exécutez un test rapide"
+    },
+    "batteryTestDeep": {
+      "title": "Effectuer un test de batterie profonde",
+      "description": "Souhaitez-vous effectuer un test de batterie en profondeur sur les UPS?",
+      "actionText": "Exécuter un test profond",
+      "successMessage": "Le test de batterie profonde a commencé"
+    },
+    "restart": {
+      "title": "Redémarrage",
+      "description": "Souhaitez-vous redémarrer les UPS?",
+      "actionText": "Redémarrage",
+      "successMessage": "Redémarrage"
+    },
+    "shutdown": {
+      "title": "Fermer",
+      "description": "Souhaitez-vous fermer les UPS?",
+      "actionText": "Fermer",
+      "successMessage": "Fermer"
+    },
+    "beeperDisable": {
+      "title": "Désactiver le bip",
+      "description": "Souhaitez-vous désactiver le bip?",
+      "actionText": "Désactiver le bip",
+      "successMessage": "Bip désactivé"
+    },
+    "beeperEnable": {
+      "title": "Activer le bip",
+      "description": "Souhaitez-vous activer le bip?",
+      "actionText": "Activer le bip",
+      "successMessage": "Beeper activé"
+    },
+    "beeperMute": {
+      "title": "Bip muet",
+      "description": "Souhaitez-vous couper le bip?",
+      "actionText": "Bip muet",
+      "successMessage": "Bip"
+    }
   }
 }
