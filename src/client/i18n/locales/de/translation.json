@@ -66,5 +66,17 @@
   },
   "serverNotFound": "Host nicht gefunden. \nÜberprüfen Sie Ihre Einstellungen.",
   "serverRefused": "Verbindung abgelehnt. \nLäuft der NUT-Server?",
-  "selectDevice": "Wählen Sie ein Gerät aus"
+  "selectDevice": "Wählen Sie ein Gerät aus",
+  "batteryTest": {
+    "title": "Batterietest durchführen",
+    "description": "Möchten Sie einen Batterietest auf den UPS durchführen?",
+    "cancel": "Stornieren",
+    "continue": "Weitermachen",
+    "started": "Batterie -Test begann",
+    "loading": "Laden..."
+  },
+  "actions": {
+    "performTest": "Test durchführen",
+    "title": "Aktionen"
+  }
 }

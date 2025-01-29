@@ -27,6 +27,7 @@ jest.mock('../../../src/app/actions', () => ({
   getDevices: jest.fn(),
   checkSettings: jest.fn(),
   disconnect: jest.fn(),
+  getAllCommands: jest.fn().mockResolvedValue([]),
 }))
 
 global.fetch = jest.fn(() =>

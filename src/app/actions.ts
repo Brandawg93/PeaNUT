@@ -92,6 +92,40 @@ export async function saveVar(device: string, varName: string, value: string) {
   }
 }
 
+export async function getAllCommands(device: string): Promise<string[]> {
+  try {
+    const nuts = await connect()
+    const commands = new Set<string>()
+    const commandPromises = nuts.map(async (nut) => {
+      const deviceExists = await nut.deviceExists(device)
+      if (deviceExists) {
+        const deviceCommands = await nut.getCommands(device)
+        deviceCommands.forEach((command) => commands.add(command))
+      }
+    })
+    await Promise.all(commandPromises)
+    return Array.from(commands)
+  } catch {
+    return []
+  }
+}
+
+export async function runCommand(device: string, command: string) {
+  try {
+    const nuts = await connect()
+    const runPromises = nuts.map(async (nut) => {
+      const deviceExists = await nut.deviceExists(device)
+      if (deviceExists) {
+        await nut.runCommand(device, command)
+      }
+    })
+    await Promise.all(runPromises)
+    return { error: undefined }
+  } catch (e: any) {
+    return { error: e?.message || 'Unknown error' }
+  }
+}
+
 export async function checkSettings(): Promise<boolean> {
   const settings = new YamlSettings(settingsFile)
   return !!(settings.get('NUT_SERVERS').length > 0)

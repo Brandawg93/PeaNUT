@@ -66,5 +66,17 @@
   },
   "serverNotFound": "Host not found. Check your settings.",
   "serverRefused": "Connection refused. Is NUT server running?",
-  "selectDevice": "Select a device"
+  "selectDevice": "Select a device",
+  "batteryTest": {
+    "title": "Perform Battery Test",
+    "description": "Would you like to perform a battery test on the UPS?",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "started": "Battery test started",
+    "loading": "Loading..."
+  },
+  "actions": {
+    "performTest": "Run test",
+    "title": "Actions"
+  }
 }

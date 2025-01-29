@@ -66,5 +66,17 @@
   },
   "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
   "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
-  "selectDevice": "Sélectionnez un appareil"
+  "selectDevice": "Sélectionnez un appareil",
+  "batteryTest": {
+    "title": "Effectuer un test de batterie",
+    "description": "Souhaitez-vous effectuer un test de batterie sur les UPS?",
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "started": "Le test de batterie a commencé",
+    "loading": "Chargement..."
+  },
+  "actions": {
+    "performTest": "Test d'exécution",
+    "title": "Actes"
+  }
 }

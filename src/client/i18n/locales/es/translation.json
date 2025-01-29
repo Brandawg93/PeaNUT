@@ -66,5 +66,17 @@
   },
   "serverNotFound": "Anfitrión no encontrado. \nVerifique su configuración.",
   "serverRefused": "Conexión rechazada. \n¿Se está ejecutando el servidor NUT?",
-  "selectDevice": "Seleccione un dispositivo"
+  "selectDevice": "Seleccione un dispositivo",
+  "batteryTest": {
+    "title": "Realizar una prueba de batería",
+    "description": "¿Le gustaría realizar una prueba de batería en el UPS?",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "started": "Prueba de batería iniciada",
+    "loading": "Cargando..."
+  },
+  "actions": {
+    "performTest": "Prueba de ejecución",
+    "title": "Comportamiento"
+  }
 }
