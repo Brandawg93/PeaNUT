@@ -125,19 +125,15 @@ export default function Wrapper({
   useEffect(() => {
     if (data?.devices) {
       getAllCommandsAction(data.devices[preferredDevice].name).then((commands) => {
-        if (
-          commands.includes(
-            SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START ||
-              SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP ||
-              SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK
-          )
-        ) {
+        const testCommands = [
+          SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK,
+          SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START,
+          SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP,
+        ]
+
+        if (commands.some((command) => testCommands.includes(command))) {
           setCanRunTests(true)
-          const preferredCommand = [
-            SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_QUICK,
-            SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START,
-            SUPPORTED_COMMANDS.COMMAND_TEST_BATTERY_START_DEEP,
-          ].find((command) => commands.includes(command))
+          const preferredCommand = testCommands.find((command) => commands.includes(command))
 
           if (preferredCommand) {
             setPreferredTestCommand(preferredCommand)
