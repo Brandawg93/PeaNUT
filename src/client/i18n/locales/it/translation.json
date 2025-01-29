@@ -66,5 +66,53 @@
   },
   "serverNotFound": "Host non trovato. \nControlla le tue impostazioni.",
   "serverRefused": "Connessione rifiutata. \nIl server NUT è in esecuzione?",
-  "selectDevice": "Seleziona un dispositivo"
+  "selectDevice": "Seleziona un dispositivo",
+  "loading": "Caricamento...",
+  "cancel": "Cancellare",
+  "continue": "Continuare",
+  "actions": {
+    "title": "Azioni",
+    "batteryTestQuick": {
+      "title": "Eseguire il test della batteria rapida",
+      "description": "Vorresti eseguire un rapido test della batteria sull'UPS?",
+      "successMessage": "Test rapido della batteria è iniziato",
+      "actionText": "Esegui test rapidi"
+    },
+    "batteryTestDeep": {
+      "title": "Eseguire il test della batteria profonda",
+      "description": "Vorresti eseguire un profondo test della batteria sull'UPS?",
+      "actionText": "Esegui test profondi",
+      "successMessage": "Il test della batteria profonda è iniziato"
+    },
+    "restart": {
+      "title": "Ricomincia",
+      "description": "Vorresti riavviare l'UPS?",
+      "actionText": "Ricomincia",
+      "successMessage": "Riavvio"
+    },
+    "shutdown": {
+      "title": "Fermare",
+      "description": "Ti piacerebbe chiudere l'UPS?",
+      "actionText": "Fermare",
+      "successMessage": "Spegnere"
+    },
+    "beeperDisable": {
+      "title": "Disabilita un segnale acustico",
+      "description": "Vorresti disabilitare il segnale acustico?",
+      "actionText": "Disabilita un segnale acustico",
+      "successMessage": "Segondatore disabilitato"
+    },
+    "beeperEnable": {
+      "title": "Abilita un segnale acustico",
+      "description": "Vorresti abilitare il segnale acustico?",
+      "actionText": "Abilita un segnale acustico",
+      "successMessage": "Seguido abilitato"
+    },
+    "beeperMute": {
+      "title": "Muto un segnale acustico",
+      "description": "Vorresti disattivare il segnale acustico?",
+      "actionText": "Muto un segnale acustico",
+      "successMessage": "Segondatore silenzioso"
+    }
+  }
 }

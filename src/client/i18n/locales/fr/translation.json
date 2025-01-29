@@ -66,5 +66,53 @@
   },
   "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
   "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
-  "selectDevice": "Sélectionnez un appareil"
+  "selectDevice": "Sélectionnez un appareil",
+  "loading": "Chargement...",
+  "cancel": "Annuler",
+  "continue": "Continuer",
+  "actions": {
+    "title": "Actes",
+    "batteryTestQuick": {
+      "title": "Effectuer un test de batterie rapide",
+      "description": "Souhaitez-vous effectuer un test de batterie rapide sur les UPS?",
+      "successMessage": "Le test de batterie rapide a commencé",
+      "actionText": "Exécutez un test rapide"
+    },
+    "batteryTestDeep": {
+      "title": "Effectuer un test de batterie profonde",
+      "description": "Souhaitez-vous effectuer un test de batterie en profondeur sur les UPS?",
+      "actionText": "Exécuter un test profond",
+      "successMessage": "Le test de batterie profonde a commencé"
+    },
+    "restart": {
+      "title": "Redémarrage",
+      "description": "Souhaitez-vous redémarrer les UPS?",
+      "actionText": "Redémarrage",
+      "successMessage": "Redémarrage"
+    },
+    "shutdown": {
+      "title": "Fermer",
+      "description": "Souhaitez-vous fermer les UPS?",
+      "actionText": "Fermer",
+      "successMessage": "Fermer"
+    },
+    "beeperDisable": {
+      "title": "Désactiver le bip",
+      "description": "Souhaitez-vous désactiver le bip?",
+      "actionText": "Désactiver le bip",
+      "successMessage": "Bip désactivé"
+    },
+    "beeperEnable": {
+      "title": "Activer le bip",
+      "description": "Souhaitez-vous activer le bip?",
+      "actionText": "Activer le bip",
+      "successMessage": "Beeper activé"
+    },
+    "beeperMute": {
+      "title": "Bip muet",
+      "description": "Souhaitez-vous couper le bip?",
+      "actionText": "Bip muet",
+      "successMessage": "Bip"
+    }
+  }
 }

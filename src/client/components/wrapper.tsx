@@ -9,6 +9,7 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineArrowRightStartOnRectangle,
 } from 'react-icons/hi2'
+
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
@@ -24,6 +25,7 @@ import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
+import Actions from '@/client/components/actions'
 
 import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
@@ -58,9 +60,10 @@ type Props = {
   getDevicesAction: () => Promise<DeviceData>
   checkSettingsAction: () => Promise<boolean>
   disconnectAction: () => Promise<void>
+  runCommandAction: (device: string, command: string) => Promise<{ error: any }>
 }
 
-export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction }: Props) {
+export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction, runCommandAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
@@ -269,6 +272,9 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
                   {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
                   &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
                 </p>
+                <div className='flex justify-end'>
+                  <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
+                </div>
               </div>
             </div>
             <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>

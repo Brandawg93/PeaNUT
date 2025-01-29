@@ -66,5 +66,53 @@
   },
   "serverNotFound": "Host not found. Check your settings.",
   "serverRefused": "Connection refused. Is NUT server running?",
-  "selectDevice": "Select a device"
+  "selectDevice": "Select a device",
+  "loading": "Loading...",
+  "cancel": "Cancel",
+  "continue": "Continue",
+  "actions": {
+    "title": "Actions",
+    "batteryTestQuick": {
+      "title": "Perform Quick Battery Test",
+      "description": "Would you like to perform a quick battery test on the UPS?",
+      "successMessage": "Quick battery test started",
+      "actionText": "Run quick test"
+    },
+    "batteryTestDeep": {
+      "title": "Perform Deep Battery Test",
+      "description": "Would you like to perform a deep battery test on the UPS?",
+      "actionText": "Run deep test",
+      "successMessage": "Deep battery test started"
+    },
+    "restart": {
+      "title": "Restart",
+      "description": "Would you like to restart the UPS?",
+      "actionText": "Restart",
+      "successMessage": "Restarting"
+    },
+    "shutdown": {
+      "title": "Shutdown",
+      "description": "Would you like to shutdown the UPS?",
+      "actionText": "Shutdown",
+      "successMessage": "Shutting down"
+    },
+    "beeperDisable": {
+      "title": "Disable Beeper",
+      "description": "Would you like to disable the beeper?",
+      "actionText": "Disable beeper",
+      "successMessage": "Beeper disabled"
+    },
+    "beeperEnable": {
+      "title": "Enable Beeper",
+      "description": "Would you like to enable the beeper?",
+      "actionText": "Enable beeper",
+      "successMessage": "Beeper enabled"
+    },
+    "beeperMute": {
+      "title": "Mute Beeper",
+      "description": "Would you like to mute the beeper?",
+      "actionText": "Mute beeper",
+      "successMessage": "Beeper muted"
+    }
+  }
 }
