@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
+import './charts.css'
 import LineChart from './line-chart-base'
+import { Payload } from 'recharts/types/component/DefaultLegendContent'
 
 type Props = {
   id: string
@@ -12,63 +14,48 @@ type Props = {
 
 export default function WattsChart(props: Props) {
   const { id, realpower, realpowerNominal, updated } = props
-  const [dataPoints, setDataPoints] = useState<Array<number>>([])
-  const [showRealPower, setShowRealPower] = useState<boolean>(true)
-  const prevDataRef = useRef(id)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
+  const [realpowerData, setRealpowerData] = useState<Array<{ dataPoint: number; time: Date }>>([])
+  const [showRealpower, setShowRealpower] = useState<boolean>(true)
+  const prevDataRef = useRef(id)
 
-  const handleLegendClick = (id: string | number) => {
-    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>, selector: string) => {
-      setter((prev) => {
-        document.querySelector(selector)?.setAttribute('style', `text-decoration: ${prev ? 'line-through' : 'none'}`)
-        return !prev
-      })
-    }
-
-    if (id === 'realPower') {
-      toggleVisibility(setShowRealPower, `.MuiChartsLegend-series-${id}`)
+  const handleLegendClick = (payload: Payload) => {
+    if (payload.value === 'realpower') {
+      setShowRealpower(!showRealpower)
     }
   }
 
   useEffect(() => {
     if (id !== prevDataRef.current) {
-      if (realpower) setDataPoints([realpower])
-      else setDataPoints([])
+      if (realpower) setRealpowerData([{ dataPoint: realpower, time: new Date() }])
+      else setRealpowerData([])
     } else {
-      if (realpower) setDataPoints((prev: Array<number>) => [...prev, realpower])
+      if (realpower) setRealpowerData((prev) => [...prev, { dataPoint: realpower, time: new Date() }])
     }
     prevDataRef.current = id
-  }, [id, realpower, updated])
+  }, [id, realpowerData, updated])
 
   return (
     <LineChart
       id='watts-chart'
-      onItemClick={(e, context) => handleLegendClick(context.seriesId)}
+      onLegendClick={handleLegendClick}
       referenceLineValue={realpowerNominal}
       referenceLineLabel={t('wattsChart.nominalRealpower')}
-      series={[
-        {
-          id: 'realPower',
-          data: showRealPower ? dataPoints : [],
+      config={{
+        time: {
+          label: 'Time',
+        },
+        inputVoltage: {
           label: t('wattsChart.realpower'),
-          type: 'line',
-          color: 'rgb(75, 192, 192)',
-          valueFormatter: (v) => (v === null ? '' : `${v}W`),
+          color: 'hsl(var(--chart-1))',
         },
-      ]}
-      xAxis={[{ scaleType: 'point', data: dataPoints.map((value, index) => index) }]}
-      yAxis={[
-        {
-          domainLimit: (min: number, max: number) => {
-            return {
-              min: realpowerNominal ? Math.min(min, realpowerNominal) : min,
-              max: realpowerNominal ? Math.max(max, realpowerNominal) : max,
-            }
-          },
-          valueFormatter: (value: number) => `${value}W`,
-        },
-      ]}
+      }}
+      unit='W'
+      data={realpowerData.map((v) => ({
+        time: v.time,
+        inputVoltage: showRealpower ? v.dataPoint : undefined,
+      }))}
     />
   )
 }

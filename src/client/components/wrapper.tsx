@@ -13,8 +13,6 @@ import {
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
 
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
@@ -28,7 +26,6 @@ import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
 
 import { LanguageContext } from '@/client/context/language'
-import { useTheme } from 'next-themes'
 import { upsStatus } from '@/common/constants'
 import { DEVICE, DeviceData } from '@/common/types'
 
@@ -75,12 +72,6 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
-  const { resolvedTheme } = useTheme()
-  const materialTheme = createTheme({
-    palette: {
-      mode: resolvedTheme as 'light' | 'dark',
-    },
-  })
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevicesAction(),
@@ -228,70 +219,67 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   }
 
   return (
-    <ThemeProvider theme={materialTheme}>
-      <CssBaseline />
-      <div data-testid='wrapper' className='bg-background'>
-        <NavBar>
-          <NavBarControls
-            disableRefresh={isLoading}
-            onRefreshClick={() => refetch()}
-            onRefetch={() => refetch()}
-            onDeviceChange={(name: string) =>
-              data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
-            }
-            onDisconnect={handleDisconnect}
-            devices={data.devices}
-          />
-        </NavBar>
-        <div className='flex justify-center pl-3 pr-3'>
-          <div className='container'>
-            <div className='mb-4 flex flex-row justify-between'>
-              <div>
-                {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
-                  <>
-                    <p className='m-0'>
-                      {t('manufacturer')}: {vars['ups.mfr']?.value}
-                    </p>
-                    <p className='m-0'>
-                      {t('model')}: {vars['ups.model']?.value}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className='m-0'>
-                      {t('device')}: {ups.description}
-                    </p>
-                  </>
-                )}
-                <p>
-                  {t('serial')}: {vars['device.serial']?.value}
-                </p>
-              </div>
-              <div>
-                <p className='text-2xl font-semibold'>
-                  {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
-                  &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
-                </p>
-                <div className='flex justify-end'>
-                  <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
-                </div>
-              </div>
-            </div>
-            <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-              <div className='mb-4'>{currentLoad()}</div>
-              <div className='mb-4'>{currentWh()}</div>
-              <div className='mb-4'>
-                <Runtime runtime={+vars['battery.runtime']?.value} />
-              </div>
-            </div>
-            <ChartsContainer vars={vars} data={data} name={ups.name} />
+    <div data-testid='wrapper' className='bg-background'>
+      <NavBar>
+        <NavBarControls
+          disableRefresh={isLoading}
+          onRefreshClick={() => refetch()}
+          onRefetch={() => refetch()}
+          onDeviceChange={(name: string) =>
+            data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
+          }
+          onDisconnect={handleDisconnect}
+          devices={data.devices}
+        />
+      </NavBar>
+      <div className='flex justify-center pl-3 pr-3'>
+        <div className='container'>
+          <div className='mb-4 flex flex-row justify-between'>
             <div>
-              <MemoizedGrid data={ups} />
+              {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
+                <>
+                  <p className='m-0'>
+                    {t('manufacturer')}: {vars['ups.mfr']?.value}
+                  </p>
+                  <p className='m-0'>
+                    {t('model')}: {vars['ups.model']?.value}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className='m-0'>
+                    {t('device')}: {ups.description}
+                  </p>
+                </>
+              )}
+              <p>
+                {t('serial')}: {vars['device.serial']?.value}
+              </p>
             </div>
-            <Footer updated={data.updated} />
+            <div>
+              <p className='text-2xl font-semibold'>
+                {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
+                &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
+              </p>
+              <div className='flex justify-end'>
+                <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
+              </div>
+            </div>
           </div>
+          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+            <div className='mb-4'>{currentLoad()}</div>
+            <div className='mb-4'>{currentWh()}</div>
+            <div className='mb-4'>
+              <Runtime runtime={+vars['battery.runtime']?.value} />
+            </div>
+          </div>
+          <ChartsContainer vars={vars} data={data} name={ups.name} />
+          <div>
+            <MemoizedGrid data={ups} />
+          </div>
+          <Footer updated={data.updated} />
         </div>
       </div>
-    </ThemeProvider>
+    </div>
   )
 }

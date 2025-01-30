@@ -4,6 +4,7 @@ import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
+import { Payload } from "recharts/types/component/DefaultLegendContent"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
@@ -111,6 +112,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed"
       nameKey?: string
       labelKey?: string
+      unit?: string
     }
 >(
   (
@@ -128,6 +130,7 @@ const ChartTooltipContent = React.forwardRef<
       color,
       nameKey,
       labelKey,
+      unit,
     },
     ref
   ) => {
@@ -167,6 +170,7 @@ const ChartTooltipContent = React.forwardRef<
       labelClassName,
       config,
       labelKey,
+      unit
     ])
 
     if (!active || !payload?.length) {
@@ -240,7 +244,7 @@ const ChartTooltipContent = React.forwardRef<
                       </div>
                       {item.value && (
                         <span className="font-mono font-medium tabular-nums text-foreground">
-                          {item.value.toLocaleString()}
+                          {`${item.value.toLocaleString()}${unit}`}
                         </span>
                       )}
                     </div>
@@ -264,10 +268,11 @@ const ChartLegendContent = React.forwardRef<
     Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
       hideIcon?: boolean
       nameKey?: string
+      handleClick?: (payload: Payload) => void
     }
 >(
   (
-    { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
+    { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey, handleClick },
     ref
   ) => {
     const { config } = useChart()
@@ -291,9 +296,10 @@ const ChartLegendContent = React.forwardRef<
 
           return (
             <div
+            onClick={() => handleClick && handleClick(item)}
               key={item.value}
               className={cn(
-                "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
+                `flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground ${handleClick && "cursor-pointer"}`.trim(),
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
@@ -315,6 +321,8 @@ const ChartLegendContent = React.forwardRef<
   }
 )
 ChartLegendContent.displayName = "ChartLegend"
+
+const ChartReferenceLine = RechartsPrimitive.ReferenceLine
 
 // Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(
@@ -362,4 +370,5 @@ export {
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  ChartReferenceLine,
 }
