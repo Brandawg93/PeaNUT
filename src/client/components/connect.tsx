@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +12,7 @@ import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
+import { LuLoader } from 'react-icons/lu'
 import logo from '@/app/icon.svg'
 import { server } from '@/common/types'
 
@@ -31,14 +32,6 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
   const { theme } = useTheme()
   const { t } = useTranslation(lng)
   const router = useRouter()
-
-  useEffect(() => {
-    async function getLoader() {
-      const { dotPulse } = await import('ldrs')
-      dotPulse.register()
-    }
-    getLoader()
-  }, [])
 
   const toggleShowPassword = () => setShowPassword(!showPassword)
 
@@ -70,7 +63,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
     if (connecting) {
       return (
         <div>
-          <l-dot-pulse size={33} speed={1.3} color='white'></l-dot-pulse>
+          <LuLoader className='animate-spin' />
         </div>
       )
     } else {
