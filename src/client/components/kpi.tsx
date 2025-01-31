@@ -58,7 +58,7 @@ export default function Kpi(props: Props) {
           </div>
         </div>
       </div>
-      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
+      <div className='absolute bottom-3.5 w-full text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
         {description}
       </div>
     </Card>

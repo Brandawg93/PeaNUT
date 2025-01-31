@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import './charts.css'
 import LineChart from './line-chart-base'
+import { Payload } from 'recharts/types/component/DefaultLegendContent'
 
 type Props = {
   id: string
@@ -16,36 +17,29 @@ export default function VoltsChart(props: Props) {
   const { id, inputVoltage, inputVoltageNominal, outputVoltage, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [inputVoltageData, setInputVoltageData] = useState<Array<number>>([])
-  const [outputVoltageData, setOutputVoltageData] = useState<Array<number>>([])
+  const [inputVoltageData, setInputVoltageData] = useState<Array<{ dataPoint: number; time: Date }>>([])
+  const [outputVoltageData, setOutputVoltageData] = useState<Array<{ dataPoint: number; time: Date }>>([])
   const [showInputVoltage, setShowInputVoltage] = useState<boolean>(true)
   const [showOutputVoltage, setShowOutputVoltage] = useState<boolean>(true)
   const prevDataRef = useRef(id)
 
-  const handleLegendClick = (id: string | number) => {
-    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>, selector: string) => {
-      setter((prev) => {
-        document.querySelector(selector)?.setAttribute('style', `text-decoration: ${prev ? 'line-through' : 'none'}`)
-        return !prev
-      })
-    }
-
-    if (id === 'inputVoltage') {
-      toggleVisibility(setShowInputVoltage, `.MuiChartsLegend-series-${id}`)
-    } else if (id === 'outputVoltage') {
-      toggleVisibility(setShowOutputVoltage, `.MuiChartsLegend-series-${id}`)
+  const handleLegendClick = (payload: Payload) => {
+    if (payload.value === 'inputVoltage') {
+      setShowInputVoltage(!showInputVoltage)
+    } else if (payload.value === 'outputVoltage') {
+      setShowOutputVoltage(!showOutputVoltage)
     }
   }
 
   useEffect(() => {
     if (id !== prevDataRef.current) {
-      if (inputVoltage) setInputVoltageData([inputVoltage])
+      if (inputVoltage) setInputVoltageData([{ dataPoint: inputVoltage, time: new Date() }])
       else setInputVoltageData([])
-      if (outputVoltage) setOutputVoltageData([outputVoltage])
+      if (outputVoltage) setOutputVoltageData([{ dataPoint: outputVoltage, time: new Date() }])
       else setOutputVoltageData([])
     } else {
-      if (inputVoltage) setInputVoltageData((prev: Array<number>) => [...prev, inputVoltage])
-      if (outputVoltage) setOutputVoltageData((prev: Array<number>) => [...prev, outputVoltage])
+      if (inputVoltage) setInputVoltageData((prev) => [...prev, { dataPoint: inputVoltage, time: new Date() }])
+      if (outputVoltage) setOutputVoltageData((prev) => [...prev, { dataPoint: outputVoltage, time: new Date() }])
     }
     prevDataRef.current = id
   }, [id, inputVoltage, outputVoltage, updated])
@@ -53,39 +47,28 @@ export default function VoltsChart(props: Props) {
   return (
     <LineChart
       id='volts-chart'
-      onItemClick={(e, context) => handleLegendClick(context.seriesId)}
+      onLegendClick={handleLegendClick}
       referenceLineValue={inputVoltageNominal}
       referenceLineLabel={t('voltsChart.nominalInputVoltage')}
-      series={[
-        {
-          id: 'inputVoltage',
-          data: showInputVoltage ? inputVoltageData : [],
+      config={{
+        time: {
+          label: 'Time',
+        },
+        inputVoltage: {
           label: t('voltsChart.inputVoltage'),
-          type: 'line',
-          color: 'rgb(75, 192, 192)',
-          valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          color: 'hsl(var(--chart-1))',
         },
-        {
-          id: 'outputVoltage',
-          data: showOutputVoltage ? outputVoltageData : [],
+        outputVoltage: {
           label: t('voltsChart.outputVoltage'),
-          type: 'line',
-          color: 'rgb(255 99 132)',
-          valueFormatter: (v) => (v === null ? '' : `${v}V`),
+          color: 'hsl(var(--chart-2))',
         },
-      ]}
-      xAxis={[{ scaleType: 'point', data: inputVoltageData.map((value, index) => index) }]}
-      yAxis={[
-        {
-          domainLimit: (min: number, max: number) => {
-            return {
-              min: inputVoltageNominal ? Math.min(min, inputVoltageNominal) : min,
-              max: inputVoltageNominal ? Math.max(max, inputVoltageNominal) : max,
-            }
-          },
-          valueFormatter: (value: number) => `${value}V`,
-        },
-      ]}
+      }}
+      unit='V'
+      data={inputVoltageData.map((v, i) => ({
+        time: v.time,
+        inputVoltage: showInputVoltage ? v.dataPoint : undefined,
+        outputVoltage: showOutputVoltage ? outputVoltageData[i].dataPoint : undefined,
+      }))}
     />
   )
 }

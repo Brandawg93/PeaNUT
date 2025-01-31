@@ -40,3 +40,9 @@ ups.test.result: No test initiated
 ups.timer.shutdown: -60
 ups.timer.start: -60
 ups.vendorid: 0764
+TIMER 10
+input.voltage: 119.0
+output.voltage: 121.0
+TIMER 10
+input.voltage: 120.0
+output.voltage: 118.0
