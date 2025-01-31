@@ -4,7 +4,7 @@
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": ["tailwind"]
+        "ignoreAtRules": ["tailwind", "plugin", "custom-variant", "theme"]
       }
     ]
   }
