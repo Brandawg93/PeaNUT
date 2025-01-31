@@ -40,4 +40,20 @@ describe('Line', () => {
 
     expect(getByTestId('volts-chart')).toBeInTheDocument()
   })
+
+  it('renders with no output voltage', () => {
+    const vars = { ...device.vars }
+    delete vars['output.voltage']
+    const { getByTestId } = render(
+      <VoltsChart
+        id={device.name}
+        inputVoltage={+vars['input.voltage'].value}
+        inputVoltageNominal={+vars['input.voltage.nominal']?.value}
+        outputVoltage={+vars['output.voltage']?.value}
+        updated={new Date()}
+      />
+    )
+
+    expect(getByTestId('volts-chart')).toBeInTheDocument()
+  })
 })
