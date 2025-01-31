@@ -5,3 +5,5 @@
 *.png
 config
 pnpm-lock.yaml
+src/client/components/ui/*.tsx
+src/lib/utils.ts
