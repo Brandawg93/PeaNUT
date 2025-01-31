@@ -38,7 +38,13 @@ export default function LineChartBase(props: Props) {
                 new Date(timeStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })
               }
             />
-            <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `${value}${unit}`} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              domain={['audo', 'auto']}
+              tickMargin={8}
+              tickFormatter={(value) => `${value}${unit}`}
+            />
             <ChartLegend
               verticalAlign='top'
               content={<ChartLegendContent handleClick={(e) => onLegendClick && onLegendClick(e)} />}
