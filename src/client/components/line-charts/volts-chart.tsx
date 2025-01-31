@@ -66,8 +66,11 @@ export default function VoltsChart(props: Props) {
       unit='V'
       data={inputVoltageData.map((v, i) => ({
         time: v.time,
-        inputVoltage: showInputVoltage ? v.dataPoint : undefined,
-        outputVoltage: showOutputVoltage ? outputVoltageData[i].dataPoint : undefined,
+        inputVoltage: inputVoltage && showInputVoltage ? v.dataPoint : undefined,
+        outputVoltage:
+          outputVoltage && i < outputVoltageData.length && showOutputVoltage
+            ? outputVoltageData[i].dataPoint
+            : undefined,
       }))}
     />
   )
