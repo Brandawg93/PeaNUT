@@ -1,53 +1,95 @@
 import React from 'react'
-import { Card } from '@material-tailwind/react'
-import { ResponsiveChartContainer, ResponsiveChartContainerProps } from '@mui/x-charts/ResponsiveChartContainer'
-import { ChartsGrid } from '@mui/x-charts/ChartsGrid'
-import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart'
-import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis'
-import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis'
-import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip'
-import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine'
-import { ChartsLegend, ChartsLegendProps } from '@mui/x-charts/ChartsLegend'
+import { Card, CardContent } from '@/client/components/ui/card'
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  ChartReferenceLine,
+} from '@/client/components/ui/chart'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { Payload } from 'recharts/types/component/DefaultLegendContent'
 
 type Props = {
   id: string
+  config: ChartConfig
+  data: any[]
+  unit: string
+  onLegendClick?: (payload: Payload) => void
   referenceLineValue?: number
   referenceLineLabel?: string
 }
 
-export default function LineChart(props: ResponsiveChartContainerProps & ChartsLegendProps & Props) {
-  const { referenceLineValue, referenceLineLabel, onItemClick, id } = props
-
+export default function LineChartBase(props: Props) {
+  const { referenceLineValue, referenceLineLabel, id, config, data, unit, onLegendClick } = props
   return (
-    <Card
-      className='border-neutral-300 h-96 w-full border border-solid border-gray-300 p-3 shadow-none dark:border-gray-800 dark:bg-gray-950'
-      data-testid={id}
-    >
-      <ResponsiveChartContainer {...props}>
-        <LinePlot />
-        <MarkPlot />
-        {referenceLineValue && (
-          <ChartsReferenceLine
-            y={referenceLineValue}
-            label={referenceLineLabel}
-            lineStyle={{ stroke: 'red', strokeDasharray: '10 5' }}
-          />
-        )}
-        <ChartsXAxis disableTicks disableLine tickLabelStyle={{ display: 'none' }} />
-        <ChartsYAxis />
-        <ChartsLegend
-          onItemClick={onItemClick}
-          slotProps={{
-            legend: {
-              direction: 'row',
-              position: { vertical: 'top', horizontal: 'middle' },
-              padding: 0,
-            },
-          }}
-        />
-        <ChartsTooltip trigger='item' />
-        <ChartsGrid horizontal vertical />
-      </ResponsiveChartContainer>
+    <Card className='h-96 w-full border border-border-card bg-card p-3 shadow-none' data-testid={id}>
+      <CardContent className='h-full !p-0'>
+        <ChartContainer config={config} className='mx-auto aspect-square h-full w-full'>
+          <LineChart accessibilityLayer data={data}>
+            <XAxis
+              dataKey='time'
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(timeStr) =>
+                new Date(timeStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })
+              }
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              domain={['audo', 'auto']}
+              tickMargin={8}
+              tickFormatter={(value) => `${value}${unit}`}
+            />
+            <ChartLegend
+              verticalAlign='top'
+              content={<ChartLegendContent handleClick={(e) => onLegendClick && onLegendClick(e)} />}
+            />
+            <CartesianGrid horizontal vertical />
+            {referenceLineValue && (
+              <ChartReferenceLine
+                y={referenceLineValue}
+                stroke='red'
+                label={referenceLineLabel}
+                strokeDasharray='4 4'
+              />
+            )}
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  unit={unit}
+                  labelKey='time'
+                  labelFormatter={(value, payload) =>
+                    new Date(payload[0].payload.time).toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      second: 'numeric',
+                    })
+                  }
+                />
+              }
+            />
+            {data.length &&
+              Object.keys(data[0])
+                .filter((k) => k !== 'time')
+                .map((key) => (
+                  <Line
+                    key={key}
+                    dataKey={key}
+                    type='monotone'
+                    stroke={`var(--color-${key})`}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                ))}
+          </LineChart>
+        </ChartContainer>
+      </CardContent>
     </Card>
   )
 }

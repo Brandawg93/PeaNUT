@@ -1,14 +1,21 @@
 'use client'
 
 import React, { useState, useEffect, useContext } from 'react'
-import { Button, Card, List, ListItem, ListItemPrefix } from '@material-tailwind/react'
+import { Card } from '@/client/components/ui/card'
+import { Button } from '@/client/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/client/components/ui/accordion'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { ToastContainer, toast } from 'react-toastify'
-import { ThemeContext } from '@/client/context/theme'
+import { Toaster, toast } from 'sonner'
+import CodeMirror from '@uiw/react-codemirror'
+import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode'
+import { yaml } from '@codemirror/lang-yaml'
+import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
-import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle } from 'react-icons/hi2'
+import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle, HiOutlineCodeBracket } from 'react-icons/hi2'
+import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
@@ -19,6 +26,8 @@ type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: <K extends keyof SettingsType>(key: K) => Promise<any>
   setSettingsAction: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => Promise<void>
+  exportSettingsAction: () => Promise<string>
+  importSettingsAction: (settings: string) => Promise<void>
   deleteSettingsAction: (key: keyof SettingsType) => Promise<void>
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
@@ -29,12 +38,14 @@ export default function SettingsWrapper({
   checkSettingsAction,
   getSettingsAction,
   setSettingsAction,
+  exportSettingsAction,
+  importSettingsAction,
   deleteSettingsAction,
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
 }: SettingsWrapperProps) {
-  const [selected, setSelected] = useState<number>(0)
+  const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [serverList, setServerList] = useState<Array<server>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
@@ -44,12 +55,8 @@ export default function SettingsWrapper({
   const [influxInterval, setInfluxInterval] = useState<number>(10)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { theme } = useContext(ThemeContext)
-
+  const { resolvedTheme, theme } = useTheme()
   const router = useRouter()
-
-  const setSelectedItem = (value: number) => setSelected(value)
-  const selectedStyle = { color: 'black', fill: 'black' }
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
@@ -118,143 +125,201 @@ export default function SettingsWrapper({
     toast.success(t('settings.saved'))
   }
 
+  const handleSettingsImport = async () => {
+    await importSettingsAction(config)
+    toast.success(t('settings.saved'))
+  }
+
+  const handleCodeChange = (value: string) => {
+    setConfig(value)
+  }
+
+  const handleSettingsMenuChange = (value: string) => {
+    if (value === 'config') {
+      exportSettingsAction().then((res) => {
+        setConfig(res)
+      })
+    }
+  }
+
   const skeleton = (
     <div className='flex flex-col gap-3'>
-      <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
-      <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
-      <div className='h-[150px] w-full animate-pulse rounded-lg p-6 dark:bg-gray-600' />
+      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
+      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
+      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
     </div>
   )
 
   const menuItems = [
-    { label: t('settings.manageServers'), Icon: HiOutlineServerStack },
-    { label: t('settings.influxDb'), Icon: SiInfluxdb },
+    { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
+    { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
+    { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
   ]
 
   return (
     <div className='flex flex-1 flex-col pl-3 pr-3' data-testid='settings-wrapper'>
-      <ToastContainer position='top-center' theme={theme} />
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='flex justify-center'>
         <div className='container'>
           <h1 className='mb-4 text-2xl font-bold'>{t('sidebar.settings')}</h1>
         </div>
       </div>
       <div className='flex flex-1 justify-center'>
-        <div className='container flex flex-col justify-between'>
-          <div className='flex flex-row gap-2'>
-            <div>
-              <Card className='bg-white dark:bg-gray-800'>
-                <List className='min-w-0'>
-                  {menuItems.map(({ label, Icon }, index) => (
-                    <ListItem
-                      key={index}
-                      selected={selected === index}
-                      onClick={() => setSelectedItem(index)}
-                      className='active: text-black hover:text-black dark:text-white'
-                      style={selected === index ? selectedStyle : {}}
-                    >
-                      <ListItemPrefix className='mr-0 lg:mr-4'>
-                        <Icon className='h-6 w-6' style={selected === index ? { color: 'black' } : {}} />
-                      </ListItemPrefix>
-                      <span className='hidden lg:block'>{label}</span>
-                    </ListItem>
-                  ))}
-                </List>
-              </Card>
-            </div>
-            <div className='flex h-full flex-1 flex-col gap-3 overflow-auto rounded-lg bg-white p-3 dark:bg-gray-800'>
+        <div className='container'>
+          <Tabs
+            defaultValue='servers'
+            className='flex h-full flex-col gap-4 md:flex-row'
+            onValueChange={handleSettingsMenuChange}
+          >
+            <TabsList className='flex h-min flex-col gap-2 sm:flex-row md:flex-col'>
+              {menuItems.map(({ label, Icon, value }, index) => (
+                <TabsTrigger key={index} value={value} className='w-full justify-start'>
+                  <div className='mr-4'>
+                    <Icon className='!h-6 !w-6' />
+                  </div>
+                  <span>{label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value='servers' className='mt-0 h-full flex-1'>
               {settingsLoaded ? (
-                <>
-                  {selected === 0 && (
-                    <div className='flex h-full flex-col justify-between'>
-                      <div className='container'>
-                        <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
-                        {serverList.map((server, index) => (
-                          <AddServer
-                            removable={serverList.length > 1}
-                            key={index}
-                            initialServer={server.HOST}
-                            initialPort={server.PORT}
-                            initialUsername={server.USERNAME}
-                            initialPassword={server.PASSWORD}
-                            handleChange={(server, port, username, password) =>
-                              handleServerChange(server, port, username, password, index)
-                            }
-                            handleRemove={() => handleServerRemove(index)}
-                            testConnectionAction={testConnectionAction}
-                          />
-                        ))}
-                        <div className='text-center'>
-                          <Button
-                            variant='filled'
-                            title={t('settings.addServer')}
-                            className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
-                            onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
-                          >
-                            <HiOutlinePlus className='h-6 w-6 dark:text-white' />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className='flex flex-row justify-between'>
-                        <div />
-                        <Button onClick={handleSaveServers} className='shadow-none'>
-                          {t('settings.apply')}
-                        </Button>
-                      </div>
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    {serverList.map((server, index) => (
+                      <AddServer
+                        removable={serverList.length > 1}
+                        key={index}
+                        initialServer={server.HOST}
+                        initialPort={server.PORT}
+                        initialUsername={server.USERNAME}
+                        initialPassword={server.PASSWORD}
+                        handleChange={(server, port, username, password) =>
+                          handleServerChange(server, port, username, password, index)
+                        }
+                        handleRemove={() => handleServerRemove(index)}
+                        testConnectionAction={testConnectionAction}
+                      />
+                    ))}
+                    <div className='text-center'>
+                      <Button
+                        variant='secondary'
+                        title={t('settings.addServer')}
+                        className='shadow-none'
+                        onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
+                      >
+                        <HiOutlinePlus className='!h-6 !w-6 stroke-2' />
+                      </Button>
                     </div>
-                  )}
-                  {selected === 1 && (
-                    <div className='flex h-full flex-col justify-between'>
-                      <div className='container'>
-                        <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                        <span className='text-sm text-gray-500'>
-                          <HiOutlineInformationCircle className='inline-block h-4 w-4' />
-                          {t('settings.influxNotice')}
-                        </span>
-                        <AddInflux
-                          initialValues={{
-                            server: influxServer,
-                            token: influxToken,
-                            org: influxOrg,
-                            bucket: influxBucket,
-                            interval: influxInterval,
-                          }}
-                          handleChange={(server, token, org, bucket, interval) => {
-                            setInfluxServer(server)
-                            setInfluxToken(token)
-                            setInfluxOrg(org)
-                            setInfluxBucket(bucket)
-                            setInfluxInterval(interval)
-                          }}
-                          handleClear={() => {
-                            setInfluxServer('')
-                            setInfluxToken('')
-                            setInfluxOrg('')
-                            setInfluxBucket('')
-                            setInfluxInterval(10)
-                            deleteSettingsAction('INFLUX_HOST')
-                            deleteSettingsAction('INFLUX_TOKEN')
-                            deleteSettingsAction('INFLUX_ORG')
-                            deleteSettingsAction('INFLUX_BUCKET')
-                            setSettingsAction('INFLUX_INTERVAL', 10)
-                          }}
-                          testInfluxConnectionAction={testInfluxConnectionAction}
-                        />
-                      </div>
-                      <div className='flex flex-row justify-between'>
-                        <div />
-                        <Button onClick={handleSaveInflux} className='shadow-none'>
-                          {t('settings.apply')}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </>
+                  </div>
+                  <div className='flex flex-row justify-between'>
+                    <div />
+                    <Button onClick={handleSaveServers} className='shadow-none'>
+                      {t('settings.apply')}
+                    </Button>
+                  </div>
+                </Card>
               ) : (
                 skeleton
               )}
-            </div>
-          </div>
+            </TabsContent>
+            <TabsContent value='influx' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
+                  <span className='text-sm text-muted-foreground'>
+                    <HiOutlineInformationCircle className='inline-block h-4 w-4' />
+                    {t('settings.influxNotice')}
+                  </span>
+                  <AddInflux
+                    initialValues={{
+                      server: influxServer,
+                      token: influxToken,
+                      org: influxOrg,
+                      bucket: influxBucket,
+                      interval: influxInterval,
+                    }}
+                    handleChange={(server, token, org, bucket, interval) => {
+                      setInfluxServer(server)
+                      setInfluxToken(token)
+                      setInfluxOrg(org)
+                      setInfluxBucket(bucket)
+                      setInfluxInterval(interval)
+                    }}
+                    handleClear={() => {
+                      setInfluxServer('')
+                      setInfluxToken('')
+                      setInfluxOrg('')
+                      setInfluxBucket('')
+                      setInfluxInterval(10)
+                      deleteSettingsAction('INFLUX_HOST')
+                      deleteSettingsAction('INFLUX_TOKEN')
+                      deleteSettingsAction('INFLUX_ORG')
+                      deleteSettingsAction('INFLUX_BUCKET')
+                      setSettingsAction('INFLUX_INTERVAL', 10)
+                    }}
+                    testInfluxConnectionAction={testInfluxConnectionAction}
+                  />
+                </div>
+                <div className='flex flex-row justify-between'>
+                  <div />
+                  <Button onClick={handleSaveInflux} className='shadow-none'>
+                    {t('settings.apply')}
+                  </Button>
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value='config' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
+                  <span>{t('settings.configExportNotice')}</span>
+                  <Accordion type='single' collapsible className='mb-2 w-full'>
+                    <AccordionItem value='item-1'>
+                      <AccordionTrigger>{t('settings.viewConfig')}</AccordionTrigger>
+                      <AccordionContent>
+                        <div className='mb-2 overflow-hidden rounded-lg border border-border-card'>
+                          <CodeMirror
+                            theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
+                            value={config}
+                            extensions={[yaml()]}
+                            onChange={handleCodeChange}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                  <div className='flex flex-row'>
+                    <Button onClick={handleSettingsImport} className='flex shadow-none'>
+                      <AiOutlineSave className='h-4 w-4' />
+                      &nbsp;
+                      <span className='self-center'>{t('settings.save')}</span>
+                    </Button>
+                    &nbsp;
+                    <Button
+                      onClick={async () => {
+                        const a = document.createElement('a')
+                        const text = await exportSettingsAction()
+                        const file = new Blob([text], { type: 'application/yaml' })
+                        a.href = URL.createObjectURL(file)
+                        a.download = 'peanut_config.yaml'
+                        a.click()
+                      }}
+                      className='flex shadow-none'
+                    >
+                      <AiOutlineDownload className='h-4 w-4' />
+                      &nbsp;
+                      <span className='self-center'>{t('settings.download')}</span>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+      <div className='flex justify-center'>
+        <div className='container'>
           <Footer />
         </div>
       </div>

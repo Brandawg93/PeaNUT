@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from '@material-tailwind/react'
+import { Card } from '@/client/components/ui/card'
 
 type Props = {
   text: string
@@ -45,7 +45,7 @@ export default function Kpi(props: Props) {
     <Card
       onClick={onClickHandler}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 text-center shadow-none dark:border-gray-800 dark:bg-gray-950'
+      className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
       data-testid='kpi'
     >
       <div
@@ -58,7 +58,7 @@ export default function Kpi(props: Props) {
           </div>
         </div>
       </div>
-      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] motion-safe:animate-fade dark:text-[#999999]'>
+      <div className='absolute bottom-3.5 w-full text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
         {description}
       </div>
     </Card>

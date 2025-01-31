@@ -43,6 +43,7 @@ const COMMAND_TEST_FAILURE_STOP = 'test.failure.stop'
 const COMMAND_TEST_PANEL_START = 'test.panel.start'
 const COMMAND_TEST_PANEL_STOP = 'test.panel.stop'
 const COMMAND_TEST_SYSTEM_START = 'test.system.start'
+const COMMAND_DRIVER_RELOAD = 'driver.reload'
 
 export const SUPPORTED_COMMANDS = {
   COMMAND_BEEPER_DISABLE,
@@ -71,4 +72,5 @@ export const SUPPORTED_COMMANDS = {
   COMMAND_TEST_PANEL_START,
   COMMAND_TEST_PANEL_STOP,
   COMMAND_TEST_SYSTEM_START,
+  COMMAND_DRIVER_RELOAD,
 }

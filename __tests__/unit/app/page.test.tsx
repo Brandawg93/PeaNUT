@@ -27,6 +27,7 @@ jest.mock('../../../src/app/actions', () => ({
   getDevices: jest.fn(),
   checkSettings: jest.fn(),
   disconnect: jest.fn(),
+  getAllCommands: jest.fn().mockResolvedValue([]),
 }))
 
 global.fetch = jest.fn(() =>
@@ -55,6 +56,9 @@ describe('Home Page', () => {
           'ups.model': { value: 'Model' },
           'device.serial': { value: '123456' },
         },
+        rwVars: [],
+        clients: [],
+        commands: [],
       },
     ],
     updated: '2023-10-01T00:00:00Z',

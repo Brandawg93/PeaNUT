@@ -9,23 +9,23 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineArrowRightStartOnRectangle,
 } from 'react-icons/hi2'
-import { Button } from '@material-tailwind/react'
+
+import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
 
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
 import NavBar from '@/client/components/navbar'
+import NavBarControls from '@/client/components/navbar-controls'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
+import Actions from '@/client/components/actions'
 
 import { LanguageContext } from '@/client/context/language'
-import { ThemeContext } from '@/client/context/theme'
 import { upsStatus } from '@/common/constants'
 import { DEVICE, DeviceData } from '@/common/types'
 
@@ -57,9 +57,10 @@ type Props = {
   getDevicesAction: () => Promise<DeviceData>
   checkSettingsAction: () => Promise<boolean>
   disconnectAction: () => Promise<void>
+  runCommandAction: (device: string, command: string) => Promise<{ error: any }>
 }
 
-export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction }: Props) {
+export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction, runCommandAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
@@ -71,12 +72,6 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
-  const { theme } = useContext(ThemeContext)
-  const materialTheme = createTheme({
-    palette: {
-      mode: theme,
-    },
-  })
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevicesAction(),
@@ -98,7 +93,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
   const loadingWrapper = (
     <div
-      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
       data-testid='loading-wrapper'
     >
       <Loader />
@@ -118,21 +113,20 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
         data-testid='wrapper'
       >
-        <div>
-          <HiExclamationCircle className='mb-4 text-8xl text-red-600' />
+        <div className='flex flex-col items-center'>
+          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
           <p>{error}</p>
         </div>
         <div>
           <Button
-            variant='filled'
             title={t('sidebar.disconnect')}
-            className='text-md float-right bg-red-400 text-black shadow-none dark:bg-red-800 dark:text-white'
+            className='bg-destructive shadow-none'
             onClick={async () => await handleDisconnect()}
           >
-            <HiOutlineArrowRightStartOnRectangle className='h-4 w-4 stroke-2 dark:text-white' />
+            <HiOutlineArrowRightStartOnRectangle className='!h-6 !w-6' />
           </Button>
         </div>
       </div>
@@ -144,11 +138,11 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   if (data.devices.length === 0) {
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
         data-testid='wrapper'
       >
-        <div>
-          <HiExclamationCircle className='mb-4 text-8xl text-red-600' />
+        <div className='flex flex-col items-center'>
+          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
           <p>{t('noDevicesError')}</p>
         </div>
       </div>
@@ -225,13 +219,9 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   }
 
   return (
-    <ThemeProvider theme={materialTheme}>
-      <CssBaseline />
-      <div
-        className='bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-900 dark:text-white'
-        data-testid='wrapper'
-      >
-        <NavBar
+    <div data-testid='wrapper' className='bg-background'>
+      <NavBar>
+        <NavBarControls
           disableRefresh={isLoading}
           onRefreshClick={() => refetch()}
           onRefetch={() => refetch()}
@@ -241,52 +231,55 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           onDisconnect={handleDisconnect}
           devices={data.devices}
         />
-        <div className='flex justify-center pl-3 pr-3'>
-          <div className='container'>
-            <div className='mb-4 flex flex-row justify-between'>
-              <div>
-                {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
-                  <>
-                    <p className='m-0'>
-                      {t('manufacturer')}: {vars['ups.mfr']?.value}
-                    </p>
-                    <p className='m-0'>
-                      {t('model')}: {vars['ups.model']?.value}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className='m-0'>
-                      {t('device')}: {ups.description}
-                    </p>
-                  </>
-                )}
-                <p>
-                  {t('serial')}: {vars['device.serial']?.value}
-                </p>
-              </div>
-              <div>
-                <p className='text-2xl font-semibold'>
-                  {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
-                  &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
-                </p>
-              </div>
-            </div>
-            <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-              <div className='mb-4'>{currentLoad()}</div>
-              <div className='mb-4'>{currentWh()}</div>
-              <div className='mb-4'>
-                <Runtime runtime={+vars['battery.runtime']?.value} />
-              </div>
-            </div>
-            <ChartsContainer vars={vars} data={data} name={ups.name} />
+      </NavBar>
+      <div className='flex justify-center pl-3 pr-3'>
+        <div className='container'>
+          <div className='mb-4 flex flex-row justify-between'>
             <div>
-              <MemoizedGrid data={ups} />
+              {vars['ups.mfr']?.value || vars['ups.model']?.value ? (
+                <>
+                  <p className='m-0'>
+                    {t('manufacturer')}: {vars['ups.mfr']?.value}
+                  </p>
+                  <p className='m-0'>
+                    {t('model')}: {vars['ups.model']?.value}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className='m-0'>
+                    {t('device')}: {ups.description}
+                  </p>
+                </>
+              )}
+              <p>
+                {t('serial')}: {vars['device.serial']?.value}
+              </p>
             </div>
-            <Footer updated={data.updated} />
+            <div>
+              <p className='text-2xl font-semibold'>
+                {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
+                &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
+              </p>
+              <div className='flex justify-end'>
+                <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
+              </div>
+            </div>
           </div>
+          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+            <div className='mb-4'>{currentLoad()}</div>
+            <div className='mb-4'>{currentWh()}</div>
+            <div className='mb-4'>
+              <Runtime runtime={+vars['battery.runtime']?.value} />
+            </div>
+          </div>
+          <ChartsContainer vars={vars} data={data} name={ups.name} />
+          <div>
+            <MemoizedGrid data={ups} />
+          </div>
+          <Footer updated={data.updated} />
         </div>
       </div>
-    </ThemeProvider>
+    </div>
   )
 }

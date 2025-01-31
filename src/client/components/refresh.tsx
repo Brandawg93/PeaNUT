@@ -1,6 +1,12 @@
 import { HiOutlineChevronDown, HiOutlineArrowPath } from 'react-icons/hi2'
 import React, { useContext } from 'react'
-import { Menu, MenuHandler, MenuList, MenuItem, Button } from '@material-tailwind/react'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/client/components/ui/dropdown-menu'
+import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
@@ -20,23 +26,22 @@ export default function Refresh(props: Props) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [effect, setEffect] = React.useState(false)
 
-  const handleSelect = (event: any) => {
-    const value = event.target.value as number
+  const handleSelect = (value: number) => {
     onRefreshChange(value)
     localStorage.setItem('refreshInterval', `${value}`)
     setIsOpen(false)
   }
 
   const isActive = (value: number) => {
-    return refreshInterval === value ? 'bg-blue-700 text-white' : ''
+    return refreshInterval === value ? '!bg-secondary-highlight' : ''
   }
 
   return (
-    <>
+    <div className='flex'>
       <Button
-        variant='filled'
+        variant='secondary'
         title={t('sidebar.refresh')}
-        className='text-md inline-flex justify-center rounded-r-none border-r bg-gray-400 px-3 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
+        className='rounded-r-none border border-r-0 border-border-card px-3 shadow-none'
         onClick={() => {
           setEffect(true)
           onClick()
@@ -44,32 +49,28 @@ export default function Refresh(props: Props) {
         onAnimationEnd={() => setEffect(false)}
         disabled={disabled}
       >
-        <HiOutlineArrowPath className={`h-4 w-4 stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
+        <HiOutlineArrowPath className={`!h-4 !w-4 stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
       </Button>
-      <Menu open={isOpen} handler={setIsOpen}>
-        <MenuHandler>
-          <Button
-            variant='filled'
-            className='text-md inline-flex justify-center rounded-l-none bg-gray-400 px-3 text-black shadow-none hover:shadow-none dark:bg-gray-800 dark:text-white'
-          >
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button variant='secondary' className='rounded-l-none border border-border-card px-3 shadow-none'>
             <HiOutlineChevronDown
               className={`h-4 w-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()}
             />
           </Button>
-        </MenuHandler>
-        <MenuList className='min-w-0 border-gray-300 text-black dark:border-gray-800 dark:bg-gray-900 dark:text-white'>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className='min-w-0'>
           {intervals.map((value) => (
-            <MenuItem
+            <DropdownMenuItem
               key={value}
-              className={`text-lg font-semibold ${isActive(value)}`}
-              value={value}
-              onClick={handleSelect}
+              className={`cursor-pointer text-lg font-semibold ${isActive(value)}`}
+              onClick={() => handleSelect(value)}
             >
               {value === 0 ? 'off' : `${value}s`}
-            </MenuItem>
+            </DropdownMenuItem>
           ))}
-        </MenuList>
-      </Menu>
-    </>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }

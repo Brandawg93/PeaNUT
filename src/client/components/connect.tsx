@@ -1,15 +1,18 @@
 'use client'
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
-import { ToastContainer, toast } from 'react-toastify'
-import { Card, Input, Button } from '@material-tailwind/react'
-
+import { Toaster, toast } from 'sonner'
+import { Card } from '@/client/components/ui/card'
+import { Button } from '@/client/components/ui/button'
+import { Input } from '@/client/components/ui/input'
+import { Label } from '@/client/components/ui/label'
 import { LanguageContext } from '@/client/context/language'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
+import { LuLoader } from 'react-icons/lu'
 import logo from '@/app/icon.svg'
 import { server } from '@/common/types'
 
@@ -26,17 +29,9 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const lng = useContext<string>(LanguageContext)
-  const { theme } = useContext(ThemeContext)
+  const { theme } = useTheme()
   const { t } = useTranslation(lng)
   const router = useRouter()
-
-  useEffect(() => {
-    async function getLoader() {
-      const { dotPulse } = await import('ldrs')
-      dotPulse.register()
-    }
-    getLoader()
-  }, [])
 
   const toggleShowPassword = () => setShowPassword(!showPassword)
 
@@ -51,18 +46,14 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
       setConnecting(true)
       const promise = testConnectionAction(server, port)
       toast.promise(promise, {
-        pending: t('connect.testing'),
-        success: {
-          render() {
-            setConnecting(false)
-            return t('connect.success')
-          },
+        loading: t('connect.testing'),
+        success: () => {
+          setConnecting(false)
+          return t('connect.success')
         },
-        error: {
-          render() {
-            setConnecting(false)
-            return t('connect.error')
-          },
+        error: () => {
+          setConnecting(false)
+          return t('connect.error')
         },
       })
     }
@@ -72,7 +63,7 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
     if (connecting) {
       return (
         <div>
-          <l-dot-pulse size={33} speed={1.3} color='white'></l-dot-pulse>
+          <LuLoader className='animate-spin' />
         </div>
       )
     } else {
@@ -82,102 +73,93 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
 
   return (
     <div
-      className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300 text-center dark:from-gray-900 dark:to-gray-800 dark:text-white'
+      className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
       data-testid='login-wrapper'
     >
-      <ToastContainer position='top-center' theme={theme} />
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='mb-8 flex justify-center'>
         <Image alt='' src={logo} width='100' height='100' className='d-inline-block align-top' />
       </div>
       <div>
         <h1 className='mb-4 text-4xl font-bold'>PeaNUT</h1>
       </div>
-      <Card className='border-neutral-300 relative flex flex-row justify-around border border-solid border-gray-300 shadow-md dark:border-gray-800 dark:bg-gray-950'>
-        <form className='w-full max-w-sm rounded-lg bg-white p-6 dark:bg-gray-800' onSubmit={handleSubmit}>
+      <Card className='relative flex flex-row justify-around overflow-hidden border border-border bg-card shadow-md'>
+        <form className='w-full max-w-sm bg-card p-6' onSubmit={handleSubmit}>
           <div className='mb-4'>
+            <Label htmlFor='serverHost'>{t('connect.server')}</Label>
             <Input
               required
               type='text'
-              variant='outlined'
-              label={t('connect.server')}
+              id='serverHost'
               value={server}
               onChange={(e) => setServer(e.target.value)}
-              className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='server'
-              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
+            <Label htmlFor='serverPort'>{t('connect.port')}</Label>
             <Input
               required
               type='number'
-              variant='outlined'
-              label={t('connect.port')}
+              id='serverPort'
               value={port}
               onChange={(e) => setPort(+e.target.value)}
-              className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='port'
               min={0}
               max={65535}
-              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
+            <Label htmlFor='username'>{t('connect.username')}</Label>
             <Input
               type='text'
-              variant='outlined'
-              label={t('connect.username')}
+              id='username'
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
+              className='w-full border-border-card bg-background px-3 py-2'
               data-testid='username'
-              crossOrigin=''
             />
           </div>
           <div className='mb-6'>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              icon={
-                <Button
-                  ripple={false}
-                  onClick={toggleShowPassword}
-                  className='relative overflow-hidden p-0'
-                  variant='text'
-                >
-                  {showPassword ? (
-                    <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
-                  ) : (
-                    <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
-                  )}
-                </Button>
-              }
-              variant='outlined'
-              label={t('connect.password')}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className='w-full px-3 py-2'
-              color={theme === 'light' ? 'black' : 'white'}
-              data-testid='password'
-              crossOrigin=''
-            />
+            <Label htmlFor='password'>{t('connect.password')}</Label>
+            <div className='flex'>
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                id='password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className='z-10 rounded-r-none border-r-0 border-border-card bg-background px-3 py-2 focus:rounded focus:border-r'
+                data-testid='password'
+              />
+              <Button
+                size='icon'
+                data-testid='toggle-password'
+                onClick={toggleShowPassword}
+                className='relative overflow-hidden rounded-l-none border border-l-0 border-border-card bg-background p-0'
+                variant='ghost'
+                type='button'
+              >
+                {showPassword ? (
+                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
+                ) : (
+                  <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
+                )}
+              </Button>
+            </div>
           </div>
           <div className='flex flex-row justify-between'>
             <Button
+              variant='destructive'
               disabled={connecting}
-              onClick={handleTestConnection}
-              className='bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700'
+              onClick={async () => handleTestConnection()}
+              className='font-bold shadow-none'
               type='button'
             >
               {getTestButton()}
             </Button>
-            <Button
-              disabled={connecting}
-              className='bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700'
-              type='submit'
-            >
+            <Button variant='default' disabled={connecting} className='px-4 py-2 font-bold' type='submit'>
               {t('connect.connect')}
             </Button>
           </div>

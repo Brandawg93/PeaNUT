@@ -1,9 +1,11 @@
-import React, { useContext } from 'react'
-import { Gauge as GaugeChart, gaugeClasses } from '@mui/x-charts/Gauge'
-import { Card } from '@material-tailwind/react'
-import { ThemeContext } from '@/client/context/theme'
+import React from 'react'
+import { ChartConfig, ChartContainer } from '@/client/components/ui/chart'
+import { Label, Pie, PieChart } from 'recharts'
+import { Card, CardContent, CardFooter } from '@/client/components/ui/card'
+import { useTheme } from 'next-themes'
+import './gauge.css'
 
-const getColor = (value: number, theme: 'light' | 'dark', invert = false) => {
+const getColor = (value: number, theme?: string, invert = false) => {
   // value from 0 to 1
   let num = value / 100
   if (invert) {
@@ -22,39 +24,66 @@ type Props = {
 
 export default function Gauge(props: Props) {
   const { percentage, invert, title, onClick } = props
-  const { theme } = useContext(ThemeContext)
+  const { resolvedTheme } = useTheme()
+  const data = [
+    { percentage, fill: 'var(--color-percentage)', stroke: 'hsl(var(--primary-foreground))' },
+    { percentage: 100 - percentage, fill: 'hsl(var(--border-card))' },
+  ]
+
+  const chartConfig = {
+    percentage: {
+      label: title,
+      color: getColor(percentage, resolvedTheme, invert),
+    },
+  } satisfies ChartConfig
 
   return (
     <Card
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='border-neutral-300 relative flex h-52 flex-row justify-around border border-solid border-gray-300 text-center shadow-none dark:border-gray-800 dark:bg-gray-950'
+      className='h-52 min-w-56 cursor-pointer overflow-hidden border border-border-card bg-card shadow-none'
       data-testid='gauge'
     >
-      <div className='motion-safe:animate-fade'>
-        <GaugeChart
-          width={225}
-          height={175}
-          value={percentage}
-          startAngle={-90}
-          endAngle={90}
-          text={({ value }) => `${value}%`}
-          sx={{
-            [`& .${gaugeClasses.valueText}`]: {
-              fontSize: 45,
-              fontFamily: 'sans-serif',
-              transform: 'translate(0, -15%)',
-            },
-            [`& .${gaugeClasses.valueArc}`]: {
-              fill: getColor(percentage, theme, invert),
-              stroke: theme === 'light' ? '#fff' : '#000',
-            },
-          }}
-        />
-      </div>
-      <div className='absolute bottom-[9px] w-full text-xs font-semibold text-[#666666] motion-safe:animate-fade dark:text-[#999999]'>
+      <CardContent className='h-44 !p-0'>
+        <div className='motion-safe:animate-fade'>
+          <ChartContainer config={chartConfig} className='mx-auto aspect-square h-full w-full max-w-[280px]'>
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey='percentage'
+                startAngle={-180}
+                endAngle={-360}
+                innerRadius={85}
+                outerRadius={105}
+                isAnimationActive={false}
+              >
+                <Label
+                  content={({ viewBox }) => {
+                    if (
+                      viewBox &&
+                      'cx' in viewBox &&
+                      viewBox.cx !== undefined &&
+                      'cy' in viewBox &&
+                      viewBox.cy !== undefined
+                    ) {
+                      return (
+                        <text x={viewBox.cx} y={viewBox.cy - 10} textAnchor='middle'>
+                          <tspan x={viewBox.cx} y={viewBox.cy - 10} className='fill-foreground text-5xl'>
+                            {percentage}%
+                          </tspan>
+                        </text>
+                      )
+                    }
+                  }}
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        </div>
+      </CardContent>
+      <CardFooter className='w-full justify-center text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
         {title}
-      </div>
+      </CardFooter>
     </Card>
   )
 }
