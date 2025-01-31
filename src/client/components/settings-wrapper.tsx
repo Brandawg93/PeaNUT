@@ -315,7 +315,7 @@ export default function SettingsWrapper({
               </Card>
             </TabsContent>
             <TabsContent value='notifications' className='mt-0 h-full flex-1'>
-              <div className='flex h-full flex-col justify-between'>
+              <Card className='p-4 shadow-none'>
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.manageNotifications')}</h2>
                   {notificationProvidersList.map((notificationProvider, index) => (
@@ -340,7 +340,7 @@ export default function SettingsWrapper({
                         setNotificationProvidersList([...notificationProvidersList, { name: 'stdout', triggers: [] }])
                       }
                     >
-                      <HiOutlinePlus className='h-6 w-6 dark:text-white' />
+                      <HiOutlinePlus className='!h-6 !w-6' />
                     </Button>
                   </div>
                 </div>
@@ -350,7 +350,7 @@ export default function SettingsWrapper({
                     {t('settings.apply')}
                   </Button>
                 </div>
-              </div>
+              </Card>
             </TabsContent>
             <TabsContent value='config' className='mt-0 h-full flex-1'>
               <Card className='p-4 shadow-none'>

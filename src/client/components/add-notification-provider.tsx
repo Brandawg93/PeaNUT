@@ -7,6 +7,7 @@ import { LanguageContext } from '@/client/context/language'
 import { Button } from '@/client/components/ui/button'
 import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
+import { Card } from '@/client/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/client/components/ui/select'
 import { NotificationProviders, NotificationTrigger, NotificationTriggerOperations } from '@/common/types'
 
@@ -61,11 +62,12 @@ export default function AddNotificationProvider({
   }
 
   return (
-    <div className='mb-4 w-full rounded-lg bg-card pb-6 pl-6'>
+    <Card className='mb-4 mt-1 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
       <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='h-12'>
         <Button
           variant='ghost'
+          type='button'
           className='text-md float-right px-3 shadow-none'
           title={t('settings.remove')}
           onClick={handleRemove}
@@ -102,6 +104,7 @@ export default function AddNotificationProvider({
               <div className='h-12'>
                 <Button
                   variant='ghost'
+                  type='button'
                   className='text-md float-right px-3 shadow-none'
                   title={t('settings.remove')}
                   onClick={() => {
@@ -156,7 +159,7 @@ export default function AddNotificationProvider({
                 <Input
                   type='number'
                   id='notificationTriggerTargetValue'
-                  value={trigger.targetValue}
+                  value={trigger.targetValue || 0}
                   onChange={(e) => {
                     trigger.targetValue = e.target.valueAsNumber
                     setTriggers([...triggers])
@@ -173,6 +176,7 @@ export default function AddNotificationProvider({
               variant='secondary'
               title={t('notification.trigger.buttonAdd')}
               className='shadow-none'
+              type='button'
               onClick={() => setTriggers([...triggers, { variable: '', operation: 'changes' }])}
             >
               <HiOutlinePlus className='!h-6 !w-6' />
@@ -187,6 +191,7 @@ export default function AddNotificationProvider({
                     variant='ghost'
                     className='text-md float-right px-3 shadow-none'
                     title={t('settings.remove')}
+                    type='button'
                     onClick={() => {
                       delete config[k]
                       setConfig(config)
@@ -240,6 +245,7 @@ export default function AddNotificationProvider({
               variant='secondary'
               title={t('notification.config.buttonAdd')}
               className='shadow-none'
+              type='button'
               onClick={() => setConfig({ ...config, property: 'value' })}
             >
               <HiOutlinePlus className='!h-6 !w-6' />
@@ -259,6 +265,6 @@ export default function AddNotificationProvider({
           </div>
         </form>
       </div>
-    </div>
+    </Card>
   )
 }
