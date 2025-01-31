@@ -41,7 +41,8 @@
     "configExportNotice": "Edite manualmente el archivo de configuración YAML.",
     "save": "Ahorrar",
     "download": "Descargar",
-    "viewConfig": "Haga clic para ver la configuración."
+    "viewConfig": "Haga clic para ver la configuración.",
+    "manageNotifications": "Notificaciones"
   },
   "connect": {
     "server": "Servidor",

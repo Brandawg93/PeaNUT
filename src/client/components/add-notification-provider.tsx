@@ -1,10 +1,13 @@
 import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ToastContainer, toast } from 'react-toastify'
+import { Toaster, toast } from 'sonner'
 import { HiOutlineXMark, HiOutlinePlus } from 'react-icons/hi2'
-import { ThemeContext } from '@/client/context/theme'
+import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
-import { Button, IconButton, Input, Option, Select } from '@material-tailwind/react'
+import { Button } from '@/client/components/ui/button'
+import { Input } from '@/client/components/ui/input'
+import { Label } from '@/client/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/client/components/ui/select'
 import { NotificationProviders, NotificationTrigger, NotificationTriggerOperations } from '@/common/types'
 
 type AddNotificationProviderProps = {
@@ -33,7 +36,7 @@ export default function AddNotificationProvider({
 }: AddNotificationProviderProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { theme } = useContext(ThemeContext)
+  const { theme } = useTheme()
   const [name, setName] = useState<(typeof NotificationProviders)[number]>(initialName)
   const [triggers, setTriggers] = useState<Array<NotificationTrigger>>(initialTriggers)
   const [config, setConfig] = useState<{ [x: string]: string } | undefined>(initialConfig)
@@ -44,7 +47,7 @@ export default function AddNotificationProvider({
       startTransition(async () => {
         const promise = testNotificationProviderAction(name, config)
         toast.promise(promise, {
-          pending: t('notification.testing'),
+          loading: t('notification.testing'),
           success: t('notification.success'),
           error: t('notification.error'),
         })
@@ -58,49 +61,48 @@ export default function AddNotificationProvider({
   }
 
   return (
-    <div className='mb-4 w-full rounded-lg bg-gray-200 pb-6 pl-6 dark:bg-gray-600'>
-      <ToastContainer position='top-center' theme={theme} />
+    <div className='mb-4 w-full rounded-lg bg-card pb-6 pl-6'>
+      <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='h-12'>
-        <IconButton
-          variant='text'
-          className='text-md float-right px-3 text-black shadow-none dark:text-white'
+        <Button
+          variant='ghost'
+          className='text-md float-right px-3 shadow-none'
           title={t('settings.remove')}
           onClick={handleRemove}
         >
-          <HiOutlineXMark className='h-6 w-6 stroke-1 dark:text-white' />
-        </IconButton>
+          <HiOutlineXMark className='h-6 w-6 stroke-1' />
+        </Button>
       </div>
       <div className='pr-6'>
         <form className='w-full'>
           <div className='mb-4'>
             <Select
-              variant='outlined'
-              label={t('notification.name')}
-              value={name}
-              onChange={(e) => {
+              onValueChange={(e) => {
                 const newName = e as (typeof NotificationProviders)[number]
                 setName(newName)
                 handleChange(newName, triggers, config)
               }}
-              className='w-full px-3 py-2 dark:text-gray-300'
-              menuProps={{ className: 'dark:bg-gray-700 dark:border-gray-800 dark:text-white' }}
-              labelProps={{ className: 'dark:text-gray-300' }}
-              data-testid={name}
+              value={name}
             >
-              {NotificationProviders.map((np, npIndex) => (
-                <Option key={npIndex} value={np}>
-                  {np}
-                </Option>
-              ))}
+              <SelectTrigger className='w-full border-border-card px-3 py-2'>
+                <SelectValue placeholder={t('notification.name')} />
+              </SelectTrigger>
+              <SelectContent>
+                {NotificationProviders.map((np, npIndex) => (
+                  <SelectItem key={npIndex} value={np}>
+                    {np}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <h3>{t('notification.trigger.heading')}</h3>
           {triggers.map((trigger, index) => (
             <div className='my-6 border-l-4 border-gray-600 pl-6' key={index}>
               <div className='h-12'>
-                <IconButton
-                  variant='text'
-                  className='text-md float-right px-3 text-black shadow-none dark:text-white'
+                <Button
+                  variant='ghost'
+                  className='text-md float-right px-3 shadow-none'
                   title={t('settings.remove')}
                   onClick={() => {
                     const newTriggers = [...triggers.filter((_trigger, _index) => _index !== index)]
@@ -108,15 +110,15 @@ export default function AddNotificationProvider({
                     handleChange(name, newTriggers, config)
                   }}
                 >
-                  <HiOutlineXMark className='h-6 w-6 stroke-1 dark:text-white' />
-                </IconButton>
+                  <HiOutlineXMark className='h-6 w-6 stroke-1' />
+                </Button>
               </div>
               <div className='mt-4'>
+                <Label htmlFor='notificationTriggerVariable'>{t('notification.trigger.variable')}</Label>
                 <Input
                   required
+                  id='notificationTriggerVariable'
                   type='text'
-                  variant='outlined'
-                  label={t('notification.trigger.variable')}
                   value={trigger.variable}
                   onChange={(e) => {
                     trigger.variable = e.target.value
@@ -124,39 +126,36 @@ export default function AddNotificationProvider({
                     handleChange(name, triggers, config)
                   }}
                   className='w-full px-3 py-2'
-                  color={theme === 'light' ? 'black' : 'white'}
                   data-testid={`${name}-trigger-variable`}
-                  crossOrigin=''
                 />
               </div>
               <div className='mt-4'>
                 <Select
-                  variant='outlined'
-                  label={t('notification.trigger.operation')}
-                  value={trigger.operation}
-                  onChange={(e) => {
+                  onValueChange={(e) => {
                     console.dir(e)
                     trigger.operation = e as (typeof NotificationTriggerOperations)[number]
                     setTriggers([...triggers])
                     handleChange(name, triggers, config)
                   }}
-                  className='w-full px-3 py-2 dark:text-gray-300'
-                  menuProps={{ className: 'dark:bg-gray-700 dark:border-gray-800 dark:text-white' }}
-                  labelProps={{ className: 'dark:text-gray-300' }}
-                  data-testid={`${name}-trigger-operation`}
+                  value={name}
                 >
-                  {NotificationTriggerOperations.map((op, opIndex) => (
-                    <Option key={opIndex} value={op}>
-                      {op}
-                    </Option>
-                  ))}
+                  <SelectTrigger className='w-full border-border-card px-3 py-2'>
+                    <SelectValue placeholder={t('notification.trigger.operation')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NotificationTriggerOperations.map((op, opIndex) => (
+                      <SelectItem key={opIndex} value={op}>
+                        {op}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
               <div className='mt-4'>
+                <Label htmlFor='notificationTriggerTargetValue'>{t('notification.trigger.targetValue')}</Label>
                 <Input
                   type='number'
-                  variant='outlined'
-                  label={t('notification.trigger.targetValue')}
+                  id='notificationTriggerTargetValue'
                   value={trigger.targetValue}
                   onChange={(e) => {
                     trigger.targetValue = e.target.valueAsNumber
@@ -164,21 +163,19 @@ export default function AddNotificationProvider({
                     handleChange(name, triggers, config)
                   }}
                   className='w-full px-3 py-2'
-                  color={theme === 'light' ? 'black' : 'white'}
                   data-testid={`${name}-trigger-targetValue`}
-                  crossOrigin=''
                 />
               </div>
             </div>
           ))}
           <div className='text-center'>
             <Button
-              variant='filled'
+              variant='secondary'
               title={t('notification.trigger.buttonAdd')}
-              className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
+              className='shadow-none'
               onClick={() => setTriggers([...triggers, { variable: '', operation: 'changes' }])}
             >
-              <HiOutlinePlus className='h-6 w-6 dark:text-white' />
+              <HiOutlinePlus className='!h-6 !w-6' />
             </Button>
           </div>
           <h3>{t('notification.config.heading')}</h3>
@@ -186,9 +183,9 @@ export default function AddNotificationProvider({
             Object.keys(config).map((k, index) => (
               <div className='my-6 border-l-4 border-gray-600 pl-6' key={index}>
                 <div className='h-12'>
-                  <IconButton
-                    variant='text'
-                    className='text-md float-right px-3 text-black shadow-none dark:text-white'
+                  <Button
+                    variant='ghost'
+                    className='text-md float-right px-3 shadow-none'
                     title={t('settings.remove')}
                     onClick={() => {
                       delete config[k]
@@ -196,15 +193,15 @@ export default function AddNotificationProvider({
                       handleChange(name, triggers, config)
                     }}
                   >
-                    <HiOutlineXMark className='h-6 w-6 stroke-1 dark:text-white' />
-                  </IconButton>
+                    <HiOutlineXMark className='h-6 w-6 stroke-1' />
+                  </Button>
                 </div>
                 <div className='mt-4'>
+                  <Label htmlFor='notificationConfigPropertyName'>{t('notification.config.propertyName')}</Label>
                   <Input
                     required
                     type='text'
-                    variant='outlined'
-                    label={t('notification.config.propertyName')}
+                    id='notificationConfigPropertyName'
                     value={k}
                     onChange={(e) => {
                       const newConfig = {
@@ -218,16 +215,14 @@ export default function AddNotificationProvider({
                       handleChange(name, triggers, newConfig)
                     }}
                     className='w-full px-3 py-2'
-                    color={theme === 'light' ? 'black' : 'white'}
                     data-testid={`${name}-config-key`}
-                    crossOrigin=''
                   />
                 </div>
                 <div className='mt-4'>
+                  <Label htmlFor='notificationConfigPropertyValue'>{t('notification.config.propertyValue')}</Label>
                   <Input
                     type='text'
-                    variant='outlined'
-                    label={t('notification.config.propertyValue')}
+                    id='notificationConfigPropertyValue'
                     value={config[k]}
                     onChange={(e) => {
                       const newConfig = { ...config, [k]: e.target.value }
@@ -235,29 +230,28 @@ export default function AddNotificationProvider({
                       handleChange(name, triggers, newConfig)
                     }}
                     className='w-full px-3 py-2'
-                    color={theme === 'light' ? 'black' : 'white'}
                     data-testid={`${name}-config-value`}
-                    crossOrigin=''
                   />
                 </div>
               </div>
             ))}
           <div className='text-center'>
             <Button
-              variant='filled'
+              variant='secondary'
               title={t('notification.config.buttonAdd')}
-              className='text-md bg-gray-300 text-black shadow-none dark:bg-gray-600 dark:text-white'
+              className='shadow-none'
               onClick={() => setConfig({ ...config, property: 'value' })}
             >
-              <HiOutlinePlus className='h-6 w-6 dark:text-white' />
+              <HiOutlinePlus className='!h-6 !w-6' />
             </Button>
           </div>
           <div className='flex flex-row justify-between'>
             <div />
             <Button
+              variant='destructive'
               disabled={connecting}
               onClick={async () => handleTestNotification()}
-              className='bg-red-500 font-bold text-white shadow-none hover:bg-red-700'
+              className='shadow-none'
               type='button'
             >
               {t('connect.test')}
