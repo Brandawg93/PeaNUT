@@ -34,7 +34,7 @@ export default function WattsChart(props: Props) {
       if (realpower) setRealpowerData((prev) => [...prev, { dataPoint: realpower, time: new Date() }])
     }
     prevDataRef.current = id
-  }, [id, realpowerData, updated])
+  }, [id, realpower, updated])
 
   return (
     <LineChart
