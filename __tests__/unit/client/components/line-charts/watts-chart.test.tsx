@@ -6,13 +6,13 @@ import { DEVICE } from '@/common/types'
 const device: DEVICE = {
   vars: {
     'ups.realpower': {
-      value: '0',
+      value: '1',
     },
     'device.serial': {
       value: 'test',
     },
     'ups.realpower.nominal': {
-      value: '0',
+      value: '1',
     },
   },
   rwVars: [],
@@ -22,10 +22,10 @@ const device: DEVICE = {
   name: 'test',
 }
 
-describe('Gauge', () => {
+describe('Watts', () => {
   it('renders', () => {
     const vars = device.vars
-    const { getByTestId } = render(
+    const chart = (
       <WattsChart
         id={device.name}
         realpower={+vars['ups.realpower'].value}
@@ -33,7 +33,7 @@ describe('Gauge', () => {
         updated={new Date()}
       />
     )
-
+    const { getByTestId } = render(chart)
     expect(getByTestId('watts-chart')).toBeInTheDocument()
   })
 })

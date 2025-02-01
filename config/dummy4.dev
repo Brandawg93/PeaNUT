@@ -1,0 +1,89 @@
+battery.capacity: 9
+battery.charge: 100
+battery.charge.low: 20
+battery.charge.restart: 0
+battery.charger.status: resting
+battery.energysave: no
+battery.energysave.delay: 300
+battery.energysave.load: 5
+battery.protection: yes
+battery.runtime: 932
+battery.type: PbAc
+battery.voltage: 13.1
+battery.voltage.nominal: 12
+device.mfr: EATON
+device.model: 5P 650
+device.serial: 123
+device.type: ups
+driver.name: usbhid-ups
+driver.parameter.pollfreq: 30
+driver.parameter.pollinterval: 1
+driver.parameter.port: auto
+driver.parameter.productid: ffff
+driver.parameter.serial: 123
+driver.parameter.synchronous: no
+driver.parameter.vendorid: 463
+driver.version: 2.7.4
+driver.version.data: MGE HID 1.40
+driver.version.internal: 0.41
+input.current: 0.8
+input.frequency: 49.9
+input.frequency.extended: no
+input.frequency.nominal: 50
+input.sensitivity: normal
+input.transfer.boost.low: 184
+input.transfer.high: 294
+input.transfer.low: 160
+input.transfer.trim.high: 265
+input.voltage: 236.2
+input.voltage.extended: no
+input.voltage.nominal: 230
+outlet.1.autoswitch.charge.low: 0
+outlet.1.delay.shutdown: 65535
+outlet.1.delay.start: 3
+outlet.1.desc: PowerShare Outlet 1
+outlet.1.id: 1
+outlet.1.status: on
+outlet.1.switchable: yes
+outlet.2.autoswitch.charge.low: 0
+outlet.2.delay.shutdown: 65535
+outlet.2.delay.start: 6
+outlet.2.desc: PowerShare Outlet 2
+outlet.2.id: 2
+outlet.2.status: on
+outlet.2.switchable: yes
+outlet.desc: Main Outlet
+outlet.id: 0
+outlet.switchable: no
+output.current: 0.7
+output.frequency: 49.9
+output.frequency.nominal: 50
+output.powerfactor: 0.76
+output.voltage: 236.2
+output.voltage.nominal: 230
+ups.beeper.status: enabled
+ups.delay.shutdown: 20
+ups.delay.start: 30
+ups.efficiency: 88
+ups.firmware: 03.18.0035
+ups.load: 26
+ups.load.high: 105
+ups.mfr: EATON
+ups.model: 5P 650
+ups.power: 165
+ups.power.nominal: 650
+ups.productid: ffff
+ups.realpower: 126
+ups.realpower.nominal: 420
+ups.serial: 123
+ups.shutdown: enabled
+ups.start.auto: yes
+ups.start.battery: yes
+ups.start.reboot: yes
+ups.status: OL
+ups.test.interval: 2592000
+ups.test.result: Done and passed
+ups.timer.shutdown: -1
+ups.timer.start: -1
+ups.type: offline / line interactive
+ups.vendorid: 463

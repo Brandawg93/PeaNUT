@@ -12,6 +12,19 @@ A Tiny Dashboard for Network UPS Tools
 
 <img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/charts.png" width="600px" />
 
+## Features
+
+- Monitor UPS devices connected to your network via [NUT](https://networkupstools.org)
+- View real-time statistics and status of UPS devices
+- Supports multiple UPS devices
+- Execute commands on UPS devices
+- Configure settings through a user-friendly UI
+- Manual configuration via YAML file
+- API access for integration with other tools
+- [InfluxDB](https://www.influxdata.com) v2 integration for notifications via [Grafana](https://grafana.com)
+- Customizable widgets for [Homepage](https://gethomepage.dev) integration
+- Detailed [documentation](https://github.com/Brandawg93/PeaNUT/wiki) and examples available
+
 ## Installation
 
 Install using Docker

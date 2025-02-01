@@ -6,16 +6,16 @@ import { DEVICE } from '@/common/types'
 const device: DEVICE = {
   vars: {
     'input.voltage': {
-      value: '0',
+      value: '1',
     },
     'device.serial': {
       value: 'test',
     },
     'input.voltage.nominal': {
-      value: '0',
+      value: '1',
     },
     'output.voltage': {
-      value: '0',
+      value: '1',
     },
   },
   rwVars: [],
@@ -25,10 +25,10 @@ const device: DEVICE = {
   name: 'test',
 }
 
-describe('Line', () => {
+describe('Volts', () => {
   it('renders', () => {
     const vars = device.vars
-    const { getByTestId } = render(
+    const chart = (
       <VoltsChart
         id={device.name}
         inputVoltage={+vars['input.voltage'].value}
@@ -37,7 +37,23 @@ describe('Line', () => {
         updated={new Date()}
       />
     )
+    const { getByTestId } = render(chart)
+    expect(getByTestId('volts-chart')).toBeInTheDocument()
+  })
 
+  it('renders with no output voltage', () => {
+    const vars = { ...device.vars }
+    delete vars['output.voltage']
+    const chart = (
+      <VoltsChart
+        id={device.name}
+        inputVoltage={+vars['input.voltage'].value}
+        inputVoltageNominal={+vars['input.voltage.nominal']?.value}
+        outputVoltage={+vars['output.voltage']?.value}
+        updated={new Date()}
+      />
+    )
+    const { getByTestId } = render(chart)
     expect(getByTestId('volts-chart')).toBeInTheDocument()
   })
 })
