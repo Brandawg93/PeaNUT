@@ -1,44 +1,33 @@
-import React, { useEffect, useState, useRef, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import './charts.css'
 import LineChart from './line-chart-base'
 import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import { useChartData } from './hooks/useChartData'
+import { BaseChartProps } from './types/chart-types'
 
-type Props = {
-  id: string
+type Props = BaseChartProps & {
   realpower?: number
   realpowerNominal?: number
-  updated: Date
 }
 
 export default function WattsChart(props: Props) {
   const { id, realpower, realpowerNominal, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [realpowerData, setRealpowerData] = useState<Array<{ dataPoint: number; time: Date }>>([])
   const [showRealpower, setShowRealpower] = useState<boolean>(true)
-  const prevDataRef = useRef(id)
-  const referenceLineData = []
-  if (realpowerNominal) {
-    referenceLineData.push({ label: t('wattsChart.nominalRealpower'), value: realpowerNominal })
-  }
+  const realpowerData = useChartData(id, updated, realpower)
+
+  const referenceLineData = realpowerNominal
+    ? [{ label: t('wattsChart.nominalRealpower'), value: realpowerNominal }]
+    : []
 
   const handleLegendClick = (payload: Payload) => {
     if (payload.value === 'realpower') {
       setShowRealpower(!showRealpower)
     }
   }
-
-  useEffect(() => {
-    if (id !== prevDataRef.current) {
-      if (realpower) setRealpowerData([{ dataPoint: realpower, time: new Date() }])
-      else setRealpowerData([])
-    } else {
-      if (realpower) setRealpowerData((prev) => [...prev, { dataPoint: realpower, time: new Date() }])
-    }
-    prevDataRef.current = id
-  }, [id, realpower, updated])
 
   return (
     <LineChart
