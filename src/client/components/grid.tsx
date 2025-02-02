@@ -13,8 +13,8 @@ import {
   HiOutlineInformationCircle,
   HiOutlineChevronRight,
   HiOutlineChevronDown,
-  HiOutlineArrowUturnDown,
 } from 'react-icons/hi2'
+import { TbList, TbListTree } from 'react-icons/tb'
 import { Toaster, toast } from 'sonner'
 import {
   createColumnHelper,
@@ -163,17 +163,19 @@ export default function NutGrid({ data }: Props) {
               {row.getCanExpand() && (
                 <div className='flex h-full flex-col justify-center'>
                   {row.getIsExpanded() ? (
-                    <HiOutlineChevronDown className='h-4 w-4' />
+                    <HiOutlineChevronDown className='!h-5 !w-5' />
                   ) : (
-                    <HiOutlineChevronRight className='h-4 w-4' />
+                    <HiOutlineChevronRight className='!h-5 !w-5' />
                   )}
                 </div>
               )}
-              <span
-                className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} mb-0 inline font-normal text-primary`}
-              >
-                {getValue()}
-              </span>
+              <div className='flex h-full flex-col justify-center'>
+                <span
+                  className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} mb-0 inline font-normal text-primary`}
+                >
+                  {getValue()}
+                </span>
+              </div>
             </button>
             {row.original.description && (
               <Popover>
@@ -199,16 +201,16 @@ export default function NutGrid({ data }: Props) {
             {useTreeData && (
               <div className='flex h-[28px] flex-col justify-center'>
                 {table.getIsAllRowsExpanded() ? (
-                  <HiOutlineChevronDown className='h-4 w-4 text-primary' />
+                  <HiOutlineChevronDown className='!h-5 !w-5' />
                 ) : (
-                  <HiOutlineChevronRight className='h-4 w-4 text-primary' />
+                  <HiOutlineChevronRight className='!h-5 !w-5' />
                 )}
               </div>
             )}
             <span className='mb-0 text-lg font-semibold text-primary'>{t('grid.key')}</span>
           </button>
-          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='text-primary shadow-none'>
-            <HiOutlineArrowUturnDown className={`${useTreeData ? '-rotate-90' : 'rotate-0'} h-4 w-4`} />
+          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='shadow-none'>
+            {useTreeData ? <TbListTree className='!h-6 !w-6' /> : <TbList className='!h-6 !w-6' />}
           </Button>
         </div>
       ),
