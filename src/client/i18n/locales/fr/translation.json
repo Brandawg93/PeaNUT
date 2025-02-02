@@ -120,5 +120,8 @@
   "voltAmpsChart": {
     "nominalPower": "Puissance nominale",
     "power": "Pouvoir"
-  }
+  },
+  "volt-amps-chart": "Puissance apparente",
+  "volts-chart": "Tension",
+  "watts-chart": "Réel pouvoir"
 }

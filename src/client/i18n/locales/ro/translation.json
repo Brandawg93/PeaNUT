@@ -120,5 +120,8 @@
   "voltAmpsChart": {
     "nominalPower": "Puterea nominală",
     "power": "Putere"
-  }
+  },
+  "volt-amps-chart": "Putere aparentă",
+  "volts-chart": "Voltaj",
+  "watts-chart": "Putere reală"
 }

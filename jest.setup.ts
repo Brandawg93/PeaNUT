@@ -42,6 +42,12 @@ jest.mock('fs', () => ({
   mkdirSync: jest.fn(),
 }))
 
-jest.mock('lucide-react', () => ({}))
+jest.mock('lucide-react', () => ({
+  ChevronDown: jest.fn(),
+  ChevronUp: jest.fn(),
+  ChevronRight: jest.fn(),
+  Check: jest.fn(),
+  Circle: jest.fn(),
+}))
 
 window.PointerEvent = MouseEvent as typeof PointerEvent
