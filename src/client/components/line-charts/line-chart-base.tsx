@@ -12,18 +12,19 @@ import {
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import { Payload } from 'recharts/types/component/DefaultLegendContent'
 
+type ReferenceLineData = Array<{ label: string; value: number }>
+
 type Props = {
   id: string
   config: ChartConfig
   data: any[]
   unit: string
   onLegendClick?: (payload: Payload) => void
-  referenceLineValue?: number
-  referenceLineLabel?: string
+  referenceLineData?: ReferenceLineData
 }
 
 export default function LineChartBase(props: Props) {
-  const { referenceLineValue, referenceLineLabel, id, config, data, unit, onLegendClick } = props
+  const { referenceLineData, id, config, data, unit, onLegendClick } = props
   return (
     <Card className='h-96 w-full border border-border-card bg-card p-3 shadow-none' data-testid={id}>
       <CardContent className='h-full !p-0'>
@@ -41,7 +42,16 @@ export default function LineChartBase(props: Props) {
             <YAxis
               tickLine={false}
               axisLine={false}
-              domain={['audo', 'auto']}
+              domain={[
+                (dataMin: number) =>
+                  referenceLineData !== undefined
+                    ? Math.min(dataMin, ...referenceLineData.map((l) => l.value))
+                    : dataMin,
+                (dataMax: number) =>
+                  referenceLineData !== undefined
+                    ? Math.max(dataMax, ...referenceLineData.map((l) => l.value))
+                    : dataMax,
+              ]}
               tickMargin={8}
               tickFormatter={(value) => `${value}${unit}`}
             />
@@ -50,14 +60,16 @@ export default function LineChartBase(props: Props) {
               content={<ChartLegendContent handleClick={(e) => onLegendClick && onLegendClick(e)} />}
             />
             <CartesianGrid horizontal vertical />
-            {referenceLineValue && (
-              <ChartReferenceLine
-                y={referenceLineValue}
-                stroke='red'
-                label={referenceLineLabel}
-                strokeDasharray='4 4'
-              />
-            )}
+            {referenceLineData &&
+              referenceLineData.map((line) => (
+                <ChartReferenceLine
+                  key={line.label}
+                  y={line.value}
+                  stroke='red'
+                  label={line.label}
+                  strokeDasharray='4 4'
+                />
+              ))}
             <ChartTooltip
               cursor={false}
               content={

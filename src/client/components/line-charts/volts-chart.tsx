@@ -9,12 +9,13 @@ type Props = {
   id: string
   inputVoltage?: number
   inputVoltageNominal?: number
+  outputVoltageNominal?: number
   outputVoltage?: number
   updated: Date
 }
 
 export default function VoltsChart(props: Props) {
-  const { id, inputVoltage, inputVoltageNominal, outputVoltage, updated } = props
+  const { id, inputVoltage, inputVoltageNominal, outputVoltage, outputVoltageNominal, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [inputVoltageData, setInputVoltageData] = useState<Array<{ dataPoint: number; time: Date }>>([])
@@ -22,6 +23,17 @@ export default function VoltsChart(props: Props) {
   const [showInputVoltage, setShowInputVoltage] = useState<boolean>(true)
   const [showOutputVoltage, setShowOutputVoltage] = useState<boolean>(true)
   const prevDataRef = useRef(id)
+  const referenceLineData = []
+  if (inputVoltageNominal && outputVoltageNominal && inputVoltageNominal === outputVoltageNominal) {
+    referenceLineData.push({ label: t('voltsChart.nominalVoltage'), value: inputVoltageNominal })
+  } else {
+    if (inputVoltageNominal) {
+      referenceLineData.push({ label: t('voltsChart.nominalInputVoltage'), value: inputVoltageNominal })
+    }
+    if (outputVoltageNominal) {
+      referenceLineData.push({ label: t('voltsChart.nominalOutputVoltage'), value: outputVoltageNominal })
+    }
+  }
 
   const handleLegendClick = (payload: Payload) => {
     if (payload.value === 'inputVoltage') {
@@ -48,8 +60,7 @@ export default function VoltsChart(props: Props) {
     <LineChart
       id='volts-chart'
       onLegendClick={handleLegendClick}
-      referenceLineValue={inputVoltageNominal}
-      referenceLineLabel={t('voltsChart.nominalInputVoltage')}
+      referenceLineData={referenceLineData}
       config={{
         time: {
           label: 'Time',

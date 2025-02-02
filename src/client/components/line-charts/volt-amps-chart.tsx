@@ -7,57 +7,57 @@ import { Payload } from 'recharts/types/component/DefaultLegendContent'
 
 type Props = {
   id: string
-  realpower?: number
-  realpowerNominal?: number
+  power?: number
+  powerNominal?: number
   updated: Date
 }
 
 export default function WattsChart(props: Props) {
-  const { id, realpower, realpowerNominal, updated } = props
+  const { id, power, powerNominal, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [realpowerData, setRealpowerData] = useState<Array<{ dataPoint: number; time: Date }>>([])
-  const [showRealpower, setShowRealpower] = useState<boolean>(true)
+  const [powerData, setPowerData] = useState<Array<{ dataPoint: number; time: Date }>>([])
+  const [showPower, setShowPower] = useState<boolean>(true)
   const prevDataRef = useRef(id)
   const referenceLineData = []
-  if (realpowerNominal) {
-    referenceLineData.push({ label: t('wattsChart.nominalRealpower'), value: realpowerNominal })
+  if (powerNominal) {
+    referenceLineData.push({ label: t('voltAmpsChart.nominalPower'), value: powerNominal })
   }
 
   const handleLegendClick = (payload: Payload) => {
-    if (payload.value === 'realpower') {
-      setShowRealpower(!showRealpower)
+    if (payload.value === 'power') {
+      setShowPower(!showPower)
     }
   }
 
   useEffect(() => {
     if (id !== prevDataRef.current) {
-      if (realpower) setRealpowerData([{ dataPoint: realpower, time: new Date() }])
-      else setRealpowerData([])
+      if (power) setPowerData([{ dataPoint: power, time: new Date() }])
+      else setPowerData([])
     } else {
-      if (realpower) setRealpowerData((prev) => [...prev, { dataPoint: realpower, time: new Date() }])
+      if (power) setPowerData((prev) => [...prev, { dataPoint: power, time: new Date() }])
     }
     prevDataRef.current = id
-  }, [id, realpower, updated])
+  }, [id, power, updated])
 
   return (
     <LineChart
-      id='watts-chart'
+      id='volt-amps-chart'
       onLegendClick={handleLegendClick}
       referenceLineData={referenceLineData}
       config={{
         time: {
           label: 'Time',
         },
-        realpower: {
-          label: t('wattsChart.realpower'),
+        power: {
+          label: t('voltAmpsChart.power'),
           color: 'hsl(var(--chart-1))',
         },
       }}
-      unit='W'
-      data={realpowerData.map((v) => ({
+      unit='VA'
+      data={powerData.map((v) => ({
         time: v.time,
-        realpower: showRealpower ? v.dataPoint : undefined,
+        power: showPower ? v.dataPoint : undefined,
       }))}
     />
   )

@@ -13,7 +13,9 @@
   "voltsChart": {
     "inputVoltage": "Tensiune de intrare",
     "outputVoltage": "Tensiune de ieșire",
-    "nominalInputVoltage": "Tensiune nominală de intrare"
+    "nominalInputVoltage": "Tensiune nominală de intrare",
+    "nominalOutputVoltage": "Tensiunea de ieșire nominală",
+    "nominalVoltage": "Tensiune nominală"
   },
   "wattsChart": {
     "realpower": "Putere reală",
@@ -114,5 +116,9 @@
       "actionText": "Bip mut",
       "successMessage": "Bipul s -a mutat"
     }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "Puterea nominală",
+    "power": "Putere"
   }
 }

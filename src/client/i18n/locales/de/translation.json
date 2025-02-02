@@ -13,7 +13,9 @@
   "voltsChart": {
     "inputVoltage": "Eingangsspannung",
     "outputVoltage": "Ausgangsspannung",
-    "nominalInputVoltage": "Nominale Eingangsspannung"
+    "nominalInputVoltage": "Nominale Eingangsspannung",
+    "nominalOutputVoltage": "Nennausgangsspannung",
+    "nominalVoltage": "Nennspannung"
   },
   "wattsChart": {
     "realpower": "Wirkleistung",
@@ -114,5 +116,9 @@
       "actionText": "Stumme Beeper",
       "successMessage": "Beeper stummgeschaltet"
     }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "Nominale Kraft",
+    "power": "Leistung"
   }
 }
