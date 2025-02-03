@@ -46,7 +46,7 @@ describe('YamlSettings', () => {
 
     it('should handle file read errors gracefully', () => {
       ;(existsSync as jest.Mock).mockReturnValue(true)
-      ;(readFileSync as jest.Mock).mockImplementation(() => {
+      ;(readFileSync as jest.Mock).mockImplementationOnce(() => {
         throw new Error('File read error')
       })
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()

@@ -13,7 +13,9 @@
   "voltsChart": {
     "inputVoltage": "Voltaje de Entrada",
     "outputVoltage": "Voltaje de Salida",
-    "nominalInputVoltage": "Voltaje de Entrada Nominal"
+    "nominalInputVoltage": "Voltaje de Entrada Nominal",
+    "nominalOutputVoltage": "Voltaje de salida nominal",
+    "nominalVoltage": "Voltaje nominal"
   },
   "wattsChart": {
     "realpower": "Potencia Real",
@@ -114,5 +116,12 @@
       "actionText": "Mute beeper",
       "successMessage": "Beeper silenciado"
     }
-  }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "Potencia nominal",
+    "power": "Fuerza"
+  },
+  "volt-amps-chart": "Poder aparente",
+  "volts-chart": "Voltaje",
+  "watts-chart": "Poder real"
 }

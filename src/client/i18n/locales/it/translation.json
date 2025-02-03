@@ -13,7 +13,9 @@
   "voltsChart": {
     "inputVoltage": "Tensione d'ingresso",
     "outputVoltage": "Tensione di uscita",
-    "nominalInputVoltage": "Tensione d'ingresso nominale"
+    "nominalInputVoltage": "Tensione d'ingresso nominale",
+    "nominalOutputVoltage": "Tensione di uscita nominale",
+    "nominalVoltage": "Tensione nominale"
   },
   "wattsChart": {
     "realpower": "Potenza reale",
@@ -114,5 +116,12 @@
       "actionText": "Muto un segnale acustico",
       "successMessage": "Segondatore silenzioso"
     }
-  }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "Potere nominale",
+    "power": "Energia"
+  },
+  "volt-amps-chart": "Potere apparente",
+  "volts-chart": "Voltaggio",
+  "watts-chart": "Vero potere"
 }

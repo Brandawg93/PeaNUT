@@ -1,3 +1,4 @@
+import React from 'react'
 import '@testing-library/jest-dom'
 
 Object.defineProperty(window, 'matchMedia', {
@@ -42,6 +43,22 @@ jest.mock('fs', () => ({
   mkdirSync: jest.fn(),
 }))
 
-jest.mock('lucide-react', () => ({}))
+jest.mock('lucide-react', () => ({
+  ChevronDown: jest.fn(),
+  ChevronUp: jest.fn(),
+  ChevronRight: jest.fn(),
+  Check: jest.fn(),
+  Circle: jest.fn(),
+}))
+
+jest.mock('recharts', () => {
+  const OriginalRechartsModule = jest.requireActual('recharts')
+  return {
+    ...OriginalRechartsModule,
+    ResponsiveContainer: ({ children }: { children: any }) => (
+      <div style={{ width: '100%', height: '100%' }}>{children}</div>
+    ),
+  }
+})
 
 window.PointerEvent = MouseEvent as typeof PointerEvent

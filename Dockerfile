@@ -5,7 +5,7 @@ WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN corepack enable
+RUN corepack enable pnpm && corepack prepare pnpm@10.0.0 --activate
 COPY --link package.json pnpm-lock.yaml* /app/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
@@ -20,7 +20,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . /app
 
-RUN corepack enable pnpm && pnpm run build && rm -rf .next/standalone/.next/cache
+RUN corepack enable pnpm && corepack prepare pnpm@10.0.0 --activate && pnpm run build && rm -rf .next/standalone/.next/cache
 
 FROM node:22-alpine AS runner
 
