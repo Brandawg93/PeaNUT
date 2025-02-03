@@ -5,14 +5,41 @@ import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
 import { server, DeviceData, VarDescription } from '@/common/types'
+import chokidar from 'chokidar'
 
 const settingsFile = './config/settings.yml'
+// Cache settings instance
+let settingsInstance: YamlSettings | null = null
+
+// Initialize watcher
+const watcher = chokidar.watch(settingsFile, {
+  persistent: true,
+  ignoreInitial: true,
+})
+
+// Reset settings instance when file changes
+watcher.on('change', () => {
+  settingsInstance = null
+})
+
+function getCachedSettings(): YamlSettings {
+  if (!settingsInstance) {
+    settingsInstance = new YamlSettings(settingsFile)
+  }
+  return settingsInstance
+}
 
 async function connect(): Promise<Array<Nut>> {
-  const settings = new YamlSettings(settingsFile)
-  return settings
-    .get('NUT_SERVERS')
-    .map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+  try {
+    const settings = getCachedSettings()
+    const servers = settings.get('NUT_SERVERS')
+    if (!Array.isArray(servers) || servers.length === 0) {
+      throw new Error('No NUT servers configured')
+    }
+    return servers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+  } catch (e: any) {
+    throw new Error(`Failed to connect to NUT servers: ${e.message}`)
+  }
 }
 
 export async function testConnection(server: string, port: number) {
@@ -28,38 +55,53 @@ export async function testInfluxConnection(host: string, token: string, org: str
 export async function getDevices(): Promise<DeviceData> {
   try {
     const nuts = await connect()
-    const gridProps: Array<DEVICE> = []
-    const devicePromises = nuts.map(async (nut) => {
-      const devices = await nut.getDevices()
-      const devicePromises = devices.map(async (device) => {
-        const [data, rwVars, commands] = await Promise.all([
-          nut.getData(device.name),
-          nut.getRWVars(device.name),
-          nut.getCommands(device.name),
-        ])
-        return {
-          vars: data,
-          rwVars,
-          description: device.description === 'Description unavailable' ? '' : device.description,
-          clients: [],
-          commands,
-          name: device.name,
-        }
+    const deviceMap = new Map<string, DEVICE>()
+    const deviceOrder: string[] = []
+
+    await Promise.all(
+      nuts.map(async (nut) => {
+        const devices = await nut.getDevices()
+        devices.forEach((device) => {
+          if (!deviceOrder.includes(device.name)) {
+            deviceOrder.push(device.name)
+          }
+        })
+
+        await Promise.all(
+          devices.map(async (device) => {
+            // Skip if we already have this device
+            if (deviceMap.has(device.name)) return
+
+            const [data, rwVars, commands] = await Promise.all([
+              nut.getData(device.name),
+              nut.getRWVars(device.name),
+              nut.getCommands(device.name),
+            ])
+
+            deviceMap.set(device.name, {
+              vars: data,
+              rwVars,
+              description: device.description === 'Description unavailable' ? '' : device.description,
+              clients: [],
+              commands,
+              name: device.name,
+            })
+          })
+        )
       })
-      const resolvedDevices = await Promise.all(devicePromises)
-      gridProps.push(...resolvedDevices)
-    })
-    await Promise.all(devicePromises)
-    const deviceNames = new Set<string>()
-    for (const device of gridProps) {
-      if (deviceNames.has(device.name)) {
-        throw new Error(`Duplicate device name found: ${device.name}`)
-      }
-      deviceNames.add(device.name)
+    )
+
+    return {
+      devices: deviceOrder.map((name) => deviceMap.get(name)!),
+      updated: new Date(),
+      error: undefined,
     }
-    return { devices: gridProps, updated: new Date(), error: undefined }
   } catch (e: any) {
-    return { devices: undefined, updated: new Date(), error: e?.message || 'Unknown error' }
+    return {
+      devices: undefined,
+      updated: new Date(),
+      error: e?.message || 'Unknown error',
+    }
   }
 }
 
@@ -83,13 +125,14 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
 export async function saveVar(device: string, varName: string, value: string) {
   try {
     const nuts = await connect()
-    const savePromises = nuts.map(async (nut) => {
-      const deviceExists = await nut.deviceExists(device)
-      if (deviceExists) {
-        await nut.setVar(device, varName, value)
-      }
-    })
-    await Promise.all(savePromises)
+    await Promise.all(
+      nuts.map(async (nut) => {
+        const deviceExists = await nut.deviceExists(device)
+        if (deviceExists) {
+          await nut.setVar(device, varName, value)
+        }
+      })
+    )
     return { error: undefined }
   } catch (e: any) {
     return { error: e?.message || 'Unknown error' }
@@ -100,14 +143,17 @@ export async function getAllCommands(device: string): Promise<string[]> {
   try {
     const nuts = await connect()
     const commands = new Set<string>()
-    const commandPromises = nuts.map(async (nut) => {
-      const deviceExists = await nut.deviceExists(device)
-      if (deviceExists) {
-        const deviceCommands = await nut.getCommands(device)
-        deviceCommands.forEach((command) => commands.add(command))
-      }
-    })
-    await Promise.all(commandPromises)
+
+    await Promise.all(
+      nuts.map(async (nut) => {
+        const deviceExists = await nut.deviceExists(device)
+        if (deviceExists) {
+          const deviceCommands = await nut.getCommands(device)
+          deviceCommands.forEach((command) => commands.add(command))
+        }
+      })
+    )
+
     return Array.from(commands)
   } catch {
     return []
@@ -131,46 +177,61 @@ export async function runCommand(device: string, command: string) {
 }
 
 export async function checkSettings(): Promise<boolean> {
-  const settings = new YamlSettings(settingsFile)
-  return !!(settings.get('NUT_SERVERS').length > 0)
+  try {
+    const settings = getCachedSettings()
+    const servers = settings.get('NUT_SERVERS')
+    return Array.isArray(servers) && servers.length > 0
+  } catch {
+    return false
+  }
 }
 
 export async function getSettings<K extends keyof SettingsType>(key: K): Promise<SettingsType[K]> {
-  const settings = new YamlSettings(settingsFile)
+  const settings = getCachedSettings()
   return settings.get(key)
 }
 
 export async function setSettings<K extends keyof SettingsType>(key: K, value: SettingsType[K]): Promise<void> {
-  const settings = new YamlSettings(settingsFile)
+  const settings = getCachedSettings()
   settings.set(key, value)
 }
 
 export async function exportSettings(): Promise<string> {
-  const settings = new YamlSettings(settingsFile)
+  const settings = getCachedSettings()
   return settings.export()
 }
 
 export async function importSettings(settings: string): Promise<void> {
-  const yamlSettings = new YamlSettings(settingsFile)
+  const yamlSettings = getCachedSettings()
   yamlSettings.import(settings)
 }
 
 export async function updateServers(servers: Array<server>) {
-  const settings = new YamlSettings(settingsFile)
+  const settings = getCachedSettings()
 
   settings.set('NUT_SERVERS', servers)
 }
 
 export async function deleteSettings(key: keyof SettingsType) {
-  const settings = new YamlSettings(settingsFile)
+  const settings = getCachedSettings()
   settings.delete(key)
 }
 
 export async function disconnect() {
-  const settings = new YamlSettings(settingsFile)
-  settings.delete('NUT_SERVERS')
-  settings.delete('INFLUX_HOST')
-  settings.delete('INFLUX_TOKEN')
-  settings.delete('INFLUX_ORG')
-  settings.delete('INFLUX_BUCKET')
+  try {
+    const settings = getCachedSettings()
+    const keysToDelete: (keyof SettingsType)[] = [
+      'NUT_SERVERS',
+      'INFLUX_HOST',
+      'INFLUX_TOKEN',
+      'INFLUX_ORG',
+      'INFLUX_BUCKET',
+    ]
+
+    keysToDelete.forEach((key) => settings.delete(key))
+    settingsInstance = null // Reset cached instance
+    await watcher.close() // Clean up the watcher
+  } catch (e: any) {
+    throw new Error(`Failed to disconnect: ${e.message}`)
+  }
 }

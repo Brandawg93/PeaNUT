@@ -2,7 +2,6 @@ import { existsSync, readFileSync } from 'fs'
 import { load } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
-jest.mock('fs')
 jest.mock('js-yaml')
 
 describe('YamlSettings', () => {
