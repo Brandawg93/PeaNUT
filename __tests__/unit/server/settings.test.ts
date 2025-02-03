@@ -53,7 +53,7 @@ describe('YamlSettings', () => {
 
       yamlSettings = new YamlSettings(filePath)
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error loading settings file: Error: File read error')
+      expect(consoleSpy).toHaveBeenCalledWith('Error loading settings file: File read error')
       expect(yamlSettings.getAll()).toEqual(
         expect.objectContaining({
           NUT_SERVERS: [],

@@ -1,5 +1,4 @@
 import PromiseSocket from '../../../src/server/promise-socket'
-import { Socket } from 'net'
 
 jest.mock('net', () => {
   const mSocket = {
@@ -10,13 +9,14 @@ jest.mock('net', () => {
     listenerCount: jest.fn(),
     off: jest.fn(),
     end: jest.fn(),
+    once: jest.fn(),
   }
   return { Socket: jest.fn(() => mSocket) }
 })
 
 describe('PromiseSocket', () => {
   let promiseSocket: PromiseSocket
-  let mockSocket: jest.Mocked<Socket>
+  let mockSocket: any
 
   beforeEach(() => {
     promiseSocket = new PromiseSocket()
@@ -31,7 +31,7 @@ describe('PromiseSocket', () => {
     jest.useFakeTimers()
     const connectPromise = promiseSocket.connect(8080, 'localhost', 100)
     jest.advanceTimersByTime(100)
-    await expect(connectPromise).rejects.toThrow('Timeout')
+    await expect(connectPromise).rejects.toThrow('Operation timeout')
     jest.useRealTimers()
   })
 
@@ -39,7 +39,7 @@ describe('PromiseSocket', () => {
     jest.useFakeTimers()
     const writePromise = promiseSocket.write('data', 100)
     jest.advanceTimersByTime(100)
-    await expect(writePromise).rejects.toThrow('Timeout')
+    await expect(writePromise).rejects.toThrow('Operation timeout')
     jest.useRealTimers()
   })
 
@@ -47,12 +47,32 @@ describe('PromiseSocket', () => {
     jest.useFakeTimers()
     const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND', 100)
     jest.advanceTimersByTime(100)
-    await expect(readPromise).rejects.toThrow('Timeout')
+    await expect(readPromise).rejects.toThrow('Operation timeout')
     jest.useRealTimers()
   })
 
-  test('close should end the socket connection', () => {
-    promiseSocket.close()
-    expect(mockSocket.end).toHaveBeenCalled()
+  describe('close', () => {
+    test('should end the socket connection and cleanup listeners', async () => {
+      let endCallback: () => void
+      mockSocket.on.mockImplementation((event: string, callback: () => void) => {
+        if (event === 'end') endCallback = callback
+      })
+
+      const closePromise = promiseSocket.close()
+      endCallback!()
+
+      await expect(closePromise).resolves.toBeUndefined()
+      expect(mockSocket.end).toHaveBeenCalled()
+      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
+    })
+
+    test('should reject on timeout', async () => {
+      jest.useFakeTimers()
+      const closePromise = promiseSocket.close(100)
+      jest.advanceTimersByTime(100)
+      await expect(closePromise).rejects.toThrow('Operation timeout')
+      jest.useRealTimers()
+    })
   })
 })
