@@ -264,6 +264,8 @@ export default function NutGrid({ data }: Props) {
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
   }
+
+  // eslint-disable-next-line react-compiler/react-compiler
   const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
 
   return (
