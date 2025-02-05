@@ -47,33 +47,31 @@ interface HierarchicalTableProps extends TableProps {
 
 const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
   const root: HierarchicalTableProps[] = []
+  const cache: { [key: string]: HierarchicalTableProps } = {}
 
   input.forEach(({ key, value, description }) => {
     const keyParts = key.split('.')
+    let currentPath = ''
     let currentLevel = root
 
-    keyParts.forEach((part, index) => {
-      let existingItem = currentLevel.find((item) => item.key === part)
+    for (let i = 0; i < keyParts.length; i++) {
+      const part = keyParts[i]
+      currentPath = currentPath ? `${currentPath}.${part}` : part
 
-      if (!existingItem) {
-        existingItem = {
-          originalKey: keyParts.slice(0, index + 1).join('.'),
+      if (!cache[currentPath]) {
+        const newItem: HierarchicalTableProps = {
+          originalKey: currentPath,
           key: part,
-          value: index === keyParts.length - 1 ? value : '',
-          description: '',
+          value: i === keyParts.length - 1 ? value : '',
+          description: i === keyParts.length - 1 ? description || '' : '',
           children: [],
         }
-        currentLevel.push(existingItem)
+        cache[currentPath] = newItem
+        currentLevel.push(newItem)
       }
 
-      if (index === keyParts.length - 1) {
-        existingItem.originalKey = key // Save the original key
-        existingItem.value = value // Assign the value at the last part
-        existingItem.description = description || '' // Assign the description if available
-      }
-
-      currentLevel = existingItem.children || []
-    })
+      currentLevel = cache[currentPath].children || []
+    }
   })
 
   return root
