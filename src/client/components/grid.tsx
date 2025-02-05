@@ -102,50 +102,6 @@ export default function NutGrid({ data }: Props) {
     [data.vars]
   )
 
-  if (!data) {
-    return null
-  }
-
-  const handleEdit = (key: string) => {
-    setEdit(key)
-  }
-
-  const handleClose = () => {
-    setEdit('')
-  }
-
-  const handleSave = async (key: string, value: string) => {
-    try {
-      const res = await saveVar(data.name, key, value)
-      if (res?.error) {
-        toast.error(res.error)
-        return
-      }
-      data.vars[key].value = value
-      handleClose()
-    } catch (e: any) {
-      toast.error(e.message)
-    }
-  }
-
-  const editInput = (key: string, value: string) => (
-    <div className='flex'>
-      <Input
-        type={Number.isNaN(+value) ? 'text' : 'number'}
-        className='w-full flex-grow rounded border bg-transparent pl-2'
-        defaultValue={value}
-      />
-      <div className='flex'>
-        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
-          <HiOutlineCheckCircle className='!h-6 !w-6 text-green-500' />
-        </Button>
-        <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
-          <HiOutlineXCircle className='!h-6 !w-6 text-red-500' />
-        </Button>
-      </div>
-    </div>
-  )
-
   const columnHelper = createColumnHelper<HierarchicalTableProps>()
   const columns = [
     columnHelper.accessor('key', {
@@ -195,7 +151,7 @@ export default function NutGrid({ data }: Props) {
           </div>
         )
       },
-      header: () => (
+      header: ({ table }) => (
         <div className='flex items-center justify-between'>
           <button disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
             {useTreeData && (
@@ -265,8 +221,52 @@ export default function NutGrid({ data }: Props) {
     getExpandedRowModel: getExpandedRowModel(),
   }
 
-  // eslint-disable-next-line react-compiler/react-compiler
   const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
+
+  if (!data) {
+    return null
+  }
+
+  const handleEdit = (key: string) => {
+    setEdit(key)
+  }
+
+  const handleClose = () => {
+    setEdit('')
+  }
+
+  const handleSave = async (key: string, value: string) => {
+    try {
+      const res = await saveVar(data.name, key, value)
+      if (res?.error) {
+        toast.error(res.error)
+        return
+      }
+      // eslint-disable-next-line react-compiler/react-compiler
+      data.vars[key].value = value
+      handleClose()
+    } catch (e: any) {
+      toast.error(e.message)
+    }
+  }
+
+  const editInput = (key: string, value: string) => (
+    <div className='flex'>
+      <Input
+        type={Number.isNaN(+value) ? 'text' : 'number'}
+        className='w-full flex-grow rounded border bg-transparent pl-2'
+        defaultValue={value}
+      />
+      <div className='flex'>
+        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
+          <HiOutlineCheckCircle className='!h-6 !w-6 text-green-500' />
+        </Button>
+        <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
+          <HiOutlineXCircle className='!h-6 !w-6 text-red-500' />
+        </Button>
+      </div>
+    </div>
+  )
 
   return (
     <Card className='w-full overflow-auto border border-border-card bg-card shadow-none' data-testid='grid'>
