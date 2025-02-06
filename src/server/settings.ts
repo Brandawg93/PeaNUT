@@ -42,7 +42,7 @@ export class YamlSettings {
           if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed
         } else {
-          this.data[key] = envValue as SettingsType[typeof key]
+          this.data[key] = envValue
         }
       } catch (error) {
         console.error(`Error parsing environment variable ${key}: ${error}`)

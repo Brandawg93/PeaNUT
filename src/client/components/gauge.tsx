@@ -39,7 +39,14 @@ export default function Gauge(props: Props) {
 
   return (
     <Card
+      role='button'
+      tabIndex={0}
       onClick={onClick}
+      onKeyUp={(e) => {
+        if (e.key === 'Enter' && onClick) {
+          onClick()
+        }
+      }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
       className='h-52 min-w-56 cursor-pointer overflow-hidden border border-border-card bg-card shadow-none'
       data-testid='gauge'

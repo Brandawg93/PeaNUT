@@ -259,6 +259,7 @@ const ChartLegendContent = React.forwardRef<
         return (
           <div
             role='button'
+            tabIndex={0}
             onClick={() => handleClick && handleClick(item)}
             onKeyUp={(e) => e.key === 'Enter' && handleClick && handleClick(item)}
             key={item.value}
