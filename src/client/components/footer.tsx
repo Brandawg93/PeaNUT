@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function Footer({ updated }: Props) {
-  const [currentVersion, setcurrentVersion] = useState({ created: new Date(), version: null, url: '' })
+  const [currentVersion, setCurrentVersion] = useState({ created: new Date(), version: null, url: '' })
   const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
@@ -25,7 +25,7 @@ export default function Footer({ updated }: Props) {
         if (!version) return
         const latest = json[0]
         const created = new Date(version.published_at)
-        setcurrentVersion({ created, version: version.name, url: version.html_url })
+        setCurrentVersion({ created, version: version.name, url: version.html_url })
         if (version.name !== latest.name) {
           setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
         }

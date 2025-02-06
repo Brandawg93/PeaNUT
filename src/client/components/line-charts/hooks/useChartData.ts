@@ -11,10 +11,13 @@ export function useChartData(id: string, updated: Date, value?: number) {
 
   useEffect(() => {
     if (id !== prevDataRef.current) {
-      if (value) setData([{ dataPoint: value, time: new Date() }])
-      else setData([])
-    } else {
-      if (value) setData((prev) => [...prev, { dataPoint: value, time: new Date() }])
+      if (value) {
+        setData([{ dataPoint: value, time: new Date() }])
+      } else {
+        setData([])
+      }
+    } else if (value) {
+      setData((prev) => [...prev, { dataPoint: value, time: new Date() }])
     }
     prevDataRef.current = id
   }, [id, value, updated])

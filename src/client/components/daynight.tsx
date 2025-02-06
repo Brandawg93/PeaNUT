@@ -11,18 +11,19 @@ import { useTheme } from 'next-themes'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
-const themes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system']
+type ThemeType = 'light' | 'dark' | 'system'
+const themes: Array<ThemeType> = ['light', 'dark', 'system']
 
 export default function DayNightSwitch() {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { resolvedTheme, theme, setTheme } = useTheme()
 
-  const handleSelect = (curr: 'light' | 'dark' | 'system') => {
+  const handleSelect = (curr: ThemeType) => {
     setTheme(curr)
   }
 
-  const isActive = (value: 'light' | 'dark' | 'system') => {
+  const isActive = (value: ThemeType) => {
     return theme === value ? '!bg-secondary-highlight' : ''
   }
 

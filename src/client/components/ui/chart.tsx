@@ -260,8 +260,8 @@ const ChartLegendContent = React.forwardRef<
           <div
             role='button'
             tabIndex={0}
-            onClick={() => handleClick && handleClick(item)}
-            onKeyUp={(e) => e.key === 'Enter' && handleClick && handleClick(item)}
+            onClick={() => handleClick?.(item)}
+            onKeyUp={(e) => e.key === 'Enter' && handleClick?.(item)}
             key={item.value}
             className={cn(
               `flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground ${handleClick && 'cursor-pointer'}`.trim()
@@ -311,7 +311,7 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
     configLabelKey = payloadPayload[key as keyof typeof payloadPayload] as string
   }
 
-  return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config]
+  return configLabelKey in config ? config[configLabelKey] : config[key]
 }
 
 export {
