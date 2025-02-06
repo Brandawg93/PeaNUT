@@ -9,6 +9,7 @@ import prettier from 'eslint-plugin-prettier'
 import nextPlugin from '@next/eslint-plugin-next'
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import pluginJest from 'eslint-plugin-jest'
+import reactCompiler from 'eslint-plugin-react-compiler'
 
 export default [
   {
@@ -71,4 +72,5 @@ export default [
       'jest/valid-expect': 'error',
     },
   },
+  reactCompiler.configs.recommended,
 ]

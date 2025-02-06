@@ -94,16 +94,15 @@ export default function LineChartBase(props: Props) {
                     content={<ChartLegendContent handleClick={(e) => onLegendClick && onLegendClick(e)} />}
                   />
                   <CartesianGrid horizontal vertical />
-                  {referenceLineData &&
-                    referenceLineData.map((line) => (
-                      <ChartReferenceLine
-                        key={line.label}
-                        y={line.value}
-                        stroke='red'
-                        label={line.label}
-                        strokeDasharray='4 4'
-                      />
-                    ))}
+                  {referenceLineData?.map((line) => (
+                    <ChartReferenceLine
+                      key={line.label}
+                      y={line.value}
+                      stroke='red'
+                      label={line.label}
+                      strokeDasharray='4 4'
+                    />
+                  ))}
                   <ChartTooltip
                     cursor={false}
                     content={
@@ -120,7 +119,7 @@ export default function LineChartBase(props: Props) {
                       />
                     }
                   />
-                  {data.length &&
+                  {data.length > 0 &&
                     Object.keys(data[0])
                       .filter((k) => k !== 'time')
                       .map((key) => (

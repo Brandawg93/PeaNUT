@@ -2,19 +2,19 @@ import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
 export class Nut {
-  private host: string
+  private readonly host: string
 
-  private port: number
+  private readonly port: number
 
-  private username: string
+  private readonly username: string
 
-  private password: string
+  private readonly password: string
 
   constructor(host: string, port: number, username?: string, password?: string) {
     this.host = host
     this.port = port
-    this.username = username || ''
-    this.password = password || ''
+    this.username = username ?? ''
+    this.password = password ?? ''
   }
 
   private parseInfo(data: string, start: string, callback: (line: string) => string): Array<string> {
@@ -106,7 +106,7 @@ export class Nut {
         })
         .catch((error: any) => {
           console.error(error?.message)
-          reject(error?.message)
+          reject(new Error(error?.message))
         })
     })
   }
@@ -146,7 +146,7 @@ export class Nut {
       const type = await this.getType(device, key, socket)
       if (type.includes('NUMBER') && !isNaN(+value)) {
         const num = +value
-        vars[key] = { value: num ? num : value, description }
+        vars[key] = { value: num || value, description }
       } else {
         vars[key] = { value, description }
       }

@@ -13,7 +13,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: { esmExternals: true },
+  experimental: {
+    esmExternals: true,
+    reactCompiler: true,
+  },
 }
 
 module.exports =

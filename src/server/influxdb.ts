@@ -3,9 +3,9 @@ import { PingAPI } from '@influxdata/influxdb-client-apis'
 import { DEVICE } from '@/common/types'
 
 export default class InfluxWriter {
-  private writeApi: ReturnType<InfluxDB['getWriteApi']>
-  private url: string
-  private token: string
+  private readonly writeApi: ReturnType<InfluxDB['getWriteApi']>
+  private readonly url: string
+  private readonly token: string
 
   constructor(url: string, token: string, org: string, bucket: string) {
     this.url = url

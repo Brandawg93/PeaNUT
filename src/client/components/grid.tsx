@@ -47,33 +47,31 @@ interface HierarchicalTableProps extends TableProps {
 
 const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
   const root: HierarchicalTableProps[] = []
+  const cache: { [key: string]: HierarchicalTableProps } = {}
 
   input.forEach(({ key, value, description }) => {
     const keyParts = key.split('.')
+    let currentPath = ''
     let currentLevel = root
 
-    keyParts.forEach((part, index) => {
-      let existingItem = currentLevel.find((item) => item.key === part)
+    for (let i = 0; i < keyParts.length; i++) {
+      const part = keyParts[i]
+      currentPath = currentPath ? `${currentPath}.${part}` : part
 
-      if (!existingItem) {
-        existingItem = {
-          originalKey: keyParts.slice(0, index + 1).join('.'),
+      if (!cache[currentPath]) {
+        const newItem: HierarchicalTableProps = {
+          originalKey: currentPath,
           key: part,
-          value: index === keyParts.length - 1 ? value : '',
-          description: '',
+          value: i === keyParts.length - 1 ? value : '',
+          description: i === keyParts.length - 1 ? description || '' : '',
           children: [],
         }
-        currentLevel.push(existingItem)
+        cache[currentPath] = newItem
+        currentLevel.push(newItem)
       }
 
-      if (index === keyParts.length - 1) {
-        existingItem.originalKey = key // Save the original key
-        existingItem.value = value // Assign the value at the last part
-        existingItem.description = description || '' // Assign the description if available
-      }
-
-      currentLevel = existingItem.children || []
-    })
+      currentLevel = cache[currentPath].children || []
+    }
   })
 
   return root
@@ -100,50 +98,6 @@ export default function NutGrid({ data }: Props) {
     () =>
       Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A', description: v?.description })),
     [data.vars]
-  )
-
-  if (!data) {
-    return null
-  }
-
-  const handleEdit = (key: string) => {
-    setEdit(key)
-  }
-
-  const handleClose = () => {
-    setEdit('')
-  }
-
-  const handleSave = async (key: string, value: string) => {
-    try {
-      const res = await saveVar(data.name, key, value)
-      if (res?.error) {
-        toast.error(res.error)
-        return
-      }
-      data.vars[key].value = value
-      handleClose()
-    } catch (e: any) {
-      toast.error(e.message)
-    }
-  }
-
-  const editInput = (key: string, value: string) => (
-    <div className='flex'>
-      <Input
-        type={Number.isNaN(+value) ? 'text' : 'number'}
-        className='w-full flex-grow rounded border bg-transparent pl-2'
-        defaultValue={value}
-      />
-      <div className='flex'>
-        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
-          <HiOutlineCheckCircle className='!h-6 !w-6 text-green-500' />
-        </Button>
-        <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
-          <HiOutlineXCircle className='!h-6 !w-6 text-red-500' />
-        </Button>
-      </div>
-    </div>
   )
 
   const columnHelper = createColumnHelper<HierarchicalTableProps>()
@@ -195,7 +149,7 @@ export default function NutGrid({ data }: Props) {
           </div>
         )
       },
-      header: () => (
+      header: ({ table }) => (
         <div className='flex items-center justify-between'>
           <button disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
             {useTreeData && (
@@ -264,7 +218,53 @@ export default function NutGrid({ data }: Props) {
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
   }
+
   const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
+
+  if (!data) {
+    return null
+  }
+
+  const handleEdit = (key: string) => {
+    setEdit(key)
+  }
+
+  const handleClose = () => {
+    setEdit('')
+  }
+
+  const handleSave = async (key: string, value: string) => {
+    try {
+      const res = await saveVar(data.name, key, value)
+      if (res?.error) {
+        toast.error(res.error)
+        return
+      }
+      // eslint-disable-next-line react-compiler/react-compiler
+      data.vars[key].value = value
+      handleClose()
+    } catch (e: any) {
+      toast.error(e.message)
+    }
+  }
+
+  const editInput = (key: string, value: string) => (
+    <div className='flex'>
+      <Input
+        type={Number.isNaN(+value) ? 'text' : 'number'}
+        className='w-full flex-grow rounded border bg-transparent pl-2'
+        defaultValue={value}
+      />
+      <div className='flex'>
+        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
+          <HiOutlineCheckCircle className='!h-6 !w-6 text-green-500' />
+        </Button>
+        <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
+          <HiOutlineXCircle className='!h-6 !w-6 text-red-500' />
+        </Button>
+      </div>
+    </div>
+  )
 
   return (
     <Card className='w-full overflow-auto border border-border-card bg-card shadow-none' data-testid='grid'>

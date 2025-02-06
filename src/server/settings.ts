@@ -15,14 +15,61 @@ const ISettings = {
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
 
 export class YamlSettings {
-  private filePath: string
+  private readonly filePath: string
   private data: SettingsType
+  private readonly envVars: Record<string, string | undefined>
 
   constructor(filePath: string) {
     this.filePath = filePath
     this.data = { ...ISettings }
+    // Cache environment variables
+    this.envVars = { ...process.env }
     this.loadFromEnvVars()
     this.load()
+  }
+
+  private loadFromEnvVars(): void {
+    let key: keyof SettingsType
+    for (key in ISettings) {
+      const envValue = this.envVars[key]
+      if (envValue === undefined || this.data[key] !== ISettings[key]) continue
+
+      try {
+        if (key === 'NUT_SERVERS') {
+          this.data[key] = JSON.parse(envValue) as server[]
+        } else if (key === 'INFLUX_INTERVAL') {
+          const parsed = Number(envValue)
+          if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
+          this.data[key] = parsed
+        } else {
+          this.data[key] = envValue
+        }
+      } catch (error) {
+        console.error(`Error parsing environment variable ${key}: ${error}`)
+      }
+    }
+
+    // Backwards compatibility for NUT_HOST and NUT_PORT
+    const { NUT_HOST: nutHost, NUT_PORT: nutPort, USERNAME: username, PASSWORD: password } = this.envVars
+
+    if (nutHost && nutPort) {
+      const port = Number(nutPort)
+      if (isNaN(port)) {
+        console.error('Invalid NUT_PORT value')
+        return
+      }
+
+      const serverExists = this.data.NUT_SERVERS.some((server) => server.HOST === nutHost && server.PORT === port)
+
+      if (!serverExists) {
+        this.data.NUT_SERVERS.push({
+          HOST: nutHost,
+          PORT: port,
+          USERNAME: username,
+          PASSWORD: password,
+        })
+      }
+    }
   }
 
   private load(): void {
@@ -39,46 +86,11 @@ export class YamlSettings {
         this.save()
       }
     } catch (error) {
-      console.error(`Error loading settings file: ${error}`)
+      console.error(`Error loading settings file: ${error instanceof Error ? error.message : error}`)
     }
 
-    // Ensure NUT_SERVERS is always an array
+    // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
-  }
-
-  private loadFromEnvVars(): void {
-    let key: keyof SettingsType
-    for (key in ISettings) {
-      const envValue = process.env[key as string]
-      if (envValue !== undefined && this.data[key] === ISettings[key]) {
-        if (key === 'NUT_SERVERS') {
-          this.data[key] = JSON.parse(envValue)
-        } else if (key === 'INFLUX_INTERVAL') {
-          this.data[key] = Number(envValue)
-        } else {
-          this.data[key] = envValue
-        }
-      }
-    }
-
-    // Backwards compatibility for NUT_HOST and NUT_PORT
-    const nutHost = process.env.NUT_HOST
-    const nutPort = process.env.NUT_PORT
-    const username = process.env.USERNAME
-    const password = process.env.PASSWORD
-    if (nutHost && nutPort) {
-      const existingServer = this.data.NUT_SERVERS.find(
-        (server) => server.HOST === nutHost && server.PORT === Number(nutPort)
-      )
-      if (!existingServer) {
-        this.data.NUT_SERVERS.push({
-          HOST: nutHost,
-          PORT: Number(nutPort),
-          USERNAME: username,
-          PASSWORD: password,
-        })
-      }
-    }
   }
 
   private save(): void {
@@ -109,8 +121,12 @@ export class YamlSettings {
   }
 
   public import(contents: string): void {
-    const fileData = load(contents) as SettingsType
-    this.data = { ...ISettings, ...fileData }
-    this.save()
+    try {
+      const fileData = load(contents) as SettingsType
+      this.data = { ...ISettings, ...fileData }
+      this.save()
+    } catch (error) {
+      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : error}`)
+    }
   }
 }
