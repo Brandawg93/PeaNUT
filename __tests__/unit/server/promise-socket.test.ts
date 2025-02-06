@@ -75,4 +75,76 @@ describe('PromiseSocket', () => {
       jest.useRealTimers()
     })
   })
+
+  describe('readAll', () => {
+    test('should resolve when data contains until string', async () => {
+      let dataCallback: (data: Buffer) => void
+      mockSocket.on.mockImplementation((event: string, callback: any) => {
+        if (event === 'data') dataCallback = callback
+      })
+
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      dataCallback!(Buffer.from('some data END COMMAND'))
+
+      await expect(readPromise).resolves.toBe('some data END COMMAND')
+      expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
+    })
+
+    test('should accumulate data until end string is found', async () => {
+      let dataCallback: (data: Buffer) => void
+      mockSocket.on.mockImplementation((event: string, callback: any) => {
+        if (event === 'data') dataCallback = callback
+      })
+
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      dataCallback!(Buffer.from('some '))
+      dataCallback!(Buffer.from('data END '))
+      dataCallback!(Buffer.from('COMMAND'))
+
+      await expect(readPromise).resolves.toBe('some data END COMMAND')
+    })
+
+    test('should resolve on end event if data contains until string', async () => {
+      let dataCallback: (data: Buffer) => void
+      let endCallback: () => void
+      mockSocket.on.mockImplementation((event: string, callback: any) => {
+        if (event === 'data') dataCallback = callback
+        if (event === 'end') endCallback = callback
+      })
+
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      dataCallback!(Buffer.from('some data END COMMAND'))
+      endCallback!()
+
+      await expect(readPromise).resolves.toBe('some data END COMMAND')
+    })
+
+    test('should reject on end event if data does not contain until string', async () => {
+      let dataCallback: (data: Buffer) => void
+      let endCallback: () => void
+      mockSocket.on.mockImplementation((event: string, callback: any) => {
+        if (event === 'data') dataCallback = callback
+        if (event === 'end') endCallback = callback
+      })
+
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      dataCallback!(Buffer.from('incomplete data'))
+      endCallback!()
+
+      await expect(readPromise).rejects.toThrow('Connection closed before receiving complete data')
+      expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
+    })
+
+    test('should reject on timeout', async () => {
+      jest.useFakeTimers()
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND', 100)
+      jest.advanceTimersByTime(100)
+      await expect(readPromise).rejects.toThrow('Operation timeout')
+      jest.useRealTimers()
+    })
+  })
 })

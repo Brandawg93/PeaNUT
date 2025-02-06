@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'fs'
-import { load } from 'js-yaml'
+import { load, dump } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
 jest.mock('js-yaml')
@@ -130,6 +130,83 @@ describe('YamlSettings', () => {
 
       expect(Object.keys(yamlSettings.getAll())).toContain('INFLUX_TOKEN')
       expect(Object.keys(yamlSettings.getAll())).toContain('INFLUX_BUCKET')
+    })
+  })
+
+  describe('export', () => {
+    it('should export settings as YAML string', () => {
+      // Setup test data
+      yamlSettings.set('INFLUX_HOST', 'test-host')
+      yamlSettings.set('INFLUX_TOKEN', 'test-token')
+      yamlSettings.set('NUT_SERVERS', [{ HOST: 'test-nut', PORT: 3493 }])
+
+      const exported = yamlSettings.export()
+
+      // Mock the dump function to return what it receives
+      ;(dump as jest.Mock).mockImplementation((data) => JSON.stringify(data))
+
+      expect(typeof exported).toBe('undefined')
+      expect(dump).toHaveBeenCalledWith(yamlSettings.getAll())
+    })
+  })
+
+  describe('import', () => {
+    it('should import valid YAML settings', () => {
+      const validYaml = `
+        INFLUX_HOST: imported-host
+        INFLUX_TOKEN: imported-token
+        NUT_SERVERS:
+          - HOST: imported-nut
+            PORT: 3493
+      `
+
+      // Mock the load function to return parsed data
+      ;(load as jest.Mock).mockReturnValue({
+        INFLUX_HOST: 'imported-host',
+        INFLUX_TOKEN: 'imported-token',
+        NUT_SERVERS: [{ HOST: 'imported-nut', PORT: 3493 }],
+      })
+
+      yamlSettings.import(validYaml)
+
+      expect(yamlSettings.get('INFLUX_HOST')).toBe('imported-host')
+      expect(yamlSettings.get('INFLUX_TOKEN')).toBe('imported-token')
+      expect(yamlSettings.get('NUT_SERVERS')).toEqual([{ HOST: 'imported-nut', PORT: 3493 }])
+    })
+
+    it('should throw error when importing invalid YAML', () => {
+      const invalidYaml = '{'
+
+      // Mock the load function to throw an error
+      ;(load as jest.Mock).mockImplementation(() => {
+        throw new Error('Invalid YAML')
+      })
+
+      expect(() => yamlSettings.import(invalidYaml)).toThrow('Failed to import settings: Invalid YAML')
+    })
+
+    it('should preserve default values for missing fields', () => {
+      const partialYaml = `
+        INFLUX_HOST: imported-host
+      `
+
+      // Mock the load function to return partial data
+      ;(load as jest.Mock).mockReturnValue({
+        INFLUX_HOST: 'imported-host',
+      })
+
+      yamlSettings.import(partialYaml)
+
+      expect(yamlSettings.get('INFLUX_HOST')).toBe('imported-host')
+      expect(yamlSettings.get('INFLUX_INTERVAL')).toBe(10) // Default value
+      expect(yamlSettings.get('NUT_SERVERS')).toEqual([
+        {
+          HOST: 'localhost_env',
+          PASSWORD: undefined,
+          PORT: 8082,
+          USERNAME: undefined,
+        },
+      ]) // Default value
     })
   })
 })
