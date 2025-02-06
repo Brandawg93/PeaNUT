@@ -1,10 +1,9 @@
 'use server'
 
 import InfluxWriter from '@/server/influxdb'
-import { DEVICE } from '@/common/types'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { server, DeviceData, VarDescription } from '@/common/types'
+import { DEVICE, server, DeviceData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
 
 const settingsFile = './config/settings.yml'
