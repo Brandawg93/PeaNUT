@@ -15,7 +15,7 @@ const ISettings = {
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
 
 export class YamlSettings {
-  private filePath: string
+  private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
 

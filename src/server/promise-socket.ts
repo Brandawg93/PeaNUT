@@ -4,7 +4,7 @@ const TIMEOUT = 10000
 const MAX_LISTENERS = 9
 
 export default class PromiseSocket {
-  private innerSok: Socket = new Socket()
+  private readonly innerSok: Socket = new Socket()
 
   public isConnected(): boolean {
     return this.innerSok && !this.innerSok.destroyed && this.innerSok.readable && this.innerSok.writable

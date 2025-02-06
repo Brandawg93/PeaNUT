@@ -16,7 +16,7 @@ import { getNutInstances } from '@/app/api/utils'
  */
 export async function GET() {
   const nuts = await getNutInstances()
-  const promises = await nuts.map((nut) => nut.getVersion())
+  const promises = nuts.map((nut) => nut.getVersion())
   const data = await Promise.all(promises)
   return NextResponse.json(data)
 }

@@ -60,7 +60,7 @@ describe('actions', () => {
 
   it('gets all var descriptions', async () => {
     const data = await getAllVarDescriptions('ups', ['battery.charge'])
-    expect(data?.data && data.data['battery.charge']).toEqual('test')
+    expect(data?.data?.['battery.charge']).toEqual('test')
   })
 
   it('tests connection', () => {
