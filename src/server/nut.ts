@@ -106,7 +106,7 @@ export class Nut {
         })
         .catch((error: any) => {
           console.error(error?.message)
-          reject(error?.message)
+          reject(new Error(error?.message))
         })
     })
   }

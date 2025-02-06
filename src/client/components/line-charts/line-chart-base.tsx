@@ -120,7 +120,7 @@ export default function LineChartBase(props: Props) {
                       />
                     }
                   />
-                  {data.length &&
+                  {data.length > 0 &&
                     Object.keys(data[0])
                       .filter((k) => k !== 'time')
                       .map((key) => (

@@ -43,7 +43,7 @@ export default class PromiseSocket {
       new Promise<void>((resolve, reject) => {
         this.addErrorHandler(reject)
         this.innerSok.write(`${data}\n`, (err) => {
-          if (err) reject(err)
+          if (err) reject(new Error(`${err}`))
           else resolve()
         })
       }),

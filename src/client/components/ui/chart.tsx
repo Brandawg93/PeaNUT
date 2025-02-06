@@ -258,7 +258,9 @@ const ChartLegendContent = React.forwardRef<
 
         return (
           <div
+            role='button'
             onClick={() => handleClick && handleClick(item)}
+            onKeyUp={(e) => e.key === 'Enter' && handleClick && handleClick(item)}
             key={item.value}
             className={cn(
               `flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground ${handleClick && 'cursor-pointer'}`.trim()

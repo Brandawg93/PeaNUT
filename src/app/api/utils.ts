@@ -9,6 +9,7 @@ export const getNutInstances = async (): Promise<Array<Nut>> => {
 
 export const getSingleNutInstance = async (device: string): Promise<Nut | undefined> => {
   const nuts = await getNutInstances()
-  const nut = await Promise.any(nuts.map(async (nut) => ((await nut.deviceExists(device)) ? nut : Promise.reject())))
-  return nut
+  return Promise.any(
+    nuts.map(async (nut) => ((await nut.deviceExists(device)) ? nut : Promise.reject(new Error('Device not found'))))
+  )
 }
