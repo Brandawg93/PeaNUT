@@ -153,7 +153,7 @@ export class Nut {
     }
     await this.closeConnection(socket)
     return Object.keys(vars)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .reduce((finalObject: VARS, key) => {
         finalObject[key] = vars[key]
         return finalObject
