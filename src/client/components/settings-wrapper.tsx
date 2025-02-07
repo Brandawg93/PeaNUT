@@ -60,7 +60,6 @@ export default function SettingsWrapper({
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
-      setSettingsLoaded(true)
       if (!res) {
         router.replace('/login')
       } else {
@@ -84,6 +83,7 @@ export default function SettingsWrapper({
         if (influxInterval) {
           setInfluxInterval(influxInterval)
         }
+        setSettingsLoaded(true)
       }
     })
   }, [])
