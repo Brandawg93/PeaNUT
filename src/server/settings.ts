@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
 import { server } from '../common/types'
+import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
@@ -9,7 +10,7 @@ const ISettings = {
   INFLUX_TOKEN: '',
   INFLUX_ORG: '',
   INFLUX_BUCKET: '',
-  INFLUX_INTERVAL: 10,
+  INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }

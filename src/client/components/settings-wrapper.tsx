@@ -21,6 +21,7 @@ import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
 import { SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
+import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
@@ -251,12 +252,12 @@ export default function SettingsWrapper({
                       setInfluxToken('')
                       setInfluxOrg('')
                       setInfluxBucket('')
-                      setInfluxInterval(10)
+                      setInfluxInterval(DEFAULT_INFLUX_INTERVAL)
                       deleteSettingsAction('INFLUX_HOST')
                       deleteSettingsAction('INFLUX_TOKEN')
                       deleteSettingsAction('INFLUX_ORG')
                       deleteSettingsAction('INFLUX_BUCKET')
-                      setSettingsAction('INFLUX_INTERVAL', 10)
+                      setSettingsAction('INFLUX_INTERVAL', DEFAULT_INFLUX_INTERVAL)
                     }}
                     testInfluxConnectionAction={testInfluxConnectionAction}
                   />
