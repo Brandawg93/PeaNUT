@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
 import { server, NotifierSettings } from '../common/types'
-import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
+import { DEFAULT_INFLUX_INTERVAL, DEFAULT_NOTIFICATION_INTERVAL } from '@/common/constants'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
@@ -11,7 +11,7 @@ const ISettings = {
   INFLUX_ORG: '',
   INFLUX_BUCKET: '',
   INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
-  NOTIFICATION_INTERVAL: 10,
+  NOTIFICATION_INTERVAL: DEFAULT_NOTIFICATION_INTERVAL,
   NOTIFICATION_PROVIDERS: [] as Array<NotifierSettings>,
 }
 

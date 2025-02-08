@@ -6,7 +6,7 @@ import InfluxWriter from '@/server/influxdb'
 import { NotifierFactory } from '@/server/notifications/notifier-factory'
 import { Notifier } from '@/server/notifications/notifier'
 import { DEVICE } from '@/common/types'
-import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
+import { DEFAULT_INFLUX_INTERVAL, DEFAULT_NOTIFICATION_INTERVAL } from '@/common/constants'
 
 const settingsFile = './config/settings.yml'
 
@@ -16,7 +16,7 @@ const scheduler = new ToadScheduler()
 
 // Get the current interval from settings or default to DEFAULT_INFLUX_INTERVAL seconds
 const influxInterval = settings.get('INFLUX_INTERVAL') || DEFAULT_INFLUX_INTERVAL
-const notificationInterval = settings.get('NOTIFICATION_INTERVAL') || 10
+const notificationInterval = settings.get('NOTIFICATION_INTERVAL') || DEFAULT_NOTIFICATION_INTERVAL
 
 // Define the task to write data to InfluxDB
 const createInfluxDbTask = () =>
@@ -105,7 +105,7 @@ watcher.on('change', () => {
   }
 
   const newNotificationProviders = newSettings.get('NOTIFICATION_PROVIDERS')
-  const newNotificationInterval = newSettings.get('NOTIFICATION_INTERVAL') || 10
+  const newNotificationInterval = newSettings.get('NOTIFICATION_INTERVAL') || DEFAULT_NOTIFICATION_INTERVAL
   if (newNotificationProviders && newNotificationInterval) {
     addOrUpdateJob('notifications_job', newNotificationInterval, createNotificationTask())
   }
