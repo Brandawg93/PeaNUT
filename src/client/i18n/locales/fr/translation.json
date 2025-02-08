@@ -13,7 +13,9 @@
   "voltsChart": {
     "inputVoltage": "Tension d'entrée",
     "outputVoltage": "Tension de sortie",
-    "nominalInputVoltage": "Tension d'entrée nominale"
+    "nominalInputVoltage": "Tension d'entrée nominale",
+    "nominalOutputVoltage": "Tension de sortie nominale",
+    "nominalVoltage": "Tension nominale"
   },
   "wattsChart": {
     "realpower": "Puissance réelle",
@@ -115,5 +117,12 @@
       "actionText": "Bip muet",
       "successMessage": "Bip"
     }
-  }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "Puissance nominale",
+    "power": "Pouvoir"
+  },
+  "volt-amps-chart": "Puissance apparente",
+  "volts-chart": "Tension",
+  "watts-chart": "Réel pouvoir"
 }

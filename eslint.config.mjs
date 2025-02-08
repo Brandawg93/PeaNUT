@@ -8,6 +8,8 @@ import reactPlugin from 'eslint-plugin-react'
 import prettier from 'eslint-plugin-prettier'
 import nextPlugin from '@next/eslint-plugin-next'
 import pluginQuery from '@tanstack/eslint-plugin-query'
+import pluginJest from 'eslint-plugin-jest'
+import reactCompiler from 'eslint-plugin-react-compiler'
 
 export default [
   {
@@ -26,7 +28,6 @@ export default [
       '.husky',
       '.devcontainer',
       '.gitignore',
-      'src/client/components/ui/*.tsx',
     ],
   },
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
@@ -57,4 +58,19 @@ export default [
       ...nextPlugin.configs['core-web-vitals'].rules,
     },
   },
+  {
+    files: ['**/*.spec.js', '**/*.test.js'],
+    plugins: { jest: pluginJest },
+    languageOptions: {
+      globals: pluginJest.environments.globals.globals,
+    },
+    rules: {
+      'jest/no-disabled-tests': 'warn',
+      'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
+      'jest/prefer-to-have-length': 'warn',
+      'jest/valid-expect': 'error',
+    },
+  },
+  reactCompiler.configs.recommended,
 ]

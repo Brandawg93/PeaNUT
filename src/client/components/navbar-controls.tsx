@@ -16,7 +16,6 @@ type Props = {
   onRefreshClick: () => void
   onRefetch: () => void
   onDeviceChange: (name: string) => void
-  onDisconnect: () => void
   devices: Array<DEVICE>
   disableRefresh: boolean
 }

@@ -20,7 +20,7 @@ services:
       - INFLUX_TOKEN=super_secret_token
       - INFLUX_ORG=home
       - INFLUX_BUCKET=ups
-      - INFLUX_INTERVAL=3
+      - INFLUX_INTERVAL=10
 
   influxdb:
     image: influxdb:2

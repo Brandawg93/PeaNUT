@@ -2,14 +2,17 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    types: [opened, synchronize, reopened]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
+        # with:
+        #   fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - uses: pnpm/action-setup@v4
         with:
@@ -70,3 +73,7 @@ jobs:
           NUT_HOST: localhost
           NUT_PORT: 3493
           WEB_PORT: 8080
+      # - name: SonarQube Scan
+      #   uses: SonarSource/sonarqube-scan-action@v4
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

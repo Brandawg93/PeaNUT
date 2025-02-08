@@ -8,45 +8,43 @@ import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 
 type Props = BaseChartProps & {
-  realpower?: number
-  realpowerNominal?: number
+  power?: number
+  powerNominal?: number
 }
 
-export default function WattsChart(props: Props) {
-  const { id, realpower, realpowerNominal, updated } = props
+export default function VoltAmpsChart(props: Props) {
+  const { id, power, powerNominal, updated } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [showRealpower, setShowRealpower] = useState<boolean>(true)
-  const realpowerData = useChartData(id, updated, realpower)
+  const [showPower, setShowPower] = useState<boolean>(true)
+  const powerData = useChartData(id, updated, power)
 
-  const referenceLineData = realpowerNominal
-    ? [{ label: t('wattsChart.nominalRealpower'), value: realpowerNominal }]
-    : []
+  const referenceLineData = powerNominal ? [{ label: t('voltAmpsChart.nominalPower'), value: powerNominal }] : []
 
   const handleLegendClick = (payload: Payload) => {
-    if (payload.value === 'realpower') {
-      setShowRealpower(!showRealpower)
+    if (payload.value === 'power') {
+      setShowPower(!showPower)
     }
   }
 
   return (
     <LineChart
-      id='watts-chart'
+      id='volt-amps-chart'
       onLegendClick={handleLegendClick}
       referenceLineData={referenceLineData}
       config={{
         time: {
           label: 'Time',
         },
-        realpower: {
-          label: t('wattsChart.realpower'),
+        power: {
+          label: t('voltAmpsChart.power'),
           color: 'hsl(var(--chart-1))',
         },
       }}
-      unit='W'
-      data={realpowerData.map((v) => ({
+      unit='VA'
+      data={powerData.map((v) => ({
         time: v.time,
-        realpower: showRealpower ? v.dataPoint : undefined,
+        power: showPower ? v.dataPoint : undefined,
       }))}
     />
   )

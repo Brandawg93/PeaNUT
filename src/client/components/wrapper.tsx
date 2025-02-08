@@ -66,7 +66,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
   )
-  const [wattHours, setwattHours] = useState<boolean>(
+  const [wattHours, setWattHours] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattHours') === 'true' : false
   )
   const lng = useContext<string>(LanguageContext)
@@ -132,7 +132,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
       </div>
     )
   }
-  if (!settingsLoaded || !data || !data.devices) {
+  if (!settingsLoaded || !data?.devices) {
     return loadingWrapper
   }
   if (data.devices.length === 0) {
@@ -163,7 +163,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   }
 
   const toggleWattHours = () => {
-    setwattHours((prev) => {
+    setWattHours((prev) => {
       localStorage.setItem('wattHours', (!prev).toString())
       return !prev
     })
@@ -228,7 +228,6 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           onDeviceChange={(name: string) =>
             data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
           }
-          onDisconnect={handleDisconnect}
           devices={data.devices}
         />
       </NavBar>
@@ -246,11 +245,9 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
                   </p>
                 </>
               ) : (
-                <>
-                  <p className='m-0'>
-                    {t('device')}: {ups.description}
-                  </p>
-                </>
+                <p className='m-0'>
+                  {t('device')}: {ups.description}
+                </p>
               )}
               <p>
                 {t('serial')}: {vars['device.serial']?.value}

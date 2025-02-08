@@ -23,14 +23,27 @@ const languages = [
 export default function LanguageSwitcher() {
   const lng = useContext<string>(LanguageContext)
   const { t, i18n } = useTranslation(lng)
+  const [language, setLanguage] = React.useState(i18next.language)
 
   const handleSelect = (language: string) => {
     i18n.changeLanguage(language)
   }
 
   const isActive = (value: string) => {
-    return i18next.language === value ? '!bg-secondary-highlight' : ''
+    return language === value ? '!bg-secondary-highlight' : ''
   }
+
+  React.useEffect(() => {
+    const handleLanguageChange = () => {
+      setLanguage(i18next.language)
+    }
+
+    i18next.on('languageChanged', handleLanguageChange)
+
+    return () => {
+      i18next.off('languageChanged', handleLanguageChange)
+    }
+  }, [])
 
   return (
     <DropdownMenu>

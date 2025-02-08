@@ -9,6 +9,7 @@ A Tiny Dashboard for Network UPS Tools
 [![PayPal](https://img.shields.io/badge/paypal-donate-blue?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=CEYYGVB7ZZ764&item_name=peanut&currency_code=USD&source=url)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/brandawg93)](https://github.com/Brandawg93)
 ![Docker Pulls](https://img.shields.io/docker/pulls/brandawg93/peanut)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Brandawg93_PeaNUT&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Brandawg93_PeaNUT)
 
 <img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/charts.png" width="600px" />
 

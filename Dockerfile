@@ -1,18 +1,20 @@
-FROM node:22-slim AS deps
+FROM node:lts-slim AS deps
 
 WORKDIR /app
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN corepack enable
+RUN npm i -g corepack && \
+    corepack enable pnpm
 COPY --link package.json pnpm-lock.yaml* /app/
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch | \
+    grep -v "cross-device link not permitted\|Falling back to copying packages from store"
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --frozen-lockfile --ignore-scripts
 
-FROM node:22-slim AS build
+FROM node:lts-slim AS build
 
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -20,9 +22,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY . /app
 
-RUN corepack enable pnpm && pnpm run build && rm -rf .next/standalone/.next/cache
+RUN npm -g i corepack && \
+    corepack enable pnpm && \
+    pnpm run build && \
+    rm -rf .next/standalone/.next/cache
 
-FROM node:22-alpine AS runner
+FROM node:lts-alpine AS runner
 
 LABEL org.opencontainers.image.title="PeaNUT"
 LABEL org.opencontainers.image.description="A tiny dashboard for Network UPS Tools"
