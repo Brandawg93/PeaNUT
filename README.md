@@ -124,7 +124,7 @@ widget:
       format: percent
     - field: battery.runtime
       label: Battery Runtime
-      format: text
+      format: duration
     - field: ups.load
       label: UPS Load
       format: percent
