@@ -93,7 +93,7 @@ export default function NutGrid({ data }: Props) {
     // Get stored state from localStorage
     const storedState = localStorage.getItem('collapsible-grid')
     // Set to stored value if exists, otherwise default to open (id)
-    setAccordionOpen(storedState === 'open')
+    setAccordionOpen(!storedState || storedState === 'open')
   }, [])
 
   const hierarchicalData = useMemo<HierarchicalTableProps[]>(
