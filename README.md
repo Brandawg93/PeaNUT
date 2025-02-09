@@ -22,7 +22,8 @@ A Tiny Dashboard for Network UPS Tools
 - Configure settings through a user-friendly UI
 - Manual configuration via YAML file
 - API access for integration with other tools
-- [InfluxDB](https://www.influxdata.com) v2 integration for notifications via [Grafana](https://grafana.com)
+- [InfluxDB](https://www.influxdata.com) v2 integration for monitoring via [Grafana](https://grafana.com)
+- [Prometheus](https://prometheus.io) support for monitoring and alerting
 - Customizable widgets for [Homepage](https://gethomepage.dev) integration
 - Detailed [documentation](https://github.com/Brandawg93/PeaNUT/wiki) and examples available
 
@@ -94,6 +95,7 @@ Configuration is primarily done via the UI, but manual configuration can be done
 | `GET /api/v1/devices/[ups]/description`                   | Retrieves the description for the specified UPS device                        |
 | `GET /api/v1/devices/[ups]/clients`                       | Retrieves the connected clients for the specified UPS device                  |
 | `GET /api/v1/devices/[ups]/rwvars`                        | Retrieves writable variables for the specified UPS device                     |
+| `GET /api/v1/metrics`                                     | Metrics endpoint for prometheus                                               |
 
 ## Homepage Support
 
