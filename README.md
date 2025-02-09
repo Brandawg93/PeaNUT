@@ -95,6 +95,7 @@ Configuration is primarily done via the UI, but manual configuration can be done
 | `GET /api/v1/devices/[ups]/description`                   | Retrieves the description for the specified UPS device                        |
 | `GET /api/v1/devices/[ups]/clients`                       | Retrieves the connected clients for the specified UPS device                  |
 | `GET /api/v1/devices/[ups]/rwvars`                        | Retrieves writable variables for the specified UPS device                     |
+| `GET /api/v1/metrics`                                     | Metrics endpoint for prometheus                                               |
 
 ## Homepage Support
 

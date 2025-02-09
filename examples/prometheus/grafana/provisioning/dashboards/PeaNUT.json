@@ -474,15 +474,15 @@
     }
   ],
   "preload": false,
-  "refresh": "",
+  "refresh": "10s",
   "schemaVersion": 40,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "text": "dummy2",
-          "value": "dummy2"
+          "text": "ups",
+          "value": "ups"
         },
         "definition": "label_values(ups)",
         "includeAll": false,
@@ -501,7 +501,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
