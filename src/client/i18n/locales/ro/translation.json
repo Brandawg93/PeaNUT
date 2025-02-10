@@ -123,5 +123,6 @@
   },
   "volt-amps-chart": "Putere aparentă",
   "volts-chart": "Voltaj",
-  "watts-chart": "Putere reală"
+  "watts-chart": "Putere reală",
+  "accordion-grid": "Date UPS"
 }

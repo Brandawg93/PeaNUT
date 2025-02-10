@@ -41,16 +41,22 @@ export default function Kpi(props: Props) {
     }
   }
 
+  const clickableProps = onClick
+    ? {
+        role: 'button',
+        tabIndex: 0,
+        onClick: onClickHandler,
+        onKeyUp: (e: any) => {
+          if (e.key === 'Enter' && onClickHandler) {
+            onClickHandler()
+          }
+        },
+      }
+    : {}
+
   return (
     <Card
-      role='button'
-      tabIndex={0}
-      onClick={onClickHandler}
-      onKeyUp={(e) => {
-        if (e.key === 'Enter' && onClickHandler) {
-          onClickHandler()
-        }
-      }}
+      {...clickableProps}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
       className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
       data-testid='kpi'

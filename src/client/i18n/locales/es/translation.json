@@ -123,5 +123,6 @@
   },
   "volt-amps-chart": "Poder aparente",
   "volts-chart": "Voltaje",
-  "watts-chart": "Poder real"
+  "watts-chart": "Poder real",
+  "accordion-grid": "Datos de UPS"
 }
