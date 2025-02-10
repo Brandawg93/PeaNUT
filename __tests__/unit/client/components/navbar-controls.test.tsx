@@ -30,7 +30,7 @@ const devices = [
 ]
 
 describe('NavBar', () => {
-  it.skip('renders', () => {
+  it('renders', () => {
     render(
       <NavBarControls
         devices={devices}
@@ -41,8 +41,8 @@ describe('NavBar', () => {
       />
     )
 
-    const heading = screen.getByText('PeaNUT')
+    const langSwitcher = screen.getByTitle('sidebar.language')
 
-    expect(heading).toBeInTheDocument()
+    expect(langSwitcher).toBeInTheDocument()
   })
 })
