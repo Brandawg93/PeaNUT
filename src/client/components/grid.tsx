@@ -4,6 +4,7 @@ import React, { useState, useMemo, useContext, useEffect } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
 import { Input } from '@/client/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/client/components/ui/popover'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import {
@@ -14,7 +15,6 @@ import {
   HiOutlineChevronRight,
   HiOutlineChevronDown,
 } from 'react-icons/hi2'
-import { LuChevronDown } from 'react-icons/lu'
 import { TbList, TbListTree } from 'react-icons/tb'
 import { Toaster, toast } from 'sonner'
 import {
@@ -30,7 +30,6 @@ import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
 import { DEVICE } from '@/common/types'
 import { saveVar } from '@/app/actions'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/client/components/ui/collapsible'
 
 type Props = {
   data: DEVICE
@@ -46,6 +45,8 @@ interface HierarchicalTableProps extends TableProps {
   originalKey?: string
   children?: HierarchicalTableProps[]
 }
+
+const GRID_ID = 'accordion-grid'
 
 const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
   const root: HierarchicalTableProps[] = []
@@ -91,7 +92,7 @@ export default function NutGrid({ data }: Props) {
 
   useEffect(() => {
     // Get stored state from localStorage
-    const storedState = localStorage.getItem('collapsible-grid')
+    const storedState = localStorage.getItem(GRID_ID)
     // Set to stored value if exists, otherwise default to open (id)
     setAccordionOpen(!storedState || storedState === 'open')
   }, [])
@@ -276,59 +277,59 @@ export default function NutGrid({ data }: Props) {
     </div>
   )
 
-  const handleCollapsibleChange = (value: boolean) => {
+  const handleAccordionChange = (value: boolean) => {
     // Store the new state in localStorage
-    localStorage.setItem('collapsible-grid', value ? 'open' : 'closed')
+    localStorage.setItem(GRID_ID, value ? 'open' : 'closed')
     setAccordionOpen(value)
   }
 
   return (
     <Card className='w-full overflow-auto border border-border-card bg-card shadow-none' data-testid='grid'>
       <CardContent className='!p-0'>
-        <Collapsible
-          className='relative min-h-[40px] w-full'
-          open={accordionOpen}
-          onOpenChange={handleCollapsibleChange}
+        <Accordion
+          type='single'
+          collapsible
+          className='w-full'
+          value={accordionOpen ? GRID_ID : ''}
+          onValueChange={() => handleAccordionChange(!accordionOpen)}
         >
-          <CollapsibleTrigger className='absolute right-0 bg-transparent p-3'>
-            <LuChevronDown
-              className={`lucide lucide-chevron-down h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ${accordionOpen ? 'rotate-180' : 'rotate-0'}`}
-            />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
-            <table className='w-full table-auto'>
-              <thead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={header.id}
-                        className={`p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b border-border-card bg-muted`}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {table.getRowModel().rows.map((row, index) => (
-                  <tr key={row.id} aria-rowindex={index}>
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t p-3`}
-                        key={cell.id}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CollapsibleContent>
-        </Collapsible>
+          <AccordionItem value={GRID_ID} className='!border-b-0'>
+            <AccordionTrigger className='p-3'>{t(GRID_ID)}</AccordionTrigger>
+            <AccordionContent className='!pb-0'>
+              <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
+              <table className='w-full table-auto'>
+                <thead>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          className={`p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-b border-border-card bg-muted`}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {table.getRowModel().rows.map((row, index) => (
+                    <tr key={row.id} aria-rowindex={index}>
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t p-3`}
+                          key={cell.id}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </CardContent>
     </Card>
   )

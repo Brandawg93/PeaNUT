@@ -123,5 +123,6 @@
   },
   "volt-amps-chart": "Scheinbare Kraft",
   "volts-chart": "Stromspannung",
-  "watts-chart": "Echte Kraft"
+  "watts-chart": "Echte Kraft",
+  "accordion-grid": "UPS -Daten"
 }

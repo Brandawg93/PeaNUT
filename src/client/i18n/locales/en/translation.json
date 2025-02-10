@@ -123,5 +123,6 @@
   },
   "volts-chart": "Voltage",
   "watts-chart": "Real Power",
-  "volt-amps-chart": "Apparent Power"
+  "volt-amps-chart": "Apparent Power",
+  "accordion-grid": "UPS Data"
 }
