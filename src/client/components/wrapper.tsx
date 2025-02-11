@@ -7,13 +7,11 @@ import {
   HiOutlineExclamationTriangle,
   HiExclamationCircle,
   HiOutlineExclamationCircle,
-  HiOutlineArrowRightStartOnRectangle,
+  HiOutlineCog6Tooth,
 } from 'react-icons/hi2'
-
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
@@ -24,7 +22,6 @@ import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
-
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import { DEVICE, DeviceData } from '@/common/types'
@@ -56,11 +53,10 @@ const roundIfNeeded = (num: number) => Math.round((num + Number.EPSILON) * 100) 
 type Props = {
   getDevicesAction: () => Promise<DeviceData>
   checkSettingsAction: () => Promise<boolean>
-  disconnectAction: () => Promise<void>
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
 }
 
-export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction, runCommandAction }: Props) {
+export default function Wrapper({ getDevicesAction, checkSettingsAction, runCommandAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
@@ -86,11 +82,6 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     })
   }, [])
 
-  const handleDisconnect = async () => {
-    await disconnectAction()
-    router.replace('/login')
-  }
-
   const loadingWrapper = (
     <div
       className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
@@ -100,17 +91,10 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     </div>
   )
 
-  if (data?.error) {
-    let error = 'Internal Server Error'
-    if (data?.error.includes('ECONNREFUSED')) {
-      error = t('serverRefused')
-    }
-    if (data?.error.includes('ENOTFOUND')) {
-      error = t('serverNotFound')
-    }
-
-    console.error(error)
-
+  if (!settingsLoaded || !data?.devices) {
+    return loadingWrapper
+  }
+  if (data.devices.length === 0) {
     return (
       <div
         className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
@@ -118,32 +102,17 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
       >
         <div className='flex flex-col items-center'>
           <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
-          <p>{error}</p>
+          <p>{t('noDevicesError')}</p>
         </div>
         <div>
           <Button
-            title={t('sidebar.disconnect')}
-            className='bg-destructive shadow-none'
-            onClick={async () => await handleDisconnect()}
+            variant='default'
+            title={t('sidebar.settings')}
+            className='shadow-none'
+            onClick={() => router.push('/settings')}
           >
-            <HiOutlineArrowRightStartOnRectangle className='!h-6 !w-6' />
+            <HiOutlineCog6Tooth className='!h-6 !w-6' />
           </Button>
-        </div>
-      </div>
-    )
-  }
-  if (!settingsLoaded || !data?.devices) {
-    return loadingWrapper
-  }
-  if (data.devices.length === 0) {
-    return (
-      <div
-        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
-        data-testid='wrapper'
-      >
-        <div className='flex flex-col items-center'>
-          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
-          <p>{t('noDevicesError')}</p>
         </div>
       </div>
     )

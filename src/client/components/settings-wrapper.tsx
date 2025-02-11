@@ -107,7 +107,6 @@ export default function SettingsWrapper({
   const handleServerRemove = async (index: number) => {
     const updatedServerList = serverList.filter((_, i) => i !== index)
     setServerList(updatedServerList)
-    await updateServersAction(updatedServerList)
   }
 
   const handleSaveServers = async () => {

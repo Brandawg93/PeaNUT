@@ -47,13 +47,12 @@ describe('Wrapper Component', () => {
     updated: '2023-10-01T00:00:00Z',
   }
 
-  const renderComponent = (checkSettingsAction: boolean, getDevicesAction = {}, disconnectAction = null) =>
+  const renderComponent = (checkSettingsAction: boolean, getDevicesAction = {}) =>
     render(
       <LanguageContext.Provider value='en'>
         <Wrapper
           checkSettingsAction={jest.fn().mockResolvedValue(checkSettingsAction)}
           getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
-          disconnectAction={jest.fn().mockResolvedValue(disconnectAction)}
           runCommandAction={jest.fn().mockResolvedValue({})}
         />
       </LanguageContext.Provider>
