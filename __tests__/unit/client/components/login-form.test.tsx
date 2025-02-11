@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import Connect from '@/client/components/connect'
+import LoginForm from '@/client/components/login-form'
 import { LanguageContext } from '@/client/context/language'
 import PromiseSocket from '@/server/promise-socket'
 
@@ -12,15 +12,13 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-describe('Connect Component', () => {
+describe('LoginForm Component', () => {
   const mockLanguageContext = 'en'
-  const mockUpdateServers = jest.fn()
-  const mockTestConnection = jest.fn().mockResolvedValue('success')
 
   const renderComponent = () =>
     render(
       <LanguageContext.Provider value={mockLanguageContext}>
-        <Connect updateServersAction={mockUpdateServers} testConnectionAction={mockTestConnection} />
+        <LoginForm />
       </LanguageContext.Provider>
     )
 

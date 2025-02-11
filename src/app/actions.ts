@@ -5,6 +5,8 @@ import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
 import { DEVICE, server, DeviceData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
+import { AuthError } from 'next-auth'
+import { signIn } from '@/auth'
 
 const settingsFile = './config/settings.yml'
 // Cache settings instance
@@ -38,6 +40,22 @@ async function connect(): Promise<Array<Nut>> {
     return servers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
   } catch (e: any) {
     throw new Error(`Failed to connect to NUT servers: ${e.message}`)
+  }
+}
+
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+  try {
+    await signIn('credentials', formData)
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.'
+        default:
+          return 'Something went wrong.'
+      }
+    }
+    throw error
   }
 }
 
