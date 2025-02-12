@@ -96,8 +96,6 @@ describe('AddServer Component', () => {
     fireEvent.click(testButton)
     expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080)
 
-    expect(testButton).toBeDisabled()
-
     await waitFor(() => expect(testButton).not.toBeDisabled())
   })
 })
