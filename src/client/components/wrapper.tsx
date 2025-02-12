@@ -93,7 +93,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
   const loadingWrapper = (
     <div
-      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
+      className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
       data-testid='loading-wrapper'
     >
       <Loader />
@@ -113,11 +113,11 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
 
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
+        className='bg-background absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center text-center'
         data-testid='wrapper'
       >
         <div className='flex flex-col items-center'>
-          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
+          <HiExclamationCircle className='text-destructive mb-4 text-8xl' />
           <p>{error}</p>
         </div>
         <div>
@@ -126,7 +126,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
             className='bg-destructive shadow-none'
             onClick={async () => await handleDisconnect()}
           >
-            <HiOutlineArrowRightStartOnRectangle className='!h-6 !w-6' />
+            <HiOutlineArrowRightStartOnRectangle className='h-6! w-6!' />
           </Button>
         </div>
       </div>
@@ -138,11 +138,11 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
   if (data.devices.length === 0) {
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
+        className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
         data-testid='wrapper'
       >
         <div className='flex flex-col items-center'>
-          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
+          <HiExclamationCircle className='text-destructive mb-4 text-8xl' />
           <p>{t('noDevicesError')}</p>
         </div>
       </div>
@@ -231,7 +231,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
           devices={data.devices}
         />
       </NavBar>
-      <div className='flex justify-center pl-3 pr-3'>
+      <div className='flex justify-center pr-3 pl-3'>
         <div className='container'>
           <div className='mb-4 flex flex-row justify-between'>
             <div>

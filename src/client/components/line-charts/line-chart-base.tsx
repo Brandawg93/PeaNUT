@@ -46,8 +46,8 @@ export default function LineChartBase(props: Props) {
   }
 
   return (
-    <Card className='w-full border border-border-card bg-card p-3 shadow-none' data-testid={id}>
-      <CardContent className='!p-0'>
+    <Card className='border-border-card bg-card w-full border p-3 shadow-none' data-testid={id}>
+      <CardContent className='p-0!'>
         <Accordion
           type='single'
           collapsible
@@ -55,9 +55,9 @@ export default function LineChartBase(props: Props) {
           value={accordionValue}
           onValueChange={handleAccordionChange}
         >
-          <AccordionItem value={id} className='!border-b-0'>
+          <AccordionItem value={id} className='border-b-0!'>
             <AccordionTrigger className='p-0'>{t(id)}</AccordionTrigger>
-            <AccordionContent className='!pb-0'>
+            <AccordionContent className='pb-0!'>
               <ChartContainer config={config} className='mx-auto aspect-square h-96 w-full'>
                 <LineChart accessibilityLayer data={data}>
                   <XAxis
