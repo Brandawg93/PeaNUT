@@ -48,7 +48,7 @@ export default function SettingsWrapper({
 }: SettingsWrapperProps) {
   const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
-  const [serverList, setServerList] = useState<Array<server>>([])
+  const [serverList, setServerList] = useState<Array<{ server: server; saved: boolean }>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
   const [influxToken, setInfluxToken] = useState<string>('')
   const [influxOrg, setInfluxOrg] = useState<string>('')
@@ -72,8 +72,8 @@ export default function SettingsWrapper({
           getSettingsAction('INFLUX_BUCKET'),
           getSettingsAction('INFLUX_INTERVAL'),
         ])
-        if (servers) {
-          setServerList([...servers])
+        if (servers?.length) {
+          setServerList([...servers.map((server: server) => ({ server, saved: true }))])
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -97,10 +97,10 @@ export default function SettingsWrapper({
     index: number
   ) => {
     const updatedServerList = [...serverList]
-    updatedServerList[index].HOST = server
-    updatedServerList[index].PORT = port
-    updatedServerList[index].USERNAME = username
-    updatedServerList[index].PASSWORD = password
+    updatedServerList[index].server.HOST = server
+    updatedServerList[index].server.PORT = port
+    updatedServerList[index].server.USERNAME = username
+    updatedServerList[index].server.PASSWORD = password
     setServerList(updatedServerList)
   }
 
@@ -110,7 +110,8 @@ export default function SettingsWrapper({
   }
 
   const handleSaveServers = async () => {
-    await updateServersAction(serverList)
+    await updateServersAction(serverList.map((server) => server.server))
+    setServerList(serverList.map((server) => ({ ...server, saved: true })))
     toast.success(t('settings.saved'))
   }
 
@@ -171,7 +172,7 @@ export default function SettingsWrapper({
             className='flex h-full flex-col gap-4 md:flex-row'
             onValueChange={handleSettingsMenuChange}
           >
-            <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:flex-col lg:w-auto'>
+            <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
               {menuItems.map(({ label, Icon, value }, index) => (
                 <TabsTrigger key={index} value={value} className='w-full justify-start'>
                   <div className='mr-4'>
@@ -189,11 +190,12 @@ export default function SettingsWrapper({
                     {serverList.map((server, index) => (
                       <AddServer
                         removable={serverList.length > 1}
+                        saved={server.saved}
                         key={index}
-                        initialServer={server.HOST}
-                        initialPort={server.PORT}
-                        initialUsername={server.USERNAME}
-                        initialPassword={server.PASSWORD}
+                        initialServer={server.server.HOST}
+                        initialPort={server.server.PORT}
+                        initialUsername={server.server.USERNAME}
+                        initialPassword={server.server.PASSWORD}
                         handleChange={(server, port, username, password) =>
                           handleServerChange(server, port, username, password, index)
                         }
@@ -206,7 +208,7 @@ export default function SettingsWrapper({
                         variant='secondary'
                         title={t('settings.addServer')}
                         className='shadow-none'
-                        onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
+                        onClick={() => setServerList([...serverList, { server: { HOST: '', PORT: 0 }, saved: false }])}
                       >
                         <HiOutlinePlus className='size-6! stroke-2' />
                       </Button>

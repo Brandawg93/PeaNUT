@@ -52,8 +52,7 @@ describe('SettingsWrapper', () => {
 
   it('renders the settings wrapper component', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce('localhost')
-    mockGetSettingsAction.mockResolvedValueOnce(8080)
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
 
     renderComponent()
 
@@ -64,8 +63,7 @@ describe('SettingsWrapper', () => {
 
   it('loads server settings if settings check passes', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce('localhost')
-    mockGetSettingsAction.mockResolvedValueOnce(8080)
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
 
     renderComponent()
 
@@ -76,8 +74,7 @@ describe('SettingsWrapper', () => {
 
   it('adds a new server when add server button is clicked', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce('localhost')
-    mockGetSettingsAction.mockResolvedValueOnce(8080)
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
 
     renderComponent()
 
@@ -90,7 +87,7 @@ describe('SettingsWrapper', () => {
 
   it('handles server change correctly', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce([{ HOST: 'localhost', PORT: 8080 }])
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
     mockGetSettingsAction.mockResolvedValueOnce('influxToken')
     mockGetSettingsAction.mockResolvedValueOnce('influxOrg')
@@ -102,7 +99,7 @@ describe('SettingsWrapper', () => {
       expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
     })
 
-    const serverInput = screen.getByDisplayValue('localhost')
+    const serverInput = screen.getByTestId('server')
     fireEvent.change(serverInput, { target: { value: 'newhost' } })
 
     await waitFor(() => {

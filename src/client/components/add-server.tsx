@@ -21,6 +21,7 @@ type AddServerProps = {
   handleRemove: () => void
   testConnectionAction: (server: string, port: number) => Promise<string>
   removable?: boolean
+  saved?: boolean
 }
 
 export default function AddServer({
@@ -32,6 +33,7 @@ export default function AddServer({
   handleRemove,
   testConnectionAction,
   removable,
+  saved,
 }: AddServerProps) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
@@ -56,9 +58,13 @@ export default function AddServer({
       }
       try {
         await promise
-        setConnectionStatus('success')
+        if (hideToast) {
+          setConnectionStatus('success')
+        }
       } catch {
-        setConnectionStatus('error')
+        if (hideToast) {
+          setConnectionStatus('error')
+        }
       }
     }
   }
@@ -100,13 +106,16 @@ export default function AddServer({
   }
 
   useEffect(() => {
-    handleTestConnection(true)
-    const interval = setInterval(() => {
+    let interval: NodeJS.Timeout | undefined
+    if (saved) {
       handleTestConnection(true)
-    }, PING_INTERVAL)
+      interval = setInterval(() => {
+        handleTestConnection(true)
+      }, PING_INTERVAL)
 
-    return () => clearInterval(interval)
-  }, [server, port])
+      return () => clearInterval(interval)
+    }
+  }, [saved])
 
   return (
     <TooltipProvider>
