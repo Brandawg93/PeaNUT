@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Nu au fost găsite dispozitive.",
+  "noDevicesError": "Nu au fost găsite dispozitive. \nAdăugați un dispozitiv nou în setări.",
   "updateAvailable": "Actualizare disponibilă",
   "device": "Dispozitiv",
   "manufacturer": "Producător",

@@ -5,7 +5,6 @@ import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/client/components/ui/accordion'
-import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
 import CodeMirror from '@uiw/react-codemirror'
@@ -57,12 +56,11 @@ export default function SettingsWrapper({
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { resolvedTheme, theme } = useTheme()
-  const router = useRouter()
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
       if (!res) {
-        router.replace('/login')
+        setSettingsLoaded(true)
       } else {
         const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval] = await Promise.all([
           getSettingsAction('NUT_SERVERS'),
@@ -189,7 +187,6 @@ export default function SettingsWrapper({
                     <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
                     {serverList.map((server, index) => (
                       <AddServer
-                        removable={serverList.length > 1}
                         saved={server.saved}
                         key={index}
                         initialServer={server.server.HOST}

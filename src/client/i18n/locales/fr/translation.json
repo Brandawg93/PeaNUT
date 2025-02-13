@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Aucun dispositif trouvé.",
+  "noDevicesError": "Aucun dispositif trouvé. \nAjoutez un nouvel appareil dans les paramètres.",
   "updateAvailable": "Mise à jour disponible",
   "device": "Appareil",
   "manufacturer": "Fabricant",

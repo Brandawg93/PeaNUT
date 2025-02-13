@@ -20,7 +20,6 @@ type AddServerProps = {
   handleChange: (server: string, port: number, username?: string, password?: string) => void
   handleRemove: () => void
   testConnectionAction: (server: string, port: number) => Promise<string>
-  removable?: boolean
   saved?: boolean
 }
 
@@ -32,7 +31,6 @@ export default function AddServer({
   handleChange,
   handleRemove,
   testConnectionAction,
-  removable,
   saved,
 }: AddServerProps) {
   const lng = useContext<string>(LanguageContext)
@@ -123,18 +121,14 @@ export default function AddServer({
         <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
         <div className='flex justify-between'>
           <div className='pt-2 pl-2'>{pingIcon()}</div>
-          {removable ? (
-            <Button
-              variant='ghost'
-              className='text-md px-3 shadow-none'
-              title={t('settings.remove')}
-              onClick={handleRemove}
-            >
-              <HiOutlineXMark className='size-6!' />
-            </Button>
-          ) : (
-            <div className='pt-9' />
-          )}
+          <Button
+            variant='ghost'
+            className='text-md px-3 shadow-none'
+            title={t('settings.remove')}
+            onClick={handleRemove}
+          >
+            <HiOutlineXMark className='size-6!' />
+          </Button>
         </div>
         <div className='pr-6 pl-6'>
           <form className='w-full'>

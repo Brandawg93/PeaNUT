@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "No devices found.",
+  "noDevicesError": "No devices found. Add a new device in settings.",
   "updateAvailable": "Update Available",
   "device": "Device",
   "manufacturer": "Manufacturer",

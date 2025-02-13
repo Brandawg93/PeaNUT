@@ -33,7 +33,7 @@ function connect(): Array<Nut> {
     const settings = getCachedSettings()
     const servers = settings.get('NUT_SERVERS')
     if (!Array.isArray(servers) || servers.length === 0) {
-      throw new Error('No NUT servers configured')
+      return []
     }
     return servers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
   } catch (e: any) {

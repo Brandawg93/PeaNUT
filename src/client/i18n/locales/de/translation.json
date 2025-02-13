@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Keine Geräte gefunden.",
+  "noDevicesError": "Keine Geräte gefunden. \nFügen Sie ein neues Gerät in Einstellungen hinzu.",
   "updateAvailable": "Update verfügbar",
   "device": "Gerät",
   "manufacturer": "Hersteller",
