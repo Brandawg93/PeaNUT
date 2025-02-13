@@ -284,7 +284,7 @@ export default function NutGrid({ data }: Props) {
   }
 
   return (
-    <Card className='border-border-card bg-card w-full overflow-auto border shadow-none' data-testid='grid'>
+    <Card className='border-border-card bg-card w-full border shadow-none' data-testid='grid'>
       <CardContent className='p-0!'>
         <Accordion
           type='single'
@@ -295,7 +295,7 @@ export default function NutGrid({ data }: Props) {
         >
           <AccordionItem value={GRID_ID} className='border-b-0!'>
             <AccordionTrigger className='cursor-pointer p-3'>{t(GRID_ID)}</AccordionTrigger>
-            <AccordionContent className='pb-0!'>
+            <AccordionContent className='overflow-auto pb-0!'>
               <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
               <table className='w-full table-auto'>
                 <thead>
