@@ -9,8 +9,6 @@
 @theme {
   --animate-fade: fade 1s ease 0s 1 both;
   --animate-spin-once: spin 500ms linear 0s 1;
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
   --color-gray-950: #030712;
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -63,6 +61,11 @@
       transform: rotate(180deg);
     }
   }
+}
+
+@theme inline {
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 
   @keyframes accordion-down {
     from {
@@ -180,7 +183,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
 
   body {

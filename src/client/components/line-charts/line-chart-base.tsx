@@ -7,9 +7,8 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-  ChartReferenceLine,
 } from '@/client/components/ui/chart'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, ReferenceLine } from 'recharts'
 import { Payload } from 'recharts/types/component/DefaultLegendContent'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
 import { LanguageContext } from '@/client/context/language'
@@ -56,7 +55,7 @@ export default function LineChartBase(props: Props) {
           onValueChange={handleAccordionChange}
         >
           <AccordionItem value={id} className='border-b-0!'>
-            <AccordionTrigger className='p-0'>{t(id)}</AccordionTrigger>
+            <AccordionTrigger className='cursor-pointer p-0'>{t(id)}</AccordionTrigger>
             <AccordionContent className='pb-0!'>
               <ChartContainer config={config} className='mx-auto aspect-square h-96 w-full'>
                 <LineChart accessibilityLayer data={data}>
@@ -95,7 +94,7 @@ export default function LineChartBase(props: Props) {
                   />
                   <CartesianGrid horizontal vertical />
                   {referenceLineData?.map((line) => (
-                    <ChartReferenceLine
+                    <ReferenceLine
                       key={line.label}
                       y={line.value}
                       stroke='red'

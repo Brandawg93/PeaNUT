@@ -294,7 +294,7 @@ export default function NutGrid({ data }: Props) {
           onValueChange={() => handleAccordionChange(!accordionOpen)}
         >
           <AccordionItem value={GRID_ID} className='border-b-0!'>
-            <AccordionTrigger className='p-3'>{t(GRID_ID)}</AccordionTrigger>
+            <AccordionTrigger className='cursor-pointer p-3'>{t(GRID_ID)}</AccordionTrigger>
             <AccordionContent className='pb-0!'>
               <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
               <table className='w-full table-auto'>
