@@ -31,19 +31,19 @@ import { DEVICE, DeviceData } from '@/common/types'
 
 const getStatus = (status: keyof typeof upsStatus) => {
   if (status.startsWith('OL')) {
-    return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
+    return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block size-6 stroke-[3px] text-green-400' />
   } else if (status.startsWith('OB')) {
     return (
       <HiOutlineExclamationTriangle
         data-testid='triangle-icon'
-        className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400'
+        className='mb-1 inline-block size-6 stroke-[3px] text-yellow-400'
       />
     )
   } else if (status.startsWith('LB')) {
     return (
       <HiOutlineExclamationCircle
         data-testid='exclamation-icon'
-        className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400'
+        className='mb-1 inline-block size-6 stroke-[3px] text-red-400'
       />
     )
   } else {
@@ -126,7 +126,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
             className='bg-destructive shadow-none'
             onClick={async () => await handleDisconnect()}
           >
-            <HiOutlineArrowRightStartOnRectangle className='h-6! w-6!' />
+            <HiOutlineArrowRightStartOnRectangle className='size-6!' />
           </Button>
         </div>
       </div>

@@ -70,7 +70,7 @@ export default function AddServer({
             title={t('settings.remove')}
             onClick={handleRemove}
           >
-            <HiOutlineXMark className='h-6 w-6 stroke-1' />
+            <HiOutlineXMark className='size-6' />
           </Button>
         </div>
       ) : (
@@ -146,11 +146,13 @@ export default function AddServer({
                 variant='ghost'
                 type='button'
               >
-                {showPassword ? (
-                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1' />
-                ) : (
-                  <HiOutlineEye className='h-6 w-6 stroke-1' />
-                )}
+                <div className='text-muted-foreground'>
+                  {showPassword ? (
+                    <HiOutlineEyeSlash className='size-6 stroke-1' />
+                  ) : (
+                    <HiOutlineEye className='size-6 stroke-1' />
+                  )}
+                </div>
               </Button>
             </div>
           </div>

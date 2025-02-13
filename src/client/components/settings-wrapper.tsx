@@ -176,7 +176,7 @@ export default function SettingsWrapper({
               {menuItems.map(({ label, Icon, value }, index) => (
                 <TabsTrigger key={index} value={value} className='w-full justify-start'>
                   <div className='mr-4'>
-                    <Icon className='h-6! w-6!' />
+                    <Icon className='size-6!' />
                   </div>
                   <span>{label}</span>
                 </TabsTrigger>
@@ -209,7 +209,7 @@ export default function SettingsWrapper({
                         className='shadow-none'
                         onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
                       >
-                        <HiOutlinePlus className='h-6! w-6! stroke-2' />
+                        <HiOutlinePlus className='size-6! stroke-2' />
                       </Button>
                     </div>
                   </div>
@@ -229,7 +229,7 @@ export default function SettingsWrapper({
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
                   <span className='text-muted-foreground text-sm'>
-                    <HiOutlineInformationCircle className='inline-block h-4 w-4' />
+                    <HiOutlineInformationCircle className='inline-block size-4' />
                     {t('settings.influxNotice')}
                   </span>
                   <AddInflux
@@ -292,7 +292,7 @@ export default function SettingsWrapper({
                   </Accordion>
                   <div className='flex flex-row'>
                     <Button onClick={handleSettingsImport} className='flex shadow-none'>
-                      <AiOutlineSave className='h-4 w-4' />
+                      <AiOutlineSave className='size-4' />
                       &nbsp;
                       <span className='self-center'>{t('settings.save')}</span>
                     </Button>
@@ -308,7 +308,7 @@ export default function SettingsWrapper({
                       }}
                       className='flex shadow-none'
                     >
-                      <AiOutlineDownload className='h-4 w-4' />
+                      <AiOutlineDownload className='size-4' />
                       &nbsp;
                       <span className='self-center'>{t('settings.download')}</span>
                     </Button>

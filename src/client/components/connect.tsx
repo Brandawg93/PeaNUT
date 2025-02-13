@@ -141,11 +141,13 @@ export default function Connect({ testConnectionAction, updateServersAction }: C
                 variant='ghost'
                 type='button'
               >
-                {showPassword ? (
-                  <HiOutlineEyeSlash className='h-6 w-6 stroke-1 dark:text-white' />
-                ) : (
-                  <HiOutlineEye className='h-6 w-6 stroke-1 dark:text-white' />
-                )}
+                <div className='text-muted-foreground'>
+                  {showPassword ? (
+                    <HiOutlineEyeSlash className='size-6 stroke-1' />
+                  ) : (
+                    <HiOutlineEye className='size-6 stroke-1' />
+                  )}
+                </div>
               </Button>
             </div>
           </div>

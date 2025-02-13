@@ -34,7 +34,7 @@ function ReactSwagger({ spec }: Props) {
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='h-6! w-6! text-black dark:text-white' />
+            <HiOutlineCog6Tooth className='size-6! text-black dark:text-white' />
           </Button>
         </div>
       </NavBar>

@@ -26,8 +26,8 @@ export default function Gauge(props: Props) {
   const { percentage, invert, title, onClick } = props
   const { resolvedTheme } = useTheme()
   const data = [
-    { percentage, fill: 'var(--color-percentage)', stroke: 'hsl(var(--primary-foreground))' },
-    { percentage: 100 - percentage, fill: 'hsl(var(--border-card))' },
+    { percentage, fill: 'var(--color-percentage)', stroke: 'var(--primary-foreground)' },
+    { percentage: 100 - percentage, fill: 'var(--border-card)' },
   ]
 
   const chartConfig = {

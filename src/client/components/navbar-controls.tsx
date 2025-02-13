@@ -86,7 +86,7 @@ export default function NavBarControls(props: Props) {
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='h-6! w-6!' />
+            <HiOutlineCog6Tooth className='size-6!' />
           </Button>
         </div>
       </div>

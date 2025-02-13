@@ -128,9 +128,9 @@ export default function NutGrid({ data }: Props) {
               {row.getCanExpand() && (
                 <div className='flex h-full flex-col justify-center'>
                   {row.getIsExpanded() ? (
-                    <HiOutlineChevronDown className='h-5! w-5!' />
+                    <HiOutlineChevronDown className='size-5!' />
                   ) : (
-                    <HiOutlineChevronRight className='h-5! w-5!' />
+                    <HiOutlineChevronRight className='size-5!' />
                   )}
                 </div>
               )}
@@ -146,7 +146,7 @@ export default function NutGrid({ data }: Props) {
               <Popover>
                 <PopoverTrigger asChild className='flex flex-col justify-center'>
                   <Button variant='ghost' size='icon' className='hover:bg-transparent'>
-                    <HiOutlineInformationCircle className='text-muted-foreground h-4 w-4' />
+                    <HiOutlineInformationCircle className='text-muted-foreground size-4' />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -166,16 +166,16 @@ export default function NutGrid({ data }: Props) {
             {useTreeData && (
               <div className='flex h-[28px] flex-col justify-center'>
                 {table.getIsAllRowsExpanded() ? (
-                  <HiOutlineChevronDown className='h-5! w-5!' />
+                  <HiOutlineChevronDown className='size-5!' />
                 ) : (
-                  <HiOutlineChevronRight className='h-5! w-5!' />
+                  <HiOutlineChevronRight className='size-5!' />
                 )}
               </div>
             )}
             <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
           </button>
           <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='shadow-none'>
-            {useTreeData ? <TbListTree className='h-6! w-6!' /> : <TbList className='h-6! w-6!' />}
+            {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
           </Button>
         </div>
       ),
@@ -203,7 +203,7 @@ export default function NutGrid({ data }: Props) {
               variant='secondary'
               className='shadow-none'
             >
-              <HiOutlinePencilSquare className='h-4! w-4!' />
+              <HiOutlinePencilSquare className='size-4!' />
             </Button>
           </span>
         ) : null
@@ -268,10 +268,10 @@ export default function NutGrid({ data }: Props) {
       />
       <div className='flex'>
         <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
-          <HiOutlineCheckCircle className='h-6! w-6! text-green-500' />
+          <HiOutlineCheckCircle className='size-6! text-green-500' />
         </Button>
         <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
-          <HiOutlineXCircle className='h-6! w-6! text-red-500' />
+          <HiOutlineXCircle className='size-6! text-red-500' />
         </Button>
       </div>
     </div>

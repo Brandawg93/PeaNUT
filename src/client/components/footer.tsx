@@ -41,7 +41,7 @@ export default function Footer({ updated }: Props) {
       rel='noreferrer'
     >
       &nbsp;
-      <HiOutlineExclamationCircle className='inline-block h-4 w-4' />
+      <HiOutlineExclamationCircle className='inline-block size-4' />
       &nbsp;{t('updateAvailable')}: {updateAvailable.version}
     </Link>
   ) : (
