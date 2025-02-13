@@ -93,7 +93,7 @@ export default function AddServer({
       default:
         return (
           <span className='relative flex h-3 w-3'>
-            <span className='relative inline-flex h-3 w-3 rounded-full bg-muted-foreground'></span>
+            <span className='bg-muted-foreground relative inline-flex h-3 w-3 rounded-full'></span>
           </span>
         )
     }
@@ -110,10 +110,10 @@ export default function AddServer({
 
   return (
     <TooltipProvider>
-      <Card className='mb-4 w-full border border-border bg-card pb-6 shadow-none'>
+      <Card className='border-border bg-card mb-4 w-full border pb-6 shadow-none'>
         <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
         <div className='flex justify-between'>
-          <div className='pl-2 pt-2'>{pingIcon()}</div>
+          <div className='pt-2 pl-2'>{pingIcon()}</div>
           {removable ? (
             <Button
               variant='ghost'
@@ -121,13 +121,13 @@ export default function AddServer({
               title={t('settings.remove')}
               onClick={handleRemove}
             >
-              <HiOutlineXMark className='!h-6 !w-6' />
+              <HiOutlineXMark className='size-6!' />
             </Button>
           ) : (
             <div className='pt-9' />
           )}
         </div>
-        <div className='pl-6 pr-6'>
+        <div className='pr-6 pl-6'>
           <form className='w-full'>
             <div className='mb-4'>
               <Label htmlFor='serverHost'>{t('connect.server')}</Label>
@@ -140,7 +140,7 @@ export default function AddServer({
                   setServer(e.target.value)
                   handleChange(e.target.value, port, username, password)
                 }}
-                className='w-full border-border-card bg-background px-3 py-2'
+                className='border-border-card bg-background w-full px-3 py-2'
                 data-testid='server'
               />
             </div>
@@ -155,7 +155,7 @@ export default function AddServer({
                   setPort(+e.target.value)
                   handleChange(server, +e.target.value, username, password)
                 }}
-                className='w-full border-border-card bg-background px-3 py-2'
+                className='border-border-card bg-background w-full px-3 py-2'
                 data-testid='port'
                 min={0}
                 max={65535}
@@ -171,7 +171,7 @@ export default function AddServer({
                   setUsername(e.target.value)
                   handleChange(server, port, e.target.value, password)
                 }}
-                className='w-full border-border-card bg-background px-3 py-2'
+                className='border-border-card bg-background w-full px-3 py-2'
                 data-testid='username'
               />
             </div>
@@ -186,22 +186,24 @@ export default function AddServer({
                     setPassword(e.target.value)
                     handleChange(server, port, username, e.target.value)
                   }}
-                  className='z-10 rounded-r-none border-r-0 border-border-card bg-background px-3 py-2 focus:rounded focus:border-r'
+                  className='border-border-card bg-background z-10 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
                   data-testid='password'
                 />
                 <Button
                   size='icon'
                   data-testid='toggle-password'
                   onClick={toggleShowPassword}
-                  className='relative overflow-hidden rounded-l-none border border-l-0 border-border-card bg-background p-0'
+                  className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
                   variant='ghost'
                   type='button'
                 >
-                  {showPassword ? (
-                    <HiOutlineEyeSlash className='h-6 w-6 stroke-1' />
-                  ) : (
-                    <HiOutlineEye className='h-6 w-6 stroke-1' />
-                  )}
+                  <div className='text-muted-foreground'>
+                    {showPassword ? (
+                      <HiOutlineEyeSlash className='size-6 stroke-1' />
+                    ) : (
+                      <HiOutlineEye className='size-6 stroke-1' />
+                    )}
+                  </div>
                 </Button>
               </div>
             </div>

@@ -4,7 +4,7 @@ import DayNightSwitch from '@/client/components/daynight'
 import LanguageProvider from '@/client/context/language'
 
 describe('Daynight', () => {
-  let component: React.ReactElement
+  let component: React.ReactElement<any>
   beforeAll(() => {
     component = (
       <LanguageProvider>

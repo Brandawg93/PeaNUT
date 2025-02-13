@@ -28,19 +28,19 @@ import { DEVICE, DeviceData } from '@/common/types'
 
 const getStatus = (status: keyof typeof upsStatus) => {
   if (status.startsWith('OL')) {
-    return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block h-6 w-6 stroke-[3px] text-green-400' />
+    return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block size-6 stroke-[3px] text-green-400' />
   } else if (status.startsWith('OB')) {
     return (
       <HiOutlineExclamationTriangle
         data-testid='triangle-icon'
-        className='mb-1 inline-block h-6 w-6 stroke-[3px] text-yellow-400'
+        className='mb-1 inline-block size-6 stroke-[3px] text-yellow-400'
       />
     )
   } else if (status.startsWith('LB')) {
     return (
       <HiOutlineExclamationCircle
         data-testid='exclamation-icon'
-        className='mb-1 inline-block h-6 w-6 stroke-[3px] text-red-400'
+        className='mb-1 inline-block size-6 stroke-[3px] text-red-400'
       />
     )
   } else {
@@ -84,7 +84,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, runComm
 
   const loadingWrapper = (
     <div
-      className='absolute left-0 top-0 flex h-full w-full items-center justify-center bg-background text-center'
+      className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
       data-testid='loading-wrapper'
     >
       <Loader />
@@ -97,11 +97,11 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, runComm
   if (data.devices.length === 0) {
     return (
       <div
-        className='absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center bg-background text-center'
+        className='bg-background absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center text-center'
         data-testid='wrapper'
       >
         <div className='flex flex-col items-center'>
-          <HiExclamationCircle className='mb-4 text-8xl text-destructive' />
+          <HiExclamationCircle className='text-destructive mb-4 text-8xl' />
           <p>{t('noDevicesError')}</p>
         </div>
         <div>
@@ -111,7 +111,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, runComm
             className='shadow-none'
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='!h-6 !w-6' />
+            <HiOutlineCog6Tooth className='size-6!' />
           </Button>
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, runComm
           devices={data.devices}
         />
       </NavBar>
-      <div className='flex justify-center pl-3 pr-3'>
+      <div className='flex justify-center pr-3 pl-3'>
         <div className='container'>
           <div className='mb-4 flex flex-row justify-between'>
             <div>

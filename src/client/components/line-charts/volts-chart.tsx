@@ -55,11 +55,11 @@ export default function VoltsChart(props: Props) {
         },
         inputVoltage: {
           label: t('voltsChart.inputVoltage'),
-          color: 'hsl(var(--chart-1))',
+          color: 'var(--chart-1)',
         },
         outputVoltage: {
           label: t('voltsChart.outputVoltage'),
-          color: 'hsl(var(--chart-2))',
+          color: 'var(--chart-2)',
         },
       }}
       unit='V'

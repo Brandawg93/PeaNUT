@@ -1,85 +1,183 @@
 /* stylelint-disable import-notation */
 /* stylelint-disable at-rule-no-deprecated */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans',
-    'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: hsl(0deg 0% 98%);
+  --foreground: hsl(240deg 10% 3.9%);
+  --card: hsl(0deg 0% 100%);
+  --card-foreground: hsl(240deg 10% 3.9%);
+  --popover: hsl(0deg 0% 100%);
+  --popover-foreground: hsl(240deg 10% 3.9%);
+  --primary: hsl(240deg 5.9% 10%);
+  --primary-foreground: hsl(0deg 0% 98%);
+  --secondary: hsl(240deg 4.8% 95.9%);
+  --secondary-foreground: hsl(240deg 5.9% 10%);
+  --secondary-highlight: hsl(240deg 5.9% 80%);
+  --muted: hsl(240deg 4.8% 95.9%);
+  --muted-foreground: hsl(240deg 3.8% 46.1%);
+  --accent: hsl(240deg 4.8% 95.9%);
+  --accent-foreground: hsl(240deg 5.9% 10%);
+  --destructive: hsl(0deg 84.2% 60.2%);
+  --destructive-foreground: hsl(0deg 0% 98%);
+  --border: hsl(240deg 5.9% 90%);
+  --border-card: hsl(240deg 5.9% 80%);
+  --input: hsl(240deg 5.9% 90%);
+  --ring: hsl(240deg 10% 3.9%);
+  --chart-1: hsl(12deg 76% 61%);
+  --chart-2: hsl(173deg 58% 39%);
+  --chart-3: hsl(197deg 37% 24%);
+  --chart-4: hsl(43deg 74% 66%);
+  --chart-5: hsl(27deg 87% 67%);
+  --radius: 0.5rem;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+.dark {
+  --background: hsl(240deg 10% 3.9%);
+  --foreground: hsl(0deg 0% 98%);
+  --card: hsl(240deg 5.9% 10%);
+  --card-foreground: hsl(0deg 0% 98%);
+  --popover: hsl(240deg 10% 3.9%);
+  --popover-foreground: hsl(0deg 0% 98%);
+  --primary: hsl(0deg 0% 98%);
+  --primary-foreground: hsl(240deg 5.9% 10%);
+  --secondary: hsl(240deg 3.7% 15.9%);
+  --secondary-foreground: hsl(0deg 0% 98%);
+  --secondary-highlight: hsl(240deg 3.7% 25.9%);
+  --muted: hsl(240deg 3.7% 15.9%);
+  --muted-foreground: hsl(240deg 5% 64.9%);
+  --accent: hsl(240deg 3.7% 15.9%);
+  --accent-foreground: hsl(0deg 0% 98%);
+  --destructive: hsl(0deg 62.8% 30.6%);
+  --destructive-foreground: hsl(0deg 0% 98%);
+  --border: hsl(240deg 3.7% 15.9%);
+  --border-card: hsl(240deg 3.7% 25.9%);
+  --input: hsl(240deg 3.7% 15.9%);
+  --ring: hsl(240deg 4.9% 83.9%);
+  --chart-1: hsl(220deg 70% 50%);
+  --chart-2: hsl(160deg 60% 45%);
+  --chart-3: hsl(30deg 80% 55%);
+  --chart-4: hsl(280deg 65% 60%);
+  --chart-5: hsl(340deg 75% 55%);
 }
 
-@layer base {
-  :root {
-    --background: 0 0% 98%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --secondary-highlight: 240 5.9% 80%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --border-card: 240 5.9% 80%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+@theme inline {
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade: fade 1s ease 0s 1 both;
+  --animate-spin-once: spin 500ms linear 0s 1;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-highlight: var(--secondary-highlight);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-card: var(--border-card);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
   }
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 5.9% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-highlight: 240 3.7% 25.9%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --border-card: 240 3.7% 25.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer utilities {
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans',
+      'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
 
   body {

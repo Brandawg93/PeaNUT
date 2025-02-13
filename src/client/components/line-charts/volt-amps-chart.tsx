@@ -38,7 +38,7 @@ export default function VoltAmpsChart(props: Props) {
         },
         power: {
           label: t('voltAmpsChart.power'),
-          color: 'hsl(var(--chart-1))',
+          color: 'var(--chart-1)',
         },
       }}
       unit='VA'
