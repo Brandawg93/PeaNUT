@@ -49,7 +49,7 @@ export default function NavBarControls(props: Props) {
       <div>
         {devices.length > 1 ? (
           <Select onValueChange={handleSelect} value={device.name}>
-            <SelectTrigger className='w-48 border-border-card'>
+            <SelectTrigger className='border-border-card w-48'>
               <SelectValue placeholder={t('selectDevice')} />
             </SelectTrigger>
             <SelectContent>
@@ -86,7 +86,7 @@ export default function NavBarControls(props: Props) {
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='!h-6 !w-6' />
+            <HiOutlineCog6Tooth className='size-6!' />
           </Button>
         </div>
       </div>

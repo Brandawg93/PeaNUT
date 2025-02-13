@@ -20,7 +20,7 @@ export default function SettingsLayout({
   const router = useRouter()
 
   return (
-    <div className='flex h-full min-h-screen flex-col bg-background' data-testid='wrapper'>
+    <div className='bg-background flex h-full min-h-screen flex-col' data-testid='wrapper'>
       <NavBar>
         <div className='flex justify-end space-x-2'>
           <DayNightSwitch />
@@ -33,7 +33,7 @@ export default function SettingsLayout({
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='!h-6 !w-6 text-black dark:text-white' />
+            <HiOutlineCog6Tooth className='size-6! text-black dark:text-white' />
           </Button>
         </div>
       </NavBar>

@@ -145,9 +145,9 @@ export default function SettingsWrapper({
 
   const skeleton = (
     <div className='flex flex-col gap-3'>
-      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
-      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
-      <Card className='h-[150px] w-full animate-pulse rounded-lg border border-card bg-card p-6' />
+      <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
+      <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
+      <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
     </div>
   )
 
@@ -158,7 +158,7 @@ export default function SettingsWrapper({
   ]
 
   return (
-    <div className='flex flex-1 flex-col pl-3 pr-3' data-testid='settings-wrapper'>
+    <div className='flex flex-1 flex-col pr-3 pl-3' data-testid='settings-wrapper'>
       <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='flex justify-center'>
         <div className='container'>
@@ -172,11 +172,11 @@ export default function SettingsWrapper({
             className='flex h-full flex-col gap-4 md:flex-row'
             onValueChange={handleSettingsMenuChange}
           >
-            <TabsList className='flex h-min flex-col gap-2 sm:flex-row md:flex-col'>
+            <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:flex-col lg:w-auto'>
               {menuItems.map(({ label, Icon, value }, index) => (
                 <TabsTrigger key={index} value={value} className='w-full justify-start'>
                   <div className='mr-4'>
-                    <Icon className='!h-6 !w-6' />
+                    <Icon className='size-6!' />
                   </div>
                   <span>{label}</span>
                 </TabsTrigger>
@@ -209,7 +209,7 @@ export default function SettingsWrapper({
                         className='shadow-none'
                         onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
                       >
-                        <HiOutlinePlus className='!h-6 !w-6 stroke-2' />
+                        <HiOutlinePlus className='size-6! stroke-2' />
                       </Button>
                     </div>
                   </div>
@@ -228,8 +228,8 @@ export default function SettingsWrapper({
               <Card className='p-4 shadow-none'>
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                  <span className='text-sm text-muted-foreground'>
-                    <HiOutlineInformationCircle className='inline-block h-4 w-4' />
+                  <span className='text-muted-foreground text-sm'>
+                    <HiOutlineInformationCircle className='inline-block size-4' />
                     {t('settings.influxNotice')}
                   </span>
                   <AddInflux
@@ -279,7 +279,7 @@ export default function SettingsWrapper({
                     <AccordionItem value='item-1'>
                       <AccordionTrigger>{t('settings.viewConfig')}</AccordionTrigger>
                       <AccordionContent>
-                        <div className='mb-2 overflow-hidden rounded-lg border border-border-card'>
+                        <div className='border-border-card mb-2 overflow-hidden rounded-lg border'>
                           <CodeMirror
                             theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
                             value={config}
@@ -292,7 +292,7 @@ export default function SettingsWrapper({
                   </Accordion>
                   <div className='flex flex-row'>
                     <Button onClick={handleSettingsImport} className='flex shadow-none'>
-                      <AiOutlineSave className='h-4 w-4' />
+                      <AiOutlineSave className='size-4' />
                       &nbsp;
                       <span className='self-center'>{t('settings.save')}</span>
                     </Button>
@@ -308,7 +308,7 @@ export default function SettingsWrapper({
                       }}
                       className='flex shadow-none'
                     >
-                      <AiOutlineDownload className='h-4 w-4' />
+                      <AiOutlineDownload className='size-4' />
                       &nbsp;
                       <span className='self-center'>{t('settings.download')}</span>
                     </Button>
