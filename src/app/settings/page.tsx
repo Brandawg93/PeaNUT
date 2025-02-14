@@ -10,6 +10,8 @@ import {
   deleteSettings,
   testConnection,
   testInfluxConnection,
+  updateNotificationProviders,
+  testNotificationProvider,
 } from '@/app/actions'
 
 export default function Settings() {
@@ -24,6 +26,8 @@ export default function Settings() {
       updateServersAction={updateServers}
       testConnectionAction={testConnection}
       testInfluxConnectionAction={testInfluxConnection}
+      updateNotificationProvidersAction={updateNotificationProviders}
+      testNotificationProviderAction={testNotificationProvider}
     />
   )
 }
