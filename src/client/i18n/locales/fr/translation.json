@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Aucun appareil trouvé sur ce serveur.",
+  "noDevicesError": "Aucun dispositif trouvé. \nAjoutez un nouvel appareil dans les paramètres.",
   "updateAvailable": "Mise à jour disponible",
   "device": "Appareil",
   "manufacturer": "Fabricant",
@@ -43,7 +43,8 @@
     "configExportNotice": "Modifiez manuellement le fichier de configuration YAML.",
     "save": "Sauvegarder",
     "download": "Télécharger",
-    "viewConfig": "Cliquez pour afficher la configuration."
+    "viewConfig": "Cliquez pour afficher la configuration.",
+    "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes"
   },
   "connect": {
     "server": "Serveur",

@@ -22,7 +22,7 @@ export type DEVICE = {
 export type DeviceData = {
   devices: Array<DEVICE> | undefined
   updated: Date
-  error: string | undefined
+  failedServers: Array<string> | undefined
 }
 
 export type server = {

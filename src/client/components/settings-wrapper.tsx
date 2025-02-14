@@ -5,7 +5,6 @@ import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/client/components/ui/accordion'
-import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
 import CodeMirror from '@uiw/react-codemirror'
@@ -48,7 +47,7 @@ export default function SettingsWrapper({
 }: SettingsWrapperProps) {
   const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
-  const [serverList, setServerList] = useState<Array<server>>([])
+  const [serverList, setServerList] = useState<Array<{ server: server; saved: boolean }>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
   const [influxToken, setInfluxToken] = useState<string>('')
   const [influxOrg, setInfluxOrg] = useState<string>('')
@@ -57,12 +56,11 @@ export default function SettingsWrapper({
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { resolvedTheme, theme } = useTheme()
-  const router = useRouter()
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
       if (!res) {
-        router.replace('/login')
+        setSettingsLoaded(true)
       } else {
         const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval] = await Promise.all([
           getSettingsAction('NUT_SERVERS'),
@@ -72,8 +70,8 @@ export default function SettingsWrapper({
           getSettingsAction('INFLUX_BUCKET'),
           getSettingsAction('INFLUX_INTERVAL'),
         ])
-        if (servers) {
-          setServerList([...servers])
+        if (servers?.length) {
+          setServerList([...servers.map((server: server) => ({ server, saved: true }))])
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -97,21 +95,21 @@ export default function SettingsWrapper({
     index: number
   ) => {
     const updatedServerList = [...serverList]
-    updatedServerList[index].HOST = server
-    updatedServerList[index].PORT = port
-    updatedServerList[index].USERNAME = username
-    updatedServerList[index].PASSWORD = password
+    updatedServerList[index].server.HOST = server
+    updatedServerList[index].server.PORT = port
+    updatedServerList[index].server.USERNAME = username
+    updatedServerList[index].server.PASSWORD = password
     setServerList(updatedServerList)
   }
 
   const handleServerRemove = async (index: number) => {
     const updatedServerList = serverList.filter((_, i) => i !== index)
     setServerList(updatedServerList)
-    await updateServersAction(updatedServerList)
   }
 
   const handleSaveServers = async () => {
-    await updateServersAction(serverList)
+    await updateServersAction(serverList.map((server) => server.server))
+    setServerList(serverList.map((server) => ({ ...server, saved: true })))
     toast.success(t('settings.saved'))
   }
 
@@ -172,7 +170,7 @@ export default function SettingsWrapper({
             className='flex h-full flex-col gap-4 md:flex-row'
             onValueChange={handleSettingsMenuChange}
           >
-            <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:flex-col lg:w-auto'>
+            <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
               {menuItems.map(({ label, Icon, value }, index) => (
                 <TabsTrigger key={index} value={value} className='w-full justify-start'>
                   <div className='mr-4'>
@@ -186,15 +184,21 @@ export default function SettingsWrapper({
               {settingsLoaded ? (
                 <Card className='p-4 shadow-none'>
                   <div className='container'>
-                    <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    <h2 className='text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    <div className='mb-4'>
+                      <span className='text-muted-foreground text-sm'>
+                        <HiOutlineInformationCircle className='inline-block size-4' />
+                        &nbsp;{t('settings.serversNotice')}
+                      </span>
+                    </div>
                     {serverList.map((server, index) => (
                       <AddServer
-                        removable={serverList.length > 1}
+                        saved={server.saved}
                         key={index}
-                        initialServer={server.HOST}
-                        initialPort={server.PORT}
-                        initialUsername={server.USERNAME}
-                        initialPassword={server.PASSWORD}
+                        initialServer={server.server.HOST}
+                        initialPort={server.server.PORT}
+                        initialUsername={server.server.USERNAME}
+                        initialPassword={server.server.PASSWORD}
                         handleChange={(server, port, username, password) =>
                           handleServerChange(server, port, username, password, index)
                         }
@@ -207,7 +211,7 @@ export default function SettingsWrapper({
                         variant='secondary'
                         title={t('settings.addServer')}
                         className='shadow-none'
-                        onClick={() => setServerList([...serverList, { HOST: '', PORT: 0 }])}
+                        onClick={() => setServerList([...serverList, { server: { HOST: '', PORT: 0 }, saved: false }])}
                       >
                         <HiOutlinePlus className='size-6! stroke-2' />
                       </Button>
@@ -227,11 +231,13 @@ export default function SettingsWrapper({
             <TabsContent value='influx' className='mt-0 h-full flex-1'>
               <Card className='p-4 shadow-none'>
                 <div className='container'>
-                  <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                  <span className='text-muted-foreground text-sm'>
-                    <HiOutlineInformationCircle className='inline-block size-4' />
-                    {t('settings.influxNotice')}
-                  </span>
+                  <h2 className='text-xl font-bold'>{t('settings.manageServers')}</h2>
+                  <div className='mb-4'>
+                    <span className='text-muted-foreground text-sm'>
+                      <HiOutlineInformationCircle className='inline-block size-4' />
+                      &nbsp;{t('settings.influxNotice')}
+                    </span>
+                  </div>
                   <AddInflux
                     initialValues={{
                       server: influxServer,

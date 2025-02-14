@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Nu s-au găsit dispozitive pe acest server.",
+  "noDevicesError": "Nu au fost găsite dispozitive. \nAdăugați un dispozitiv nou în setări.",
   "updateAvailable": "Actualizare disponibilă",
   "device": "Dispozitiv",
   "manufacturer": "Producător",
@@ -43,7 +43,8 @@
     "configExportNotice": "Editați manual fișierul de configurare YAML.",
     "save": "Salva",
     "download": "Descărcați",
-    "viewConfig": "Faceți clic pentru a vizualiza configurația."
+    "viewConfig": "Faceți clic pentru a vizualiza configurația.",
+    "serversNotice": "Numele de utilizator și parola sunt necesare pentru comenzi"
   },
   "connect": {
     "server": "Adresa serverului",

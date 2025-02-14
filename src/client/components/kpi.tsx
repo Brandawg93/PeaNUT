@@ -63,7 +63,7 @@ export default function Kpi(props: Props) {
     >
       <div
         style={{ width: 'calc(100% - 30px' }}
-        className='motion-safe:animate-fade flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold text-black dark:text-white'
+        className='motion-safe:animate-fade flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold'
       >
         <div className='inline-block' ref={containerRef}>
           <div ref={spanRef} style={{ transform: `scale(${scale})` }} className='inline-block'>

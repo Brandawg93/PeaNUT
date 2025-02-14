@@ -1,19 +1,17 @@
 'use client'
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
   HiOutlineExclamationTriangle,
-  HiExclamationCircle,
+  HiQuestionMarkCircle,
   HiOutlineExclamationCircle,
-  HiOutlineArrowRightStartOnRectangle,
 } from 'react-icons/hi2'
-
+import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
@@ -24,10 +22,12 @@ import Footer from '@/client/components/footer'
 import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
-
 import { LanguageContext } from '@/client/context/language'
 import { upsStatus } from '@/common/constants'
 import { DEVICE, DeviceData } from '@/common/types'
+import DayNightSwitch from './daynight'
+import LanguageSwitcher from './language-switcher'
+import { Card } from '@/client/components/ui/card'
 
 const getStatus = (status: keyof typeof upsStatus) => {
   if (status.startsWith('OL')) {
@@ -55,14 +55,11 @@ const roundIfNeeded = (num: number) => Math.round((num + Number.EPSILON) * 100) 
 
 type Props = {
   getDevicesAction: () => Promise<DeviceData>
-  checkSettingsAction: () => Promise<boolean>
-  disconnectAction: () => Promise<void>
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
 }
 
-export default function Wrapper({ getDevicesAction, checkSettingsAction, disconnectAction, runCommandAction }: Props) {
+export default function Wrapper({ getDevicesAction, runCommandAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
-  const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
   )
@@ -77,20 +74,6 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     queryFn: async () => await getDevicesAction(),
   })
 
-  useEffect(() => {
-    checkSettingsAction().then((res) => {
-      setSettingsLoaded(true)
-      if (!res) {
-        router.replace('/login')
-      }
-    })
-  }, [])
-
-  const handleDisconnect = async () => {
-    await disconnectAction()
-    router.replace('/login')
-  }
-
   const loadingWrapper = (
     <div
       className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
@@ -100,50 +83,45 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
     </div>
   )
 
-  if (data?.error) {
-    let error = 'Internal Server Error'
-    if (data?.error.includes('ECONNREFUSED')) {
-      error = t('serverRefused')
-    }
-    if (data?.error.includes('ENOTFOUND')) {
-      error = t('serverNotFound')
-    }
-
-    console.error(error)
-
-    return (
-      <div
-        className='bg-background absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center text-center'
-        data-testid='wrapper'
-      >
-        <div className='flex flex-col items-center'>
-          <HiExclamationCircle className='text-destructive mb-4 text-8xl' />
-          <p>{error}</p>
-        </div>
-        <div>
-          <Button
-            title={t('sidebar.disconnect')}
-            className='bg-destructive shadow-none'
-            onClick={async () => await handleDisconnect()}
-          >
-            <HiOutlineArrowRightStartOnRectangle className='size-6!' />
-          </Button>
-        </div>
-      </div>
-    )
-  }
-  if (!settingsLoaded || !data?.devices) {
+  if (!data?.devices) {
     return loadingWrapper
   }
   if (data.devices.length === 0) {
     return (
-      <div
-        className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
-        data-testid='wrapper'
-      >
-        <div className='flex flex-col items-center'>
-          <HiExclamationCircle className='text-destructive mb-4 text-8xl' />
-          <p>{t('noDevicesError')}</p>
+      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
+        <NavBar>
+          <div className='flex justify-end space-x-2'>
+            <DayNightSwitch />
+            <LanguageSwitcher />
+            <Button
+              variant='ghost'
+              size='lg'
+              className='px-3'
+              title={t('sidebar.settings')}
+              aria-label={t('sidebar.settings')}
+              onClick={() => router.push('/settings')}
+            >
+              <TbSettings className='size-6! stroke-[1.5px]' />
+            </Button>
+          </div>
+        </NavBar>
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
+            <div className='flex flex-col items-center pb-2'>
+              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
+              <p>{t('noDevicesError')}</p>
+            </div>
+            <div>
+              <Button
+                variant='default'
+                title={t('sidebar.settings')}
+                className='shadow-none'
+                onClick={() => router.push('/settings')}
+              >
+                <TbSettings className='size-6! stroke-[1.5px]' />
+              </Button>
+            </div>
+          </Card>
         </div>
       </div>
     )
@@ -229,6 +207,7 @@ export default function Wrapper({ getDevicesAction, checkSettingsAction, disconn
             data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
           }
           devices={data.devices}
+          failedServers={data.failedServers}
         />
       </NavBar>
       <div className='flex justify-center pr-3 pl-3'>

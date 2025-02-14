@@ -7,7 +7,7 @@ import { Button } from '@/client/components/ui/button'
 import { t } from 'i18next'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { HiOutlineCog6Tooth } from 'react-icons/hi2'
+import { TbSettings } from 'react-icons/tb'
 import { useTheme } from 'next-themes'
 import SwaggerUI from 'swagger-ui-react'
 import 'swagger-ui-react/swagger-ui.css'
@@ -34,7 +34,7 @@ function ReactSwagger({ spec }: Props) {
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='size-6! text-black dark:text-white' />
+            <TbSettings className='size-6! stroke-[1.5px]' />
           </Button>
         </div>
       </NavBar>
