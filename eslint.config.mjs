@@ -72,5 +72,12 @@ export default [
       'jest/valid-expect': 'error',
     },
   },
-  reactCompiler.configs.recommended,
+  {
+    plugins: {
+      'react-compiler': reactCompiler,
+    },
+    rules: {
+      'react-compiler/react-compiler': 'error',
+    },
+  },
 ]
