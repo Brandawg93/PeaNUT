@@ -86,7 +86,7 @@ export async function getDevices(): Promise<DeviceData> {
               rwVars,
               description: device.description === 'Description unavailable' ? '' : device.description,
               clients: [],
-              commands,
+              commands: nut.hasCredentials() ? commands : [],
               name: device.name,
             })
           })

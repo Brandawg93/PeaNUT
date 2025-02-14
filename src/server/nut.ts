@@ -25,6 +25,10 @@ export class Nut {
     return this.port
   }
 
+  public hasCredentials(): boolean {
+    return !!this.username && !!this.password
+  }
+
   private parseInfo(data: string, start: string, callback: (line: string) => string): Array<string> {
     return data
       .split('\n')

@@ -184,7 +184,13 @@ export default function SettingsWrapper({
               {settingsLoaded ? (
                 <Card className='p-4 shadow-none'>
                   <div className='container'>
-                    <h2 className='mb-4 text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    <h2 className='text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    <div className='mb-4'>
+                      <span className='text-muted-foreground text-sm'>
+                        <HiOutlineInformationCircle className='inline-block size-4' />
+                        &nbsp;{t('settings.serversNotice')}
+                      </span>
+                    </div>
                     {serverList.map((server, index) => (
                       <AddServer
                         saved={server.saved}
@@ -225,11 +231,13 @@ export default function SettingsWrapper({
             <TabsContent value='influx' className='mt-0 h-full flex-1'>
               <Card className='p-4 shadow-none'>
                 <div className='container'>
-                  <h2 className='mb-4 text-xl font-bold'>{t('settings.influxDb')}</h2>
-                  <span className='text-muted-foreground text-sm'>
-                    <HiOutlineInformationCircle className='inline-block size-4' />
-                    {t('settings.influxNotice')}
-                  </span>
+                  <h2 className='text-xl font-bold'>{t('settings.manageServers')}</h2>
+                  <div className='mb-4'>
+                    <span className='text-muted-foreground text-sm'>
+                      <HiOutlineInformationCircle className='inline-block size-4' />
+                      &nbsp;{t('settings.influxNotice')}
+                    </span>
+                  </div>
                   <AddInflux
                     initialValues={{
                       server: influxServer,

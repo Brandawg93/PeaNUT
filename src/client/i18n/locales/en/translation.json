@@ -43,7 +43,8 @@
     "configExportNotice": "Manually edit the YAML configuration file.",
     "download": "Download",
     "save": "Save",
-    "viewConfig": "Click to view configuration."
+    "viewConfig": "Click to view configuration.",
+    "serversNotice": "Username and password are required for commands"
   },
   "connect": {
     "server": "Server Address",

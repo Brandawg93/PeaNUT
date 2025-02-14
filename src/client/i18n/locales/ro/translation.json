@@ -43,7 +43,8 @@
     "configExportNotice": "Editați manual fișierul de configurare YAML.",
     "save": "Salva",
     "download": "Descărcați",
-    "viewConfig": "Faceți clic pentru a vizualiza configurația."
+    "viewConfig": "Faceți clic pentru a vizualiza configurația.",
+    "serversNotice": "Numele de utilizator și parola sunt necesare pentru comenzi"
   },
   "connect": {
     "server": "Adresa serverului",
