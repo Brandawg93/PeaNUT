@@ -8,7 +8,7 @@ import { LanguageContext } from '@/client/context/language'
 import { Button } from '@/client/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { HiOutlineCog6Tooth } from 'react-icons/hi2'
+import { TbSettings } from 'react-icons/tb'
 
 export default function SettingsLayout({
   children, // will be a page or nested layout
@@ -33,7 +33,7 @@ export default function SettingsLayout({
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='size-6! text-black dark:text-white' />
+            <TbSettings className='size-6! stroke-[1.5px]' />
           </Button>
         </div>
       </NavBar>
