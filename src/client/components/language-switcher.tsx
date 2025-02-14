@@ -30,7 +30,7 @@ export default function LanguageSwitcher() {
   }
 
   const isActive = (value: string) => {
-    return language === value ? '!bg-secondary-highlight' : ''
+    return language === value ? 'bg-secondary-highlight!' : ''
   }
 
   React.useEffect(() => {
@@ -49,11 +49,11 @@ export default function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild data-testid='language-trigger'>
         <Button size='lg' variant='ghost' title={t('sidebar.language')} className='px-3'>
-          <HiOutlineLanguage className='!h-6 !w-6' />
+          <HiOutlineLanguage className='size-6!' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <ul className='grid grid-cols-2 gap-1 outline-none outline-0'>
+        <ul className='grid grid-cols-2 gap-1 outline-hidden outline-0'>
           {languages.map((language) => (
             <DropdownMenuItem
               key={language.value}

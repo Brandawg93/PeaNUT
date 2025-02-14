@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "No se encontraron dispositivos en este servidor.",
+  "noDevicesError": "No se encontraron dispositivos. \nAgregue un nuevo dispositivo en la configuración.",
   "updateAvailable": "Actualización Disponible",
   "device": "Dispositivo",
   "manufacturer": "Fabricante",
@@ -43,7 +43,8 @@
     "configExportNotice": "Edite manualmente el archivo de configuración YAML.",
     "save": "Ahorrar",
     "download": "Descargar",
-    "viewConfig": "Haga clic para ver la configuración."
+    "viewConfig": "Haga clic para ver la configuración.",
+    "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos"
   },
   "connect": {
     "server": "Servidor",

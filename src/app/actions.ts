@@ -30,12 +30,12 @@ function getCachedSettings(): YamlSettings {
   return settingsInstance
 }
 
-async function connect(): Promise<Array<Nut>> {
+function connect(): Array<Nut> {
   try {
     const settings = getCachedSettings()
     const servers = settings.get('NUT_SERVERS')
     if (!Array.isArray(servers) || servers.length === 0) {
-      throw new Error('No NUT servers configured')
+      return []
     }
     return servers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
   } catch (e: any) {
@@ -70,13 +70,17 @@ export async function testInfluxConnection(host: string, token: string, org: str
 }
 
 export async function getDevices(): Promise<DeviceData> {
-  try {
-    const nuts = await connect()
-    const deviceMap = new Map<string, DEVICE>()
-    const deviceOrder: string[] = []
+  const nuts = connect()
+  const deviceMap = new Map<string, DEVICE>()
+  const deviceOrder: string[] = []
+  const failedServers: string[] = []
 
-    await Promise.all(
-      nuts.map(async (nut) => {
+  await Promise.all(
+    nuts.map(async (nut) => {
+      try {
+        // Test connection first
+        await nut.testConnection()
+
         const devices = await nut.getDevices()
         devices.forEach((device) => {
           if (!deviceOrder.includes(device.name)) {
@@ -100,31 +104,28 @@ export async function getDevices(): Promise<DeviceData> {
               rwVars,
               description: device.description === 'Description unavailable' ? '' : device.description,
               clients: [],
-              commands,
+              commands: nut.hasCredentials() ? commands : [],
               name: device.name,
             })
           })
         )
-      })
-    )
+      } catch {
+        // Add failed server to list
+        failedServers.push(`${nut.getHost()}:${nut.getPort()}`)
+      }
+    })
+  )
 
-    return {
-      devices: deviceOrder.map((name) => deviceMap.get(name)!),
-      updated: new Date(),
-      error: undefined,
-    }
-  } catch (e: any) {
-    return {
-      devices: undefined,
-      updated: new Date(),
-      error: e?.message || 'Unknown error',
-    }
+  return {
+    devices: deviceOrder.map((name) => deviceMap.get(name)!),
+    updated: new Date(),
+    failedServers: failedServers.length > 0 ? failedServers : undefined,
   }
 }
 
 export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
-    const nut = (await connect()).find((nut) => nut.deviceExists(device))
+    const nut = connect().find((nut) => nut.deviceExists(device))
     const data: { [x: string]: string } = {}
     if (!nut) {
       return { data: undefined, error: 'Device not found' }
@@ -141,7 +142,7 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
 
 export async function saveVar(device: string, varName: string, value: string) {
   try {
-    const nuts = await connect()
+    const nuts = connect()
     await Promise.all(
       nuts.map(async (nut) => {
         const deviceExists = await nut.deviceExists(device)
@@ -158,7 +159,7 @@ export async function saveVar(device: string, varName: string, value: string) {
 
 export async function getAllCommands(device: string): Promise<string[]> {
   try {
-    const nuts = await connect()
+    const nuts = connect()
     const commands = new Set<string>()
 
     await Promise.all(
@@ -179,7 +180,7 @@ export async function getAllCommands(device: string): Promise<string[]> {
 
 export async function runCommand(device: string, command: string) {
   try {
-    const nuts = await connect()
+    const nuts = connect()
     const runPromises = nuts.map(async (nut) => {
       const deviceExists = await nut.deviceExists(device)
       if (deviceExists) {

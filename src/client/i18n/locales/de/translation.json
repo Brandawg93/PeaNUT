@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Keine Geräte auf diesem Server gefunden.",
+  "noDevicesError": "Keine Geräte gefunden. \nFügen Sie ein neues Gerät in Einstellungen hinzu.",
   "updateAvailable": "Update verfügbar",
   "device": "Gerät",
   "manufacturer": "Hersteller",
@@ -43,7 +43,8 @@
     "configExportNotice": "Bearbeiten Sie die YAML-Konfigurationsdatei manuell.",
     "save": "Speichern",
     "download": "Herunterladen",
-    "viewConfig": "Klicken Sie, um die Konfiguration anzuzeigen."
+    "viewConfig": "Klicken Sie, um die Konfiguration anzuzeigen.",
+    "serversNotice": "Benutzername und Passwort sind für Befehle erforderlich"
   },
   "connect": {
     "server": "Serveradresse",

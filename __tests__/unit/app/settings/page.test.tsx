@@ -28,8 +28,7 @@ describe('Settings Page', () => {
   })
 
   it('renders a heading', async () => {
-    ;(getSettings as jest.Mock).mockResolvedValueOnce('localhost')
-    ;(getSettings as jest.Mock).mockResolvedValueOnce(8080)
+    ;(getSettings as jest.Mock).mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
     render(<Page />)
 
     const wrapper = await screen.findByTestId('settings-wrapper')

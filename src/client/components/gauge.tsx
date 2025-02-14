@@ -26,8 +26,8 @@ export default function Gauge(props: Props) {
   const { percentage, invert, title, onClick } = props
   const { resolvedTheme } = useTheme()
   const data = [
-    { percentage, fill: 'var(--color-percentage)', stroke: 'hsl(var(--primary-foreground))' },
-    { percentage: 100 - percentage, fill: 'hsl(var(--border-card))' },
+    { percentage, fill: 'var(--color-percentage)', stroke: 'var(--primary-foreground)' },
+    { percentage: 100 - percentage, fill: 'var(--border-card)' },
   ]
 
   const chartConfig = {
@@ -48,10 +48,10 @@ export default function Gauge(props: Props) {
         }
       }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='h-52 min-w-56 cursor-pointer overflow-hidden border border-border-card bg-card shadow-none'
+      className='border-border-card bg-card h-52 min-w-56 cursor-pointer overflow-hidden border shadow-none'
       data-testid='gauge'
     >
-      <CardContent className='h-44 !p-0'>
+      <CardContent className='h-44 p-0!'>
         <div className='motion-safe:animate-fade'>
           <ChartContainer config={chartConfig} className='mx-auto aspect-square h-full w-full max-w-[280px]'>
             <PieChart>
@@ -88,7 +88,7 @@ export default function Gauge(props: Props) {
           </ChartContainer>
         </div>
       </CardContent>
-      <CardFooter className='w-full justify-center text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
+      <CardFooter className='text-muted-foreground motion-safe:animate-fade w-full justify-center text-xs font-semibold'>
         {title}
       </CardFooter>
     </Card>

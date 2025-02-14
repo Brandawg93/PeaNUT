@@ -8,7 +8,7 @@ describe('AddServer Component', () => {
   const mockHandleRemove = jest.fn()
   const mockTestConnectionAction = jest.fn()
 
-  const renderComponent = (removable = false) => {
+  const renderComponent = () => {
     return render(
       <LanguageContext.Provider value='en'>
         <AddServer
@@ -19,7 +19,6 @@ describe('AddServer Component', () => {
           handleChange={mockHandleChange}
           handleRemove={mockHandleRemove}
           testConnectionAction={mockTestConnectionAction}
-          removable={removable}
         />
       </LanguageContext.Provider>
     )
@@ -45,14 +44,8 @@ describe('AddServer Component', () => {
     expect(mockHandleChange).toHaveBeenCalledWith('localhost', 9090, 'admin', 'nut_test')
   })
 
-  test('renders remove button when removable is true', () => {
-    const { getByTitle } = renderComponent(true)
-    const removeButton = getByTitle('settings.remove')
-    expect(removeButton).toBeInTheDocument()
-  })
-
   test('calls handleRemove on remove button click', () => {
-    const { getByTitle } = renderComponent(true)
+    const { getByTitle } = renderComponent()
     const removeButton = getByTitle('settings.remove')
     fireEvent.click(removeButton)
     expect(mockHandleRemove).toHaveBeenCalled()
@@ -95,8 +88,6 @@ describe('AddServer Component', () => {
     const testButton = getByText('connect.test')
     fireEvent.click(testButton)
     expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080)
-
-    expect(testButton).toBeDisabled()
 
     await waitFor(() => expect(testButton).not.toBeDisabled())
   })

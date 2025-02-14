@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/client/components/ui/select'
 import { Button } from '@/client/components/ui/button'
-import { HiOutlineCog6Tooth } from 'react-icons/hi2'
+import { TbSettings, TbSettingsExclamation } from 'react-icons/tb'
 import { LanguageContext } from '@/client/context/language'
 import Refresh from '@/client/components/refresh'
 import { DEVICE } from '@/common/types'
@@ -18,10 +18,11 @@ type Props = {
   onDeviceChange: (name: string) => void
   devices: Array<DEVICE>
   disableRefresh: boolean
+  failedServers?: Array<string>
 }
 
 export default function NavBarControls(props: Props) {
-  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh } = props
+  const { onRefreshClick, onRefetch, onDeviceChange, devices, disableRefresh, failedServers } = props
   const [device, setDevice] = useState(devices[0])
   const [refreshInterval, setRefreshInterval] = useState<number>(Number(localStorage.getItem('refreshInterval')) || 0)
   const lng = useContext<string>(LanguageContext)
@@ -49,7 +50,7 @@ export default function NavBarControls(props: Props) {
       <div>
         {devices.length > 1 ? (
           <Select onValueChange={handleSelect} value={device.name}>
-            <SelectTrigger className='w-48 border-border-card'>
+            <SelectTrigger className='border-border-card w-48'>
               <SelectValue placeholder={t('selectDevice')} />
             </SelectTrigger>
             <SelectContent>
@@ -86,7 +87,11 @@ export default function NavBarControls(props: Props) {
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
           >
-            <HiOutlineCog6Tooth className='!h-6 !w-6' />
+            {failedServers ? (
+              <TbSettingsExclamation className='size-6! stroke-[1.5px]' />
+            ) : (
+              <TbSettings className='size-6! stroke-[1.5px]' />
+            )}
           </Button>
         </div>
       </div>
