@@ -80,11 +80,12 @@ export class Nut {
     return data
   }
 
-  public async checkCredentials(socket: PromiseSocket): Promise<void> {
+  public async checkCredentials(socket?: PromiseSocket): Promise<void> {
+    const connection = socket || (await this.getConnection())
     if (this.username) {
       const command = `USERNAME ${this.username}`
-      await socket.write(command)
-      const data = await socket.readAll(command, '\n')
+      await connection.write(command)
+      const data = await connection.readAll(command, '\n')
       if (data !== 'OK\n') {
         throw new Error('Invalid username')
       }
@@ -92,8 +93,8 @@ export class Nut {
 
     if (this.password) {
       const command = `PASSWORD ${this.password}`
-      await socket.write(command)
-      const data = await socket.readAll(command, '\n')
+      await connection.write(command)
+      const data = await connection.readAll(command, '\n')
       if (data !== 'OK\n') {
         throw new Error('Invalid password')
       }

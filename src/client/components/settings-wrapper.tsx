@@ -30,7 +30,7 @@ type SettingsWrapperProps = {
   importSettingsAction: (settings: string) => Promise<void>
   deleteSettingsAction: (key: keyof SettingsType) => Promise<void>
   updateServersAction: (newServers: Array<server>) => Promise<void>
-  testConnectionAction: (server: string, port: number) => Promise<string>
+  testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
 }
 

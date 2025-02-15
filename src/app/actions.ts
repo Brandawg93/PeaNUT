@@ -41,9 +41,13 @@ function connect(): Array<Nut> {
   }
 }
 
-export async function testConnection(server: string, port: number) {
-  const nut = new Nut(server, port)
-  return await nut.testConnection()
+export async function testConnection(server: string, port: number, username?: string, password?: string) {
+  const nut = new Nut(server, port, username, password)
+  const connection = await nut.testConnection()
+  if (connection && username && password) {
+    await nut.checkCredentials()
+  }
+  return connection
 }
 
 export async function testInfluxConnection(host: string, token: string, org: string, bucket: string) {
