@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect } from 'react'
 import { useXTerm } from 'react-xtermjs'
 import { FitAddon } from '@xterm/addon-fit'
@@ -61,6 +63,14 @@ export default function NutTerminal({ nutCommandAction, host, port, username, pa
             terminal.writeln(`${line.trim()}`)
           })
           commandBuffer.current = ''
+        }
+        return
+      }
+
+      if (data === '\u007F') {
+        if (commandBuffer.current.length > 0) {
+          commandBuffer.current = commandBuffer.current.slice(0, -1)
+          terminal.write('\b \b')
         }
         return
       }

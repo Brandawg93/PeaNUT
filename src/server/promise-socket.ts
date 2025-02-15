@@ -51,7 +51,7 @@ export default class PromiseSocket {
     )
   }
 
-  async readAll(command: string, until: string = `END ${command}`, timeout = TIMEOUT): Promise<string> {
+  async readAll(command: string, until: string = `END ${command.toUpperCase()}`, timeout = TIMEOUT): Promise<string> {
     return this.raceWithTimeout(
       new Promise<string>((resolve, reject) => {
         let buf = ''

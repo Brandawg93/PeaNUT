@@ -243,6 +243,9 @@ export async function proxyNutCommand(
   username?: string,
   password?: string
 ): Promise<string> {
+  if (!host || !port || !command) {
+    throw new Error('Invalid parameters')
+  }
   try {
     const nut = new Nut(host, port, username, password)
     const response = await nut.getCommand(command)
