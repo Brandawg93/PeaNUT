@@ -26,7 +26,7 @@ describe('YamlSettings', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
     yamlSettings = new YamlSettings(filePath)
   })
 
