@@ -14,6 +14,7 @@ import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
 import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle, HiOutlineCodeBracket } from 'react-icons/hi2'
+import { LuTerminal } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
@@ -21,6 +22,7 @@ import AddInflux from './add-influx'
 import { SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
+import NutTerminal from './terminal'
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
@@ -32,6 +34,13 @@ type SettingsWrapperProps = {
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
+  proxyNutCommandAction: (
+    host: string,
+    port: number,
+    command: string,
+    username?: string,
+    password?: string
+  ) => Promise<string>
 }
 
 export default function SettingsWrapper({
@@ -44,6 +53,7 @@ export default function SettingsWrapper({
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
+  proxyNutCommandAction,
 }: SettingsWrapperProps) {
   const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
@@ -153,7 +163,10 @@ export default function SettingsWrapper({
     { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
     { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
     { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
+    { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
   ]
+
+  const firstServer = serverList[0]?.server
 
   return (
     <div className='flex flex-1 flex-col pr-3 pl-3' data-testid='settings-wrapper'>
@@ -319,6 +332,23 @@ export default function SettingsWrapper({
                       <span className='self-center'>{t('settings.download')}</span>
                     </Button>
                   </div>
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value='terminal' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='mb-4 text-xl font-bold'>{t('settings.terminal')}</h2>
+                  <span>{t('settings.terminalNotice')}</span>
+                  {firstServer && (
+                    <NutTerminal
+                      host={firstServer.HOST}
+                      port={firstServer.PORT}
+                      username={firstServer.USERNAME}
+                      password={firstServer.PASSWORD}
+                      nutCommandAction={proxyNutCommandAction}
+                    />
+                  )}
                 </div>
               </Card>
             </TabsContent>
