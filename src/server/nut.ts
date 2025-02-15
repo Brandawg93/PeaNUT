@@ -99,6 +99,25 @@ export class Nut {
         throw new Error('Invalid password')
       }
     }
+
+    const devices = await this.getDevices()
+    if (devices.length === 0) {
+      throw new Error('No devices found')
+    }
+
+    const device = devices[0].name
+    const command = `LOGIN ${device}`
+    await connection.write(command)
+
+    const data = await connection.readAll(command, '\n')
+    if (data !== 'OK\n') {
+      throw new Error('Login failed')
+    }
+
+    if (!socket) {
+      await connection.write('LOGOUT')
+      await connection.close()
+    }
   }
 
   public async getVersion(): Promise<string> {
