@@ -55,12 +55,25 @@ export default class PromiseSocket {
     return this.raceWithTimeout(
       new Promise<string>((resolve, reject) => {
         let buf = ''
+        let partialDataTimer: NodeJS.Timeout | null = null
 
         const onData = (data: Buffer) => {
           buf += data.toString()
-          if (buf.includes(until)) {
+
+          // Clear existing timer if any
+          if (partialDataTimer) {
+            clearTimeout(partialDataTimer)
+          }
+
+          if (buf.toUpperCase().includes(until)) {
             cleanup()
             resolve(buf)
+          } else if (buf.length > 0) {
+            // Set timer to resolve after 1 second if we have partial data
+            partialDataTimer = setTimeout(() => {
+              cleanup()
+              resolve(buf)
+            }, 1000)
           }
         }
 
@@ -74,6 +87,9 @@ export default class PromiseSocket {
         }
 
         const cleanup = () => {
+          if (partialDataTimer) {
+            clearTimeout(partialDataTimer)
+          }
           this.innerSok.off('data', onData)
           this.innerSok.off('end', onEnd)
           this.innerSok.off('error', reject)

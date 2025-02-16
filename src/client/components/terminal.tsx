@@ -49,6 +49,11 @@ export default function NutTerminal({ nutCommandAction, host, port, username, pa
 
   const handleCommand = async (data: string, terminal: Terminal) => {
     try {
+      // Ignore arrow keys (they come as escape sequences)
+      if (data.startsWith('\x1b[')) {
+        return
+      }
+
       if (commandBuffer.current.trim() === 'clear') {
         terminal.clear()
         commandBuffer.current = ''
@@ -57,12 +62,19 @@ export default function NutTerminal({ nutCommandAction, host, port, username, pa
 
       if (data === '\r') {
         if (commandBuffer.current) {
-          const response = await nutCommandAction(host, port, commandBuffer.current, username, password)
-          terminal.write('\r\n')
-          response.split('\n').forEach((line) => {
-            terminal.writeln(`${line.trim()}`)
-          })
-          commandBuffer.current = ''
+          try {
+            const response = await nutCommandAction(host, port, commandBuffer.current, username, password)
+            terminal.write('\r\n')
+            response.split('\n').forEach((line) => {
+              terminal.writeln(`${line.trim()}`)
+            })
+            commandBuffer.current = ''
+          } catch (error) {
+            console.error('Error executing command:', error)
+            terminal.write('\r\n')
+            terminal.writeln('Error executing command')
+            commandBuffer.current = ''
+          }
         }
         return
       }
@@ -82,6 +94,7 @@ export default function NutTerminal({ nutCommandAction, host, port, username, pa
     } catch (error) {
       console.error('Error in handleCommand:', error)
       terminal.writeln('\r\nError executing command')
+      commandBuffer.current = ''
     }
   }
 
