@@ -1,61 +1,86 @@
-import React from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import React, { render, screen, fireEvent } from '@testing-library/react'
 import LoginForm from '@/client/components/login-form'
-import { LanguageContext } from '@/client/context/language'
-import PromiseSocket from '@/server/promise-socket'
+import { useSearchParams } from 'next/navigation'
+import { useActionState } from 'react'
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: () => null,
-    }
-  },
+// Mock the useActionState hook
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useActionState: jest.fn(),
+  useState: jest.requireActual('react').useState,
 }))
 
-describe('LoginForm Component', () => {
-  const mockLanguageContext = 'en'
-
-  const renderComponent = () =>
-    render(
-      <LanguageContext.Provider value={mockLanguageContext}>
-        <LoginForm />
-      </LanguageContext.Provider>
-    )
-
-  beforeAll(() => {
-    jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
-    jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
-    jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
-  })
+describe('LoginForm', () => {
+  const mockSearchParams = new URLSearchParams()
+  const mockFormAction = jest.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    // Setup default mocks
+    ;(useSearchParams as jest.Mock).mockReturnValue(mockSearchParams)
+    ;(useActionState as jest.Mock).mockReturnValue([undefined, mockFormAction, false])
   })
 
-  it('renders without crashing', () => {
-    const { getByTestId } = renderComponent()
-    expect(getByTestId('login-wrapper')).toBeInTheDocument()
+  it('renders the login form with all required elements', () => {
+    render(<LoginForm />)
+
+    expect(screen.getByText('Please log in to continue.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    expect(screen.getByLabelText('Password')).toBeInTheDocument()
+    expect(screen.getByTestId('login-button')).toBeInTheDocument()
   })
 
-  it('calls setSettings and onConnect on form submit', async () => {
-    const { getByTestId, getByText } = renderComponent()
+  it('toggles password visibility when clicking the eye icon', () => {
+    render(<LoginForm />)
 
-    fireEvent.change(getByTestId('server'), { target: { value: 'localhost' } })
-    fireEvent.change(getByTestId('port'), { target: { value: '1234' } })
+    const passwordInput = screen.getByLabelText('Password')
+    const toggleButton = screen.getByTestId('toggle-password')
 
-    fireEvent.click(getByText('connect.connect'))
+    // Initially password should be hidden
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    // Click toggle button
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'text')
+
+    // Click toggle button again
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'password')
   })
 
-  it('shows success icon on successful connection test', async () => {
-    const { getByTestId, getByText, queryByText } = renderComponent()
+  it('displays error message when authentication fails', () => {
+    const errorMessage = 'Invalid credentials'
+    ;(useActionState as jest.Mock).mockReturnValue([errorMessage, mockFormAction, false])
 
-    fireEvent.change(getByTestId('server'), { target: { value: 'localhost' } })
-    fireEvent.change(getByTestId('port'), { target: { value: '1234' } })
+    render(<LoginForm />)
 
-    fireEvent.click(getByText('connect.test'))
+    expect(screen.getByText(errorMessage)).toBeInTheDocument()
+  })
 
-    await waitFor(() => {
-      expect(queryByText('connect.test')).not.toBeInTheDocument()
-    })
+  it('uses default callback URL when none is provided', () => {
+    render(<LoginForm />)
+
+    const hiddenInput = screen.getByDisplayValue('/')
+    expect(hiddenInput).toHaveAttribute('name', 'redirectTo')
+  })
+
+  it('uses provided callback URL from search params', () => {
+    const callbackUrl = '/dashboard'
+    const mockParamsWithCallback = new URLSearchParams()
+    mockParamsWithCallback.set('callbackUrl', callbackUrl)
+    ;(useSearchParams as jest.Mock).mockReturnValue(mockParamsWithCallback)
+
+    render(<LoginForm />)
+
+    const hiddenInput = screen.getByDisplayValue(callbackUrl)
+    expect(hiddenInput).toHaveAttribute('name', 'redirectTo')
+  })
+
+  it('shows loading state when form submission is pending', () => {
+    ;(useActionState as jest.Mock).mockReturnValue([undefined, mockFormAction, true])
+
+    render(<LoginForm />)
+
+    const loginButton = screen.getByTestId('login-button')
+    expect(loginButton).toHaveAttribute('aria-disabled', 'true')
   })
 })

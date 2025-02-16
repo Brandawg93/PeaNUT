@@ -4,10 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}))
-
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
 }))

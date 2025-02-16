@@ -3,14 +3,6 @@ import { render, screen } from '@testing-library/react'
 import Page from '@/app/settings/page'
 import { checkSettings, getSettings } from '@/app/actions'
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: jest.fn(),
-    }
-  },
-}))
-
 jest.mock('../../../../src/app/actions', () => ({
   checkSettings: jest.fn(),
   getSettings: jest.fn(),

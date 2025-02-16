@@ -4,14 +4,6 @@ import SettingsWrapper from '@/client/components/settings-wrapper'
 import { LanguageContext } from '@/client/context/language'
 // import { useRouter } from 'next/navigation'
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: jest.fn(),
-    }
-  },
-}))
-
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([{ name: '1.0.0' }]),
