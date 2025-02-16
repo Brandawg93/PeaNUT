@@ -96,7 +96,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
+      expect(screen.getByTestId('server')).toBeInTheDocument()
     })
 
     const serverInput = screen.getByTestId('server')
