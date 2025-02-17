@@ -80,7 +80,7 @@ export default function NavBarControls(props: Props) {
         <div className='hidden sm:block'>
           <LanguageSwitcher />
         </div>
-        <div>
+        <div className='hidden sm:block'>
           <Button variant='ghost' size='icon' title={t('logout')} aria-label={t('logout')} onClick={onLogout}>
             <LuLogOut className='size-6! stroke-[1.5px]' />
           </Button>
