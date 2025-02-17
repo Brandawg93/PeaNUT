@@ -8,7 +8,7 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl, headers } }) {
       // Check if authentication is enabled via env variables
       // Also check for empty strings
-      const authEnabled = process.env.USERNAME?.trim() && process.env.PASSWORD?.trim()
+      const authEnabled = process.env.WEB_USERNAME?.trim() && process.env.WEB_PASSWORD?.trim()
 
       // If auth is not enabled, allow all access
       if (!authEnabled) {
@@ -37,7 +37,7 @@ export const authConfig = {
         const [username, password] = credentials.split(':')
 
         // Verify credentials against environment variables
-        const isAuthorized = username === process.env.USERNAME && password === process.env.PASSWORD
+        const isAuthorized = username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD
         if (!isAuthorized) {
           return new Response('Unauthorized', { status: 401 })
         }
