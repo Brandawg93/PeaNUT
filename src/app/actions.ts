@@ -6,7 +6,7 @@ import { YamlSettings, SettingsType } from '@/server/settings'
 import { DEVICE, server, DeviceData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
-import { signIn } from '@/auth'
+import { signIn, signOut } from '@/auth'
 
 const settingsFile = './config/settings.yml'
 // Cache settings instance
@@ -57,6 +57,10 @@ export async function authenticate(prevState: string | undefined, formData: Form
     }
     throw error
   }
+}
+
+export async function logout() {
+  await signOut()
 }
 
 export async function testConnection(server: string, port: number) {

@@ -23,16 +23,16 @@ describe('LoginForm', () => {
   it('renders the login form with all required elements', () => {
     render(<LoginForm />)
 
-    expect(screen.getByText('Please log in to continue.')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeInTheDocument()
-    expect(screen.getByLabelText('Password')).toBeInTheDocument()
+    expect(screen.getByText('login.title')).toBeInTheDocument()
+    expect(screen.getByLabelText('login.username')).toBeInTheDocument()
+    expect(screen.getByLabelText('login.password')).toBeInTheDocument()
     expect(screen.getByTestId('login-button')).toBeInTheDocument()
   })
 
   it('toggles password visibility when clicking the eye icon', () => {
     render(<LoginForm />)
 
-    const passwordInput = screen.getByLabelText('Password')
+    const passwordInput = screen.getByLabelText('login.password')
     const toggleButton = screen.getByTestId('toggle-password')
 
     // Initially password should be hidden

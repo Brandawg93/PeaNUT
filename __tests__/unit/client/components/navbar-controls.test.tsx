@@ -29,6 +29,7 @@ describe('NavBar', () => {
         onRefreshClick={() => {}}
         onRefetch={() => {}}
         onDeviceChange={() => {}}
+        onLogout={() => {}}
         disableRefresh={false}
       />
     )

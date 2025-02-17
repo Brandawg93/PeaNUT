@@ -125,5 +125,14 @@
   "volt-amps-chart": "Putere aparentă",
   "volts-chart": "Voltaj",
   "watts-chart": "Putere reală",
-  "accordion-grid": "Date UPS"
+  "accordion-grid": "Date UPS",
+  "login": {
+    "title": "Vă rugăm să vă conectați pentru a continua.",
+    "username": "Nume de utilizator",
+    "usernamePlaceholder": "Introduceți numele de utilizator",
+    "password": "Parolă",
+    "passwordPlaceholder": "Introduceți parola",
+    "submit": "Log in"
+  },
+  "logout": "Deconectare"
 }

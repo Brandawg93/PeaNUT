@@ -48,6 +48,7 @@ describe('Wrapper Component', () => {
         <Wrapper
           getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
           runCommandAction={jest.fn().mockResolvedValue({})}
+          logoutAction={jest.fn()}
         />
       </LanguageContext.Provider>
     )
