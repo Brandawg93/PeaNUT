@@ -7,7 +7,8 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl, headers } }) {
       // Check if authentication is enabled via env variables
-      const authEnabled = process.env.USERNAME && process.env.PASSWORD
+      // Also check for empty strings
+      const authEnabled = process.env.USERNAME?.trim() && process.env.PASSWORD?.trim()
 
       // If auth is not enabled, allow all access
       if (!authEnabled) {
