@@ -130,11 +130,18 @@ export async function getDevices(): Promise<DeviceData> {
 export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
     const nuts = connect()
-    const nut = nuts.find(async (nut) => await nut.deviceExists(device))
     const data: { [x: string]: string } = {}
-    if (!nut) {
-      return { data: undefined, error: 'Device not found' }
-    }
+
+    // Find the first NUT server that has the device
+    const nut = await Promise.any(
+      nuts.map(async (nut) => {
+        if (await nut.deviceExists(device)) {
+          return nut
+        }
+        throw new Error('Device not found on this server')
+      })
+    )
+
     const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(device, param)))
     params.forEach((param, index) => {
       data[param] = descriptions[index]
