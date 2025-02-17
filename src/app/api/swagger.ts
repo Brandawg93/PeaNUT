@@ -1,5 +1,23 @@
 import { createSwaggerSpec } from 'next-swagger-doc'
 
+const options = {
+  components: {
+    securitySchemes: {
+      BasicAuth: {
+        type: 'http',
+        scheme: 'basic',
+      },
+    },
+  },
+  security: [
+    {
+      BasicAuth: [],
+    },
+  ],
+}
+
+const useAuth = process.env.USERNAME && process.env.PASSWORD
+
 export const getApiDocs = async () => {
   const spec = createSwaggerSpec({
     apiFolder: 'src/app/api', // define api folder under app folder
@@ -9,16 +27,7 @@ export const getApiDocs = async () => {
         title: 'PeaNUT API',
         version: '1.0',
       },
-      //   components: {
-      //     securitySchemes: {
-      //       BearerAuth: {
-      //         type: 'http',
-      //         scheme: 'bearer',
-      //         bearerFormat: 'JWT',
-      //       },
-      //     },
-      //   },
-      //   security: [],
+      ...(useAuth ? options : {}),
     },
   })
   return spec
