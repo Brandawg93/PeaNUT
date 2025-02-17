@@ -16,8 +16,13 @@ export const authConfig = {
 
       const isLoggedIn = !!auth?.user
       const isApiRoute = nextUrl.pathname.startsWith('/api')
+      const isApiV1Route = nextUrl.pathname.startsWith('/api/v1')
 
-      if (isApiRoute) {
+      if (isApiRoute && !isApiV1Route) {
+        return true
+      }
+
+      if (isApiV1Route) {
         // Get the Authorization header
         const authHeader = headers.get('authorization')
 
