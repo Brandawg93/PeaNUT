@@ -68,8 +68,6 @@ jobs:
           pnpm run test:all
           pnpm run build
         env:
-          USERNAME: admin
-          PASSWORD: nut_test
           NUT_HOST: localhost
           NUT_PORT: 3493
           WEB_PORT: 8080

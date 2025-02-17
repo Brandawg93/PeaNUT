@@ -129,7 +129,8 @@ export async function getDevices(): Promise<DeviceData> {
 
 export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
-    const nut = connect().find((nut) => nut.deviceExists(device))
+    const nuts = connect()
+    const nut = nuts.find(async (nut) => await nut.deviceExists(device))
     const data: { [x: string]: string } = {}
     if (!nut) {
       return { data: undefined, error: 'Device not found' }
