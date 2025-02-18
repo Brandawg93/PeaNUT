@@ -1,4 +1,4 @@
-FROM node:lts-slim AS deps
+FROM node:lts-alpine AS deps
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch | \
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --frozen-lockfile --ignore-scripts
 
-FROM node:lts-slim AS build
+FROM node:lts-alpine AS build
 
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -43,10 +43,16 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
+ENV AUTH_TRUST_HOST=http://${WEB_HOST}:${WEB_PORT}
+ENV AUTH_SECRET=
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE $WEB_PORT
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://$WEB_HOST:$WEB_PORT/api/ping || exit 1
+  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["npm", "start"]

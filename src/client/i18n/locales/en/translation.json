@@ -125,5 +125,14 @@
   "volts-chart": "Voltage",
   "watts-chart": "Real Power",
   "volt-amps-chart": "Apparent Power",
-  "accordion-grid": "UPS Data"
+  "accordion-grid": "UPS Data",
+  "login": {
+    "title": "Please log in to continue.",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "submit": "Log in"
+  },
+  "logout": "Logout"
 }

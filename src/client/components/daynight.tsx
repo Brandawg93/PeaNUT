@@ -44,7 +44,7 @@ export default function DayNightSwitch() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild data-testid='daynight-trigger'>
-        <Button size='lg' variant='ghost' title={t('theme.title')} className='px-3'>
+        <Button size='icon' variant='ghost' title={t('theme.title')} className='px-3'>
           {getThemeIcon(resolvedTheme)}
         </Button>
       </DropdownMenuTrigger>

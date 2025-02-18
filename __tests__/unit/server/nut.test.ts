@@ -130,9 +130,7 @@ describe('Nut', () => {
   })
 
   it('should get read-write variables for a device', async () => {
-    process.env.USERNAME = 'test'
-    process.env.PASSWORD = 'test'
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut('localhost', 3493, 'test', 'test')
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST RW ups\nRW ups battery.charge.low "10"\nEND LIST RW ups')

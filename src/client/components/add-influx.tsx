@@ -112,11 +112,7 @@ export default function AddInflux({
                 type='button'
               >
                 <div className='text-muted-foreground'>
-                  {showPassword ? (
-                    <HiOutlineEyeSlash className='size-6 stroke-1' />
-                  ) : (
-                    <HiOutlineEye className='size-6 stroke-1' />
-                  )}
+                  {showPassword ? <HiOutlineEyeSlash className='stroke-1' /> : <HiOutlineEye className='stroke-1' />}
                 </div>
               </Button>
             </div>
