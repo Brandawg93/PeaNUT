@@ -45,7 +45,8 @@ export const authConfig = {
       }
 
       if (isLoggedIn) return true
-      return false // Redirect unauthenticated users to login page
+      if (nextUrl.pathname === '/login') return true
+      return Response.redirect(new URL(`/login?callbackUrl=${nextUrl.pathname}`, nextUrl.origin))
     },
   },
   providers: [], // Add providers with an empty array for now
