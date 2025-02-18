@@ -71,7 +71,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
+      expect(screen.getByTitle('settings.addServer')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByTitle('settings.addServer'))
