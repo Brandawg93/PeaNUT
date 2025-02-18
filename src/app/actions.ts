@@ -5,6 +5,8 @@ import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
 import { DEVICE, server, DeviceData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
+import { AuthError } from 'next-auth'
+import { signIn, signOut } from '@/auth'
 
 const settingsFile = './config/settings.yml'
 // Cache settings instance
@@ -39,6 +41,26 @@ function connect(): Array<Nut> {
   } catch (e: any) {
     throw new Error(`Failed to connect to NUT servers: ${e.message}`)
   }
+}
+
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+  try {
+    await signIn('credentials', formData)
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.'
+        default:
+          return 'Something went wrong.'
+      }
+    }
+    throw error
+  }
+}
+
+export async function logout() {
+  await signOut()
 }
 
 export async function testConnection(server: string, port: number) {
@@ -107,11 +129,19 @@ export async function getDevices(): Promise<DeviceData> {
 
 export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
-    const nut = connect().find((nut) => nut.deviceExists(device))
+    const nuts = connect()
     const data: { [x: string]: string } = {}
-    if (!nut) {
-      return { data: undefined, error: 'Device not found' }
-    }
+
+    // Find the first NUT server that has the device
+    const nut = await Promise.any(
+      nuts.map(async (nut) => {
+        if (await nut.deviceExists(device)) {
+          return nut
+        }
+        throw new Error('Device not found on this server')
+      })
+    )
+
     const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(device, param)))
     params.forEach((param, index) => {
       data[param] = descriptions[index]

@@ -56,9 +56,10 @@ const roundIfNeeded = (num: number) => Math.round((num + Number.EPSILON) * 100) 
 type Props = {
   getDevicesAction: () => Promise<DeviceData>
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
+  logoutAction: () => void
 }
 
-export default function Wrapper({ getDevicesAction, runCommandAction }: Props) {
+export default function Wrapper({ getDevicesAction, runCommandAction, logoutAction }: Props) {
   const [preferredDevice, setPreferredDevice] = useState<number>(0)
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
     typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
@@ -206,6 +207,7 @@ export default function Wrapper({ getDevicesAction, runCommandAction }: Props) {
           onDeviceChange={(name: string) =>
             data.devices && setPreferredDevice(data.devices.findIndex((d: DEVICE) => d.name === name))
           }
+          onLogout={logoutAction}
           devices={data.devices}
           failedServers={data.failedServers}
         />

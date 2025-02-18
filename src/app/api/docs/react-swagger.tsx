@@ -11,12 +11,14 @@ import { TbSettings } from 'react-icons/tb'
 import { useTheme } from 'next-themes'
 import SwaggerUI from 'swagger-ui-react'
 import 'swagger-ui-react/swagger-ui.css'
+import { LuLogOut } from 'react-icons/lu'
 
 type Props = {
   spec: Record<string, any>
+  onLogout: () => void
 }
 
-function ReactSwagger({ spec }: Props) {
+function ReactSwagger({ spec, onLogout }: Props) {
   const { resolvedTheme } = useTheme()
   const router = useRouter()
   const swaggerTheme = resolvedTheme === 'dark' ? 'invert-[0.98] hue-rotate-180' : 'invert-0 hue-rotate-0'
@@ -26,10 +28,12 @@ function ReactSwagger({ spec }: Props) {
         <div className='flex justify-end space-x-2'>
           <DayNightSwitch />
           <LanguageSwitcher />
+          <Button variant='ghost' size='icon' title={t('logout')} aria-label={t('logout')} onClick={onLogout}>
+            <LuLogOut className='size-6! stroke-[1.5px]' />
+          </Button>
           <Button
             variant='ghost'
-            size='lg'
-            className='px-3'
+            size='icon'
             title={t('sidebar.settings')}
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
