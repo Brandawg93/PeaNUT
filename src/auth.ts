@@ -12,7 +12,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (parsedCredentials.success) {
           const { username, password } = parsedCredentials.data
-          if (username === process.env.USERNAME && password === process.env.PASSWORD) {
+          if (username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD) {
             return { name: username }
           }
         }

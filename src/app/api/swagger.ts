@@ -16,7 +16,7 @@ const options = {
   ],
 }
 
-const useAuth = process.env.USERNAME && process.env.PASSWORD
+const useAuth = process.env.WEB_USERNAME && process.env.WEB_PASSWORD
 
 export const getApiDocs = async () => {
   const spec = createSwaggerSpec({
