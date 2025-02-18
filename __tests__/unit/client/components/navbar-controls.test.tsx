@@ -2,14 +2,6 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import NavBarControls from '@/client/components/navbar-controls'
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: () => null,
-    }
-  },
-}))
-
 const devices = [
   {
     vars: {},
@@ -37,6 +29,7 @@ describe('NavBar', () => {
         onRefreshClick={() => {}}
         onRefetch={() => {}}
         onDeviceChange={() => {}}
+        onLogout={() => {}}
         disableRefresh={false}
       />
     )

@@ -125,5 +125,14 @@
   "volt-amps-chart": "Poder aparente",
   "volts-chart": "Voltaje",
   "watts-chart": "Poder real",
-  "accordion-grid": "Datos de UPS"
+  "accordion-grid": "Datos de UPS",
+  "login": {
+    "title": "Inicie sesión para continuar.",
+    "username": "Nombre de usuario",
+    "usernamePlaceholder": "Ingrese su nombre de usuario",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Ingrese su contraseña",
+    "submit": "Acceso"
+  },
+  "logout": "Cierre de sesión"
 }

@@ -63,6 +63,7 @@ jobs:
 
       - name: Build and test
         run: |
+          export AUTH_SECRET=$(npx --yes auth secret)
           pnpm run type-check
           pnpm run lint
           pnpm run test:all

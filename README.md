@@ -69,15 +69,26 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-| Variable  | Default   | Description                 |
-| --------- | --------- | --------------------------- |
-| WEB_HOST  | localhost | Hostname of web server      |
-| WEB_PORT  | 8080      | Port of web server          |
-| BASE_PATH | undefined | Base path for reverse proxy |
+| Variable     | Default   | Description                 |
+| ------------ | --------- | --------------------------- |
+| WEB_HOST     | localhost | Hostname of web server      |
+| WEB_PORT     | 8080      | Port of web server          |
+| WEB_USERNAME | undefined | Username of web app         |
+| WEB_PASSWORD | undefined | Password of web app         |
+| BASE_PATH    | undefined | Base path for reverse proxy |
 
 ## Configuration
 
 Configuration is primarily done via the UI, but manual configuration can be done via the `/config/settings.yml` file within the container. More information can be found on the [wiki](https://github.com/Brandawg93/PeaNUT/wiki/YAML-Configuration).
+
+## Authentication
+
+Authentication can be enabled by setting both `WEB_USERNAME` and `WEB_PASSWORD` environment variables. When these are set:
+
+- Web UI access will require login using these credentials
+- API calls will require Basic Authentication
+
+For API calls, you'll need to include an Authorization header with the Base64 encoded credentials in the format `username:password`. The header should be formatted as: `Authorization: Basic <encoded credentials>`
 
 ## API
 

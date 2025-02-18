@@ -202,6 +202,7 @@ const config: Config = {
   // watchman: true,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    'next-auth': '<rootDir>/__tests__/__mocks__/next-auth.ts',
   },
 }
 

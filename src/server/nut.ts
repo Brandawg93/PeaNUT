@@ -215,7 +215,7 @@ export class Nut {
   }
 
   public async getRWVars(device = 'UPS'): Promise<Array<keyof VARS>> {
-    if (!process.env.USERNAME || !process.env.PASSWORD) {
+    if (!this.username || !this.password) {
       return []
     }
     const command = `LIST RW ${device}`
