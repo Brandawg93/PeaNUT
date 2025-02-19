@@ -51,7 +51,7 @@ export default function AddServer({
         toast.promise(promise, {
           loading: t('connect.testing'),
           success: t('connect.success'),
-          error: t('connect.error'),
+          error: (error) => error?.message || t('connect.error'),
         })
       }
       try {

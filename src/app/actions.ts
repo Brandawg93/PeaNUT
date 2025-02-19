@@ -43,13 +43,22 @@ function connect(): Array<Nut> {
   }
 }
 
-export async function testConnection(server: string, port: number, username?: string, password?: string) {
-  const nut = new Nut(server, port, username, password)
-  const connection = await nut.testConnection()
-  if (connection && username && password) {
-    await nut.checkCredentials()
+export async function testConnection(
+  server: string,
+  port: number,
+  username?: string,
+  password?: string
+): Promise<string> {
+  try {
+    const nut = new Nut(server, port, username, password)
+    const connection = await nut.testConnection()
+    if (connection && username && password) {
+      await nut.checkCredentials()
+    }
+    return connection
+  } catch (error: any) {
+    return Promise.reject(new Error(error.message))
   }
-  return connection
 }
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
