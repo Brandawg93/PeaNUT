@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS deps
+FROM node:lts-slim AS deps
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch | \
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --frozen-lockfile --ignore-scripts
 
-FROM node:lts-alpine AS build
+FROM node:lts-slim AS build
 
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
