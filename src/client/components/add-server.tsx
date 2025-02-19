@@ -19,7 +19,7 @@ type AddServerProps = {
   initialPassword: string | undefined
   handleChange: (server: string, port: number, username?: string, password?: string) => void
   handleRemove: () => void
-  testConnectionAction: (server: string, port: number) => Promise<string>
+  testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   saved?: boolean
 }
 
@@ -46,12 +46,12 @@ export default function AddServer({
 
   const handleTestConnection = async (hideToast = false) => {
     if (server && port) {
-      const promise = testConnectionAction(server, port)
+      const promise = testConnectionAction(server, port, username, password)
       if (!hideToast) {
         toast.promise(promise, {
           loading: t('connect.testing'),
           success: t('connect.success'),
-          error: t('connect.error'),
+          error: (error) => error?.message || t('connect.error'),
         })
       }
       try {

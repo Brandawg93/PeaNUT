@@ -43,6 +43,24 @@ function connect(): Array<Nut> {
   }
 }
 
+export async function testConnection(
+  server: string,
+  port: number,
+  username?: string,
+  password?: string
+): Promise<string> {
+  try {
+    const nut = new Nut(server, port, username, password)
+    const connection = await nut.testConnection()
+    if (connection && username && password) {
+      await nut.checkCredentials()
+    }
+    return connection
+  } catch (error: any) {
+    return Promise.reject(new Error(error.message))
+  }
+}
+
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
     await signIn('credentials', formData)
@@ -61,11 +79,6 @@ export async function authenticate(prevState: string | undefined, formData: Form
 
 export async function logout() {
   await signOut()
-}
-
-export async function testConnection(server: string, port: number) {
-  const nut = new Nut(server, port)
-  return await nut.testConnection()
 }
 
 export async function testInfluxConnection(host: string, token: string, org: string, bucket: string) {
