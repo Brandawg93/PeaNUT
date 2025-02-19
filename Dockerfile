@@ -43,16 +43,10 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
-ENV AUTH_TRUST_HOST=http://${WEB_HOST}:${WEB_PORT}
-ENV AUTH_SECRET=
-
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 EXPOSE $WEB_PORT
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
   CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["npm", "start"]
