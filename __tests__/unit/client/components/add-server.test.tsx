@@ -87,7 +87,7 @@ describe('AddServer Component', () => {
     const { getByText } = renderComponent()
     const testButton = getByText('connect.test')
     fireEvent.click(testButton)
-    expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080)
+    expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080, 'admin', 'nut_test')
 
     await waitFor(() => expect(testButton).not.toBeDisabled())
   })
