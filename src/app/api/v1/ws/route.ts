@@ -58,7 +58,7 @@ export function SOCKET(client: import('ws').WebSocket, request: import('http').I
           messageBuffer = ''
           return
         }
-        nutClient.write(messageBuffer.replace('\r', '\n'))
+        nutClient.write(messageBuffer.replace(/\r/g, '\n'))
         client.send('\r\n')
         messageBuffer = ''
       }
