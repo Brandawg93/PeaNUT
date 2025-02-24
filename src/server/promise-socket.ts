@@ -51,29 +51,16 @@ export default class PromiseSocket {
     )
   }
 
-  async readAll(command: string, until: string = `END ${command.toUpperCase()}`, timeout = TIMEOUT): Promise<string> {
+  async readAll(command: string, until: string = `END ${command}`, timeout = TIMEOUT): Promise<string> {
     return this.raceWithTimeout(
       new Promise<string>((resolve, reject) => {
         let buf = ''
-        let partialDataTimer: NodeJS.Timeout | null = null
 
         const onData = (data: Buffer) => {
           buf += data.toString()
-
-          // Clear existing timer if any
-          if (partialDataTimer) {
-            clearTimeout(partialDataTimer)
-          }
-
-          if (buf.toUpperCase().includes(until)) {
+          if (buf.includes(until)) {
             cleanup()
             resolve(buf)
-          } else if (buf.length > 0) {
-            // Set timer to resolve after 1 second if we have partial data
-            partialDataTimer = setTimeout(() => {
-              cleanup()
-              resolve(buf)
-            }, 1000)
           }
         }
 
@@ -87,9 +74,6 @@ export default class PromiseSocket {
         }
 
         const cleanup = () => {
-          if (partialDataTimer) {
-            clearTimeout(partialDataTimer)
-          }
           this.innerSok.off('data', onData)
           this.innerSok.off('end', onEnd)
           this.innerSok.off('error', reject)

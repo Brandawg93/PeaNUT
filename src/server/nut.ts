@@ -59,7 +59,7 @@ export class Nut {
     await socket.close()
   }
 
-  public async getCommand(
+  private async getCommand(
     command: string,
     until?: string,
     checkCredentials = false,
