@@ -11,6 +11,7 @@ import { TbSettings } from 'react-icons/tb'
 import { useTheme } from 'next-themes'
 import SwaggerUI from 'swagger-ui-react'
 import 'swagger-ui-react/swagger-ui.css'
+import './custom.css'
 import { LuLogOut } from 'react-icons/lu'
 
 type Props = {
