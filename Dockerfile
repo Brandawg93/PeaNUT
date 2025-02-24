@@ -24,6 +24,7 @@ COPY . /app
 
 RUN npm -g i corepack && \
     corepack enable pnpm && \
+    pnpm run prepare && \
     pnpm run build && \
     rm -rf .next/standalone/.next/cache
 
