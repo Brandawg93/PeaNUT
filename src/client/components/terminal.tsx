@@ -25,7 +25,7 @@ export default function NutTerminal({ host, port }: Props) {
     terminal.open(containerRef.current)
 
     const ws = new WebSocket(
-      `ws://${window.location.host}/api/v1/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
+      `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
     )
     wsRef.current = ws
 
