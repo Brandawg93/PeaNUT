@@ -10,7 +10,6 @@ import {
   deleteSettings,
   testConnection,
   testInfluxConnection,
-  proxyNutCommand,
 } from '@/app/actions'
 
 export default function Settings() {
@@ -25,7 +24,6 @@ export default function Settings() {
       updateServersAction={updateServers}
       testConnectionAction={testConnection}
       testInfluxConnectionAction={testInfluxConnection}
-      proxyNutCommandAction={proxyNutCommand}
     />
   )
 }

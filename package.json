@@ -27,7 +27,7 @@
     "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh",
     "telemetry": "next telemetry disable",
-    "prepare": "husky"
+    "prepare": "husky && next-ws patch"
   },
   "dependencies": {
     "@codemirror/lang-yaml": "^6.1.2",
@@ -48,6 +48,7 @@
     "@tanstack/react-table": "^8.21.2",
     "@uiw/codemirror-theme-vscode": "^4.23.8",
     "@uiw/react-codemirror": "^4.23.8",
+    "@xterm/addon-attach": "^0.11.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "chokidar": "^4.0.3",
@@ -62,6 +63,7 @@
     "next-auth": "5.0.0-beta.25",
     "next-remove-imports": "^1.0.12",
     "next-themes": "^0.4.4",
+    "next-ws": "^2.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.4.0",
@@ -72,6 +74,7 @@
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "toad-scheduler": "^3.0.1",
+    "ws": "^8.18.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -91,6 +94,7 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/swagger-ui-react": "^5.18.0",
+    "@types/ws": "^8.5.14",
     "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
     "concurrently": "^9.1.2",
     "eslint": "^9.20.1",

@@ -278,22 +278,3 @@ export async function disconnect() {
     throw new Error(`Failed to disconnect: ${e.message}`)
   }
 }
-
-export async function proxyNutCommand(
-  host: string,
-  port: number,
-  command: string,
-  username?: string,
-  password?: string
-): Promise<string> {
-  if (!host || !port || !command) {
-    throw new Error('Invalid parameters')
-  }
-  try {
-    const nut = new Nut(host, port, username, password)
-    const response = await nut.getCommand(command)
-    return response
-  } catch (e: any) {
-    throw new Error(`Failed to execute NUT command: ${e.message}`)
-  }
-}

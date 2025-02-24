@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react'
 import { useXTerm } from 'react-xtermjs'
 import { FitAddon } from '@xterm/addon-fit'
+import { AttachAddon } from '@xterm/addon-attach'
 import { Terminal } from '@xterm/xterm'
 
 type Props = {
@@ -10,42 +11,42 @@ type Props = {
   port: number
   username?: string
   password?: string
-  nutCommandAction: (
-    host: string,
-    port: number,
-    command: string,
-    username?: string,
-    password?: string
-  ) => Promise<string>
 }
 
-export default function NutTerminal({ nutCommandAction, host, port, username, password }: Props) {
-  const { instance, ref } = useXTerm({ options: { cursorBlink: true } })
-  const fitAddon = React.useRef(new FitAddon())
-  const commandBuffer = React.useRef('')
+export default function NutTerminal({ host, port }: Props) {
+  const ws = new WebSocket(
+    `ws://${window.location.host}/api/v1/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
+  )
+
+  ws.onopen = () => {
+    console.log('Connected to the server')
+  }
+
+  const { instance, ref } = useXTerm()
+  const fitAddon = new FitAddon()
+  const attachAddon = new AttachAddon(ws)
 
   useEffect(() => {
-    if (!instance) return
+    // Load the fit addons
+    instance?.loadAddon(fitAddon)
+    instance?.loadAddon(attachAddon)
 
-    // Initialize terminal
-    instance.loadAddon(fitAddon.current)
-    instance.writeln('NUT Server Terminal')
-    instance.writeln('Type your commands below...')
+    // Write custom message on your terminal
+    instance?.writeln('Welcome react-xtermjs!')
+    instance?.writeln('This is a simple example using an addon.')
 
     // Handle terminal input
-    instance.onData((data) => {
+    instance?.onData((data) => {
       handleCommand(data, instance)
     })
 
-    // Handle window resizing
-    const handleResize = () => fitAddon.current.fit()
+    // Handle resize event
+    const handleResize = () => fitAddon.fit()
     window.addEventListener('resize', handleResize)
-    handleResize()
-
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [instance])
+  }, [ref, instance])
 
   const handleCommand = async (data: string, terminal: Terminal) => {
     try {
@@ -54,47 +55,22 @@ export default function NutTerminal({ nutCommandAction, host, port, username, pa
         return
       }
 
-      if (commandBuffer.current.trim() === 'clear') {
+      if (data === 'clear') {
         terminal.clear()
-        commandBuffer.current = ''
-        return
-      }
-
-      if (data === '\r') {
-        if (commandBuffer.current) {
-          try {
-            const response = await nutCommandAction(host, port, commandBuffer.current, username, password)
-            terminal.write('\r\n')
-            response.split('\n').forEach((line) => {
-              terminal.writeln(`${line.trim()}`)
-            })
-            commandBuffer.current = ''
-          } catch (error) {
-            console.error('Error executing command:', error)
-            terminal.write('\r\n')
-            terminal.writeln('Error executing command')
-            commandBuffer.current = ''
-          }
-        }
         return
       }
 
       if (data === '\u007F') {
-        if (commandBuffer.current.length > 0) {
-          commandBuffer.current = commandBuffer.current.slice(0, -1)
-          terminal.write('\b \b')
-        }
+        terminal.write('\b \b')
         return
       }
 
       if (data) {
-        commandBuffer.current += data
         terminal.write(data)
       }
     } catch (error) {
       console.error('Error in handleCommand:', error)
       terminal.writeln('\r\nError executing command')
-      commandBuffer.current = ''
     }
   }
 

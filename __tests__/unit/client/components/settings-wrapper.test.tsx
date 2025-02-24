@@ -19,7 +19,6 @@ const mockDeleteSettingsAction = jest.fn()
 const mockUpdateServersAction = jest.fn()
 const mockTestConnectionAction = jest.fn().mockResolvedValue('success')
 const mockTestInfluxConnectionAction = jest.fn()
-const proxyNutCommandAction = jest.fn()
 
 const renderComponent = () =>
   render(
@@ -34,7 +33,6 @@ const renderComponent = () =>
         updateServersAction={mockUpdateServersAction}
         testConnectionAction={mockTestConnectionAction}
         testInfluxConnectionAction={mockTestInfluxConnectionAction}
-        proxyNutCommandAction={proxyNutCommandAction}
       />
     </LanguageContext.Provider>
   )

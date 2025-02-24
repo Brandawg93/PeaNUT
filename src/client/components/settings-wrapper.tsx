@@ -34,13 +34,6 @@ type SettingsWrapperProps = {
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
-  proxyNutCommandAction: (
-    host: string,
-    port: number,
-    command: string,
-    username?: string,
-    password?: string
-  ) => Promise<string>
 }
 
 export default function SettingsWrapper({
@@ -53,7 +46,6 @@ export default function SettingsWrapper({
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
-  proxyNutCommandAction,
 }: SettingsWrapperProps) {
   const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
@@ -340,15 +332,7 @@ export default function SettingsWrapper({
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.terminal')}</h2>
                   <span>{t('settings.terminalNotice')}</span>
-                  {firstServer && (
-                    <NutTerminal
-                      host={firstServer.HOST}
-                      port={firstServer.PORT}
-                      username={firstServer.USERNAME}
-                      password={firstServer.PASSWORD}
-                      nutCommandAction={proxyNutCommandAction}
-                    />
-                  )}
+                  {firstServer && <NutTerminal host={firstServer.HOST} port={firstServer.PORT} />}
                 </div>
               </Card>
             </TabsContent>
