@@ -44,7 +44,9 @@
     "save": "Ahorrar",
     "download": "Descargar",
     "viewConfig": "Haga clic para ver la configuración.",
-    "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos"
+    "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos",
+    "terminal": "Terminal",
+    "terminalNotice": "Escriba \"Ayuda\" para una lista de comandos."
   },
   "connect": {
     "server": "Servidor",

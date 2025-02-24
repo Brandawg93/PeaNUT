@@ -44,7 +44,9 @@
     "download": "Download",
     "save": "Save",
     "viewConfig": "Click to view configuration.",
-    "serversNotice": "Username and password are required for commands"
+    "serversNotice": "Username and password are required for commands",
+    "terminal": "Terminal",
+    "terminalNotice": "Type \"help\" for a list of commands."
   },
   "connect": {
     "server": "Server Address",

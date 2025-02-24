@@ -44,7 +44,9 @@
     "save": "Speichern",
     "download": "Herunterladen",
     "viewConfig": "Klicken Sie, um die Konfiguration anzuzeigen.",
-    "serversNotice": "Benutzername und Passwort sind für Befehle erforderlich"
+    "serversNotice": "Benutzername und Passwort sind für Befehle erforderlich",
+    "terminal": "Terminal",
+    "terminalNotice": "Geben Sie \"Hilfe\" für eine Liste von Befehlen ein."
   },
   "connect": {
     "server": "Serveradresse",

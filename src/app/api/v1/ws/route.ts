@@ -40,13 +40,24 @@ export function SOCKET(client: import('ws').WebSocket, request: import('http').I
 
   client.on('message', (message) => {
     try {
-      const command = message.toString()
+      // Handle backspace character (0x7F)
+      if (Buffer.isBuffer(message) && message.length === 1 && message[0] === 0x7f) {
+        if (messageBuffer.length > 0) {
+          messageBuffer = messageBuffer.slice(0, -1)
+        }
+        return
+      }
 
       // Append the new message to the buffer
-      messageBuffer += command
+      messageBuffer += message
 
       // Check if the message contains a newline
       if (messageBuffer.includes('\r')) {
+        if (messageBuffer === 'clear\r') {
+          client.send('\x1b[2J\x1b[H')
+          messageBuffer = ''
+          return
+        }
         nutClient.write(messageBuffer.replace('\r', '\n'))
         client.send('\r\n')
         messageBuffer = ''

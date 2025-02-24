@@ -327,7 +327,7 @@ export default function SettingsWrapper({
                 </div>
               </Card>
             </TabsContent>
-            <TabsContent value='terminal' className='mt-0 h-full flex-1'>
+            <TabsContent value='terminal' className='mt-0 h-full flex-1 overflow-x-hidden'>
               <Card className='p-4 shadow-none'>
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.terminal')}</h2>
