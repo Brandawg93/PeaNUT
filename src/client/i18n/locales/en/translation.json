@@ -46,7 +46,8 @@
     "viewConfig": "Click to view configuration.",
     "serversNotice": "Username and password are required for commands",
     "terminal": "Terminal",
-    "terminalNotice": "Type \"help\" for a list of commands."
+    "terminalNotice": "Type \"help\" for a list of commands.",
+    "selectServer": "Select a server"
   },
   "connect": {
     "server": "Server Address",

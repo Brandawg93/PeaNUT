@@ -46,7 +46,8 @@
     "viewConfig": "Haga clic para ver la configuración.",
     "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos",
     "terminal": "Terminal",
-    "terminalNotice": "Escriba \"Ayuda\" para una lista de comandos."
+    "terminalNotice": "Escriba \"Ayuda\" para una lista de comandos.",
+    "selectServer": "Seleccione un servidor"
   },
   "connect": {
     "server": "Servidor",

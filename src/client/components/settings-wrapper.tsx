@@ -5,6 +5,7 @@ import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/client/components/ui/accordion'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/client/components/ui/select'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
 import CodeMirror from '@uiw/react-codemirror'
@@ -13,7 +14,14 @@ import { yaml } from '@codemirror/lang-yaml'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
-import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle, HiOutlineCodeBracket } from 'react-icons/hi2'
+import {
+  HiOutlineServerStack,
+  HiOutlinePlus,
+  HiOutlineInformationCircle,
+  HiOutlineCodeBracket,
+  HiOutlineLink,
+  HiOutlineLinkSlash,
+} from 'react-icons/hi2'
 import { LuTerminal } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
@@ -55,6 +63,8 @@ export default function SettingsWrapper({
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
   const [influxInterval, setInfluxInterval] = useState<number>(10)
+  const [selectedServer, setSelectedServer] = useState<string>('')
+  const [connected, setConnected] = useState(false)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { resolvedTheme, theme } = useTheme()
@@ -157,8 +167,6 @@ export default function SettingsWrapper({
     { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
     { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
   ]
-
-  const firstServer = serverList[0]?.server
 
   return (
     <div className='flex flex-1 flex-col pr-3 pl-3' data-testid='settings-wrapper'>
@@ -332,7 +340,37 @@ export default function SettingsWrapper({
                 <div className='container'>
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.terminal')}</h2>
                   <span>{t('settings.terminalNotice')}</span>
-                  {firstServer && <NutTerminal host={firstServer.HOST} port={firstServer.PORT} />}
+                  <div className='mt-4 mb-4 flex gap-2'>
+                    {!connected && (
+                      <>
+                        <Select onValueChange={setSelectedServer} value={selectedServer}>
+                          <SelectTrigger className='w-[200px]'>
+                            <SelectValue placeholder={t('settings.selectServer')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {serverList.map(({ server }) => (
+                              <SelectItem key={`${server.HOST}:${server.PORT}`} value={`${server.HOST}:${server.PORT}`}>
+                                {server.HOST}:{server.PORT}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={() => setConnected(true)} disabled={!selectedServer}>
+                          <HiOutlineLink />
+                          {t('connect.connect')}
+                        </Button>
+                      </>
+                    )}
+                    {connected && (
+                      <Button onClick={() => setConnected(false)} variant='destructive'>
+                        <HiOutlineLinkSlash />
+                        {t('sidebar.disconnect')}
+                      </Button>
+                    )}
+                  </div>
+                  {connected && selectedServer && (
+                    <NutTerminal host={selectedServer.split(':')[0]} port={parseInt(selectedServer.split(':')[1])} />
+                  )}
                 </div>
               </Card>
             </TabsContent>

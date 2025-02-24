@@ -46,7 +46,8 @@
     "viewConfig": "Faceți clic pentru a vizualiza configurația.",
     "serversNotice": "Numele de utilizator și parola sunt necesare pentru comenzi",
     "terminal": "Terminal",
-    "terminalNotice": "Tastați „ajutor” pentru o listă de comenzi."
+    "terminalNotice": "Tastați „ajutor” pentru o listă de comenzi.",
+    "selectServer": "Selectați un server"
   },
   "connect": {
     "server": "Adresa serverului",
