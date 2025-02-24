@@ -122,9 +122,6 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.0.0)
-      react-xtermjs:
-        specifier: ^1.0.9
-        version: 1.0.9(@xterm/xterm@5.5.0)
       recharts:
         specifier: ^2.15.1
         version: 2.15.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -4894,11 +4891,6 @@ packages:
     peerDependencies:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
-
-  react-xtermjs@1.0.9:
-    resolution: {integrity: sha512-lrK1xiWfgxAC+4shtMHh0Irxg2t5t7JbTtpP0W7GIf1gQ9SHW/djmyiLpQSA75mN1DpT0bKeqj1fOKd0XX8RBA==}
-    peerDependencies:
-      '@xterm/xterm': ^5.5.0
 
   react@19.0.0:
     resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
@@ -11488,10 +11480,6 @@ snapshots:
       prop-types: 15.8.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-
-  react-xtermjs@1.0.9(@xterm/xterm@5.5.0):
-    dependencies:
-      '@xterm/xterm': 5.5.0
 
   react@19.0.0: {}
 

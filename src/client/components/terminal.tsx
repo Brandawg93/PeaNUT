@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
-import { useXTerm } from 'react-xtermjs'
 import { FitAddon } from '@xterm/addon-fit'
 import { AttachAddon } from '@xterm/addon-attach'
 import { Terminal } from '@xterm/xterm'
+import '@xterm/xterm/css/xterm.css'
 
 type Props = {
   host: string
@@ -12,11 +12,17 @@ type Props = {
 }
 
 export default function NutTerminal({ host, port }: Props) {
-  const { instance, ref } = useXTerm()
   const wsRef = useRef<WebSocket | null>(null)
+  const terminalRef = useRef<Terminal | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!instance || wsRef.current) return // Prevent multiple WS connections
+    if (!containerRef.current || wsRef.current || terminalRef.current) return
+
+    // Initialize terminal
+    const terminal = new Terminal()
+    terminalRef.current = terminal
+    terminal.open(containerRef.current)
 
     const ws = new WebSocket(
       `ws://${window.location.host}/api/v1/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
@@ -30,12 +36,12 @@ export default function NutTerminal({ host, port }: Props) {
     ws.onopen = () => {
       const attachAddon = new AttachAddon(ws)
 
-      instance.loadAddon(fitAddon)
-      instance.loadAddon(attachAddon)
+      terminal.loadAddon(fitAddon)
+      terminal.loadAddon(attachAddon)
 
       // Handle terminal input
-      instance.onData((data) => {
-        handleCommand(data, instance)
+      terminal.onData((data: string) => {
+        handleCommand(data)
       })
 
       // Handle resize event
@@ -53,11 +59,18 @@ export default function NutTerminal({ host, port }: Props) {
         wsRef.current.close()
       }
       wsRef.current = null
+      if (terminalRef.current) {
+        terminalRef.current.dispose()
+        terminalRef.current = null
+      }
       window.removeEventListener('resize', handleResize)
     }
-  }, [ref, instance, host, port])
+  }, [host, port])
 
-  const handleCommand = async (data: string, terminal: Terminal) => {
+  const handleCommand = async (data: string) => {
+    const terminal = terminalRef.current
+    if (!terminal) return
+
     try {
       if (data === '\u007F') {
         terminal.write('\b \b')
@@ -75,7 +88,7 @@ export default function NutTerminal({ host, port }: Props) {
 
   return (
     <div className='h-full w-full'>
-      <div ref={ref} className='h-full w-full' />
+      <div ref={containerRef} className='h-full w-full' />
     </div>
   )
 }

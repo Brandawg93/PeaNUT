@@ -30,7 +30,9 @@ import AddInflux from './add-influx'
 import { SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
-import NutTerminal from './terminal'
+import dynamic from 'next/dynamic'
+
+const NutTerminal = dynamic(() => import('@/client/components/terminal'), { ssr: false })
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
