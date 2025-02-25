@@ -1,4 +1,5 @@
 import * as net from 'net'
+import { getToken } from 'next-auth/jwt'
 
 interface NutConfig {
   host: string
@@ -12,8 +13,19 @@ export function GET() {
   return new Response('Upgrade Required', { status: 426, headers })
 }
 
-export function SOCKET(client: import('ws').WebSocket, request: import('http').IncomingMessage) {
+export async function SOCKET(client: import('ws').WebSocket, request: import('http').IncomingMessage) {
   console.log('A client connected')
+  const token = await getToken({
+    req: { headers: request.headers as Record<string, string> },
+    secret: process.env.AUTH_SECRET,
+  })
+
+  if (!token) {
+    console.log('Unauthorized WebSocket connection attempt')
+    client.send(JSON.stringify({ type: 'error', message: 'Unauthorized' }))
+    client.close()
+    return
+  }
 
   // Parse the URL to get NUT server details
   const url = new URL(request.url || '', `http://${request.headers.host}`)

@@ -5,6 +5,7 @@ import { FitAddon } from '@xterm/addon-fit'
 import { AttachAddon } from '@xterm/addon-attach'
 import { Terminal } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
+import { useTheme } from 'next-themes'
 
 type Props = {
   host: string
@@ -15,12 +16,20 @@ export default function NutTerminal({ host, port }: Props) {
   const wsRef = useRef<WebSocket | null>(null)
   const terminalRef = useRef<Terminal | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     if (!containerRef.current || wsRef.current || terminalRef.current) return
 
     // Initialize terminal
-    const terminal = new Terminal()
+    const terminal = new Terminal({
+      theme: {
+        background: resolvedTheme === 'dark' ? '#09090b' : '#fafafa',
+        cursor: resolvedTheme === 'dark' ? '#fafafa' : '#09090b',
+        foreground: resolvedTheme === 'dark' ? '#fafafa' : '#09090b',
+        selectionBackground: resolvedTheme === 'dark' ? '#3e3e3e' : '#dcdcdc',
+      },
+    })
     terminalRef.current = terminal
     terminal.open(containerRef.current)
 
@@ -65,7 +74,7 @@ export default function NutTerminal({ host, port }: Props) {
       }
       window.removeEventListener('resize', handleResize)
     }
-  }, [host, port])
+  }, [host, port, resolvedTheme])
 
   const handleCommand = async (data: string) => {
     const terminal = terminalRef.current
