@@ -4,14 +4,6 @@ import SettingsWrapper from '@/client/components/settings-wrapper'
 import { LanguageContext } from '@/client/context/language'
 // import { useRouter } from 'next/navigation'
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: jest.fn(),
-    }
-  },
-}))
-
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([{ name: '1.0.0' }]),
@@ -56,8 +48,7 @@ describe('SettingsWrapper', () => {
 
   it('renders the settings wrapper component', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce('localhost')
-    mockGetSettingsAction.mockResolvedValueOnce(8080)
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
 
     renderComponent()
 
@@ -68,8 +59,7 @@ describe('SettingsWrapper', () => {
 
   it('loads server settings if settings check passes', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce('localhost')
-    mockGetSettingsAction.mockResolvedValueOnce(8080)
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
 
     renderComponent()
 
@@ -80,13 +70,12 @@ describe('SettingsWrapper', () => {
 
   it('adds a new server when add server button is clicked', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce('localhost')
-    mockGetSettingsAction.mockResolvedValueOnce(8080)
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
 
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
+      expect(screen.getByTitle('settings.addServer')).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByTitle('settings.addServer'))
@@ -94,7 +83,7 @@ describe('SettingsWrapper', () => {
 
   it('handles server change correctly', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce([{ HOST: 'localhost', PORT: 8080 }])
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
     mockGetSettingsAction.mockResolvedValueOnce('influxToken')
     mockGetSettingsAction.mockResolvedValueOnce('influxOrg')
@@ -103,10 +92,10 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
+      expect(screen.getByTestId('server')).toBeInTheDocument()
     })
 
-    const serverInput = screen.getByDisplayValue('localhost')
+    const serverInput = screen.getByTestId('server')
     fireEvent.change(serverInput, { target: { value: 'newhost' } })
 
     await waitFor(() => {

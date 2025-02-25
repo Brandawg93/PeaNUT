@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Nu s-au găsit dispozitive pe acest server.",
+  "noDevicesError": "Nu au fost găsite dispozitive. \nAdăugați un dispozitiv nou în setări.",
   "updateAvailable": "Actualizare disponibilă",
   "device": "Dispozitiv",
   "manufacturer": "Producător",
@@ -44,7 +44,11 @@
     "save": "Salva",
     "download": "Descărcați",
     "viewConfig": "Faceți clic pentru a vizualiza configurația.",
-    "manageNotifications": "Notificări"
+    "manageNotifications": "Notificări",
+    "serversNotice": "Numele de utilizator și parola sunt necesare pentru comenzi",
+    "terminal": "Terminal",
+    "terminalNotice": "Tastați „ajutor” pentru o listă de comenzi.",
+    "selectServer": "Selectați un server"
   },
   "connect": {
     "server": "Adresa serverului",
@@ -124,5 +128,15 @@
   },
   "volt-amps-chart": "Putere aparentă",
   "volts-chart": "Voltaj",
-  "watts-chart": "Putere reală"
+  "watts-chart": "Putere reală",
+  "accordion-grid": "Date UPS",
+  "login": {
+    "title": "Vă rugăm să vă conectați pentru a continua.",
+    "username": "Nume de utilizator",
+    "usernamePlaceholder": "Introduceți numele de utilizator",
+    "password": "Parolă",
+    "passwordPlaceholder": "Introduceți parola",
+    "submit": "Log in"
+  },
+  "logout": "Deconectare"
 }

@@ -1,13 +1,8 @@
 import React from 'react'
-import { useRouter } from 'next/navigation'
 import { render } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
-
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}))
 
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
@@ -47,14 +42,13 @@ describe('Wrapper Component', () => {
     updated: '2023-10-01T00:00:00Z',
   }
 
-  const renderComponent = (checkSettingsAction: boolean, getDevicesAction = {}, disconnectAction = null) =>
+  const renderComponent = (getDevicesAction = {}) =>
     render(
       <LanguageContext.Provider value='en'>
         <Wrapper
-          checkSettingsAction={jest.fn().mockResolvedValue(checkSettingsAction)}
           getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
-          disconnectAction={jest.fn().mockResolvedValue(disconnectAction)}
           runCommandAction={jest.fn().mockResolvedValue({})}
+          logoutAction={jest.fn()}
         />
       </LanguageContext.Provider>
     )
@@ -74,24 +68,25 @@ describe('Wrapper Component', () => {
       refetch: jest.fn(),
     })
 
-    const { findByTestId } = renderComponent(true)
+    const { findByTestId } = renderComponent()
     const wrapper = await findByTestId('loading-wrapper')
     expect(wrapper).toBeInTheDocument()
   })
 
   it('renders error state', async () => {
-    const mockRouter = {
-      replace: jest.fn(),
-    }
-    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
-    const { findByTestId } = renderComponent(false)
-    const wrapper = await findByTestId('wrapper')
+    ;(useQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      data: { devices: [] },
+      refetch: jest.fn(),
+    })
+
+    const { findByTestId } = renderComponent()
+    const wrapper = await findByTestId('empty-wrapper')
     expect(wrapper).toBeInTheDocument()
-    expect(mockRouter.replace).toHaveBeenCalled()
   })
 
   it('renders success state', async () => {
-    const { findByTestId } = renderComponent(true)
+    const { findByTestId } = renderComponent()
     const wrapper = await findByTestId('wrapper')
     expect(wrapper).toBeInTheDocument()
   })
@@ -116,7 +111,7 @@ describe('Wrapper Component', () => {
       refetch: jest.fn(),
     })
 
-    const { findByTestId } = renderComponent(true)
+    const { findByTestId } = renderComponent()
     const icon = await findByTestId('check-icon')
     expect(icon).toBeInTheDocument()
   })
@@ -141,7 +136,7 @@ describe('Wrapper Component', () => {
       refetch: jest.fn(),
     })
 
-    const { findByTestId } = renderComponent(true)
+    const { findByTestId } = renderComponent()
     const icon = await findByTestId('triangle-icon')
     expect(icon).toBeInTheDocument()
   })
@@ -166,7 +161,7 @@ describe('Wrapper Component', () => {
       refetch: jest.fn(),
     })
 
-    const { findByTestId } = renderComponent(true)
+    const { findByTestId } = renderComponent()
     const icon = await findByTestId('exclamation-icon')
     expect(icon).toBeInTheDocument()
   })

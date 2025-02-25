@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Keine Geräte auf diesem Server gefunden.",
+  "noDevicesError": "Keine Geräte gefunden. \nFügen Sie ein neues Gerät in Einstellungen hinzu.",
   "updateAvailable": "Update verfügbar",
   "device": "Gerät",
   "manufacturer": "Hersteller",
@@ -44,7 +44,11 @@
     "save": "Speichern",
     "download": "Herunterladen",
     "viewConfig": "Klicken Sie, um die Konfiguration anzuzeigen.",
-    "manageNotifications": "Benachrichtigungen"
+    "manageNotifications": "Benachrichtigungen",
+    "serversNotice": "Benutzername und Passwort sind für Befehle erforderlich",
+    "terminal": "Terminal",
+    "terminalNotice": "Geben Sie \"Hilfe\" für eine Liste von Befehlen ein.",
+    "selectServer": "Wählen Sie einen Server aus"
   },
   "connect": {
     "server": "Serveradresse",
@@ -124,5 +128,15 @@
   },
   "volt-amps-chart": "Scheinbare Kraft",
   "volts-chart": "Stromspannung",
-  "watts-chart": "Echte Kraft"
+  "watts-chart": "Echte Kraft",
+  "accordion-grid": "UPS -Daten",
+  "login": {
+    "title": "Bitte melden Sie sich an, um fortzufahren.",
+    "username": "Benutzername",
+    "usernamePlaceholder": "Geben Sie Ihren Benutzernamen ein",
+    "password": "Passwort",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "submit": "Einloggen"
+  },
+  "logout": "Abmelden"
 }

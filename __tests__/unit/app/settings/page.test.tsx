@@ -3,14 +3,6 @@ import { render, screen } from '@testing-library/react'
 import Page from '@/app/settings/page'
 import { checkSettings, getSettings } from '@/app/actions'
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: jest.fn(),
-    }
-  },
-}))
-
 jest.mock('../../../../src/app/actions', () => ({
   checkSettings: jest.fn(),
   getSettings: jest.fn(),
@@ -28,8 +20,7 @@ describe('Settings Page', () => {
   })
 
   it('renders a heading', async () => {
-    ;(getSettings as jest.Mock).mockResolvedValueOnce('localhost')
-    ;(getSettings as jest.Mock).mockResolvedValueOnce(8080)
+    ;(getSettings as jest.Mock).mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
     render(<Page />)
 
     const wrapper = await screen.findByTestId('settings-wrapper')

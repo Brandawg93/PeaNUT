@@ -40,7 +40,7 @@ export default function WattsChart(props: Props) {
         },
         realpower: {
           label: t('wattsChart.realpower'),
-          color: 'hsl(var(--chart-1))',
+          color: 'var(--chart-1)',
         },
       }}
       unit='W'

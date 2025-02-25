@@ -50,6 +50,7 @@ beforeAll(() => {
   jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
   jest.spyOn(Nut.prototype, 'setVar').mockResolvedValue()
   jest.spyOn(Nut.prototype, 'checkCredentials').mockResolvedValue()
+  jest.spyOn(Nut.prototype, 'testConnection').mockResolvedValue('Connection successful')
   jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
   jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
   jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()

@@ -24,6 +24,7 @@ COPY . /app
 
 RUN npm -g i corepack && \
     corepack enable pnpm && \
+    pnpm run prepare && \
     pnpm run build && \
     rm -rf .next/standalone/.next/cache
 
@@ -47,6 +48,6 @@ ENV WEB_PORT=8080
 EXPOSE $WEB_PORT
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://$WEB_HOST:$WEB_PORT/api/ping || exit 1
+  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
 CMD ["npm", "start"]

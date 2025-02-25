@@ -24,11 +24,11 @@ export default function DayNightSwitch() {
   }
 
   const isActive = (value: ThemeType) => {
-    return theme === value ? '!bg-secondary-highlight' : ''
+    return theme === value ? 'bg-secondary-highlight!' : ''
   }
 
   const getThemeIcon = (theme?: string) => {
-    const iconProps = '!h-6 !w-6'
+    const iconProps = 'size-6!'
     switch (theme) {
       case 'light':
         return <HiOutlineSun className={iconProps} />
@@ -44,7 +44,7 @@ export default function DayNightSwitch() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild data-testid='daynight-trigger'>
-        <Button size='lg' variant='ghost' title={t('theme.title')} className='px-3'>
+        <Button size='icon' variant='ghost' title={t('theme.title')} className='px-3'>
           {getThemeIcon(resolvedTheme)}
         </Button>
       </DropdownMenuTrigger>

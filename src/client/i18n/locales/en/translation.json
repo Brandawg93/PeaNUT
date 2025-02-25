@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "No devices found on this server.",
+  "noDevicesError": "No devices found. Add a new device in settings.",
   "updateAvailable": "Update Available",
   "device": "Device",
   "manufacturer": "Manufacturer",
@@ -44,7 +44,11 @@
     "configExportNotice": "Manually edit the YAML configuration file.",
     "download": "Download",
     "save": "Save",
-    "viewConfig": "Click to view configuration."
+    "viewConfig": "Click to view configuration.",
+    "serversNotice": "Username and password are required for commands",
+    "terminal": "Terminal",
+    "terminalNotice": "Type \"help\" for a list of commands.",
+    "selectServer": "Select a server"
   },
   "connect": {
     "server": "Server Address",
@@ -144,5 +148,15 @@
   },
   "volts-chart": "Voltage",
   "watts-chart": "Real Power",
-  "volt-amps-chart": "Apparent Power"
+  "volt-amps-chart": "Apparent Power",
+  "accordion-grid": "UPS Data",
+  "login": {
+    "title": "Please log in to continue.",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "submit": "Log in"
+  },
+  "logout": "Logout"
 }

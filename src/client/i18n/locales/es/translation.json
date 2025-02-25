@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "No se encontraron dispositivos en este servidor.",
+  "noDevicesError": "No se encontraron dispositivos. \nAgregue un nuevo dispositivo en la configuración.",
   "updateAvailable": "Actualización Disponible",
   "device": "Dispositivo",
   "manufacturer": "Fabricante",
@@ -44,7 +44,11 @@
     "save": "Ahorrar",
     "download": "Descargar",
     "viewConfig": "Haga clic para ver la configuración.",
-    "manageNotifications": "Notificaciones"
+    "manageNotifications": "Notificaciones",
+    "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos",
+    "terminal": "Terminal",
+    "terminalNotice": "Escriba \"Ayuda\" para una lista de comandos.",
+    "selectServer": "Seleccione un servidor"
   },
   "connect": {
     "server": "Servidor",
@@ -124,5 +128,15 @@
   },
   "volt-amps-chart": "Poder aparente",
   "volts-chart": "Voltaje",
-  "watts-chart": "Poder real"
+  "watts-chart": "Poder real",
+  "accordion-grid": "Datos de UPS",
+  "login": {
+    "title": "Inicie sesión para continuar.",
+    "username": "Nombre de usuario",
+    "usernamePlaceholder": "Ingrese su nombre de usuario",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Ingrese su contraseña",
+    "submit": "Acceso"
+  },
+  "logout": "Cierre de sesión"
 }

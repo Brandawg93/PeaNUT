@@ -41,23 +41,29 @@ export default function Kpi(props: Props) {
     }
   }
 
+  const clickableProps = onClick
+    ? {
+        role: 'button',
+        tabIndex: 0,
+        onClick: onClickHandler,
+        onKeyUp: (e: any) => {
+          if (e.key === 'Enter' && onClickHandler) {
+            onClickHandler()
+          }
+        },
+      }
+    : {}
+
   return (
     <Card
-      role='button'
-      tabIndex={0}
-      onClick={onClickHandler}
-      onKeyUp={(e) => {
-        if (e.key === 'Enter' && onClickHandler) {
-          onClickHandler()
-        }
-      }}
+      {...clickableProps}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='relative flex h-52 flex-row justify-around border border-border-card bg-card text-center shadow-none'
+      className='border-border-card bg-card relative flex h-52 flex-row justify-around border text-center shadow-none'
       data-testid='kpi'
     >
       <div
         style={{ width: 'calc(100% - 30px' }}
-        className='flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold text-black motion-safe:animate-fade dark:text-white'
+        className='motion-safe:animate-fade flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold'
       >
         <div className='inline-block' ref={containerRef}>
           <div ref={spanRef} style={{ transform: `scale(${scale})` }} className='inline-block'>
@@ -65,7 +71,7 @@ export default function Kpi(props: Props) {
           </div>
         </div>
       </div>
-      <div className='absolute bottom-3.5 w-full text-xs font-semibold text-muted-foreground motion-safe:animate-fade'>
+      <div className='text-muted-foreground motion-safe:animate-fade absolute bottom-3.5 w-full text-xs font-semibold'>
         {description}
       </div>
     </Card>

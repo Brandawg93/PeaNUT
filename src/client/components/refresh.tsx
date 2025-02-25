@@ -33,7 +33,7 @@ export default function Refresh(props: Props) {
   }
 
   const isActive = (value: number) => {
-    return refreshInterval === value ? '!bg-secondary-highlight' : ''
+    return refreshInterval === value ? 'bg-secondary-highlight!' : ''
   }
 
   return (
@@ -41,7 +41,7 @@ export default function Refresh(props: Props) {
       <Button
         variant='secondary'
         title={t('sidebar.refresh')}
-        className='rounded-r-none border border-r-0 border-border-card px-3 shadow-none'
+        className='border-border-card rounded-r-none border border-r-0 px-3 shadow-none'
         onClick={() => {
           setEffect(true)
           onClick()
@@ -49,13 +49,13 @@ export default function Refresh(props: Props) {
         onAnimationEnd={() => setEffect(false)}
         disabled={disabled}
       >
-        <HiOutlineArrowPath className={`!h-4 !w-4 stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
+        <HiOutlineArrowPath className={`size-4! stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
       </Button>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant='secondary' className='rounded-l-none border border-border-card px-3 shadow-none'>
+          <Button variant='secondary' className='border-border-card rounded-l-none border px-3 shadow-none'>
             <HiOutlineChevronDown
-              className={`h-4 w-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()}
+              className={`size-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()}
             />
           </Button>
         </DropdownMenuTrigger>

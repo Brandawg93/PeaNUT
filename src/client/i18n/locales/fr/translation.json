@@ -1,5 +1,5 @@
 {
-  "noDevicesError": "Aucun appareil trouvé sur ce serveur.",
+  "noDevicesError": "Aucun dispositif trouvé. \nAjoutez un nouvel appareil dans les paramètres.",
   "updateAvailable": "Mise à jour disponible",
   "device": "Appareil",
   "manufacturer": "Fabricant",
@@ -44,7 +44,11 @@
     "save": "Sauvegarder",
     "download": "Télécharger",
     "viewConfig": "Cliquez pour afficher la configuration.",
-    "manageNotifications": "Notifications"
+    "manageNotifications": "Notifications",
+    "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes",
+    "terminal": "Terminal",
+    "terminalNotice": "Tapez \"Aide\" pour une liste de commandes.",
+    "selectServer": "Sélectionnez un serveur"
   },
   "connect": {
     "server": "Serveur",
@@ -124,5 +128,15 @@
   },
   "volt-amps-chart": "Puissance apparente",
   "volts-chart": "Tension",
-  "watts-chart": "Réel pouvoir"
+  "watts-chart": "Réel pouvoir",
+  "accordion-grid": "Données UPS",
+  "login": {
+    "title": "Veuillez vous connecter pour continuer.",
+    "username": "Nom d'utilisateur",
+    "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "submit": "Se connecter"
+  },
+  "logout": "Déconnexion"
 }

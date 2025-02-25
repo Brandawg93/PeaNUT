@@ -9,7 +9,14 @@ export const getNutInstances = async (): Promise<Array<Nut>> => {
 
 export const getSingleNutInstance = async (device: string): Promise<Nut | undefined> => {
   const nuts = await getNutInstances()
-  return Promise.any(
-    nuts.map(async (nut) => ((await nut.deviceExists(device)) ? nut : Promise.reject(new Error('Device not found'))))
-  )
+  try {
+    return await Promise.any(
+      nuts.map(async (nut) => ((await nut.deviceExists(device)) ? nut : Promise.reject(new Error('Device not found'))))
+    )
+  } catch (error) {
+    if (error instanceof AggregateError) {
+      return undefined
+    }
+    throw error // Re-throw any other errors
+  }
 }
