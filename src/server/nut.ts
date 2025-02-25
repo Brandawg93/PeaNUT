@@ -111,7 +111,7 @@ export class Nut {
 
     const data = await connection.readAll(command, '\n')
     if (data !== 'OK\n') {
-      throw new Error('Login failed')
+      throw new Error('Invalid credentials')
     }
 
     if (!socket) {
