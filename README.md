@@ -21,6 +21,7 @@ A Tiny Dashboard for Network UPS Tools
 - Execute commands on UPS devices
 - Configure settings through a user-friendly UI
 - Manual configuration via YAML file
+- Access NUT server directly via terminal
 - API access for integration with other tools
 - [InfluxDB](https://www.influxdata.com) v2 integration for monitoring via [Grafana](https://grafana.com)
 - [Prometheus](https://prometheus.io) support for monitoring and alerting

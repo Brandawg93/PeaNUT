@@ -5,6 +5,7 @@ import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/client/components/ui/accordion'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/client/components/ui/select'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
 import CodeMirror from '@uiw/react-codemirror'
@@ -13,7 +14,15 @@ import { yaml } from '@codemirror/lang-yaml'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { SiInfluxdb } from 'react-icons/si'
-import { HiOutlineServerStack, HiOutlinePlus, HiOutlineInformationCircle, HiOutlineCodeBracket } from 'react-icons/hi2'
+import {
+  HiOutlineServerStack,
+  HiOutlinePlus,
+  HiOutlineInformationCircle,
+  HiOutlineCodeBracket,
+  HiOutlineLink,
+  HiOutlineLinkSlash,
+} from 'react-icons/hi2'
+import { LuTerminal, LuCircleHelp } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
@@ -21,6 +30,9 @@ import AddInflux from './add-influx'
 import { SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
+import dynamic from 'next/dynamic'
+
+const NutTerminal = dynamic(() => import('@/client/components/terminal'), { ssr: false })
 
 type SettingsWrapperProps = {
   checkSettingsAction: () => Promise<boolean>
@@ -53,6 +65,8 @@ export default function SettingsWrapper({
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
   const [influxInterval, setInfluxInterval] = useState<number>(10)
+  const [selectedServer, setSelectedServer] = useState<string>('')
+  const [connected, setConnected] = useState(false)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { resolvedTheme, theme } = useTheme()
@@ -72,6 +86,9 @@ export default function SettingsWrapper({
         ])
         if (servers?.length) {
           setServerList([...servers.map((server: server) => ({ server, saved: true }))])
+          if (servers.length === 1) {
+            setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
+          }
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -153,6 +170,7 @@ export default function SettingsWrapper({
     { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
     { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
     { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
+    { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
   ]
 
   return (
@@ -319,6 +337,55 @@ export default function SettingsWrapper({
                       <span className='self-center'>{t('settings.download')}</span>
                     </Button>
                   </div>
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value='terminal' className='mt-0 h-full flex-1 overflow-x-hidden'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='mb-4 text-xl font-bold'>
+                    {t('settings.terminal')}
+                    <a
+                      href='https://networkupstools.org/docs/developer-guide.chunked/net-protocol.html'
+                      target='_blank'
+                      rel='noreferrer'
+                      className='ml-2 inline-block'
+                    >
+                      <LuCircleHelp className='size-4' />
+                    </a>
+                  </h2>
+                  <span>{t('settings.terminalNotice')}</span>
+                  <div className='mt-4 mb-4 flex gap-2'>
+                    {!connected && (
+                      <>
+                        <Select onValueChange={setSelectedServer} value={selectedServer}>
+                          <SelectTrigger className='w-[200px]'>
+                            <SelectValue placeholder={t('settings.selectServer')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {serverList.map(({ server }) => (
+                              <SelectItem key={`${server.HOST}:${server.PORT}`} value={`${server.HOST}:${server.PORT}`}>
+                                {server.HOST}:{server.PORT}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={() => setConnected(true)} disabled={!selectedServer}>
+                          <HiOutlineLink />
+                          {t('connect.connect')}
+                        </Button>
+                      </>
+                    )}
+                    {connected && (
+                      <Button onClick={() => setConnected(false)} variant='destructive'>
+                        <HiOutlineLinkSlash />
+                        {t('sidebar.disconnect')}
+                      </Button>
+                    )}
+                  </div>
+                  {connected && selectedServer && (
+                    <NutTerminal host={selectedServer.split(':')[0]} port={parseInt(selectedServer.split(':')[1])} />
+                  )}
                 </div>
               </Card>
             </TabsContent>

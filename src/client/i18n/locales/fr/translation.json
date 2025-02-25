@@ -44,7 +44,10 @@
     "save": "Sauvegarder",
     "download": "Télécharger",
     "viewConfig": "Cliquez pour afficher la configuration.",
-    "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes"
+    "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes",
+    "terminal": "Terminal",
+    "terminalNotice": "Tapez \"Aide\" pour une liste de commandes.",
+    "selectServer": "Sélectionnez un serveur"
   },
   "connect": {
     "server": "Serveur",
