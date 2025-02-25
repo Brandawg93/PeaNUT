@@ -22,7 +22,7 @@ import {
   HiOutlineLink,
   HiOutlineLinkSlash,
 } from 'react-icons/hi2'
-import { LuTerminal } from 'react-icons/lu'
+import { LuTerminal, LuCircleHelp } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
@@ -86,6 +86,9 @@ export default function SettingsWrapper({
         ])
         if (servers?.length) {
           setServerList([...servers.map((server: server) => ({ server, saved: true }))])
+          if (servers.length === 1) {
+            setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
+          }
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -340,7 +343,17 @@ export default function SettingsWrapper({
             <TabsContent value='terminal' className='mt-0 h-full flex-1 overflow-x-hidden'>
               <Card className='p-4 shadow-none'>
                 <div className='container'>
-                  <h2 className='mb-4 text-xl font-bold'>{t('settings.terminal')}</h2>
+                  <h2 className='mb-4 text-xl font-bold'>
+                    {t('settings.terminal')}
+                    <a
+                      href='https://networkupstools.org/docs/developer-guide.chunked/net-protocol.html'
+                      target='_blank'
+                      rel='noreferrer'
+                      className='ml-2 inline-block'
+                    >
+                      <LuCircleHelp className='size-4' />
+                    </a>
+                  </h2>
                   <span>{t('settings.terminalNotice')}</span>
                   <div className='mt-4 mb-4 flex gap-2'>
                     {!connected && (
