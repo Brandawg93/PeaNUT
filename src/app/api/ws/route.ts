@@ -14,14 +14,13 @@ export function GET() {
 }
 
 export async function SOCKET(client: import('ws').WebSocket, request: import('http').IncomingMessage) {
-  console.log('A client connected')
   const token = await getToken({
     req: { headers: request.headers as Record<string, string> },
     secret: process.env.AUTH_SECRET,
   })
 
   if (!token) {
-    console.log('Unauthorized WebSocket connection attempt')
+    console.error('Unauthorized WebSocket connection attempt')
     client.send(JSON.stringify({ type: 'error', message: 'Unauthorized' }))
     client.close()
     return
@@ -43,9 +42,7 @@ export async function SOCKET(client: import('ws').WebSocket, request: import('ht
   // Create connection to NUT server
   const nutClient = new net.Socket()
 
-  nutClient.connect(nutConfig.port, nutConfig.host, () => {
-    console.log('Connected to NUT server')
-  })
+  nutClient.connect(nutConfig.port, nutConfig.host)
 
   nutClient.on('data', (data) => {
     // Forward NUT server responses to WebSocket client
@@ -88,13 +85,11 @@ export async function SOCKET(client: import('ws').WebSocket, request: import('ht
   })
 
   client.on('close', () => {
-    console.log('A client disconnected')
     // Clean up NUT connection when WebSocket closes
     nutClient.end()
   })
 
   nutClient.on('close', () => {
-    console.log('NUT server connection closed')
     client.close()
   })
 }

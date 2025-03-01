@@ -166,7 +166,7 @@ export class Nut {
     const command = `LIST VAR ${device}`
     const data = await this.getCommand(command, undefined, false, socket)
     if (!data.startsWith(`BEGIN ${command}\n`)) {
-      console.log('data: ', data)
+      console.error('data: ', data)
       throw new Error('Invalid response')
     }
     const vars: VARS = {}

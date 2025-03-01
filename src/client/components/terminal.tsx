@@ -59,10 +59,6 @@ export default function NutTerminal({ host, port }: Props) {
       fitAddon.fit()
     }
 
-    ws.onclose = () => {
-      console.log('Disconnected from the server')
-    }
-
     return () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.close()
