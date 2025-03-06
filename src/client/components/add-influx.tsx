@@ -9,7 +9,7 @@ import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { Card } from '@/client/components/ui/card'
 
-type AddInfluxProps = {
+type AddInfluxProps = Readonly<{
   initialValues: { server: string; token: string; org: string; bucket: string; interval: number }
   handleChange: (server: string, token: string, org: string, bucket: string, interval: number) => void
   handleClear: () => void
@@ -20,7 +20,7 @@ type AddInfluxProps = {
     bucket: string,
     interval: number
   ) => Promise<void>
-}
+}>
 
 export default function AddInflux({
   initialValues,

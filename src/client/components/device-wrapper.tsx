@@ -53,12 +53,12 @@ const getStatus = (status: keyof typeof upsStatus) => {
 
 const roundIfNeeded = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100
 
-type Props = {
+type Props = Readonly<{
   device: string
   getDeviceAction: (device: string) => Promise<DeviceData>
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
   logoutAction: () => void
-}
+}>
 
 export default function DeviceWrapper({ device, getDeviceAction, runCommandAction, logoutAction }: Props) {
   const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(

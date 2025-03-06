@@ -11,13 +11,13 @@ import Refresh from '@/client/components/refresh'
 import LanguageSwitcher from '@/client/components/language-switcher'
 import DayNightSwitch from '@/client/components/daynight'
 
-type Props = {
+type Props = Readonly<{
   onRefreshClick: () => void
   onRefetch: () => void
   onLogout: () => void
   disableRefresh: boolean
   failedServers?: Array<string>
-}
+}>
 
 export default function NavBarControls(props: Props) {
   const { onRefreshClick, onRefetch, onLogout, disableRefresh, failedServers } = props

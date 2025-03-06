@@ -12,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/clie
 
 const PING_INTERVAL = 10000
 
-type AddServerProps = {
+type AddServerProps = Readonly<{
   initialServer: string
   initialPort: number
   initialUsername: string | undefined
@@ -21,7 +21,7 @@ type AddServerProps = {
   handleRemove: () => void
   testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   saved?: boolean
-}
+}>
 
 export default function AddServer({
   initialServer,

@@ -26,10 +26,10 @@ import { Card } from '@/client/components/ui/card'
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { Progress } from '@/client/components/ui/progress'
-type Props = {
+type Props = Readonly<{
   getDevicesAction: () => Promise<DevicesData>
   logoutAction: () => void
-}
+}>
 
 const getStatus = (status: string) => {
   if (!status) return <></>

@@ -10,12 +10,12 @@ import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
-type Props = {
+type Props = Readonly<{
   onClick: () => void
   onRefreshChange: (value: number) => void
   refreshInterval: number
   disabled: boolean
-}
+}>
 
 const intervals = [0, 1, 3, 5, 10, 30]
 

@@ -34,7 +34,7 @@ import dynamic from 'next/dynamic'
 
 const NutTerminal = dynamic(() => import('@/client/components/terminal'), { ssr: false })
 
-type SettingsWrapperProps = {
+type SettingsWrapperProps = Readonly<{
   checkSettingsAction: () => Promise<boolean>
   getSettingsAction: <K extends keyof SettingsType>(key: K) => Promise<any>
   setSettingsAction: <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => Promise<void>
@@ -44,7 +44,7 @@ type SettingsWrapperProps = {
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
-}
+}>
 
 export default function SettingsWrapper({
   checkSettingsAction,

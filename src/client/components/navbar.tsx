@@ -6,7 +6,7 @@ import logo from '@/app/icon.svg'
 export default function NavBar({
   children, // will be a page or nested layout
 }: {
-  children?: React.ReactNode
+  readonly children?: React.ReactNode
 }) {
   return (
     <div className='flex justify-center'>
