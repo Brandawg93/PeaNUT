@@ -1,4 +1,4 @@
-battery.charge: 100
+battery.charge: 10
 battery.charge.low: 10
 battery.charge.warning: 50
 battery.date: 2001/09/25

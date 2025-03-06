@@ -137,5 +137,9 @@
     "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
     "submit": "Einloggen"
   },
-  "logout": "Abmelden"
+  "logout": "Abmelden",
+  "description": "Beschreibung",
+  "status": "Status",
+  "view": "Sicht",
+  "details": "Details"
 }

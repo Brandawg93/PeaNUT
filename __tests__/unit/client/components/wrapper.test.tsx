@@ -45,11 +45,7 @@ describe('Wrapper Component', () => {
   const renderComponent = (getDevicesAction = {}) =>
     render(
       <LanguageContext.Provider value='en'>
-        <Wrapper
-          getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)}
-          runCommandAction={jest.fn().mockResolvedValue({})}
-          logoutAction={jest.fn()}
-        />
+        <Wrapper getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)} logoutAction={jest.fn()} />
       </LanguageContext.Provider>
     )
 

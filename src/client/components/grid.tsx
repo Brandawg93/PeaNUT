@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useContext, useEffect } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { Input } from '@/client/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/client/components/ui/popover'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
@@ -297,36 +298,36 @@ export default function NutGrid({ data }: Props) {
             <AccordionTrigger className='cursor-pointer p-3'>{t(GRID_ID)}</AccordionTrigger>
             <AccordionContent className='overflow-auto pb-0!'>
               <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
-              <table className='w-full table-auto'>
-                <thead>
+              <Table className='w-full'>
+                <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
+                    <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <th
+                        <TableHead
                           key={header.id}
                           className={`p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-border-card bg-muted border-b`}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
-                        </th>
+                        </TableHead>
                       ))}
-                    </tr>
+                    </TableRow>
                   ))}
-                </thead>
-                <tbody>
+                </TableHeader>
+                <TableBody>
                   {table.getRowModel().rows.map((row, index) => (
-                    <tr key={row.id} aria-rowindex={index}>
+                    <TableRow key={row.id} aria-rowindex={index}>
                       {row.getVisibleCells().map((cell) => (
-                        <td
+                        <TableCell
                           className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t p-3`}
                           key={cell.id}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
+                        </TableCell>
                       ))}
-                    </tr>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
