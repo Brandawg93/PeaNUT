@@ -190,7 +190,7 @@ export default function SettingsWrapper({
           >
             <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
               {menuItems.map(({ label, Icon, value }) => (
-                <TabsTrigger key={value} value={value} className='w-full justify-start'>
+                <TabsTrigger key={value} value={value} className='w-full cursor-pointer justify-start'>
                   <div className='mr-4'>
                     <Icon className='size-6!' />
                   </div>
