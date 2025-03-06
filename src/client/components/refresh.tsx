@@ -41,7 +41,7 @@ export default function Refresh(props: Props) {
       <Button
         variant='secondary'
         title={t('sidebar.refresh')}
-        className='border-border-card rounded-r-none border border-r-0 px-3 shadow-none'
+        className='border-border-card cursor-pointer rounded-r-none border border-r-0 px-3 shadow-none'
         onClick={() => {
           setEffect(true)
           onClick()
@@ -53,7 +53,10 @@ export default function Refresh(props: Props) {
       </Button>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant='secondary' className='border-border-card rounded-l-none border px-3 shadow-none'>
+          <Button
+            variant='secondary'
+            className='border-border-card cursor-pointer rounded-l-none border px-3 shadow-none'
+          >
             <HiOutlineChevronDown
               className={`size-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()}
             />

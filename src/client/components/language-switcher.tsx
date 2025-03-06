@@ -48,7 +48,7 @@ export default function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild data-testid='language-trigger'>
-        <Button size='icon' variant='ghost' title={t('sidebar.language')} className='px-3'>
+        <Button size='icon' variant='ghost' title={t('sidebar.language')} className='cursor-pointer px-3'>
           <HiOutlineLanguage className='size-6!' />
         </Button>
       </DropdownMenuTrigger>

@@ -51,13 +51,21 @@ export default function NavBarControls(props: Props) {
           <LanguageSwitcher />
         </div>
         <div className='hidden sm:block'>
-          <Button variant='ghost' size='icon' title={t('logout')} aria-label={t('logout')} onClick={onLogout}>
-            <LuLogOut className='size-6! stroke-[1.5px]' />
+          <Button
+            className='cursor-pointer'
+            variant='ghost'
+            size='icon'
+            title={t('logout')}
+            aria-label={t('logout')}
+            onClick={onLogout}
+          >
+            <LuLogOut className='size-6! cursor-pointer stroke-[1.5px]' />
           </Button>
         </div>
         <div>
           <Button
             variant='ghost'
+            className='cursor-pointer'
             size='icon'
             title={t('sidebar.settings')}
             aria-label={t('sidebar.settings')}

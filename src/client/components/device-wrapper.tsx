@@ -198,7 +198,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   }
 
   return (
-    <div data-testid='wrapper' className='bg-background'>
+    <div data-testid='wrapper' className='bg-background flex h-full min-h-screen flex-col'>
       <NavBar>
         <NavBarControls
           disableRefresh={isLoading}
@@ -207,7 +207,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
           onLogout={logoutAction}
         />
       </NavBar>
-      <div className='flex justify-center pr-3 pl-3'>
+      <div className='flex grow justify-center px-3'>
         <div className='container'>
           <div className='mb-4 flex flex-row justify-between'>
             <div>
@@ -250,6 +250,10 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
           <div>
             <MemoizedGrid data={ups} />
           </div>
+        </div>
+      </div>
+      <div className='flex justify-center px-3'>
+        <div className='container'>
           <Footer updated={data.updated} />
         </div>
       </div>

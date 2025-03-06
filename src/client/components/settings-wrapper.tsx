@@ -174,7 +174,7 @@ export default function SettingsWrapper({
   ]
 
   return (
-    <div className='flex flex-1 flex-col pr-3 pl-3' data-testid='settings-wrapper'>
+    <div className='flex flex-1 flex-col px-3' data-testid='settings-wrapper'>
       <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='flex justify-center'>
         <div className='container'>
@@ -228,7 +228,7 @@ export default function SettingsWrapper({
                       <Button
                         variant='secondary'
                         title={t('settings.addServer')}
-                        className='shadow-none'
+                        className='cursor-pointer shadow-none'
                         onClick={() => setServerList([...serverList, { server: { HOST: '', PORT: 0 }, saved: false }])}
                       >
                         <HiOutlinePlus className='size-6! stroke-2' />
@@ -237,7 +237,7 @@ export default function SettingsWrapper({
                   </div>
                   <div className='flex flex-row justify-between'>
                     <div />
-                    <Button onClick={handleSaveServers} className='shadow-none'>
+                    <Button onClick={handleSaveServers} className='cursor-pointer shadow-none'>
                       {t('settings.apply')}
                     </Button>
                   </div>
@@ -288,7 +288,7 @@ export default function SettingsWrapper({
                 </div>
                 <div className='flex flex-row justify-between'>
                   <div />
-                  <Button onClick={handleSaveInflux} className='shadow-none'>
+                  <Button onClick={handleSaveInflux} className='cursor-pointer shadow-none'>
                     {t('settings.apply')}
                   </Button>
                 </div>
@@ -315,7 +315,7 @@ export default function SettingsWrapper({
                     </AccordionItem>
                   </Accordion>
                   <div className='flex flex-row'>
-                    <Button onClick={handleSettingsImport} className='flex shadow-none'>
+                    <Button onClick={handleSettingsImport} className='flex cursor-pointer shadow-none'>
                       <AiOutlineSave className='size-4' />
                       &nbsp;
                       <span className='self-center'>{t('settings.save')}</span>
@@ -330,7 +330,7 @@ export default function SettingsWrapper({
                         a.download = 'peanut_config.yaml'
                         a.click()
                       }}
-                      className='flex shadow-none'
+                      className='flex cursor-pointer shadow-none'
                     >
                       <AiOutlineDownload className='size-4' />
                       &nbsp;
@@ -370,14 +370,18 @@ export default function SettingsWrapper({
                             ))}
                           </SelectContent>
                         </Select>
-                        <Button onClick={() => setConnected(true)} disabled={!selectedServer}>
+                        <Button
+                          className='cursor-pointer'
+                          onClick={() => setConnected(true)}
+                          disabled={!selectedServer}
+                        >
                           <HiOutlineLink />
                           {t('connect.connect')}
                         </Button>
                       </>
                     )}
                     {connected && (
-                      <Button onClick={() => setConnected(false)} variant='destructive'>
+                      <Button onClick={() => setConnected(false)} variant='destructive' className='cursor-pointer'>
                         <HiOutlineLinkSlash />
                         {t('sidebar.disconnect')}
                       </Button>

@@ -123,14 +123,14 @@ export default function AddServer({
           <div className='pt-2 pl-2'>{pingIcon()}</div>
           <Button
             variant='ghost'
-            className='text-md px-3 shadow-none'
+            className='text-md cursor-pointer px-3 shadow-none'
             title={t('settings.remove')}
             onClick={handleRemove}
           >
             <HiOutlineXMark className='size-6!' />
           </Button>
         </div>
-        <div className='pr-6 pl-6'>
+        <div className='px-6'>
           <form className='w-full'>
             <div className='mb-4'>
               <Label htmlFor='serverHost'>{t('connect.server')}</Label>
@@ -196,7 +196,7 @@ export default function AddServer({
                   size='icon'
                   data-testid='toggle-password'
                   onClick={toggleShowPassword}
-                  className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
+                  className='border-border-card bg-background relative cursor-pointer overflow-hidden rounded-l-none border border-l-0 p-0'
                   variant='ghost'
                   type='button'
                 >
@@ -211,7 +211,7 @@ export default function AddServer({
               <Button
                 variant='destructive'
                 onClick={async () => handleTestConnection()}
-                className='font-bold shadow-none'
+                className='cursor-pointer font-bold shadow-none'
                 type='button'
               >
                 {t('connect.test')}

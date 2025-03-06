@@ -107,7 +107,7 @@ export default function AddInflux({
                 size='icon'
                 data-testid='show-password'
                 onClick={toggleShowPassword}
-                className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
+                className='border-border-card bg-background relative cursor-pointer overflow-hidden rounded-l-none border border-l-0 p-0'
                 variant='ghost'
                 type='button'
               >
@@ -166,7 +166,7 @@ export default function AddInflux({
               variant='secondary'
               disabled={connecting}
               onClick={async () => handleClearForm()}
-              className='font-bold shadow-none'
+              className='cursor-pointer font-bold shadow-none'
               type='button'
             >
               {t('connect.clear')}
@@ -175,7 +175,7 @@ export default function AddInflux({
               variant='destructive'
               disabled={connecting}
               onClick={async () => handleTestConnection()}
-              className='font-bold shadow-none'
+              className='cursor-pointer font-bold shadow-none'
               type='button'
             >
               {t('connect.test')}

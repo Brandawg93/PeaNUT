@@ -124,7 +124,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
           <Button
             variant='outline'
             size='sm'
-            className='flex items-center gap-2'
+            className='flex cursor-pointer items-center gap-2'
             onClick={(e) => {
               e.stopPropagation()
               router.push(`/device/${info.getValue()}`)
@@ -199,7 +199,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   }
 
   return (
-    <div data-testid='wrapper' className='bg-background'>
+    <div data-testid='wrapper' className='bg-background flex h-full min-h-screen flex-col'>
       <NavBar>
         <NavBarControls
           disableRefresh={isLoading}
@@ -209,7 +209,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
           failedServers={data.failedServers}
         />
       </NavBar>
-      <div className='flex justify-center px-3'>
+      <div className='flex grow justify-center px-3'>
         <div className='container'>
           <Card className='border-border-card bg-card mb-4 w-full border shadow-none'>
             <div className='p-4'>
@@ -239,6 +239,10 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
               </Table>
             </div>
           </Card>
+        </div>
+      </div>
+      <div className='flex justify-center px-3'>
+        <div className='container'>
           <Footer updated={data.updated} />
         </div>
       </div>
