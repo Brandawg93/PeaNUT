@@ -68,11 +68,11 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
     () => [
       columnHelper.accessor('name', {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('device')}</span>,
-        cell: (info) => <span className='text-primary mb-0 font-normal'>{info.getValue() as string}</span>,
+        cell: (info) => <span className='text-primary mb-0 font-normal'>{info.getValue()}</span>,
       }),
       columnHelper.accessor('description', {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('description')}</span>,
-        cell: (info) => <span className='text-primary mb-0 font-normal'>{info.getValue() as string}</span>,
+        cell: (info) => <span className='text-primary mb-0 font-normal'>{info.getValue()}</span>,
       }),
       columnHelper.accessor((row) => row.vars['ups.status']?.value ?? 'N/A', {
         id: 'status',

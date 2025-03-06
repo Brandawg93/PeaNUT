@@ -189,8 +189,8 @@ export default function SettingsWrapper({
             onValueChange={handleSettingsMenuChange}
           >
             <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
-              {menuItems.map(({ label, Icon, value }, index) => (
-                <TabsTrigger key={index} value={value} className='w-full justify-start'>
+              {menuItems.map(({ label, Icon, value }) => (
+                <TabsTrigger key={value} value={value} className='w-full justify-start'>
                   <div className='mr-4'>
                     <Icon className='size-6!' />
                   </div>
@@ -212,7 +212,7 @@ export default function SettingsWrapper({
                     {serverList.map((server, index) => (
                       <AddServer
                         saved={server.saved}
-                        key={index}
+                        key={`${server.server.HOST}:${server.server.PORT}`}
                         initialServer={server.server.HOST}
                         initialPort={server.server.PORT}
                         initialUsername={server.server.USERNAME}

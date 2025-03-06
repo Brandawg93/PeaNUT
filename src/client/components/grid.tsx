@@ -32,9 +32,9 @@ import { useTheme } from 'next-themes'
 import { DEVICE } from '@/common/types'
 import { saveVar } from '@/app/actions'
 
-type Props = {
+type Props = Readonly<{
   data: DEVICE
-}
+}>
 
 interface TableProps {
   key: string
@@ -67,7 +67,7 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
           originalKey: currentPath,
           key: part,
           value: i === keyParts.length - 1 ? value : '',
-          description: i === keyParts.length - 1 ? description || '' : '',
+          description: i === keyParts.length - 1 ? (description ?? '') : '',
           children: [],
         }
         cache[currentPath] = newItem

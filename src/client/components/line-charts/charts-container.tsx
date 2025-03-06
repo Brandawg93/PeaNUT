@@ -6,11 +6,11 @@ import VoltsChart from '@/client/components/line-charts/volts-chart'
 import WattsChart from '@/client/components/line-charts/watts-chart'
 import VoltAmpsChart from '@/client/components/line-charts/volt-amps-chart'
 
-type Props = {
+type Props = Readonly<{
   vars: VARS
   data: DeviceData
   name: string
-}
+}>
 
 export default function ChartsContainer({ vars, data, name }: Props) {
   const voltageWrapper = vars['input.voltage'] ? (
