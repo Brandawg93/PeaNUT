@@ -14,10 +14,10 @@ import 'swagger-ui-react/swagger-ui.css'
 import './custom.css'
 import { LuLogOut } from 'react-icons/lu'
 
-type Props = {
+type Props = Readonly<{
   spec: Record<string, any>
   onLogout: () => void
-}
+}>
 
 function ReactSwagger({ spec, onLogout }: Props) {
   const { resolvedTheme } = useTheme()

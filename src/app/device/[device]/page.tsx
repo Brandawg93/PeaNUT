@@ -3,7 +3,7 @@ import DeviceWrapper from '@/client/components/device-wrapper'
 import QueryWrapper from '@/client/context/query-client'
 import { getDevice, runCommand, logout } from '@/app/actions'
 
-export default async function Home({ params }: { params: Promise<{ device: string }> }) {
+export default async function Home({ params }: { readonly params: Promise<{ device: string }> }) {
   const { device } = await params
   return (
     <QueryWrapper>
