@@ -3,7 +3,7 @@
 import InfluxWriter from '@/server/influxdb'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { DEVICE, server, DeviceData, VarDescription } from '@/common/types'
+import { DEVICE, server, DeviceData, DevicesData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
@@ -86,7 +86,7 @@ export async function testInfluxConnection(host: string, token: string, org: str
   return await influxdata.testConnection()
 }
 
-export async function getDevices(): Promise<DeviceData> {
+export async function getDevices(): Promise<DevicesData> {
   const nuts = connect()
   const deviceMap = new Map<string, DEVICE>()
   const deviceOrder: string[] = []
@@ -137,6 +137,35 @@ export async function getDevices(): Promise<DeviceData> {
     devices: deviceOrder.map((name) => deviceMap.get(name)!),
     updated: new Date(),
     failedServers: failedServers.length > 0 ? failedServers : undefined,
+  }
+}
+
+export async function getDevice(device: string): Promise<DeviceData> {
+  const nuts = connect()
+  const nut = await Promise.any(
+    nuts.map(async (nut) => {
+      if (await nut.deviceExists(device)) {
+        return nut
+      }
+      throw new Error('Device not found on this server')
+    })
+  )
+  const [data, rwVars, commands, description] = await Promise.all([
+    nut.getData(device),
+    nut.getRWVars(device),
+    nut.getCommands(device),
+    nut.getDescription(device),
+  ])
+  return {
+    device: {
+      vars: data,
+      rwVars,
+      description: description === 'Description unavailable' ? '' : description,
+      clients: [],
+      commands: nut.hasCredentials() ? commands : [],
+      name: device,
+    },
+    updated: new Date(),
   }
 }
 

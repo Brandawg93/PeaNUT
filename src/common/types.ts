@@ -19,10 +19,15 @@ export type DEVICE = {
   clients: Array<string>
 }
 
-export type DeviceData = {
+export type DevicesData = {
   devices: Array<DEVICE> | undefined
   updated: Date
   failedServers: Array<string> | undefined
+}
+
+export type DeviceData = {
+  device: DEVICE
+  updated: Date
 }
 
 export type server = {

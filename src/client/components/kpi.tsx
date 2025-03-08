@@ -1,14 +1,13 @@
 import React from 'react'
 import { Card } from '@/client/components/ui/card'
 
-type Props = {
+type Props = Readonly<{
   text: string
   description: string
   onClick?: () => void
-}
+}>
 
-export default function Kpi(props: Props) {
-  const { text, description, onClick } = props
+export default function Kpi({ text, description, onClick }: Props) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const spanRef = React.useRef<HTMLDivElement>(null)
   const [scale, setScale] = React.useState(1)

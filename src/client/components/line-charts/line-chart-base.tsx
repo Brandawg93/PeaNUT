@@ -16,14 +16,14 @@ import { useTranslation } from 'react-i18next'
 
 type ReferenceLineData = Array<{ label: string; value: number }>
 
-type Props = {
+type Props = Readonly<{
   id: string
   config: ChartConfig
   data: any[]
   unit: string
   onLegendClick?: (payload: Payload) => void
   referenceLineData?: ReferenceLineData
-}
+}>
 
 export default function LineChartBase(props: Props) {
   const { referenceLineData, id, config, data, unit, onLegendClick } = props

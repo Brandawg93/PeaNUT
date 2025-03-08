@@ -11,6 +11,7 @@ A Tiny Dashboard for Network UPS Tools
 ![Docker Pulls](https://img.shields.io/docker/pulls/brandawg93/peanut)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Brandawg93_PeaNUT&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Brandawg93_PeaNUT)
 
+<img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/table.png" width="600px" />
 <img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/charts.png" width="600px" />
 
 ## Features
