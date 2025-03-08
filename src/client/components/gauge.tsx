@@ -15,15 +15,14 @@ const getColor = (value: number, theme?: string, invert = false) => {
   return `hsl(${hue}, 100%, ${theme === 'light' ? 40 : 20}%)`
 }
 
-type Props = {
+type Props = Readonly<{
   percentage: number
   invert?: boolean
   title: string
   onClick?: () => void
-}
+}>
 
-export default function Gauge(props: Props) {
-  const { percentage, invert, title, onClick } = props
+export default function Gauge({ percentage, invert, title, onClick }: Props) {
   const { resolvedTheme } = useTheme()
   const data = [
     { percentage, fill: 'var(--color-percentage)', stroke: 'var(--primary-foreground)' },

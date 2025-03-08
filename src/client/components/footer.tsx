@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import pJson from '../../../package.json'
 
-type Props = {
+type Props = Readonly<{
   updated?: Date
-}
+}>
 
 export default function Footer({ updated }: Props) {
   const [currentVersion, setCurrentVersion] = useState({ created: new Date(), version: null, url: '' })

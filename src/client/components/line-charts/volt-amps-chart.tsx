@@ -7,13 +7,14 @@ import { Payload } from 'recharts/types/component/DefaultLegendContent'
 import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 
-type Props = BaseChartProps & {
-  power?: number
-  powerNominal?: number
-}
+type Props = Readonly<
+  BaseChartProps & {
+    power?: number
+    powerNominal?: number
+  }
+>
 
-export default function VoltAmpsChart(props: Props) {
-  const { id, power, powerNominal, updated } = props
+export default function VoltAmpsChart({ id, power, powerNominal, updated }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [showPower, setShowPower] = useState<boolean>(true)

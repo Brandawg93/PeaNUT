@@ -7,13 +7,14 @@ import { Payload } from 'recharts/types/component/DefaultLegendContent'
 import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 
-type Props = BaseChartProps & {
-  realpower?: number
-  realpowerNominal?: number
-}
+type Props = Readonly<
+  BaseChartProps & {
+    realpower?: number
+    realpowerNominal?: number
+  }
+>
 
-export default function WattsChart(props: Props) {
-  const { id, realpower, realpowerNominal, updated } = props
+export default function WattsChart({ id, realpower, realpowerNominal, updated }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [showRealpower, setShowRealpower] = useState<boolean>(true)

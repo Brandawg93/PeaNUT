@@ -14,10 +14,10 @@ import 'swagger-ui-react/swagger-ui.css'
 import './custom.css'
 import { LuLogOut } from 'react-icons/lu'
 
-type Props = {
+type Props = Readonly<{
   spec: Record<string, any>
   onLogout: () => void
-}
+}>
 
 function ReactSwagger({ spec, onLogout }: Props) {
   const { resolvedTheme } = useTheme()
@@ -29,7 +29,14 @@ function ReactSwagger({ spec, onLogout }: Props) {
         <div className='flex justify-end space-x-2'>
           <DayNightSwitch />
           <LanguageSwitcher />
-          <Button variant='ghost' size='icon' title={t('logout')} aria-label={t('logout')} onClick={onLogout}>
+          <Button
+            variant='ghost'
+            size='icon'
+            title={t('logout')}
+            aria-label={t('logout')}
+            onClick={onLogout}
+            className='cursor-pointer'
+          >
             <LuLogOut className='size-6! stroke-[1.5px]' />
           </Button>
           <Button
@@ -38,6 +45,7 @@ function ReactSwagger({ spec, onLogout }: Props) {
             title={t('sidebar.settings')}
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
+            className='cursor-pointer'
           >
             <TbSettings className='size-6! stroke-[1.5px]' />
           </Button>

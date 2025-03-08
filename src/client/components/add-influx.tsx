@@ -9,7 +9,7 @@ import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { Card } from '@/client/components/ui/card'
 
-type AddInfluxProps = {
+type AddInfluxProps = Readonly<{
   initialValues: { server: string; token: string; org: string; bucket: string; interval: number }
   handleChange: (server: string, token: string, org: string, bucket: string, interval: number) => void
   handleClear: () => void
@@ -20,7 +20,7 @@ type AddInfluxProps = {
     bucket: string,
     interval: number
   ) => Promise<void>
-}
+}>
 
 export default function AddInflux({
   initialValues,
@@ -107,7 +107,7 @@ export default function AddInflux({
                 size='icon'
                 data-testid='show-password'
                 onClick={toggleShowPassword}
-                className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
+                className='border-border-card bg-background relative cursor-pointer overflow-hidden rounded-l-none border border-l-0 p-0'
                 variant='ghost'
                 type='button'
               >
@@ -166,7 +166,7 @@ export default function AddInflux({
               variant='secondary'
               disabled={connecting}
               onClick={async () => handleClearForm()}
-              className='font-bold shadow-none'
+              className='cursor-pointer font-bold shadow-none'
               type='button'
             >
               {t('connect.clear')}
@@ -175,7 +175,7 @@ export default function AddInflux({
               variant='destructive'
               disabled={connecting}
               onClick={async () => handleTestConnection()}
-              className='font-bold shadow-none'
+              className='cursor-pointer font-bold shadow-none'
               type='button'
             >
               {t('connect.test')}

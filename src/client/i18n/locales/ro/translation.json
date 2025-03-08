@@ -137,5 +137,9 @@
     "passwordPlaceholder": "Introduceți parola",
     "submit": "Log in"
   },
-  "logout": "Deconectare"
+  "logout": "Deconectare",
+  "description": "Descriere",
+  "status": "Statut",
+  "view": "Vedere",
+  "details": "Detalii"
 }

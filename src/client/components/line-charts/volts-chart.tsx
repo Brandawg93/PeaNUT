@@ -7,15 +7,23 @@ import { Payload } from 'recharts/types/component/DefaultLegendContent'
 import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 
-type Props = BaseChartProps & {
-  inputVoltage?: number
-  inputVoltageNominal?: number
-  outputVoltageNominal?: number
-  outputVoltage?: number
-}
+type Props = Readonly<
+  BaseChartProps & {
+    inputVoltage?: number
+    inputVoltageNominal?: number
+    outputVoltageNominal?: number
+    outputVoltage?: number
+  }
+>
 
-export default function VoltsChart(props: Props) {
-  const { id, inputVoltage, inputVoltageNominal, outputVoltage, outputVoltageNominal, updated } = props
+export default function VoltsChart({
+  id,
+  inputVoltage,
+  inputVoltageNominal,
+  outputVoltage,
+  outputVoltageNominal,
+  updated,
+}: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [showInputVoltage, setShowInputVoltage] = useState<boolean>(true)

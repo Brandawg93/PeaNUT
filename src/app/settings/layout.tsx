@@ -15,7 +15,7 @@ import { LuLogOut } from 'react-icons/lu'
 export default function SettingsLayout({
   children, // will be a page or nested layout
 }: {
-  children: React.ReactNode
+  readonly children: React.ReactNode
 }) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
@@ -27,7 +27,14 @@ export default function SettingsLayout({
         <div className='flex justify-end space-x-2'>
           <DayNightSwitch />
           <LanguageSwitcher />
-          <Button variant='ghost' size='icon' title={t('logout')} aria-label={t('logout')} onClick={logout}>
+          <Button
+            variant='ghost'
+            size='icon'
+            title={t('logout')}
+            aria-label={t('logout')}
+            onClick={logout}
+            className='cursor-pointer'
+          >
             <LuLogOut className='size-6! stroke-[1.5px]' />
           </Button>
 
@@ -37,6 +44,7 @@ export default function SettingsLayout({
             title={t('sidebar.settings')}
             aria-label={t('sidebar.settings')}
             onClick={() => router.push('/settings')}
+            className='cursor-pointer'
           >
             <TbSettings className='size-6! stroke-[1.5px]' />
           </Button>
