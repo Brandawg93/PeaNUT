@@ -19,6 +19,7 @@ export class YamlSettings {
   private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
+  private readonly peanutVarPrefix = 'PEANUT_'
 
   constructor(filePath: string) {
     this.filePath = filePath
@@ -27,6 +28,27 @@ export class YamlSettings {
     this.envVars = { ...process.env }
     this.loadFromEnvVars()
     this.load()
+  }
+
+  private substituteEnvironmentVars(str: string): string {
+    let result = str
+    if (result.includes('{{')) {
+      Object.entries(this.envVars).forEach(([key, value]) => {
+        if (key.startsWith(this.peanutVarPrefix) && value) {
+          try {
+            const fileContents = fs.readFileSync(value, 'utf8')
+            result = result.replaceAll(`{{${key}}}`, fileContents.trim())
+          } catch (error) {
+            console.error(`Error reading file for ${key}: ${error}`)
+          }
+        } else {
+          if (value) {
+            result = result.replaceAll(`{{${key}}}`, value)
+          }
+        }
+      })
+    }
+    return result
   }
 
   private loadFromEnvVars(): void {
@@ -79,7 +101,9 @@ export class YamlSettings {
 
     try {
       if (fs.existsSync(this.filePath)) {
-        const fileContents = fs.readFileSync(this.filePath, 'utf8')
+        const rawFileContents = fs.readFileSync(this.filePath, 'utf8')
+        // Apply environment variable substitutions
+        const fileContents = this.substituteEnvironmentVars(rawFileContents)
         const fileData = load(fileContents) as SettingsType
         // Merge settings, giving priority to file data
         this.data = { ...this.data, ...fileData }
