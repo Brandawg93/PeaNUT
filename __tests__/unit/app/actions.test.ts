@@ -17,13 +17,21 @@ import {
   exportSettings,
   importSettings,
   updateServers,
+  getDevice,
+  authenticate,
 } from '@/app/actions'
 import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
+import { signIn } from '@/auth'
 
 global.TextDecoder = TextDecoder as any
 global.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
+
+// Mock signIn
+jest.mock('@/src/auth', () => ({
+  signIn: jest.fn(),
+}))
 
 const vars: VARS = {}
 
@@ -51,6 +59,7 @@ beforeAll(() => {
   jest.spyOn(Nut.prototype, 'setVar').mockResolvedValue()
   jest.spyOn(Nut.prototype, 'checkCredentials').mockResolvedValue()
   jest.spyOn(Nut.prototype, 'testConnection').mockResolvedValue('Connection successful')
+  jest.spyOn(Nut.prototype, 'getDescription').mockResolvedValue('bar')
   jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
   jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
   jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
@@ -155,5 +164,36 @@ describe('actions', () => {
     ]
     await updateServers(servers)
     expect(YamlSettings.prototype.set).toHaveBeenCalledWith('NUT_SERVERS', servers)
+  })
+
+  it('gets a single device', async () => {
+    const deviceData = await getDevice('foo')
+    expect(deviceData.device).toEqual({
+      vars: {},
+      rwVars: ['battery.charge'],
+      description: 'bar',
+      clients: [],
+      commands: [],
+      name: 'foo',
+    })
+    expect(deviceData.updated).toBeInstanceOf(Date)
+    expect(Nut.prototype.getData).toHaveBeenCalledWith('foo')
+    expect(Nut.prototype.getRWVars).toHaveBeenCalledWith('foo')
+    expect(Nut.prototype.getCommands).toHaveBeenCalledWith('foo')
+    expect(Nut.prototype.getDescription).toHaveBeenCalledWith('foo')
+  })
+
+  describe('authenticate', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it('successfully authenticates', async () => {
+      const formData = new FormData()
+      formData.append('username', 'test')
+      formData.append('password', 'test')
+      await authenticate(undefined, formData)
+      expect(signIn).toHaveBeenCalledWith('credentials', formData)
+    })
   })
 })

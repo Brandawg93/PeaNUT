@@ -60,4 +60,37 @@ describe('InfluxWriter', () => {
     influxWriter.writePoint(device)
     expect(writePointMock).toHaveBeenCalled()
   })
+
+  describe('close', () => {
+    it('should close the write API successfully', async () => {
+      const closeMock = jest.fn().mockResolvedValue(undefined)
+      influxWriter['writeApi'].close = closeMock
+
+      await influxWriter.close()
+      expect(closeMock).toHaveBeenCalled()
+    })
+
+    it('should handle 401 unauthorized error', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const closeMock = jest.fn().mockRejectedValue({ statusCode: 401 })
+      influxWriter['writeApi'].close = closeMock
+
+      await influxWriter.close()
+      expect(closeMock).toHaveBeenCalled()
+      expect(consoleErrorSpy).toHaveBeenCalledWith({ statusCode: 401 })
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('should handle other errors', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const error = new Error('Test error')
+      const closeMock = jest.fn().mockRejectedValue(error)
+      influxWriter['writeApi'].close = closeMock
+
+      await influxWriter.close()
+      expect(closeMock).toHaveBeenCalled()
+      expect(consoleErrorSpy).toHaveBeenCalledWith(error)
+      consoleErrorSpy.mockRestore()
+    })
+  })
 })
