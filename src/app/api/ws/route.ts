@@ -27,13 +27,13 @@ export async function SOCKET(client: import('ws').WebSocket, request: import('ht
   }
 
   // Parse the URL to get NUT server details
-  const url = new URL(request.url || '', `http://${request.headers.host}`)
+  const url = new URL(request.url ?? '', `http://${request.headers.host}`)
   const nutHost = url.searchParams.get('nutHost')
   const nutPort = url.searchParams.get('nutPort')
 
   const nutConfig: NutConfig = {
-    host: nutHost || process.env.NUT_HOST || 'localhost',
-    port: parseInt(nutPort || process.env.NUT_PORT || '3493'),
+    host: nutHost ?? process.env.NUT_HOST ?? 'localhost',
+    port: parseInt(nutPort ?? process.env.NUT_PORT ?? '3493'),
   }
 
   // Add message buffer

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<P
     }
 
     // Only save the variable on the first instance that has the device
-    await nut?.runCommand(device, param)
+    await nut?.runCommand(param, device)
     return NextResponse.json(`Command ${param} on device ${device} run successfully on device ${device}`)
   } catch (e) {
     console.error(e)

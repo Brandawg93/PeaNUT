@@ -143,7 +143,7 @@ describe('Nut', () => {
     const nut = new Nut('localhost', 3493)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('CMDDESC ups "test command"')
 
-    const description = await nut.getCommandDescription('ups', 'test')
+    const description = await nut.getCommandDescription('test', 'ups')
     expect(description).toEqual('test command')
   })
 
@@ -151,7 +151,7 @@ describe('Nut', () => {
     const nut = new Nut('localhost', 3493)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('VAR ups battery.charge "100"')
 
-    const value = await nut.getVar('ups', 'battery.charge')
+    const value = await nut.getVar('battery.charge', 'ups')
     expect(value).toEqual('100')
   })
 
@@ -163,7 +163,7 @@ describe('Nut', () => {
         'BEGIN LIST ENUM ups battery.charge\nENUM ups battery.charge "100"\nEND LIST ENUM ups battery.charge'
       )
 
-    const enums = await nut.getEnum('ups', 'battery.charge')
+    const enums = await nut.getEnum('battery.charge', 'ups')
     expect(enums).toEqual(['100'])
   })
 
@@ -175,7 +175,7 @@ describe('Nut', () => {
         'BEGIN LIST RANGE ups battery.charge\nRANGE ups battery.charge "0-100"\nEND LIST RANGE ups battery.charge'
       )
 
-    const ranges = await nut.getRange('ups', 'battery.charge')
+    const ranges = await nut.getRange('battery.charge', 'ups')
     expect(ranges).toEqual(['0-100'])
   })
 
@@ -184,7 +184,7 @@ describe('Nut', () => {
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('OK\n')
     jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
 
-    await nut.setVar('ups', 'battery.charge', '90')
+    await nut.setVar('battery.charge', '90', 'ups')
     expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('SET VAR ups battery.charge 90')
   })
 })

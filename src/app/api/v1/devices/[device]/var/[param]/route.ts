@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
   const nut = await getSingleNutInstance(device)
   const paramString = param
   try {
-    const data = await nut?.getVar(device, param)
+    const data = await nut?.getVar(param, device)
     if (data === undefined) {
       return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
         status: 404,
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<P
     }
 
     // Only save the variable on the first instance that has the device
-    await nut?.setVar(device, param, value)
+    await nut?.setVar(param, value, device)
     return NextResponse.json(`Variable ${param} on device ${device} saved successfully on device ${device}`)
   } catch (e) {
     console.error(e)

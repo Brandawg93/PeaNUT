@@ -19,18 +19,19 @@ export default function Footer({ updated }: Props) {
   const { t } = useTranslation(lng)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/brandawg93/peanut/releases').then((res) => {
-      res.json().then((json) => {
-        const version = json.find((r: any) => r.name === `v${pJson.version}`)
-        if (!version) return
-        const latest = json[0]
-        const created = new Date(version.published_at)
-        setCurrentVersion({ created, version: version.name, url: version.html_url })
-        if (version.name !== latest.name) {
-          setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
-        }
-      })
-    })
+    const checkVersions = async () => {
+      const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
+      const json = await res.json()
+      const version = json.find((r: any) => r.name === `v${pJson.version}`)
+      if (!version) return
+      const latest = json[0]
+      const created = new Date(version.published_at)
+      setCurrentVersion({ created, version: version.name, url: version.html_url })
+      if (version.name !== latest.name) {
+        setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
+      }
+    }
+    checkVersions()
   }, [])
 
   const updateAvailableWrapper = updateAvailable.version ? (
