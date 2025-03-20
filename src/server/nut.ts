@@ -174,8 +174,8 @@ export class Nut {
     for await (const line of lines) {
       const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
       const value = line.split('"')[1].trim()
-      const description = await this.getVarDescription(device, key, socket)
-      const type = await this.getType(device, key, socket)
+      const description = await this.getVarDescription(key, device, socket)
+      const type = await this.getType(key, device, socket)
       if (type.includes('NUMBER') && !isNaN(+value)) {
         const num = +value
         vars[key] = { value: num || value, description }
@@ -226,7 +226,7 @@ export class Nut {
     return vars
   }
 
-  public async getCommandDescription(device = 'UPS', command: string): Promise<string> {
+  public async getCommandDescription(command: string, device = 'UPS'): Promise<string> {
     const data = await this.getCommand(`GET CMDDESC ${device} ${command}`, '\n')
     if (!data.startsWith('CMDDESC')) {
       throw new Error('Invalid response')
@@ -234,14 +234,14 @@ export class Nut {
     return data.split('"')[1].trim()
   }
 
-  public async runCommand(device = 'UPS', command: string): Promise<void> {
+  public async runCommand(command: string, device = 'UPS'): Promise<void> {
     const data = await this.getCommand(`INSTCMD ${device} ${command}`, '\n', true)
     if (data !== 'OK\n') {
       throw new Error('Invalid response')
     }
   }
 
-  public async getVar(device = 'UPS', variable: string): Promise<string> {
+  public async getVar(variable: string, device = 'UPS'): Promise<string> {
     const data = await this.getCommand(`GET VAR ${device} ${variable}`, '\n')
     if (!data.startsWith('VAR')) {
       throw new Error('Invalid response')
@@ -249,7 +249,7 @@ export class Nut {
     return data.split('"')[1].trim()
   }
 
-  public async getVarDescription(device = 'UPS', variable: string, socket?: PromiseSocket): Promise<string> {
+  public async getVarDescription(variable: string, device = 'UPS', socket?: PromiseSocket): Promise<string> {
     const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n', false, socket)
     if (!data.startsWith('DESC')) {
       throw new Error('Invalid response')
@@ -257,7 +257,7 @@ export class Nut {
     return data.split('"')[1].trim()
   }
 
-  public async getEnum(device = 'UPS', variable: string): Promise<Array<string>> {
+  public async getEnum(variable: string, device = 'UPS'): Promise<Array<string>> {
     const command = `LIST ENUM ${device} ${variable}`
     const data = await this.getCommand(command)
     const enums: Array<string> = this.parseInfo(data, 'ENUM', (line) =>
@@ -266,7 +266,7 @@ export class Nut {
     return enums
   }
 
-  public async getRange(device = 'UPS', variable: string): Promise<Array<string>> {
+  public async getRange(variable: string, device = 'UPS'): Promise<Array<string>> {
     const command = `LIST RANGE ${device} ${variable}`
     const data = await this.getCommand(command)
     const ranges: Array<string> = this.parseInfo(data, 'RANGE', (line) =>
@@ -275,7 +275,7 @@ export class Nut {
     return ranges
   }
 
-  public async getType(device = 'UPS', variable: string, socket?: PromiseSocket): Promise<string> {
+  public async getType(variable: string, device = 'UPS', socket?: PromiseSocket): Promise<string> {
     const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n', false, socket)
     if (!data.startsWith('TYPE')) {
       throw new Error('Invalid response')
@@ -283,7 +283,7 @@ export class Nut {
     return data.split(`TYPE ${device} ${variable}`)[1].trim()
   }
 
-  public async setVar(device = 'UPS', variable: string, value: string): Promise<void> {
+  public async setVar(variable: string, value: string, device = 'UPS'): Promise<void> {
     if (await this.deviceExists(device)) {
       const data = await this.getCommand(`SET VAR ${device} ${variable} ${value}`, '\n', true)
       if (data !== 'OK\n') {

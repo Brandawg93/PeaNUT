@@ -66,12 +66,10 @@ export async function authenticate(prevState: string | undefined, formData: Form
     await signIn('credentials', formData)
   } catch (error) {
     if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.'
-        default:
-          return 'Something went wrong.'
+      if (error.type === 'CredentialsSignin') {
+        return 'Invalid credentials.'
       }
+      return 'Something went wrong.'
     }
     throw error
   }
@@ -184,7 +182,7 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
       })
     )
 
-    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(device, param)))
+    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(param, device)))
     params.forEach((param, index) => {
       data[param] = descriptions[index]
     })
@@ -201,7 +199,7 @@ export async function saveVar(device: string, varName: string, value: string) {
       nuts.map(async (nut) => {
         const deviceExists = await nut.deviceExists(device)
         if (deviceExists) {
-          await nut.setVar(device, varName, value)
+          await nut.setVar(varName, value, device)
         }
       })
     )
@@ -238,7 +236,7 @@ export async function runCommand(device: string, command: string) {
     const runPromises = nuts.map(async (nut) => {
       const deviceExists = await nut.deviceExists(device)
       if (deviceExists) {
-        await nut.runCommand(device, command)
+        await nut.runCommand(command, device)
       }
     })
     await Promise.all(runPromises)

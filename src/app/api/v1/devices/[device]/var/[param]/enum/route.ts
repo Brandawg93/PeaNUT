@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
   const { device, param } = await params
   const nut = await getSingleNutInstance(device)
   const paramString = param
-  const data = await nut?.getEnum(device, param)
+  const data = await nut?.getEnum(param, device)
   if (data === undefined) {
     return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
       status: 404,

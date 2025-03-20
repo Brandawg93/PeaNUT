@@ -142,7 +142,7 @@ describe('actions', () => {
   it('runs a command on a device', async () => {
     const result = await runCommand('ups', 'test.battery.start')
     expect(result.error).toBeUndefined()
-    expect(Nut.prototype.runCommand).toHaveBeenCalledWith('ups', 'test.battery.start')
+    expect(Nut.prototype.runCommand).toHaveBeenCalledWith('test.battery.start', 'ups')
   })
 
   it('exports settings', async () => {
