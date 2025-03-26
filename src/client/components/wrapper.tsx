@@ -140,7 +140,9 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   )
 
   const table = useReactTable({
-    data: data?.devices || [],
+    data: (data?.devices || []).filter((device) => {
+      return device?.vars && Object.keys(device.vars).length > 0 && device.vars['ups.status']?.value !== 'N/A'
+    }),
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
