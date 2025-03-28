@@ -1,6 +1,6 @@
 {
   "name": "peanut",
-  "version": "5.6.0",
+  "version": "5.6.1",
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
@@ -83,7 +83,7 @@
     "@next/bundle-analyzer": "^15.2.2",
     "@next/eslint-plugin-next": "^15.2.2",
     "@playwright/test": "^1.50.1",
-    "@tailwindcss/postcss": "^4.0.13",
+    "@tailwindcss/postcss": "^4.0.17",
     "@tanstack/eslint-plugin-query": "^5.67.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
