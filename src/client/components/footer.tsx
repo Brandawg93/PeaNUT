@@ -63,7 +63,7 @@ export default function Footer({ updated }: Props) {
         <div>
           {updated ? (
             <p className='m-0 text-sm no-underline'>
-              {t('lastUpdated')}: {updated.toLocaleString(lng, { hour12: true })}
+              {t('lastUpdated')}: {updated.toLocaleString(lng)}
             </p>
           ) : (
             <></>
@@ -77,7 +77,7 @@ export default function Footer({ updated }: Props) {
             rel='noreferrer'
           >
             {currentVersion.version}
-            &nbsp;({currentVersion.created.toLocaleDateString()})
+            &nbsp;({currentVersion.created.toLocaleDateString(lng)})
           </Link>
           {updateAvailableWrapper}
         </div>
