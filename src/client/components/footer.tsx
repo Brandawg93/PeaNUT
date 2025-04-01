@@ -15,8 +15,28 @@ type Props = Readonly<{
 export default function Footer({ updated }: Props) {
   const [currentVersion, setCurrentVersion] = useState({ created: new Date(), version: null, url: '' })
   const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' })
+  const [use24Hour, setUse24Hour] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('use24Hour') === 'true'
+    }
+    return false
+  })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
+
+  const toggleTimeFormat = () => {
+    const newFormat = !use24Hour
+    setUse24Hour(newFormat)
+    localStorage.setItem('use24Hour', String(newFormat))
+  }
+
+  const formatDateTime = (date: Date) => {
+    return date.toLocaleString(lng, { hour12: !use24Hour })
+  }
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString(lng, { hour12: !use24Hour })
+  }
 
   useEffect(() => {
     const checkVersions = async () => {
@@ -62,9 +82,9 @@ export default function Footer({ updated }: Props) {
       <div className='text-muted-foreground mb-3 grid grid-flow-row grid-cols-2'>
         <div>
           {updated ? (
-            <p className='m-0 text-sm no-underline'>
-              {t('lastUpdated')}: {updated.toLocaleString(lng)}
-            </p>
+            <button className='m-0 text-sm no-underline' onClick={toggleTimeFormat}>
+              {t('lastUpdated')}: {formatDateTime(updated)}
+            </button>
           ) : (
             <></>
           )}
@@ -77,7 +97,7 @@ export default function Footer({ updated }: Props) {
             rel='noreferrer'
           >
             {currentVersion.version}
-            &nbsp;({currentVersion.created.toLocaleDateString(lng)})
+            &nbsp;({formatDate(currentVersion.created)})
           </Link>
           {updateAvailableWrapper}
         </div>
