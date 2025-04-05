@@ -48,7 +48,7 @@ const getStatus = (status: keyof typeof upsStatus) => {
       />
     )
   } else if (status.startsWith(DEVICE_UNREACHABLE)) {
-    return <HiXCircle data-testid='exclamation-icon' className='mb-1 inline-block size-6 text-red-400' />
+    return <HiXCircle data-testid='xcross-icon' className='mb-1 inline-block size-6 text-red-400' />
   } else {
     return <></>
   }
