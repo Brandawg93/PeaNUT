@@ -108,10 +108,12 @@ export async function getDevices(): Promise<DevicesData> {
             // Skip if we already have this device
             if (deviceMap.has(device.name)) return
 
-            const [data, rwVars, commands] = await Promise.all([
-              nut.getData(device.name),
-              nut.getRWVars(device.name),
-              nut.getCommands(device.name),
+            const data = await nut.getData(device.name)
+            const isReachable = !data['ups.unreachable']?.value
+
+            const [rwVars, commands] = await Promise.all([
+              isReachable ? nut.getRWVars(device.name) : Promise.resolve([]),
+              isReachable ? nut.getCommands(device.name) : Promise.resolve([]),
             ])
 
             deviceMap.set(device.name, {
@@ -148,11 +150,14 @@ export async function getDevice(device: string): Promise<DeviceData> {
       throw new Error('Device not found on this server')
     })
   )
-  const [data, rwVars, commands, description] = await Promise.all([
-    nut.getData(device),
-    nut.getRWVars(device),
-    nut.getCommands(device),
-    nut.getDescription(device),
+
+  const data = await nut.getData(device)
+  const isReachable = !data['ups.unreachable']?.value
+
+  const [rwVars, commands, description] = await Promise.all([
+    isReachable ? nut.getRWVars(device) : Promise.resolve([]),
+    isReachable ? nut.getCommands(device) : Promise.resolve([]),
+    isReachable ? nut.getDescription(device) : Promise.resolve(''),
   ])
   return {
     device: {

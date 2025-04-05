@@ -7,6 +7,7 @@ import {
   HiOutlineExclamationTriangle,
   HiQuestionMarkCircle,
   HiOutlineExclamationCircle,
+  HiXCircle,
 } from 'react-icons/hi2'
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
@@ -23,7 +24,7 @@ import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
 import { LanguageContext } from '@/client/context/language'
-import { upsStatus } from '@/common/constants'
+import { DEVICE_UNREACHABLE, upsStatus } from '@/common/constants'
 import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
@@ -46,6 +47,8 @@ const getStatus = (status: keyof typeof upsStatus) => {
         className='mb-1 inline-block size-6 stroke-[3px] text-red-400'
       />
     )
+  } else if (status.startsWith(DEVICE_UNREACHABLE)) {
+    return <HiXCircle data-testid='exclamation-icon' className='mb-1 inline-block size-6 text-red-400' />
   } else {
     return <></>
   }

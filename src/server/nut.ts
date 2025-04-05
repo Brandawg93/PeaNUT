@@ -1,3 +1,4 @@
+import { DEVICE_UNREACHABLE } from '@/common/constants'
 import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
@@ -68,7 +69,12 @@ export class Nut {
     // use existing socket if it exists, otherwise establish a new connection
     const connection = socket || (await this.getConnection(checkCredentials))
     await connection.write(command)
-    const data = await connection.readAll(command, until)
+    const data = await connection.readAll(command, until).catch((error) => {
+      if (command.startsWith('LIST VAR')) {
+        return DEVICE_UNREACHABLE
+      }
+      throw new Error(`Error response: ${error}`)
+    })
     // if we opened a new connection, close it
     if (!socket) {
       await connection.write('LOGOUT')
@@ -165,6 +171,13 @@ export class Nut {
     const socket = await this.getConnection()
     const command = `LIST VAR ${device}`
     const data = await this.getCommand(command, undefined, false, socket)
+    if (data == DEVICE_UNREACHABLE) {
+      return {
+        'ups.device_name': { value: device, description: 'Device name' },
+        'ups.status': { value: DEVICE_UNREACHABLE, description: 'UPS status' },
+        'ups.unreachable': { value: 1, description: 'UPS is unreachable' },
+      }
+    }
     if (!data.startsWith(`BEGIN ${command}\n`)) {
       console.error('data: ', data)
       throw new Error('Invalid response')
@@ -184,6 +197,7 @@ export class Nut {
       }
     }
     await this.closeConnection(socket)
+    vars['ups.device_name'] = { value: device, description: 'Device Name on NUT config' }
     return Object.keys(vars)
       .sort((a, b) => a.localeCompare(b))
       .reduce((finalObject: VARS, key) => {

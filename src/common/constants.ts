@@ -15,6 +15,7 @@ export const upsStatus = {
   BOOST: 'Boosting Voltage',
   FSD: 'Forced Shutdown',
   ALARM: 'Alarm',
+  DEVICE_UNREACHABLE: 'Device Unreachable',
 }
 
 const COMMAND_BEEPER_DISABLE = 'beeper.disable'
@@ -76,3 +77,5 @@ export const SUPPORTED_COMMANDS = {
 }
 
 export const DEFAULT_INFLUX_INTERVAL = 10
+
+export const DEVICE_UNREACHABLE = 'DEVICE_UNREACHABLE'
