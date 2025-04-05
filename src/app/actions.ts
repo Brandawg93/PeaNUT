@@ -7,6 +7,7 @@ import { DEVICE, server, DeviceData, DevicesData, VarDescription } from '@/commo
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
+import { upsStatus } from '@/common/constants'
 
 const settingsFile = './config/settings.yml'
 // Cache settings instance
@@ -109,7 +110,7 @@ export async function getDevices(): Promise<DevicesData> {
             if (deviceMap.has(device.name)) return
 
             const data = await nut.getData(device.name)
-            const isReachable = !data['ups.unreachable']?.value
+            const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
             const [rwVars, commands] = await Promise.all([
               isReachable ? nut.getRWVars(device.name) : Promise.resolve([]),
@@ -152,7 +153,7 @@ export async function getDevice(device: string): Promise<DeviceData> {
   )
 
   const data = await nut.getData(device)
-  const isReachable = !data['ups.unreachable']?.value
+  const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
   const [rwVars, commands, description] = await Promise.all([
     isReachable ? nut.getRWVars(device) : Promise.resolve([]),

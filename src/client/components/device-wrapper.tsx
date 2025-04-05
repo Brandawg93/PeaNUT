@@ -24,7 +24,7 @@ import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
 import { LanguageContext } from '@/client/context/language'
-import { DEVICE_UNREACHABLE, upsStatus } from '@/common/constants'
+import { upsStatus } from '@/common/constants'
 import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
@@ -47,7 +47,7 @@ const getStatus = (status: keyof typeof upsStatus) => {
         className='mb-1 inline-block size-6 stroke-[3px] text-red-400'
       />
     )
-  } else if (status.startsWith(DEVICE_UNREACHABLE)) {
+  } else if (status.startsWith(upsStatus.DEVICE_UNREACHABLE)) {
     return <HiXCircle data-testid='xcross-icon' className='mb-1 inline-block size-6 text-red-400' />
   } else {
     return <></>

@@ -77,5 +77,3 @@ export const SUPPORTED_COMMANDS = {
 }
 
 export const DEFAULT_INFLUX_INTERVAL = 10
-
-export const DEVICE_UNREACHABLE = 'DEVICE_UNREACHABLE'
