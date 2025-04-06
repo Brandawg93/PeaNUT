@@ -5,6 +5,7 @@ import * as RechartsPrimitive from 'recharts'
 
 import { cn } from '@/lib/utils'
 import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import { LanguageContext } from '@/client/context/language'
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const
@@ -125,6 +126,7 @@ const ChartTooltipContent = React.forwardRef<
     ref
   ) => {
     const { config } = useChart()
+    const lng = React.useContext<string>(LanguageContext)
 
     const tooltipLabel = React.useMemo(() => {
       if (hideLabel || !payload?.length) {
@@ -215,7 +217,7 @@ const ChartTooltipContent = React.forwardRef<
                       </div>
                       {item.value && (
                         <span className='text-foreground font-mono font-medium tabular-nums'>
-                          &nbsp;{`${item.value.toLocaleString()}${unit}`}
+                          &nbsp;{`${item.value.toLocaleString(lng)}${unit}`}
                         </span>
                       )}
                     </div>
