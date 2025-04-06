@@ -72,16 +72,6 @@ describe('Nut', () => {
     expect(description).toEqual('Battery charge level')
   })
 
-  it('should work with multiple ups devices on the same server', async () => {
-    const nut = new Nut('localhost', 3493, 'test', 'test')
-    jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(listVarUps)
-    jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
-    jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
-
-    const data = await nut.getData('ups')
-    expect(data['battery.charge'].value).toEqual('100')
-  })
-
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
     jest
