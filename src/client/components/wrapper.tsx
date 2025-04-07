@@ -8,6 +8,7 @@ import {
   HiQuestionMarkCircle,
   HiOutlineExclamationCircle,
   HiOutlineInformationCircle,
+  HiXCircle,
 } from 'react-icons/hi2'
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
@@ -49,6 +50,8 @@ const getStatus = (status: string) => {
         className='mb-1 inline-block size-6 stroke-[3px] text-red-400'
       />
     )
+  } else if (status.startsWith(upsStatus.DEVICE_UNREACHABLE)) {
+    return <HiXCircle data-testid='xcross-icon' className='mb-1 inline-block size-6 text-red-400' />
   } else {
     return <></>
   }

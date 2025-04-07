@@ -1,3 +1,4 @@
+import { upsStatus } from '@/common/constants'
 import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
@@ -68,7 +69,12 @@ export class Nut {
     // use existing socket if it exists, otherwise establish a new connection
     const connection = socket || (await this.getConnection(checkCredentials))
     await connection.write(command)
-    const data = await connection.readAll(command, until)
+    const data = await connection.readAll(command, until).catch((error) => {
+      if (command.startsWith('LIST VAR')) {
+        return upsStatus.DEVICE_UNREACHABLE
+      }
+      throw new Error(`Error response: ${error}`)
+    })
     // if we opened a new connection, close it
     if (!socket) {
       await connection.write('LOGOUT')
@@ -165,6 +171,12 @@ export class Nut {
     const socket = await this.getConnection()
     const command = `LIST VAR ${device}`
     const data = await this.getCommand(command, undefined, false, socket)
+    if (data == upsStatus.DEVICE_UNREACHABLE) {
+      return {
+        'ups.device_name': { value: device },
+        'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+      }
+    }
     if (!data.startsWith(`BEGIN ${command}\n`)) {
       console.error('data: ', data)
       throw new Error('Invalid response')

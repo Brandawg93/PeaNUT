@@ -1,5 +1,6 @@
 import { Nut } from '@/server/nut'
 import PromiseSocket from '@/server/promise-socket'
+import { upsStatus } from '@/common/constants'
 
 const listVarUps = `BEGIN LIST VAR ups
 VAR ups battery.charge "100"
@@ -71,16 +72,6 @@ describe('Nut', () => {
     expect(description).toEqual('Battery charge level')
   })
 
-  it('should work with multiple ups devices on the same server', async () => {
-    const nut = new Nut('localhost', 3493, 'test', 'test')
-    jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(listVarUps)
-    jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
-    jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
-
-    const data = await nut.getData('ups')
-    expect(data['battery.charge'].value).toEqual('100')
-  })
-
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
     jest
@@ -89,6 +80,16 @@ describe('Nut', () => {
 
     const devices = await nut.getDevices()
     expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])
+  })
+
+  it('should detect when a device is unreachable', async () => {
+    const nut = new Nut('localhost', 3493)
+    jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(upsStatus.DEVICE_UNREACHABLE)
+    jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
+    jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
+
+    const data = await nut.getData('this_ups_cant be reached')
+    expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
   })
 
   it('should work with multiple ups devices on the same server', async () => {
