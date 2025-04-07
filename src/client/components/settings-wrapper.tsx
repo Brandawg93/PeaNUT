@@ -59,7 +59,7 @@ export default function SettingsWrapper({
 }: SettingsWrapperProps) {
   const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
-  const [serverList, setServerList] = useState<Array<{ server: server; saved: boolean }>>([])
+  const [serverList, setServerList] = useState<Array<{ id: string; server: server; saved: boolean }>>([])
   const [influxServer, setInfluxServer] = useState<string>('')
   const [influxToken, setInfluxToken] = useState<string>('')
   const [influxOrg, setInfluxOrg] = useState<string>('')
@@ -85,7 +85,13 @@ export default function SettingsWrapper({
           getSettingsAction('INFLUX_INTERVAL'),
         ])
         if (servers?.length) {
-          setServerList([...servers.map((server: server) => ({ server, saved: true }))])
+          setServerList([
+            ...servers.map((server: server) => ({
+              id: `${server.HOST}:${server.PORT}-${Date.now()}`,
+              server,
+              saved: true,
+            })),
+          ])
           if (servers.length === 1) {
             setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
           }
@@ -111,22 +117,29 @@ export default function SettingsWrapper({
     password: string | undefined,
     index: number
   ) => {
-    const updatedServerList = [...serverList]
-    updatedServerList[index].server.HOST = server
-    updatedServerList[index].server.PORT = port
-    updatedServerList[index].server.USERNAME = username
-    updatedServerList[index].server.PASSWORD = password
-    setServerList(updatedServerList)
+    setServerList((prevList) => {
+      const updatedList = [...prevList]
+      updatedList[index] = {
+        ...updatedList[index],
+        server: {
+          ...updatedList[index].server,
+          HOST: server,
+          PORT: port,
+          USERNAME: username,
+          PASSWORD: password,
+        },
+      }
+      return updatedList
+    })
   }
 
   const handleServerRemove = async (index: number) => {
-    const updatedServerList = serverList.filter((_, i) => i !== index)
-    setServerList(updatedServerList)
+    setServerList((prevList) => prevList.filter((_, i) => i !== index))
   }
 
   const handleSaveServers = async () => {
-    await updateServersAction(serverList.map((server) => server.server))
-    setServerList(serverList.map((server) => ({ ...server, saved: true })))
+    await updateServersAction(serverList.map(({ server }) => server))
+    setServerList((prevList) => prevList.map((item) => ({ ...item, saved: true })))
     toast.success(t('settings.saved'))
   }
 
@@ -212,7 +225,7 @@ export default function SettingsWrapper({
                     {serverList.map((server, index) => (
                       <AddServer
                         saved={server.saved}
-                        key={`${server.server.HOST}:${server.server.PORT}`}
+                        key={server.id}
                         initialServer={server.server.HOST}
                         initialPort={server.server.PORT}
                         initialUsername={server.server.USERNAME}
@@ -229,7 +242,16 @@ export default function SettingsWrapper({
                         variant='secondary'
                         title={t('settings.addServer')}
                         className='cursor-pointer shadow-none'
-                        onClick={() => setServerList([...serverList, { server: { HOST: '', PORT: 0 }, saved: false }])}
+                        onClick={() =>
+                          setServerList((prevList) => [
+                            ...prevList,
+                            {
+                              id: `new-server-${Date.now()}`,
+                              server: { HOST: '', PORT: 0 },
+                              saved: false,
+                            },
+                          ])
+                        }
                       >
                         <HiOutlinePlus className='size-6! stroke-2' />
                       </Button>
