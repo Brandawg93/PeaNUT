@@ -1,6 +1,7 @@
 import { InfluxDB, Point, HttpError } from '@influxdata/influxdb-client'
 import { PingAPI } from '@influxdata/influxdb-client-apis'
 import { DEVICE } from '@/common/types'
+import { upsStatus } from '@/common/constants'
 
 export default class InfluxWriter {
   private readonly writeApi: ReturnType<InfluxDB['getWriteApi']>
@@ -20,6 +21,11 @@ export default class InfluxWriter {
   }
 
   writePoint(device: DEVICE, timestamp?: Date | number) {
+    // Skip writing if device is unreachable
+    if (device.vars.status?.value === upsStatus.DEVICE_UNREACHABLE) {
+      return
+    }
+
     // float fields
     for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'number')) {
       const point = new Point(device.name)
@@ -29,7 +35,11 @@ export default class InfluxWriter {
         point.timestamp(timestamp)
       }
 
-      this.writeApi.writePoint(point)
+      try {
+        this.writeApi.writePoint(point)
+      } catch (e) {
+        console.error(`Failed to write float field ${key} for device ${device.name}:`, e)
+      }
     }
 
     // string fields
@@ -41,7 +51,11 @@ export default class InfluxWriter {
         point.timestamp(timestamp)
       }
 
-      this.writeApi.writePoint(point)
+      try {
+        this.writeApi.writePoint(point)
+      } catch (e) {
+        console.error(`Failed to write string field ${key} for device ${device.name}:`, e)
+      }
     }
   }
 
