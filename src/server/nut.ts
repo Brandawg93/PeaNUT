@@ -190,7 +190,7 @@ export class Nut {
       const type = await this.getType(key, device, socket)
       if (type.includes('NUMBER') && !isNaN(+value)) {
         const num = +value
-        vars[key] = { value: num || value, description }
+        vars[key] = { value: num, description }
       } else {
         vars[key] = { value, description }
       }
