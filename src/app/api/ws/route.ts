@@ -14,16 +14,18 @@ export function GET() {
 }
 
 export async function SOCKET(client: import('ws').WebSocket, request: import('http').IncomingMessage) {
-  const token = await getToken({
-    req: { headers: request.headers as Record<string, string> },
-    secret: process.env.AUTH_SECRET,
-  })
+  if (process.env.WEB_USERNAME && process.env.WEB_PASSWORD) {
+    const token = await getToken({
+      req: { headers: request.headers as Record<string, string> },
+      secret: process.env.AUTH_SECRET,
+    })
 
-  if (!token) {
-    console.error('Unauthorized WebSocket connection attempt')
-    client.send(JSON.stringify({ type: 'error', message: 'Unauthorized' }))
-    client.close()
-    return
+    if (!token) {
+      console.error('Unauthorized WebSocket connection attempt')
+      client.send(JSON.stringify({ type: 'error', message: 'Unauthorized' }))
+      client.close()
+      return
+    }
   }
 
   // Parse the URL to get NUT server details
