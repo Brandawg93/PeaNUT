@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
     "dev": "docker compose up -d && next dev --turbopack && docker compose down",
-    "build": "next build --turbopack",
+    "build": "next build",
     "build:local": "npm run build && cp -r .next/static .next/standalone/.next/",
     "build:analyze": "ANALYZE=true next build",
     "start": "HOSTNAME=$WEB_HOST PORT=$WEB_PORT node server.js",
@@ -27,7 +27,7 @@
     "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh",
     "telemetry": "next telemetry disable",
-    "prepare": "husky && next-ws patch"
+    "prepare": "husky && next-ws patch --yes"
   },
   "dependencies": {
     "@codemirror/lang-yaml": "^6.1.2",
