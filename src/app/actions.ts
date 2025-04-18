@@ -1,12 +1,19 @@
 'use server'
 
 import InfluxWriter from '@/server/influxdb'
-import { DEVICE, NotificationProviders, NotifierSettings, server, DeviceData, VarDescription } from '@/common/types'
+import {
+  DEVICE,
+  NotificationProviders,
+  NotifierSettings,
+  server,
+  DeviceData,
+  VarDescription,
+  DevicesData,
+} from '@/common/types'
 import { Notifier } from '@/server/notifications/notifier'
 import { NotifierFactory } from '@/server/notifications/notifier-factory'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { DEVICE, server, DeviceData, DevicesData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
@@ -28,9 +35,7 @@ watcher.on('change', () => {
 })
 
 function getCachedSettings(): YamlSettings {
-  if (!settingsInstance) {
-    settingsInstance = new YamlSettings(settingsFile)
-  }
+  settingsInstance ??= new YamlSettings(settingsFile)
   return settingsInstance
 }
 
@@ -197,7 +202,7 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
     })
     return { data, error: undefined }
   } catch (e: any) {
-    return { data: undefined, error: e?.message || 'Unknown error' }
+    return { data: undefined, error: e?.message ?? 'Unknown error' }
   }
 }
 
@@ -214,7 +219,7 @@ export async function saveVar(device: string, varName: string, value: string) {
     )
     return { error: undefined }
   } catch (e: any) {
-    return { error: e?.message || 'Unknown error' }
+    return { error: e?.message ?? 'Unknown error' }
   }
 }
 
@@ -251,7 +256,7 @@ export async function runCommand(device: string, command: string) {
     await Promise.all(runPromises)
     return { error: undefined }
   } catch (e: any) {
-    return { error: e?.message || 'Unknown error' }
+    return { error: e?.message ?? 'Unknown error' }
   }
 }
 
