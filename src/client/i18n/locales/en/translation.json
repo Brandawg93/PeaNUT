@@ -158,5 +158,9 @@
     "passwordPlaceholder": "Enter your password",
     "submit": "Log in"
   },
-  "logout": "Logout"
+  "logout": "Logout",
+  "description": "Description",
+  "status": "Status",
+  "view": "View",
+  "details": "Details"
 }

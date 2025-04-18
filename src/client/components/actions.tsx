@@ -23,11 +23,11 @@ import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 
-type Props = {
+type Props = Readonly<{
   device: string
   commands: string[]
   runCommandAction: (device: string, command: string) => Promise<{ error: any }>
-}
+}>
 
 type CommandConfig = {
   command: string

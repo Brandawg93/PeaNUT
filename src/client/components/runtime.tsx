@@ -30,9 +30,9 @@ function secondsToDhms(seconds: number): string {
   return parts.join(', ')
 }
 
-type Props = {
+type Props = Readonly<{
   runtime: number
-}
+}>
 
 export default function Runtime({ runtime }: Props) {
   const lng = useContext<string>(LanguageContext)

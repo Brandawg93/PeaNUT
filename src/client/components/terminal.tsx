@@ -7,10 +7,10 @@ import { Terminal } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { useTheme } from 'next-themes'
 
-type Props = {
+type Props = Readonly<{
   host: string
   port: number
-}
+}>
 
 export default function NutTerminal({ host, port }: Props) {
   const wsRef = useRef<WebSocket | null>(null)
@@ -57,10 +57,6 @@ export default function NutTerminal({ host, port }: Props) {
       window.addEventListener('resize', handleResize)
       // Initial fit
       fitAddon.fit()
-    }
-
-    ws.onclose = () => {
-      console.log('Disconnected from the server')
     }
 
     return () => {

@@ -1,5 +1,6 @@
 import { Nut } from '@/server/nut'
 import PromiseSocket from '@/server/promise-socket'
+import { upsStatus } from '@/common/constants'
 
 const listVarUps = `BEGIN LIST VAR ups
 VAR ups battery.charge "100"
@@ -71,16 +72,6 @@ describe('Nut', () => {
     expect(description).toEqual('Battery charge level')
   })
 
-  it('should work with multiple ups devices on the same server', async () => {
-    const nut = new Nut('localhost', 3493, 'test', 'test')
-    jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(listVarUps)
-    jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
-    jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
-
-    const data = await nut.getData('ups')
-    expect(data['battery.charge'].value).toEqual('100')
-  })
-
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
     jest
@@ -89,6 +80,16 @@ describe('Nut', () => {
 
     const devices = await nut.getDevices()
     expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])
+  })
+
+  it('should detect when a device is unreachable', async () => {
+    const nut = new Nut('localhost', 3493)
+    jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(upsStatus.DEVICE_UNREACHABLE)
+    jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
+    jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
+
+    const data = await nut.getData('this_ups_cant be reached')
+    expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
   })
 
   it('should work with multiple ups devices on the same server', async () => {
@@ -143,7 +144,7 @@ describe('Nut', () => {
     const nut = new Nut('localhost', 3493)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('CMDDESC ups "test command"')
 
-    const description = await nut.getCommandDescription('ups', 'test')
+    const description = await nut.getCommandDescription('test', 'ups')
     expect(description).toEqual('test command')
   })
 
@@ -151,7 +152,7 @@ describe('Nut', () => {
     const nut = new Nut('localhost', 3493)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('VAR ups battery.charge "100"')
 
-    const value = await nut.getVar('ups', 'battery.charge')
+    const value = await nut.getVar('battery.charge', 'ups')
     expect(value).toEqual('100')
   })
 
@@ -163,7 +164,7 @@ describe('Nut', () => {
         'BEGIN LIST ENUM ups battery.charge\nENUM ups battery.charge "100"\nEND LIST ENUM ups battery.charge'
       )
 
-    const enums = await nut.getEnum('ups', 'battery.charge')
+    const enums = await nut.getEnum('battery.charge', 'ups')
     expect(enums).toEqual(['100'])
   })
 
@@ -175,7 +176,7 @@ describe('Nut', () => {
         'BEGIN LIST RANGE ups battery.charge\nRANGE ups battery.charge "0-100"\nEND LIST RANGE ups battery.charge'
       )
 
-    const ranges = await nut.getRange('ups', 'battery.charge')
+    const ranges = await nut.getRange('battery.charge', 'ups')
     expect(ranges).toEqual(['0-100'])
   })
 
@@ -184,7 +185,7 @@ describe('Nut', () => {
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('OK\n')
     jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
 
-    await nut.setVar('ups', 'battery.charge', '90')
+    await nut.setVar('battery.charge', '90', 'ups')
     expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('SET VAR ups battery.charge 90')
   })
 })

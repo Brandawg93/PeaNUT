@@ -16,14 +16,14 @@ import { useTranslation } from 'react-i18next'
 
 type ReferenceLineData = Array<{ label: string; value: number }>
 
-type Props = {
+type Props = Readonly<{
   id: string
   config: ChartConfig
   data: any[]
   unit: string
   onLegendClick?: (payload: Payload) => void
   referenceLineData?: ReferenceLineData
-}
+}>
 
 export default function LineChartBase(props: Props) {
   const { referenceLineData, id, config, data, unit, onLegendClick } = props
@@ -65,10 +65,11 @@ export default function LineChartBase(props: Props) {
                     axisLine={false}
                     tickMargin={8}
                     tickFormatter={(timeStr) =>
-                      new Date(timeStr).toLocaleTimeString('en-US', {
+                      new Date(timeStr).toLocaleTimeString(lng, {
                         hour: 'numeric',
                         minute: 'numeric',
                         second: 'numeric',
+                        hour12: localStorage.getItem('use24Hour') !== 'true',
                       })
                     }
                   />
@@ -109,10 +110,11 @@ export default function LineChartBase(props: Props) {
                         unit={unit}
                         labelKey='time'
                         labelFormatter={(value, payload) =>
-                          new Date(payload[0].payload.time).toLocaleTimeString('en-US', {
+                          new Date(payload[0].payload.time).toLocaleTimeString(lng, {
                             hour: 'numeric',
                             minute: 'numeric',
                             second: 'numeric',
+                            hour12: localStorage.getItem('use24Hour') !== 'true',
                           })
                         }
                       />

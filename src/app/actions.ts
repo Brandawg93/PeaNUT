@@ -6,9 +6,11 @@ import { Notifier } from '@/server/notifications/notifier'
 import { NotifierFactory } from '@/server/notifications/notifier-factory'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
+import { DEVICE, server, DeviceData, DevicesData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
+import { upsStatus } from '@/common/constants'
 
 const settingsFile = './config/settings.yml'
 // Cache settings instance
@@ -68,12 +70,10 @@ export async function authenticate(prevState: string | undefined, formData: Form
     await signIn('credentials', formData)
   } catch (error) {
     if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.'
-        default:
-          return 'Something went wrong.'
+      if (error.type === 'CredentialsSignin') {
+        return 'Invalid credentials.'
       }
+      return 'Something went wrong.'
     }
     throw error
   }
@@ -88,7 +88,7 @@ export async function testInfluxConnection(host: string, token: string, org: str
   return await influxdata.testConnection()
 }
 
-export async function getDevices(): Promise<DeviceData> {
+export async function getDevices(): Promise<DevicesData> {
   const nuts = connect()
   const deviceMap = new Map<string, DEVICE>()
   const deviceOrder: string[] = []
@@ -112,10 +112,12 @@ export async function getDevices(): Promise<DeviceData> {
             // Skip if we already have this device
             if (deviceMap.has(device.name)) return
 
-            const [data, rwVars, commands] = await Promise.all([
-              nut.getData(device.name),
-              nut.getRWVars(device.name),
-              nut.getCommands(device.name),
+            const data = await nut.getData(device.name)
+            const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
+
+            const [rwVars, commands] = await Promise.all([
+              isReachable ? nut.getRWVars(device.name) : Promise.resolve([]),
+              isReachable ? nut.getCommands(device.name) : Promise.resolve([]),
             ])
 
             deviceMap.set(device.name, {
@@ -142,6 +144,38 @@ export async function getDevices(): Promise<DeviceData> {
   }
 }
 
+export async function getDevice(device: string): Promise<DeviceData> {
+  const nuts = connect()
+  const nut = await Promise.any(
+    nuts.map(async (nut) => {
+      if (await nut.deviceExists(device)) {
+        return nut
+      }
+      throw new Error('Device not found on this server')
+    })
+  )
+
+  const data = await nut.getData(device)
+  const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
+
+  const [rwVars, commands, description] = await Promise.all([
+    isReachable ? nut.getRWVars(device) : Promise.resolve([]),
+    isReachable ? nut.getCommands(device) : Promise.resolve([]),
+    isReachable ? nut.getDescription(device) : Promise.resolve(''),
+  ])
+  return {
+    device: {
+      vars: data,
+      rwVars,
+      description: description === 'Description unavailable' ? '' : description,
+      clients: [],
+      commands: nut.hasCredentials() ? commands : [],
+      name: device,
+    },
+    updated: new Date(),
+  }
+}
+
 export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
   try {
     const nuts = connect()
@@ -157,7 +191,7 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
       })
     )
 
-    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(device, param)))
+    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(param, device)))
     params.forEach((param, index) => {
       data[param] = descriptions[index]
     })
@@ -174,7 +208,7 @@ export async function saveVar(device: string, varName: string, value: string) {
       nuts.map(async (nut) => {
         const deviceExists = await nut.deviceExists(device)
         if (deviceExists) {
-          await nut.setVar(device, varName, value)
+          await nut.setVar(varName, value, device)
         }
       })
     )
@@ -211,7 +245,7 @@ export async function runCommand(device: string, command: string) {
     const runPromises = nuts.map(async (nut) => {
       const deviceExists = await nut.deviceExists(device)
       if (deviceExists) {
-        await nut.runCommand(device, command)
+        await nut.runCommand(command, device)
       }
     })
     await Promise.all(runPromises)

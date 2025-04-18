@@ -20,6 +20,6 @@ i18next
 
 export const LanguageContext = createContext(i18next.language)
 
-export default function LanguageProvider({ children }: { children: React.ReactNode }) {
+export default function LanguageProvider({ children }: { readonly children: React.ReactNode }) {
   return <LanguageContext.Provider value={i18next.language}>{children}</LanguageContext.Provider>
 }
