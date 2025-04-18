@@ -34,7 +34,7 @@ export default function AddNotificationProvider({
   handleChange,
   handleRemove,
   testNotificationProviderAction,
-}: AddNotificationProviderProps) {
+}: Readonly<AddNotificationProviderProps>) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useTheme()
