@@ -23,6 +23,7 @@ type AddNotificationProviderProps = {
   handleRemove: () => void
   testNotificationProviderAction: (
     name: (typeof NotificationProviders)[number],
+    triggers: NotificationTrigger[],
     config?: { [x: string]: string }
   ) => Promise<string>
 }
@@ -46,7 +47,7 @@ export default function AddNotificationProvider({
   const handleTestNotification = async () => {
     if (name) {
       startTransition(async () => {
-        const promise = testNotificationProviderAction(name, config)
+        const promise = testNotificationProviderAction(name, triggers, config)
         toast.promise(promise, {
           loading: t('notification.testing'),
           success: t('notification.success'),
@@ -144,7 +145,7 @@ export default function AddNotificationProvider({
                     setTriggers(newTriggers)
                     handleChange(name, newTriggers, config)
                   }}
-                  value={name}
+                  value={trigger.operation}
                 >
                   <SelectTrigger className='border-border-card w-full px-3 py-2'>
                     <SelectValue placeholder={t('notification.trigger.operation')} />

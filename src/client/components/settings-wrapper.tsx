@@ -49,6 +49,7 @@ type SettingsWrapperProps = Readonly<{
   updateNotificationProvidersAction: (newNotificationProviders: Array<NotifierSettings>) => Promise<void>
   testNotificationProviderAction: (
     name: (typeof NotificationProviders)[number],
+    triggers: NotificationTrigger[],
     config: { [x: string]: string } | undefined
   ) => Promise<string>
 }>

@@ -42,16 +42,6 @@ export class Ntfy extends Notifier {
         `Basic ${Buffer.from(this.config.username + ':' + this.config.password).toString('base64')}`
     }
     try {
-      console.log('sending to ' + this.config.server_url)
-      console.log(
-        JSON.stringify({
-          topic: this.config.topic,
-          message: notification.message,
-          priority: this.config.priority,
-          title: notification.title,
-          tags: this.config.tags.split(','),
-        })
-      )
       const req = await fetch(this.config.server_url, {
         method: 'POST',
         headers,

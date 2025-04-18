@@ -3,6 +3,7 @@
 import InfluxWriter from '@/server/influxdb'
 import {
   DEVICE,
+  NotificationTrigger,
   NotificationProviders,
   NotifierSettings,
   server,
@@ -298,9 +299,10 @@ export async function updateServers(servers: Array<server>) {
 
 export async function testNotificationProvider(
   name: (typeof NotificationProviders)[number],
+  triggers: NotificationTrigger[],
   config: { [x: string]: string } | undefined
 ) {
-  const notificationProvider: Notifier = NotifierFactory({ name, triggers: [], config })
+  const notificationProvider: Notifier = NotifierFactory({ name, triggers, config })
   return await notificationProvider.sendTestNotification()
 }
 
