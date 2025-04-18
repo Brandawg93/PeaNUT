@@ -86,15 +86,16 @@ export default function SettingsWrapper({
       if (!res) {
         setSettingsLoaded(true)
       } else {
-        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, notificationProviders] = await Promise.all([
-          getSettingsAction('NUT_SERVERS'),
-          getSettingsAction('INFLUX_HOST'),
-          getSettingsAction('INFLUX_TOKEN'),
-          getSettingsAction('INFLUX_ORG'),
-          getSettingsAction('INFLUX_BUCKET'),
-          getSettingsAction('INFLUX_INTERVAL'),
-          getSettingsAction('NOTIFICATION_PROVIDERS'),
-        ])
+        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, notificationProviders] =
+          await Promise.all([
+            getSettingsAction('NUT_SERVERS'),
+            getSettingsAction('INFLUX_HOST'),
+            getSettingsAction('INFLUX_TOKEN'),
+            getSettingsAction('INFLUX_ORG'),
+            getSettingsAction('INFLUX_BUCKET'),
+            getSettingsAction('INFLUX_INTERVAL'),
+            getSettingsAction('NOTIFICATION_PROVIDERS'),
+          ])
         if (servers?.length) {
           setServerList([
             ...servers.map((server: server) => ({

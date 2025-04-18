@@ -62,7 +62,7 @@ export default function AddNotificationProvider({
   }
 
   return (
-    <Card className='mb-4 mt-1 w-full border border-border bg-card pb-6 pl-6 shadow-none'>
+    <Card className='border-border bg-card mt-1 mb-4 w-full border pb-6 pl-6 shadow-none'>
       <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
       <div className='h-12'>
         <Button
@@ -86,7 +86,7 @@ export default function AddNotificationProvider({
               }}
               value={name}
             >
-              <SelectTrigger className='w-full border-border-card px-3 py-2'>
+              <SelectTrigger className='border-border-card w-full px-3 py-2'>
                 <SelectValue placeholder={t('notification.name')} />
               </SelectTrigger>
               <SelectContent>
@@ -136,13 +136,17 @@ export default function AddNotificationProvider({
                 <Select
                   onValueChange={(e) => {
                     console.dir(e)
-                    trigger.operation = e as (typeof NotificationTriggerOperations)[number]
-                    setTriggers([...triggers])
-                    handleChange(name, triggers, config)
+                    const newTriggers = [...triggers]
+                    newTriggers[index] = {
+                      ...newTriggers[index],
+                      operation: e as (typeof NotificationTriggerOperations)[number],
+                    }
+                    setTriggers(newTriggers)
+                    handleChange(name, newTriggers, config)
                   }}
                   value={name}
                 >
-                  <SelectTrigger className='w-full border-border-card px-3 py-2'>
+                  <SelectTrigger className='border-border-card w-full px-3 py-2'>
                     <SelectValue placeholder={t('notification.trigger.operation')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -159,11 +163,15 @@ export default function AddNotificationProvider({
                 <Input
                   type='number'
                   id='notificationTriggerTargetValue'
-                  value={trigger.targetValue || 0}
+                  value={trigger.targetValue ?? 0}
                   onChange={(e) => {
-                    trigger.targetValue = e.target.valueAsNumber
-                    setTriggers([...triggers])
-                    handleChange(name, triggers, config)
+                    const newTriggers = [...triggers]
+                    newTriggers[index] = {
+                      ...newTriggers[index],
+                      targetValue: e.target.valueAsNumber,
+                    }
+                    setTriggers(newTriggers)
+                    handleChange(name, newTriggers, config)
                   }}
                   className='w-full px-3 py-2'
                   data-testid={`${name}-trigger-targetValue`}
@@ -193,9 +201,10 @@ export default function AddNotificationProvider({
                     title={t('settings.remove')}
                     type='button'
                     onClick={() => {
-                      delete config[k]
-                      setConfig(config)
-                      handleChange(name, triggers, config)
+                      const newConfig = { ...config }
+                      delete newConfig[k]
+                      setConfig(newConfig)
+                      handleChange(name, triggers, newConfig)
                     }}
                   >
                     <HiOutlineXMark className='h-6 w-6 stroke-1' />
