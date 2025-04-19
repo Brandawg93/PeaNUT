@@ -235,7 +235,9 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
             <div>
               <p className='text-2xl font-semibold'>
                 {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
-                &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
+                &nbsp;
+                {upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] ||
+                  (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
                 <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
