@@ -6,6 +6,7 @@
     "clean": "rm -rf .next .swc coverage test-results",
     "dev": "docker compose up -d && next dev --turbopack && docker compose down",
     "build": "next build",
+    "build:turbo": "next build --turbopack",
     "build:local": "npm run build && cp -r .next/static .next/standalone/.next/",
     "build:analyze": "ANALYZE=true next build",
     "start": "HOSTNAME=$WEB_HOST PORT=$WEB_PORT node server.js",
