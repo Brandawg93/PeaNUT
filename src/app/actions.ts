@@ -67,7 +67,7 @@ export async function authenticate(prevState: string | undefined, formData: Form
     await signIn('credentials', formData)
   } catch (error) {
     if (error instanceof AuthError) {
-      if (error.type === 'CredentialsSignin') {
+      if (error.message === 'CredentialsSignin') {
         return 'Invalid credentials.'
       }
       return 'Something went wrong.'
