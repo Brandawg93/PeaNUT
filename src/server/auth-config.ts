@@ -10,9 +10,4 @@ export function ensureAuthSecret() {
   } else {
     console.log(`AUTH_SECRET already exists: ${process.env.AUTH_SECRET}`)
   }
-  if (process.env.WEB_HOST && process.env.WEB_PORT) {
-    process.env.AUTH_TRUST_HOST = process.env.WEB_HOST.startsWith('http')
-      ? `${process.env.WEB_HOST}:${process.env.WEB_PORT}`
-      : `http://${process.env.WEB_HOST}:${process.env.WEB_PORT}`
-  }
 }

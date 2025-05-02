@@ -49,30 +49,5 @@ describe('auth-config', () => {
       // Verify AUTH_SECRET remained unchanged
       expect(process.env.AUTH_SECRET).toBe(existingSecret)
     })
-
-    it('should set AUTH_TRUST_HOST correctly when WEB_HOST and WEB_PORT are provided', () => {
-      process.env.WEB_HOST = 'localhost'
-      process.env.WEB_PORT = '3000'
-
-      ensureAuthSecret()
-
-      expect(process.env.AUTH_TRUST_HOST).toBe('http://localhost:3000')
-    })
-
-    it('should handle WEB_HOST that already includes http://', () => {
-      process.env.WEB_HOST = 'http://localhost'
-      process.env.WEB_PORT = '3000'
-
-      ensureAuthSecret()
-
-      expect(process.env.AUTH_TRUST_HOST).toBe('http://localhost:3000')
-    })
-
-    it('should not set AUTH_TRUST_HOST when WEB_HOST or WEB_PORT are missing', () => {
-      // No need to explicitly delete variables as we start with clean environment
-      ensureAuthSecret()
-
-      expect(process.env.AUTH_TRUST_HOST).toBeUndefined()
-    })
   })
 })
