@@ -8,8 +8,7 @@ export function ensureAuthSecret() {
     process.env.AUTH_SECRET = authSecret
     console.log(`Generated new AUTH_SECRET: ${authSecret}`)
     return authSecret
-  } else {
-    console.log(`AUTH_SECRET already exists: ${process.env.AUTH_SECRET}`)
-    return process.env.AUTH_SECRET
   }
+  console.log(`AUTH_SECRET already exists: ${process.env.AUTH_SECRET}`)
+  return process.env.AUTH_SECRET
 }
