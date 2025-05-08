@@ -18,6 +18,7 @@ import {
   HiOutlineServerStack,
   HiOutlinePlus,
   HiOutlineInformationCircle,
+  HiOutlineBellAlert,
   HiOutlineCodeBracket,
   HiOutlineLink,
   HiOutlineLinkSlash,
@@ -26,9 +27,10 @@ import { LuTerminal, LuCircleHelp } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
+import AddNotificationProvider from '@/client/components/add-notification-provider'
 import AddInflux from './add-influx'
 import { SettingsType } from '@/server/settings'
-import { server } from '@/common/types'
+import { NotificationProviders, NotificationTrigger, NotifierSettings, server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import dynamic from 'next/dynamic'
 
@@ -44,6 +46,12 @@ type SettingsWrapperProps = Readonly<{
   updateServersAction: (newServers: Array<server>) => Promise<void>
   testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   testInfluxConnectionAction: (server: string, token: string, org: string, bucket: string) => Promise<void>
+  updateNotificationProvidersAction: (newNotificationProviders: Array<NotifierSettings>) => Promise<void>
+  testNotificationProviderAction: (
+    name: (typeof NotificationProviders)[number],
+    triggers: NotificationTrigger[],
+    config: { [x: string]: string } | undefined
+  ) => Promise<string>
 }>
 
 export default function SettingsWrapper({
@@ -56,6 +64,8 @@ export default function SettingsWrapper({
   updateServersAction,
   testConnectionAction,
   testInfluxConnectionAction,
+  updateNotificationProvidersAction,
+  testNotificationProviderAction,
 }: SettingsWrapperProps) {
   const [config, setConfig] = useState<string>('')
   const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false)
@@ -65,6 +75,7 @@ export default function SettingsWrapper({
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
   const [influxInterval, setInfluxInterval] = useState<number>(10)
+  const [notificationProvidersList, setNotificationProvidersList] = useState<Array<NotifierSettings>>([])
   const [selectedServer, setSelectedServer] = useState<string>('')
   const [connected, setConnected] = useState(false)
   const lng = useContext<string>(LanguageContext)
@@ -76,14 +87,16 @@ export default function SettingsWrapper({
       if (!res) {
         setSettingsLoaded(true)
       } else {
-        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval] = await Promise.all([
-          getSettingsAction('NUT_SERVERS'),
-          getSettingsAction('INFLUX_HOST'),
-          getSettingsAction('INFLUX_TOKEN'),
-          getSettingsAction('INFLUX_ORG'),
-          getSettingsAction('INFLUX_BUCKET'),
-          getSettingsAction('INFLUX_INTERVAL'),
-        ])
+        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, notificationProviders] =
+          await Promise.all([
+            getSettingsAction('NUT_SERVERS'),
+            getSettingsAction('INFLUX_HOST'),
+            getSettingsAction('INFLUX_TOKEN'),
+            getSettingsAction('INFLUX_ORG'),
+            getSettingsAction('INFLUX_BUCKET'),
+            getSettingsAction('INFLUX_INTERVAL'),
+            getSettingsAction('NOTIFICATION_PROVIDERS'),
+          ])
         if (servers?.length) {
           setServerList([
             ...servers.map((server: server) => ({
@@ -95,6 +108,9 @@ export default function SettingsWrapper({
           if (servers.length === 1) {
             setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
           }
+        }
+        if (notificationProviders) {
+          setNotificationProvidersList([...notificationProviders])
         }
         if (influxHost && influxToken && influxOrg && influxBucket) {
           setInfluxServer(influxHost)
@@ -154,6 +170,30 @@ export default function SettingsWrapper({
     toast.success(t('settings.saved'))
   }
 
+  const handleNotificationProviderChange = (
+    name: (typeof NotificationProviders)[number],
+    triggers: Array<NotificationTrigger>,
+    config: { [x: string]: string } | undefined,
+    index: number
+  ) => {
+    const updatedNotificationProvidersList = [...notificationProvidersList]
+    updatedNotificationProvidersList[index].name = name
+    updatedNotificationProvidersList[index].triggers = triggers
+    updatedNotificationProvidersList[index].config = config
+    setNotificationProvidersList(updatedNotificationProvidersList)
+  }
+
+  const handleNotificationProviderRemove = async (index: number) => {
+    const updatedNotificationProvidersList = notificationProvidersList.filter((_, i) => i !== index)
+    setNotificationProvidersList(updatedNotificationProvidersList)
+    await updateNotificationProvidersAction(updatedNotificationProvidersList)
+  }
+
+  const handleSaveNotificationProviders = async () => {
+    await updateNotificationProvidersAction(notificationProvidersList)
+    toast.success(t('settings.saved'))
+  }
+
   const handleSettingsImport = async () => {
     await importSettingsAction(config)
     toast.success(t('settings.saved'))
@@ -182,6 +222,7 @@ export default function SettingsWrapper({
   const menuItems = [
     { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
     { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
+    { label: t('settings.manageNotifications'), Icon: HiOutlineBellAlert, value: 'notifications' },
     { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
     { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
   ]
@@ -311,6 +352,44 @@ export default function SettingsWrapper({
                 <div className='flex flex-row justify-between'>
                   <div />
                   <Button onClick={handleSaveInflux} className='cursor-pointer shadow-none'>
+                    {t('settings.apply')}
+                  </Button>
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value='notifications' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='mb-4 text-xl font-bold'>{t('settings.manageNotifications')}</h2>
+                  {notificationProvidersList.map((notificationProvider, index) => (
+                    <AddNotificationProvider
+                      key={index}
+                      initialName={notificationProvider.name}
+                      initialTriggers={notificationProvider.triggers}
+                      initialConfig={notificationProvider.config}
+                      handleChange={(name, triggers, config) =>
+                        handleNotificationProviderChange(name, triggers, config, index)
+                      }
+                      handleRemove={() => handleNotificationProviderRemove(index)}
+                      testNotificationProviderAction={testNotificationProviderAction}
+                    />
+                  ))}
+                  <div className='text-center'>
+                    <Button
+                      variant='secondary'
+                      title={t('notification.buttonAdd')}
+                      className='shadow-none'
+                      onClick={() =>
+                        setNotificationProvidersList([...notificationProvidersList, { name: 'stdout', triggers: [] }])
+                      }
+                    >
+                      <HiOutlinePlus className='!h-6 !w-6' />
+                    </Button>
+                  </div>
+                </div>
+                <div className='flex flex-row justify-between'>
+                  <div />
+                  <Button onClick={handleSaveNotificationProviders} className='shadow-none'>
                     {t('settings.apply')}
                   </Button>
                 </div>
