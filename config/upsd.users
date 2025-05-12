@@ -3,4 +3,4 @@
         actions = set
         actions = fsd
         instcmds = all
-        upsmon primary
+        upsmon primary # use "master" for older NUT servers
