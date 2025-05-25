@@ -4,6 +4,7 @@ import React, { useContext, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
+  HiBolt,
   HiOutlineExclamationTriangle,
   HiQuestionMarkCircle,
   HiOutlineExclamationCircle,
@@ -34,7 +35,9 @@ type Props = Readonly<{
 
 const getStatus = (status: string) => {
   if (!status) return <></>
-  if (status.startsWith('OL')) {
+  if (status === 'OL CHRG') {
+    return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
+  } else if (status.startsWith('OL')) {
     return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block size-6 stroke-[3px] text-green-400' />
   } else if (status.startsWith('OB')) {
     return (

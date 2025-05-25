@@ -108,7 +108,7 @@ describe('Wrapper Component', () => {
     })
 
     const { findByTestId } = renderComponent()
-    const icon = await findByTestId('check-icon')
+    const icon = await findByTestId('bolt-icon')
     expect(icon).toBeInTheDocument()
   })
 
