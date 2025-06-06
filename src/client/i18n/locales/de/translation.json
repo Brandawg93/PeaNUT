@@ -35,7 +35,7 @@
   },
   "settings": {
     "title": "Einstellungen",
-    "general": "",
+    "general": "Allgemein",
     "generalNotice": "Allgemeine Anwendungseinstellungen",
     "dateFormat": "Datumsformat",
     "selectDateFormat": "Wählen Sie ein Datumsformat",

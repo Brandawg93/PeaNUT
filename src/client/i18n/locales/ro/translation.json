@@ -35,7 +35,7 @@
   },
   "settings": {
     "title": "Setări",
-    "general": "",
+    "general": "General",
     "generalNotice": "Setări generale ale aplicației",
     "dateFormat": "Formatul datei",
     "selectDateFormat": "Selectați un format de dată",

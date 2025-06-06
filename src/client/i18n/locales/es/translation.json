@@ -34,7 +34,7 @@
   },
   "settings": {
     "title": "Configuración",
-    "general": "",
+    "general": "General",
     "generalNotice": "Configuración general de la aplicación",
     "dateFormat": "Formato de fecha",
     "selectDateFormat": "Seleccione un formato de fecha",
