@@ -67,7 +67,7 @@ describe('SettingsWrapper', () => {
   it('handles server change correctly', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
     const servers = [
-      { server: { HOST: 'localhost', PORT: 8080, USERNAME: 'testuser', PASSWORD: 'testpassword' }, saved: true },
+      { server: { HOST: 'localhost', PORT: 8080, USERNAME: jest.fn(), PASSWORD: jest.fn() }, saved: true },
     ]
     mockGetSettingsAction.mockResolvedValueOnce(servers)
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
