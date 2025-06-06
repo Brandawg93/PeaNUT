@@ -6,16 +6,18 @@
   "model": "Model",
   "serial": "Serie",
   "currentLoad": "Sarcină curentă",
-  "batteryCharge": "Nivelul de încărcare",
+  "batteryCharge": "Nivel baterie",
   "batteryRuntime": "Durata de funcționare",
   "lastUpdated": "Ultima actualizare",
+  "toggleTime": "Faceți clic pentru a comuta formatul 12/24 de ore",
   "docs": "Documentație API",
   "voltsChart": {
     "inputVoltage": "Tensiune de intrare",
     "outputVoltage": "Tensiune de ieșire",
     "nominalInputVoltage": "Tensiune nominală de intrare",
     "nominalOutputVoltage": "Tensiunea de ieșire nominală",
-    "nominalVoltage": "Tensiune nominală"
+    "nominalVoltage": "Tensiune nominală",
+    "title": "Volți"
   },
   "wattsChart": {
     "realpower": "Putere reală",
@@ -32,14 +34,21 @@
     "language": "Limbă"
   },
   "settings": {
-    "manageServers": "Gestionare servere",
+    "title": "Setări",
+    "general": "",
+    "generalNotice": "Setări generale ale aplicației",
+    "dateFormat": "Formatul datei",
+    "selectDateFormat": "Selectați un format de dată",
+    "timeFormat": "Formatul orei",
+    "selectTimeFormat": "Selectați un format de oră",
+    "manageServers": "Gestionați serverele",
     "influxDb": "InfluxDB",
     "influxNotice": "Funcționează doar cu InfluxDB 2.x",
     "influxInterval": "Influx Interval (s)",
     "addServer": "Adăugare server",
     "apply": "Aplică",
     "saved": "Modificările au fost salvate",
-    "configExport": "Configurare YAML",
+    "configExport": "Import/Export Config",
     "configExportNotice": "Editați manual fișierul de configurare YAML.",
     "save": "Salva",
     "download": "Descărcați",
@@ -139,7 +148,7 @@
   },
   "logout": "Deconectare",
   "description": "Descriere",
-  "status": "Statut",
-  "view": "Vedere",
+  "status": "Stare",
+  "view": "Vizualizare",
   "details": "Detalii"
 }

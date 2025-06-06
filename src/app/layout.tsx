@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import '@/app/globals.css'
 import { ThemeProvider } from '@/client/context/theme-provider'
 import LanguageProvider from '@/client/context/language'
+import { SettingsProvider } from '@/client/context/settings'
 import i18next from 'i18next'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -18,7 +19,9 @@ export default function RootLayout({ children }: { readonly children: React.Reac
     <html suppressHydrationWarning lang={i18next.language}>
       <body className={`${inter.className} bg-background`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <LanguageProvider>{children}</LanguageProvider>
+          <SettingsProvider>
+            <LanguageProvider>{children}</LanguageProvider>
+          </SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

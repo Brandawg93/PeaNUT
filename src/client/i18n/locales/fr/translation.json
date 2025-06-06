@@ -9,13 +9,15 @@
   "batteryCharge": "Charge de la batterie",
   "batteryRuntime": "Autonomie de la batterie",
   "lastUpdated": "Dernière mise à jour",
+  "toggleTime": "Cliquez pour basculer le format 12/24 heures",
   "docs": "Docs API",
   "voltsChart": {
     "inputVoltage": "Tension d'entrée",
     "outputVoltage": "Tension de sortie",
     "nominalInputVoltage": "Tension d'entrée nominale",
     "nominalOutputVoltage": "Tension de sortie nominale",
-    "nominalVoltage": "Tension nominale"
+    "nominalVoltage": "Tension nominale",
+    "title": "Volts"
   },
   "wattsChart": {
     "realpower": "Puissance réelle",
@@ -32,6 +34,13 @@
     "language": "Langue"
   },
   "settings": {
+    "title": "Paramètres",
+    "general": "",
+    "generalNotice": "Paramètres généraux de l'application",
+    "dateFormat": "Format de date",
+    "selectDateFormat": "Sélectionnez un format de date",
+    "timeFormat": "Format de l'heure",
+    "selectTimeFormat": "Sélectionnez un format d'heure",
     "manageServers": "Gérer les serveurs",
     "influxDb": "InfluxDB",
     "influxNotice": "Cela ne fonctionnera qu'avec InfluxDB 2.x",
@@ -39,7 +48,7 @@
     "addServer": "Ajouter un serveur",
     "apply": "Appliquer",
     "saved": "Modifications enregistrées",
-    "configExport": "Configuration YAML",
+    "configExport": "Importer/Exporter la configuration",
     "configExportNotice": "Modifiez manuellement le fichier de configuration YAML.",
     "save": "Sauvegarder",
     "download": "Télécharger",
@@ -71,7 +80,7 @@
     "title": "Thème"
   },
   "serverNotFound": "Hôte introuvable. \nVérifiez vos paramètres.",
-  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d’exécution ?",
+  "serverRefused": "Connexion rejetée. \nLe serveur NUT est-il en cours d'exécution ?",
   "selectDevice": "Sélectionnez un appareil",
   "loading": "Chargement...",
   "cancel": "Annuler",
