@@ -76,50 +76,54 @@ export default function SettingsWrapper({
   const { resolvedTheme, theme } = useTheme()
   const { refreshSettings } = useSettings()
 
+  const loadSettings = async () => {
+    const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, format, timeFormat] =
+      await Promise.all([
+        getSettingsAction('NUT_SERVERS'),
+        getSettingsAction('INFLUX_HOST'),
+        getSettingsAction('INFLUX_TOKEN'),
+        getSettingsAction('INFLUX_ORG'),
+        getSettingsAction('INFLUX_BUCKET'),
+        getSettingsAction('INFLUX_INTERVAL'),
+        getSettingsAction('DATE_FORMAT'),
+        getSettingsAction('TIME_FORMAT'),
+      ])
+    if (servers?.length) {
+      setServerList([
+        ...servers.map((server: server) => ({
+          id: `${server.HOST}:${server.PORT}-${Date.now()}`,
+          server,
+          saved: true,
+        })),
+      ])
+      if (servers.length === 1) {
+        setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
+      }
+    }
+    if (influxHost && influxToken && influxOrg && influxBucket) {
+      setInfluxServer(influxHost)
+      setInfluxToken(influxToken)
+      setInfluxOrg(influxOrg)
+      setInfluxBucket(influxBucket)
+    }
+    if (influxInterval) {
+      setInfluxInterval(influxInterval)
+    }
+    if (format) {
+      setDateFormat(format)
+    }
+    if (timeFormat) {
+      setTimeFormat(timeFormat)
+    }
+    setSettingsLoaded(true)
+  }
+
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
       if (!res) {
         setSettingsLoaded(true)
       } else {
-        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, format, timeFormat] =
-          await Promise.all([
-            getSettingsAction('NUT_SERVERS'),
-            getSettingsAction('INFLUX_HOST'),
-            getSettingsAction('INFLUX_TOKEN'),
-            getSettingsAction('INFLUX_ORG'),
-            getSettingsAction('INFLUX_BUCKET'),
-            getSettingsAction('INFLUX_INTERVAL'),
-            getSettingsAction('DATE_FORMAT'),
-            getSettingsAction('TIME_FORMAT'),
-          ])
-        if (servers?.length) {
-          setServerList([
-            ...servers.map((server: server) => ({
-              id: `${server.HOST}:${server.PORT}-${Date.now()}`,
-              server,
-              saved: true,
-            })),
-          ])
-          if (servers.length === 1) {
-            setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
-          }
-        }
-        if (influxHost && influxToken && influxOrg && influxBucket) {
-          setInfluxServer(influxHost)
-          setInfluxToken(influxToken)
-          setInfluxOrg(influxOrg)
-          setInfluxBucket(influxBucket)
-        }
-        if (influxInterval) {
-          setInfluxInterval(influxInterval)
-        }
-        if (format) {
-          setDateFormat(format)
-        }
-        if (timeFormat) {
-          setTimeFormat(timeFormat)
-        }
-        setSettingsLoaded(true)
+        await loadSettings()
       }
     })
   }, [checkSettingsAction, getSettingsAction])
