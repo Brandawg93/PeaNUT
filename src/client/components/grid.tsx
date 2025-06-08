@@ -194,13 +194,13 @@ export default function NutGrid({ data }: Props) {
     columnHelper.display({
       id: 'actions',
       cell: ({ row }) => {
-        const key = useTreeData ? row.original.originalKey || '' : row.original.key
+        const key = useTreeData ? (row.original.originalKey ?? '') : row.original.key
         const isRW = data.rwVars?.includes(key)
         return isRW ? (
           <span className='text-primary mb-0 font-normal'>
             <Button
               disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
-              onClick={() => handleEdit(useTreeData ? row.original.originalKey || '' : row.original.key)}
+              onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
               variant='secondary'
               className='shadow-none'
             >
