@@ -29,9 +29,15 @@ import { AuthError } from 'next-auth'
 global.TextDecoder = TextDecoder as any
 global.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
 
-// Mock signIn
-jest.mock('@/src/auth', () => ({
+// Mock auth
+jest.mock('@/auth', () => ({
   signIn: jest.fn(),
+  signOut: jest.fn(),
+  auth: jest.fn(),
+  handlers: {
+    GET: jest.fn(),
+    POST: jest.fn(),
+  },
 }))
 
 const vars: VARS = {}

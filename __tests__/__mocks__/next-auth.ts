@@ -1,11 +1,17 @@
+const mockHandlers = {
+  GET: jest.fn(),
+  POST: jest.fn(),
+}
+
+const mockAuth = jest.fn()
+const mockSignIn = jest.fn()
+const mockSignOut = jest.fn()
+
 const NextAuth = jest.fn().mockImplementation(() => ({
-  auth: jest.fn(),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
-  handlers: {
-    GET: jest.fn(),
-    POST: jest.fn(),
-  },
+  auth: mockAuth,
+  signIn: mockSignIn,
+  signOut: mockSignOut,
+  handlers: mockHandlers,
 }))
 
 class AuthError extends Error {
@@ -15,5 +21,5 @@ class AuthError extends Error {
   }
 }
 
-export { AuthError }
+export { AuthError, mockHandlers, mockAuth, mockSignIn, mockSignOut }
 export default NextAuth

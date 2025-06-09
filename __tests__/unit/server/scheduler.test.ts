@@ -64,37 +64,29 @@ jest.mock('@influxdata/influxdb-client', () => {
 jest.mock('@influxdata/influxdb-client-apis')
 
 // Mock getDevices
-jest.mock('@/src/app/actions', () => ({
+jest.mock('@/app/actions', () => ({
   getDevices: jest.fn().mockResolvedValue({
     devices: [
       {
         name: 'test-device-1',
-        description: 'test description 1',
-        vars: {
-          temperature: { value: 25.5 },
-          humidity: { value: 60 },
-        },
-        rwVars: [],
-        commands: [],
-        clients: [],
+        host: 'localhost',
+        port: 3493,
+        username: 'test',
+        password: 'test',
       },
       {
         name: 'test-device-2',
-        description: 'test description 2',
-        vars: {
-          temperature: { value: 26.5 },
-          humidity: { value: 65 },
-        },
-        rwVars: [],
-        commands: [],
-        clients: [],
+        host: 'localhost',
+        port: 3494,
+        username: 'test2',
+        password: 'test2',
       },
     ],
   }),
 }))
 
 // Mock InfluxWriter
-jest.mock('@/src/server/influxdb', () => {
+jest.mock('@/server/influxdb', () => {
   return jest.fn().mockImplementation(() => {
     const mockWritePoint = jest.fn().mockResolvedValue({})
     const mockClose = jest.fn().mockResolvedValue({})
@@ -144,7 +136,7 @@ describe('Scheduler', () => {
   test('should initialize scheduler with the settings interval', () => {
     // Import the module to trigger initialization
     jest.isolateModules(() => {
-      require('@/src/server/scheduler')
+      require('@/server/scheduler')
     })
 
     expect(existsSync).toHaveBeenCalledWith(settingsFile)
@@ -164,7 +156,7 @@ describe('Scheduler', () => {
     }))
 
     jest.isolateModules(() => {
-      require('@/src/server/scheduler')
+      require('@/server/scheduler')
     })
 
     // Get the function passed to the Task constructor
@@ -187,7 +179,7 @@ describe('Scheduler', () => {
 
   test('should update job when settings change', () => {
     jest.isolateModules(() => {
-      require('@/src/server/scheduler')
+      require('@/server/scheduler')
     })
 
     // Verify file watcher was initialized
@@ -215,7 +207,7 @@ describe('Scheduler', () => {
     })
 
     jest.isolateModules(() => {
-      require('@/src/server/scheduler')
+      require('@/server/scheduler')
     })
 
     // Simulate settings file change with incomplete settings
@@ -242,7 +234,7 @@ describe('Scheduler', () => {
     }))
 
     jest.isolateModules(() => {
-      require('@/src/server/scheduler')
+      require('@/server/scheduler')
     })
 
     // Get the task function
@@ -270,7 +262,7 @@ describe('Scheduler', () => {
     })
 
     jest.isolateModules(() => {
-      require('@/src/server/scheduler')
+      require('@/server/scheduler')
     })
 
     // The SimpleIntervalJob should be created with the DEFAULT_INFLUX_INTERVAL

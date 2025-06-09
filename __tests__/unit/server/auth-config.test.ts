@@ -13,7 +13,9 @@ describe('auth-config', () => {
     // Reset process.env to a clean state with required variables
     process.env = {
       NODE_ENV: 'test',
+      NEXT_RUNTIME: 'nodejs',
     }
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
@@ -22,13 +24,13 @@ describe('auth-config', () => {
   })
 
   describe('ensureAuthSecret', () => {
-    it('should generate a new AUTH_SECRET if it does not exist', () => {
+    it('should generate a new AUTH_SECRET if it does not exist', async () => {
       // Mock the randomBytes to return a predictable value
       const mockRandomBytes = Buffer.from('test-secret-32-bytes-long')
       ;(crypto.randomBytes as jest.Mock).mockReturnValue(mockRandomBytes)
 
       // Call the function
-      ensureAuthSecret()
+      await ensureAuthSecret()
 
       // Verify crypto.randomBytes was called with correct parameters
       expect(crypto.randomBytes).toHaveBeenCalledWith(32)
@@ -37,11 +39,11 @@ describe('auth-config', () => {
       expect(process.env.AUTH_SECRET).toBe(mockRandomBytes.toString('base64'))
     })
 
-    it('should not generate a new AUTH_SECRET if it already exists', () => {
+    it('should not generate a new AUTH_SECRET if it already exists', async () => {
       const existingSecret = 'existing-secret'
       process.env.AUTH_SECRET = existingSecret
 
-      ensureAuthSecret()
+      await ensureAuthSecret()
 
       // Verify crypto.randomBytes was not called
       expect(crypto.randomBytes).not.toHaveBeenCalled()

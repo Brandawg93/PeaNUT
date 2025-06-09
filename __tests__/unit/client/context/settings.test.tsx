@@ -25,11 +25,6 @@ const TestComponent = () => {
 describe('Settings Context', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.useFakeTimers()
-  })
-
-  afterEach(() => {
-    jest.useRealTimers()
   })
 
   it('provides initial empty settings', () => {
@@ -53,16 +48,12 @@ describe('Settings Context', () => {
       return ''
     })
 
-    render(
-      <SettingsProvider>
-        <TestComponent />
-      </SettingsProvider>
-    )
-
-    // Wait for the settings to be fetched
     await act(async () => {
-      await Promise.resolve() // Let the microtask queue clear
-      jest.runAllTimers()
+      render(
+        <SettingsProvider>
+          <TestComponent />
+        </SettingsProvider>
+      )
     })
 
     expect(screen.getByTestId('date-format')).toHaveTextContent(mockDateFormat)
@@ -82,16 +73,12 @@ describe('Settings Context', () => {
       return ''
     })
 
-    render(
-      <SettingsProvider>
-        <TestComponent />
-      </SettingsProvider>
-    )
-
-    // Wait for initial settings to be fetched
     await act(async () => {
-      await Promise.resolve() // Let the microtask queue clear
-      jest.runAllTimers()
+      render(
+        <SettingsProvider>
+          <TestComponent />
+        </SettingsProvider>
+      )
     })
 
     expect(screen.getByTestId('date-format')).toHaveTextContent(initialDateFormat)
@@ -107,8 +94,6 @@ describe('Settings Context', () => {
     // Click refresh button
     await act(async () => {
       screen.getByText('Refresh').click()
-      await Promise.resolve() // Let the microtask queue clear
-      jest.runAllTimers()
     })
 
     expect(screen.getByTestId('date-format')).toHaveTextContent(newDateFormat)
