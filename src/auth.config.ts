@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from 'next-auth'
 import { ensureAuthSecret } from './server/auth-config'
 
-export const getAuthConfig = async (): Promise<NextAuthConfig> => ({
+export const authConfig = {
   pages: {
     signIn: '/login',
   },
@@ -52,5 +52,5 @@ export const getAuthConfig = async (): Promise<NextAuthConfig> => ({
   },
   providers: [], // Add providers with an empty array for now
   trustHost: true,
-  secret: process.env.AUTH_SECRET ?? (await ensureAuthSecret()),
-})
+  secret: process.env.AUTH_SECRET ?? ensureAuthSecret(),
+} satisfies NextAuthConfig
