@@ -1,8 +1,7 @@
-import crypto from 'crypto'
-
-export function ensureAuthSecret() {
-  if (!process.env.AUTH_SECRET) {
+export async function ensureAuthSecret() {
+  if (!process.env.AUTH_SECRET && process.env.NEXT_RUNTIME === 'nodejs') {
     // Generate a random 32-byte string and encode it as base64
+    const crypto = await import('crypto')
     const randomBytes = crypto.randomBytes(32)
     const authSecret = randomBytes.toString('base64')
     process.env.AUTH_SECRET = authSecret
