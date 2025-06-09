@@ -11,6 +11,8 @@ const ISettings = {
   INFLUX_ORG: '',
   INFLUX_BUCKET: '',
   INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
+  DATE_FORMAT: 'MM/DD/YYYY',
+  TIME_FORMAT: '12-hour',
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }

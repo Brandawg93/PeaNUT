@@ -25,9 +25,7 @@ watcher.on('change', () => {
 })
 
 function getCachedSettings(): YamlSettings {
-  if (!settingsInstance) {
-    settingsInstance = new YamlSettings(settingsFile)
-  }
+  settingsInstance ??= new YamlSettings(settingsFile)
   return settingsInstance
 }
 
@@ -194,7 +192,7 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
     })
     return { data, error: undefined }
   } catch (e: any) {
-    return { data: undefined, error: e?.message || 'Unknown error' }
+    return { data: undefined, error: e?.message ?? 'Unknown error' }
   }
 }
 
@@ -211,7 +209,7 @@ export async function saveVar(device: string, varName: string, value: string) {
     )
     return { error: undefined }
   } catch (e: any) {
-    return { error: e?.message || 'Unknown error' }
+    return { error: e?.message ?? 'Unknown error' }
   }
 }
 
@@ -248,7 +246,7 @@ export async function runCommand(device: string, command: string) {
     await Promise.all(runPromises)
     return { error: undefined }
   } catch (e: any) {
-    return { error: e?.message || 'Unknown error' }
+    return { error: e?.message ?? 'Unknown error' }
   }
 }
 

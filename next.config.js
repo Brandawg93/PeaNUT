@@ -17,6 +17,11 @@ const nextConfig = {
     esmExternals: true,
     reactCompiler: true,
   },
+  turbopack: {
+    rules: {
+      // Configure any specific rules for your project here
+    },
+  },
 }
 
 module.exports =
