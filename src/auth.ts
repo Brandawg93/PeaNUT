@@ -1,51 +1,66 @@
 import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import Credentials from 'next-auth/providers/credentials'
 import { getAuthConfig } from './auth.config'
-import type { User } from 'next-auth'
+import { z } from 'zod'
+import { NextRequest } from 'next/server'
 
-let authInstance: ReturnType<typeof NextAuth> | null = null
+export const initAuth = async () => {
+  const config = await getAuthConfig()
+  return NextAuth({
+    ...config,
+    providers: [
+      Credentials({
+        async authorize(credentials) {
+          const parsedCredentials = z
+            .object({ username: z.string(), password: z.string().min(6) })
+            .safeParse(credentials)
 
-export async function initAuth() {
-  if (!authInstance) {
-    const config = await getAuthConfig()
-    authInstance = NextAuth({
-      ...config,
-      providers: [
-        CredentialsProvider({
-          name: 'Credentials',
-          credentials: {
-            username: { label: 'Username', type: 'text' },
-            password: { label: 'Password', type: 'password' },
-          },
-          async authorize(credentials: Partial<Record<'username' | 'password', unknown>>): Promise<User | null> {
-            if (!credentials?.username || !credentials?.password) {
-              return null
+          if (parsedCredentials.success) {
+            const { username, password } = parsedCredentials.data
+            if (username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD) {
+              return { name: username }
             }
-            return { id: '1', name: String(credentials.username) }
-          },
-        }),
-      ],
-    })
-  }
-  return authInstance
+          }
+
+          return null
+        },
+      }),
+    ],
+  })
 }
 
-// Initialize auth only in non-test environments
-if (process.env.NODE_ENV !== 'test') {
-  initAuth().catch(console.error)
-}
+let authInstance: Awaited<ReturnType<typeof initAuth>> | null = null
 
-export const auth = () => {
+export const getAuth = async () => {
   if (!authInstance) {
-    throw new Error('Auth not initialized')
+    authInstance = await initAuth()
   }
   return authInstance
 }
 
-export const signIn = (...args: Parameters<ReturnType<typeof auth>['signIn']>) => {
-  return auth().signIn(...args)
+// Export individual functions that will be initialized lazily
+export const handlers = {
+  GET: async (req: NextRequest) => {
+    const auth = await getAuth()
+    return auth.handlers.GET(req)
+  },
+  POST: async (req: NextRequest) => {
+    const auth = await getAuth()
+    return auth.handlers.POST(req)
+  },
 }
 
-export const signOut = (...args: Parameters<ReturnType<typeof auth>['signOut']>) => {
-  return auth().signOut(...args)
+export const auth = async () => {
+  const authInstance = await getAuth()
+  return authInstance.auth()
+}
+
+export const signIn = async (...args: Parameters<Awaited<ReturnType<typeof getAuth>>['signIn']>) => {
+  const authInstance = await getAuth()
+  return authInstance.signIn(...args)
+}
+
+export const signOut = async (...args: Parameters<Awaited<ReturnType<typeof getAuth>>['signOut']>) => {
+  const authInstance = await getAuth()
+  return authInstance.signOut(...args)
 }

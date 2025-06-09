@@ -6,7 +6,9 @@ const initMiddleware = async () => {
   return NextAuth(config).auth
 }
 
-export default await initMiddleware()
+const middleware = initMiddleware()
+
+export default middleware
 
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
