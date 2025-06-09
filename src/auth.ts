@@ -32,9 +32,7 @@ export const initAuth = async () => {
 let authInstance: Awaited<ReturnType<typeof initAuth>> | null = null
 
 export const getAuth = async () => {
-  if (!authInstance) {
-    authInstance = await initAuth()
-  }
+  authInstance ??= await initAuth()
   return authInstance
 }
 
