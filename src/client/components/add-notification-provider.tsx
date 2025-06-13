@@ -91,8 +91,8 @@ export default function AddNotificationProvider({
                 <SelectValue placeholder={t('notification.name')} />
               </SelectTrigger>
               <SelectContent>
-                {NotificationProviders.map((np, npIndex) => (
-                  <SelectItem key={npIndex} value={np}>
+                {NotificationProviders.map((np) => (
+                  <SelectItem key={np} value={np}>
                     {np}
                   </SelectItem>
                 ))}
@@ -151,8 +151,8 @@ export default function AddNotificationProvider({
                     <SelectValue placeholder={t('notification.trigger.operation')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {NotificationTriggerOperations.map((op, opIndex) => (
-                      <SelectItem key={opIndex} value={op}>
+                    {NotificationTriggerOperations.map((op) => (
+                      <SelectItem key={op} value={op}>
                         {op}
                       </SelectItem>
                     ))}
@@ -193,8 +193,8 @@ export default function AddNotificationProvider({
           </div>
           <h3>{t('notification.config.heading')}</h3>
           {config &&
-            Object.keys(config).map((k, index) => (
-              <div className='my-6 border-l-4 border-gray-600 pl-6' key={index}>
+            Object.keys(config).map((k) => (
+              <div className='my-6 border-l-4 border-gray-600 pl-6' key={k}>
                 <div className='h-12'>
                   <Button
                     variant='ghost'

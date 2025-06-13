@@ -399,7 +399,7 @@ export default function SettingsWrapper({
                   <h2 className='mb-4 text-xl font-bold'>{t('settings.manageNotifications')}</h2>
                   {notificationProvidersList.map((notificationProvider, index) => (
                     <AddNotificationProvider
-                      key={index}
+                      key={notificationProvider.name}
                       initialName={notificationProvider.name}
                       initialTriggers={notificationProvider.triggers}
                       initialConfig={notificationProvider.config}

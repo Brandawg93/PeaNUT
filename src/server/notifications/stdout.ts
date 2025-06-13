@@ -12,7 +12,7 @@ export class Stdout extends Notifier {
     config: StdoutConfig
   ) {
     super(name, triggers)
-    this.config = Object.assign({}, config)
+    this.config = { ...config }
   }
 
   async send(notification: Notification) {
