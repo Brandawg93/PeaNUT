@@ -25,7 +25,13 @@ COPY . /app
 RUN npm -g i corepack && \
     corepack enable pnpm && \
     pnpm run prepare && \
-    pnpm run build && \
+    if [ "$(uname -m)" = "armv7l" ]; then \
+        echo "Building for ARMv7 architecture" && \
+        pnpm run build; \
+    else \
+        echo "Building for default architecture" && \
+        pnpm run build:turbo; \
+    fi && \
     rm -rf .next/standalone/.next/cache
 
 FROM node:lts-alpine AS runner

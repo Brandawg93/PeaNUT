@@ -40,7 +40,7 @@ ups.model: Back-UPS ES 750G
 ups.productid: 0002
 ups.realpower.nominal: 450
 ups.serial: test2  
-ups.status: OL
+ups.status: OL CHRG
 ups.test.result: No test initiated
 ups.timer.reboot: 0
 ups.timer.shutdown: -1

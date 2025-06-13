@@ -4,6 +4,7 @@ import React, { useContext, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
+  HiBolt,
   HiOutlineExclamationTriangle,
   HiQuestionMarkCircle,
   HiOutlineExclamationCircle,
@@ -31,7 +32,9 @@ import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
 
 const getStatus = (status: keyof typeof upsStatus) => {
-  if (status.startsWith('OL')) {
+  if (status === 'OL CHRG') {
+    return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
+  } else if (status.startsWith('OL')) {
     return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block size-6 stroke-[3px] text-green-400' />
   } else if (status.startsWith('OB')) {
     return (
@@ -235,7 +238,9 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
             <div>
               <p className='text-2xl font-semibold'>
                 {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
-                &nbsp;{upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] || vars['ups.status']?.value}
+                &nbsp;
+                {upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] ||
+                  (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
                 <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />

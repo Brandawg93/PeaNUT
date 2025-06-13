@@ -1,78 +1,72 @@
-import { ensureAuthSecret } from '../../../src/server/auth-config'
-import crypto from 'crypto'
-
-// Mock crypto.randomBytes
-jest.mock('crypto', () => ({
-  randomBytes: jest.fn(),
-}))
+// Mock Web Crypto API
+let mockGetRandomValues: jest.Mock
+const originalEnv = process.env
+let originalGetRandomValues: typeof globalThis.crypto.getRandomValues | undefined
 
 describe('auth-config', () => {
-  const originalEnv = process.env
+  let ensureAuthSecret: typeof import('../../../src/server/auth-config').ensureAuthSecret
 
-  beforeEach(() => {
-    // Reset process.env to a clean state with required variables
+  beforeEach(async () => {
     process.env = {
       NODE_ENV: 'test',
+      NEXT_RUNTIME: 'nodejs',
     }
+    jest.clearAllMocks()
+    jest.resetModules()
+    // If crypto is not defined, define it
+    if (!globalThis.crypto) (globalThis as any).crypto = {}
+    // Save the original getRandomValues if it exists
+    originalGetRandomValues = globalThis.crypto.getRandomValues
+    // Set up the mock
+    mockGetRandomValues = jest.fn()
+    if (typeof originalGetRandomValues === 'function') {
+      jest.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(mockGetRandomValues)
+    } else {
+      ;(globalThis.crypto as any).getRandomValues = mockGetRandomValues
+    }
+    // Import after setting up the mock
+    ensureAuthSecret = (await import('../../../src/server/auth-config')).ensureAuthSecret
   })
 
   afterEach(() => {
-    // Restore original process.env after each test
     process.env = originalEnv
+    // Restore the original getRandomValues if it existed
+    if (typeof originalGetRandomValues === 'function') {
+      if (typeof (globalThis.crypto.getRandomValues as any).mockRestore === 'function') {
+        ;(globalThis.crypto.getRandomValues as any).mockRestore()
+      }
+      globalThis.crypto.getRandomValues = originalGetRandomValues
+    } else {
+      delete (globalThis.crypto as any).getRandomValues
+    }
   })
 
   describe('ensureAuthSecret', () => {
-    it('should generate a new AUTH_SECRET if it does not exist', () => {
-      // Mock the randomBytes to return a predictable value
-      const mockRandomBytes = Buffer.from('test-secret-32-bytes-long')
-      ;(crypto.randomBytes as jest.Mock).mockReturnValue(mockRandomBytes)
+    it('should generate a new AUTH_SECRET if it does not exist', async () => {
+      const mockRandomBytes = new Uint8Array(32)
+      for (let i = 0; i < 32; i++) {
+        mockRandomBytes[i] = i
+      }
+      mockGetRandomValues.mockImplementation((array) => {
+        array.set(mockRandomBytes)
+        return array
+      })
 
-      // Call the function
       ensureAuthSecret()
 
-      // Verify crypto.randomBytes was called with correct parameters
-      expect(crypto.randomBytes).toHaveBeenCalledWith(32)
-
-      // Verify AUTH_SECRET was set correctly
-      expect(process.env.AUTH_SECRET).toBe(mockRandomBytes.toString('base64'))
+      expect(mockGetRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array))
+      expect(mockGetRandomValues.mock.calls[0][0].length).toBe(32)
+      expect(process.env.AUTH_SECRET).toBe(Buffer.from(mockRandomBytes).toString('base64'))
     })
 
-    it('should not generate a new AUTH_SECRET if it already exists', () => {
+    it('should not generate a new AUTH_SECRET if it already exists', async () => {
       const existingSecret = 'existing-secret'
       process.env.AUTH_SECRET = existingSecret
 
       ensureAuthSecret()
 
-      // Verify crypto.randomBytes was not called
-      expect(crypto.randomBytes).not.toHaveBeenCalled()
-
-      // Verify AUTH_SECRET remained unchanged
+      expect(mockGetRandomValues).not.toHaveBeenCalled()
       expect(process.env.AUTH_SECRET).toBe(existingSecret)
-    })
-
-    it('should set AUTH_TRUST_HOST correctly when WEB_HOST and WEB_PORT are provided', () => {
-      process.env.WEB_HOST = 'localhost'
-      process.env.WEB_PORT = '3000'
-
-      ensureAuthSecret()
-
-      expect(process.env.AUTH_TRUST_HOST).toBe('http://localhost:3000')
-    })
-
-    it('should handle WEB_HOST that already includes http://', () => {
-      process.env.WEB_HOST = 'http://localhost'
-      process.env.WEB_PORT = '3000'
-
-      ensureAuthSecret()
-
-      expect(process.env.AUTH_TRUST_HOST).toBe('http://localhost:3000')
-    })
-
-    it('should not set AUTH_TRUST_HOST when WEB_HOST or WEB_PORT are missing', () => {
-      // No need to explicitly delete variables as we start with clean environment
-      ensureAuthSecret()
-
-      expect(process.env.AUTH_TRUST_HOST).toBeUndefined()
     })
   })
 })

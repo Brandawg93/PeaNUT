@@ -1,6 +1,6 @@
 {
-  "noDevicesError": "No se encontraron dispositivos. \nAgregue un nuevo dispositivo en la configuración.",
-  "updateAvailable": "Actualización Disponible",
+  "noDevicesError": "No se han configurado dispositivos.",
+  "updateAvailable": "Actualización disponible",
   "device": "Dispositivo",
   "manufacturer": "Fabricante",
   "model": "Modelo",
@@ -8,14 +8,15 @@
   "currentLoad": "Carga Actual",
   "batteryCharge": "Carga de Batería",
   "batteryRuntime": "Duración de la Batería",
-  "lastUpdated": "Última Actualización",
+  "lastUpdated": "Última actualización",
   "docs": "Documentos de API",
   "voltsChart": {
     "inputVoltage": "Voltaje de Entrada",
     "outputVoltage": "Voltaje de Salida",
     "nominalInputVoltage": "Voltaje de Entrada Nominal",
     "nominalOutputVoltage": "Voltaje de salida nominal",
-    "nominalVoltage": "Voltaje nominal"
+    "nominalVoltage": "Voltaje nominal",
+    "title": "Voltios"
   },
   "wattsChart": {
     "realpower": "Potencia Real",
@@ -32,14 +33,21 @@
     "language": "Idioma"
   },
   "settings": {
-    "manageServers": "Gestionar Servidores",
+    "title": "Configuración",
+    "general": "General",
+    "generalNotice": "Configuración general de la aplicación",
+    "dateFormat": "Formato de fecha",
+    "selectDateFormat": "Seleccione un formato de fecha",
+    "timeFormat": "Formato de hora",
+    "selectTimeFormat": "Seleccione un formato de hora",
+    "manageServers": "Administraridores",
     "influxDb": "InfluxDB",
     "influxNotice": "Esto solo funcionará con InfluxDB 2.x",
     "influxInterval": "Influx Interval (s)",
     "addServer": "Agregar Servidor",
     "apply": "Aplicar",
     "saved": "Cambios guardados",
-    "configExport": "Configuración YAML",
+    "configExport": "Importar/Exportar configuración",
     "configExportNotice": "Edite manualmente el archivo de configuración YAML.",
     "save": "Ahorrar",
     "download": "Descargar",
@@ -142,5 +150,6 @@
   "description": "Descripción",
   "status": "Estado",
   "view": "Vista",
-  "details": "Detalles"
+  "details": "Detalles",
+  "toggleTime": "Haga clic para cambiar el formato de 12/24 horas"
 }

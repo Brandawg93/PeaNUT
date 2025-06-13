@@ -24,13 +24,20 @@ import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
 import { signIn } from '@/auth'
+import { AuthError } from 'next-auth'
 
 global.TextDecoder = TextDecoder as any
 global.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
 
-// Mock signIn
-jest.mock('@/src/auth', () => ({
+// Mock auth
+jest.mock('@/auth', () => ({
   signIn: jest.fn(),
+  signOut: jest.fn(),
+  auth: jest.fn(),
+  handlers: {
+    GET: jest.fn(),
+    POST: jest.fn(),
+  },
 }))
 
 const vars: VARS = {}
@@ -194,6 +201,30 @@ describe('actions', () => {
       formData.append('password', 'test')
       await authenticate(undefined, formData)
       expect(signIn).toHaveBeenCalledWith('credentials', formData)
+    })
+
+    it('handles invalid credentials error', async () => {
+      const formData = new FormData()
+      formData.append('username', 'test')
+      formData.append('password', 'wrong')
+
+      const authError = new AuthError('CredentialsSignin')
+      ;(signIn as jest.Mock).mockRejectedValueOnce(authError)
+
+      const result = await authenticate(undefined, formData)
+      expect(result).toBe('Invalid credentials.')
+    })
+
+    it('handles generic auth error', async () => {
+      const formData = new FormData()
+      formData.append('username', 'test')
+      formData.append('password', 'test')
+
+      const authError = new AuthError('Some other error')
+      ;(signIn as jest.Mock).mockRejectedValueOnce(authError)
+
+      const result = await authenticate(undefined, formData)
+      expect(result).toBe('Something went wrong.')
     })
   })
 })

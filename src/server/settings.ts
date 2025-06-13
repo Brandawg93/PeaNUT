@@ -13,6 +13,8 @@ const ISettings = {
   INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
   NOTIFICATION_INTERVAL: DEFAULT_NOTIFICATION_INTERVAL,
   NOTIFICATION_PROVIDERS: [] as Array<NotifierSettings>,
+  DATE_FORMAT: 'MM/DD/YYYY',
+  TIME_FORMAT: '12-hour',
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }

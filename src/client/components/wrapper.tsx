@@ -4,6 +4,7 @@ import React, { useContext, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
+  HiBolt,
   HiOutlineExclamationTriangle,
   HiQuestionMarkCircle,
   HiOutlineExclamationCircle,
@@ -34,7 +35,9 @@ type Props = Readonly<{
 
 const getStatus = (status: string) => {
   if (!status) return <></>
-  if (status.startsWith('OL')) {
+  if (status === 'OL CHRG') {
+    return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
+  } else if (status.startsWith('OL')) {
     return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block size-6 stroke-[3px] text-green-400' />
   } else if (status.startsWith('OB')) {
     return (
@@ -77,21 +80,27 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('description')}</span>,
         cell: (info) => <span className='text-primary mb-0 font-normal'>{info.getValue()}</span>,
       }),
-      columnHelper.accessor((row) => row.vars['ups.status']?.value ?? 'N/A', {
-        id: 'status',
-        header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('status')}</span>,
-        cell: (info) => {
-          const status = info.getValue() as string
-          return (
-            <div className='flex items-center gap-2'>
-              {getStatus(status)}
-              <span className='text-primary mb-0 font-normal'>
-                {upsStatus[status as keyof typeof upsStatus] || status}
-              </span>
-            </div>
-          )
+      columnHelper.accessor(
+        (row) => {
+          const status = row.vars['ups.status']?.value
+          return !status || status === '0' ? 'N/A' : status
         },
-      }),
+        {
+          id: 'status',
+          header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('status')}</span>,
+          cell: (info) => {
+            const status = info.getValue() as string
+            return (
+              <div className='flex items-center gap-2'>
+                {getStatus(status)}
+                <span className='text-primary mb-0 font-normal'>
+                  {upsStatus[status as keyof typeof upsStatus] || status}
+                </span>
+              </div>
+            )
+          },
+        }
+      ),
       columnHelper.accessor((row) => row.vars['battery.charge']?.value ?? 0, {
         id: 'batteryCharge',
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('batteryCharge')}</span>,

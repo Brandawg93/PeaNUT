@@ -1,18 +1,18 @@
-import crypto from 'crypto'
-
 export function ensureAuthSecret() {
-  if (!process.env.AUTH_SECRET) {
-    // Generate a random 32-byte string and encode it as base64
-    const randomBytes = crypto.randomBytes(32)
-    const authSecret = randomBytes.toString('base64')
-    process.env.AUTH_SECRET = authSecret
-    console.log(`Generated new AUTH_SECRET: ${authSecret}`)
-  } else {
+  if (process.env.NEXT_RUNTIME === 'nodejs' && !process.env.NEXT_PHASE) {
+    if (!process.env.AUTH_SECRET) {
+      // Generate a random 32-byte string using Web Crypto API (works in both Node.js and Edge)
+      const randomBytes = new Uint8Array(32)
+      globalThis.crypto.getRandomValues(randomBytes)
+      const authSecret = Buffer.from(randomBytes).toString('base64')
+      process.env.AUTH_SECRET = authSecret
+      if (process.env.WEB_USERNAME && process.env.WEB_PASSWORD) {
+        console.log(`Generated new AUTH_SECRET: ${authSecret}`)
+      }
+      return authSecret
+    }
     console.log(`AUTH_SECRET already exists: ${process.env.AUTH_SECRET}`)
+    return process.env.AUTH_SECRET
   }
-  if (process.env.WEB_HOST && process.env.WEB_PORT) {
-    process.env.AUTH_TRUST_HOST = process.env.WEB_HOST.startsWith('http')
-      ? `${process.env.WEB_HOST}:${process.env.WEB_PORT}`
-      : `http://${process.env.WEB_HOST}:${process.env.WEB_PORT}`
-  }
+  return process.env.AUTH_SECRET
 }

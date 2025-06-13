@@ -6,16 +6,18 @@
   "model": "Modell",
   "serial": "Seriennummer",
   "currentLoad": "Aktuelle Last",
-  "batteryCharge": "Batterieladung",
+  "batteryCharge": "Akkuladung",
   "batteryRuntime": "Batterielaufzeit",
   "lastUpdated": "Zuletzt aktualisiert",
+  "toggleTime": "Klicken, um das 12/24-Stunden-Format umzuschalten",
   "docs": "API-Dokumente",
   "voltsChart": {
     "inputVoltage": "Eingangsspannung",
     "outputVoltage": "Ausgangsspannung",
     "nominalInputVoltage": "Nominale Eingangsspannung",
     "nominalOutputVoltage": "Nennausgangsspannung",
-    "nominalVoltage": "Nennspannung"
+    "nominalVoltage": "Nennspannung",
+    "title": "Spannung"
   },
   "wattsChart": {
     "realpower": "Wirkleistung",
@@ -32,6 +34,13 @@
     "language": "Sprache"
   },
   "settings": {
+    "title": "Einstellungen",
+    "general": "Allgemein",
+    "generalNotice": "Allgemeine Anwendungseinstellungen",
+    "dateFormat": "Datumsformat",
+    "selectDateFormat": "Wählen Sie ein Datumsformat",
+    "timeFormat": "Zeitformat",
+    "selectTimeFormat": "Wählen Sie ein Zeitformat",
     "manageServers": "Server verwalten",
     "influxDb": "InfluxDB",
     "influxNotice": "Dies funktioniert nur mit InfluxDB 2.x",
@@ -39,7 +48,7 @@
     "addServer": "Server hinzufügen",
     "apply": "Anwenden",
     "saved": "Änderungen gespeichert",
-    "configExport": "YAML-Konfiguration",
+    "configExport": "Konfiguration importieren/exportieren",
     "configExportNotice": "Bearbeiten Sie die YAML-Konfigurationsdatei manuell.",
     "save": "Speichern",
     "download": "Herunterladen",

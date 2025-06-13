@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useState, useEffect, useContext } from 'react'
-import Link from 'next/link'
-import { HiOutlineExclamationCircle } from 'react-icons/hi2'
+import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
+import Link from 'next/link'
 import { LanguageContext } from '@/client/context/language'
+import { HiOutlineExclamationCircle } from 'react-icons/hi2'
 import pJson from '../../../package.json'
+import { useSettings } from '../context/settings'
 
 type Props = Readonly<{
   updated?: Date
@@ -15,27 +15,37 @@ type Props = Readonly<{
 export default function Footer({ updated }: Props) {
   const [currentVersion, setCurrentVersion] = useState({ created: new Date(), version: null, url: '' })
   const [updateAvailable, setUpdateAvailable] = useState({ created: new Date(), version: null, url: '' })
-  const [use24Hour, setUse24Hour] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('use24Hour') === 'true'
-    }
-    return false
-  })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-
-  const toggleTimeFormat = () => {
-    const newFormat = !use24Hour
-    setUse24Hour(newFormat)
-    localStorage.setItem('use24Hour', String(newFormat))
-  }
+  const { settings } = useSettings()
+  const { DATE_FORMAT: dateFormat, TIME_FORMAT: timeFormat } = settings
 
   const formatDateTime = (date: Date) => {
-    return date.toLocaleString(lng, { hour12: !use24Hour })
+    const formattedDate = formatDate(date)
+    const time = date.toLocaleTimeString(lng, {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: timeFormat === '12-hour',
+    })
+    return `${formattedDate} ${time}`
   }
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString(lng, { hour12: !use24Hour })
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+
+    if (!dateFormat) {
+      return date.toLocaleDateString(lng)
+    }
+
+    return dateFormat
+      .replace('YYYY', year.toString())
+      .replace('MM', month)
+      .replace('DD', day)
+      .replace('Month', date.toLocaleString(lng, { month: 'long' }))
+      .replace('D', date.getDate().toString())
   }
 
   useEffect(() => {
@@ -70,36 +80,30 @@ export default function Footer({ updated }: Props) {
   )
 
   return (
-    <div>
-      <div className='grid grid-flow-row grid-cols-2' data-testid='footer'>
-        <div />
-        <div className='text-muted-foreground mt-6 text-right'>
-          <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
-            {t('docs')}
-          </Link>
-        </div>
-      </div>
-      <div className='text-muted-foreground mb-3 grid grid-flow-row grid-cols-2'>
-        <div>
-          {updated ? (
-            <button className='m-0 text-sm no-underline' onClick={toggleTimeFormat}>
-              {t('lastUpdated')}: {formatDateTime(updated)}
-            </button>
-          ) : (
-            <></>
+    <div className='text-muted-foreground mt-4 mb-3 text-sm' data-testid='footer'>
+      <div className='flex justify-between'>
+        <div className='flex flex-col justify-end'>
+          {updated && (
+            <p className='m-0' title={t('toggleTime')}>
+              {t('lastUpdated')}: {formatDateTime(new Date(updated))}
+            </p>
           )}
         </div>
         <div className='text-right'>
-          <Link
-            className='text-muted-foreground m-0 text-sm no-underline'
-            href={currentVersion.url}
-            target='_blank'
-            rel='noreferrer'
-          >
-            {currentVersion.version}
-            &nbsp;({formatDate(currentVersion.created)})
+          <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+            {t('docs')}
           </Link>
-          {updateAvailableWrapper}
+          <p className='m-0'>
+            <Link
+              href={currentVersion.url}
+              target='_blank'
+              rel='noreferrer'
+              className='no-underline-text text-muted-foreground'
+            >
+              {currentVersion.version} ({formatDate(currentVersion.created)})
+            </Link>
+            {updateAvailableWrapper}
+          </p>
         </div>
       </div>
     </div>
