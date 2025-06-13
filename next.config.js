@@ -9,7 +9,6 @@ const removeImports = require('next-remove-imports')()
 
 const nextConfig = {
   output: 'standalone',
-  basePath: process.env.BASE_PATH,
   images: {
     unoptimized: true,
   },
