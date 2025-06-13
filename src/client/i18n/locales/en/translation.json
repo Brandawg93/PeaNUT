@@ -43,6 +43,7 @@
     "selectTimeFormat": "Select a time format",
     "manageServers": "Manage Servers",
     "influxDb": "InfluxDB",
+    "manageNotifications": "Notifications",
     "influxNotice": "This will only work with Influxdb 2.x",
     "influxInterval": "Influx Interval (s)",
     "addServer": "Add Server",
@@ -72,6 +73,26 @@
     "success": "Connection successful",
     "error": "Connection failed. Check the logs for more info.",
     "testing": "Testing connection..."
+  },
+  "notification": {
+    "name": "Notification Provider",
+    "buttonAdd": "Add New Notification Provider",
+    "trigger": {
+      "heading": "Triggers",
+      "buttonAdd": "Add New Trigger",
+      "variable": "Variable",
+      "operation": "Operation",
+      "targetValue": "Target Value"
+    },
+    "config": {
+      "heading": "Configuration",
+      "buttonAdd": "Add New Property",
+      "propertyName": "Property Name",
+      "propertyValue": "Property Value"
+    },
+    "success": "Successfully sent notification",
+    "error": "Failed to send notification. Check the logs for more info.",
+    "testing": "Sending test notification..."
   },
   "theme": {
     "dark": "Dark",
