@@ -70,7 +70,7 @@ export default function Kpi({ text, description, onClick }: Props) {
           </div>
         </div>
       </div>
-      <div className='text-muted-foreground motion-safe:animate-fade absolute bottom-3.5 w-full text-xs font-semibold'>
+      <div className='text-muted-foreground motion-safe:animate-fade absolute bottom-4.5 w-full text-xs font-semibold'>
         {description}
       </div>
     </Card>
