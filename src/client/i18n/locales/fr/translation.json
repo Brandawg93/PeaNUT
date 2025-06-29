@@ -55,7 +55,7 @@
     "viewConfig": "Cliquez pour afficher la configuration.",
     "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes",
     "terminal": "Terminal",
-    "terminalNotice": "Tapez \"Aide\" pour une liste de commandes.",
+    "terminalNotice": "Tapez \"help\" pour une liste de commandes.",
     "selectServer": "Sélectionnez un serveur"
   },
   "connect": {
@@ -136,7 +136,7 @@
   },
   "volt-amps-chart": "Puissance apparente",
   "volts-chart": "Tension",
-  "watts-chart": "Réel pouvoir",
+  "watts-chart": "Puissance réelle",
   "accordion-grid": "Données UPS",
   "login": {
     "title": "Veuillez vous connecter pour continuer.",
