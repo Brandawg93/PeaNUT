@@ -53,6 +53,7 @@
     "save": "Sauvegarder",
     "download": "Télécharger",
     "viewConfig": "Cliquez pour afficher la configuration.",
+    "manageNotifications": "Notifications",
     "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes",
     "terminal": "Terminal",
     "terminalNotice": "Tapez \"help\" pour une liste de commandes.",

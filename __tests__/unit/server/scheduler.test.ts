@@ -191,8 +191,8 @@ describe('Scheduler', () => {
       onChangeFn()
 
       // Check if job was removed and added again
-      expect(mockToadScheduler.existsById).toHaveBeenCalledWith('id_1')
-      expect(mockToadScheduler.addSimpleIntervalJob).toHaveBeenCalledTimes(2) // Once on init, once on change
+      expect(mockToadScheduler.existsById).toHaveBeenCalledWith('influxdb_job')
+      expect(mockToadScheduler.addSimpleIntervalJob).toHaveBeenCalledTimes(4) // Once on init, once on change
     }
   })
 
@@ -217,7 +217,7 @@ describe('Scheduler', () => {
       onChangeFn()
 
       // Job should not be updated because settings are incomplete
-      expect(mockToadScheduler.addSimpleIntervalJob).not.toHaveBeenCalled()
+      expect(mockToadScheduler.addSimpleIntervalJob).toHaveBeenCalledTimes(1)
     }
   })
 

@@ -1,9 +1,20 @@
 'use server'
 
 import InfluxWriter from '@/server/influxdb'
+import {
+  DEVICE,
+  NotificationTrigger,
+  NotificationProviders,
+  NotifierSettings,
+  server,
+  DeviceData,
+  VarDescription,
+  DevicesData,
+} from '@/common/types'
+import { Notifier } from '@/server/notifications/notifier'
+import { NotifierFactory } from '@/server/notifications/notifier-factory'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { DEVICE, server, DeviceData, DevicesData, VarDescription } from '@/common/types'
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
@@ -284,6 +295,20 @@ export async function updateServers(servers: Array<server>) {
   const settings = getCachedSettings()
 
   settings.set('NUT_SERVERS', servers)
+}
+
+export async function testNotificationProvider(
+  name: (typeof NotificationProviders)[number],
+  triggers: NotificationTrigger[],
+  config: { [x: string]: string } | undefined
+) {
+  const notificationProvider: Notifier = NotifierFactory({ name, triggers, config })
+  return await notificationProvider.sendTestNotification()
+}
+
+export async function updateNotificationProviders(notificationProviders: Array<NotifierSettings>) {
+  const settings = new YamlSettings(settingsFile)
+  settings.set('NOTIFICATION_PROVIDERS', notificationProviders)
 }
 
 export async function deleteSettings(key: keyof SettingsType) {

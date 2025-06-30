@@ -77,3 +77,4 @@ export const SUPPORTED_COMMANDS = {
 }
 
 export const DEFAULT_INFLUX_INTERVAL = 10
+export const DEFAULT_NOTIFICATION_INTERVAL = 10

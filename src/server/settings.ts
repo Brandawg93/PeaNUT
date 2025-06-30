@@ -1,8 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
-import { server } from '../common/types'
-import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
+import { server, NotifierSettings } from '../common/types'
+import { DEFAULT_INFLUX_INTERVAL, DEFAULT_NOTIFICATION_INTERVAL } from '@/common/constants'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
@@ -11,6 +11,8 @@ const ISettings = {
   INFLUX_ORG: '',
   INFLUX_BUCKET: '',
   INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
+  NOTIFICATION_INTERVAL: DEFAULT_NOTIFICATION_INTERVAL,
+  NOTIFICATION_PROVIDERS: [] as Array<NotifierSettings>,
   DATE_FORMAT: 'MM/DD/YYYY',
   TIME_FORMAT: '12-hour',
 }
@@ -40,7 +42,9 @@ export class YamlSettings {
       try {
         if (key === 'NUT_SERVERS') {
           this.data[key] = JSON.parse(envValue) as server[]
-        } else if (key === 'INFLUX_INTERVAL') {
+        } else if (key === 'NOTIFICATION_PROVIDERS') {
+          this.data[key] = JSON.parse(envValue) as NotifierSettings[]
+        } else if (key === 'INFLUX_INTERVAL' || key === 'NOTIFICATION_INTERVAL') {
           const parsed = Number(envValue)
           if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed
@@ -91,6 +95,7 @@ export class YamlSettings {
     } catch (error) {
       console.error(`Error loading settings file: ${error instanceof Error ? error.message : error}`)
     }
+    this.data.NOTIFICATION_PROVIDERS ??= []
 
     // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
