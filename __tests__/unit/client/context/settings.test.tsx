@@ -27,12 +27,14 @@ describe('Settings Context', () => {
     jest.clearAllMocks()
   })
 
-  it('provides initial empty settings', () => {
-    render(
-      <SettingsProvider>
-        <TestComponent />
-      </SettingsProvider>
-    )
+  it('provides initial empty settings', async () => {
+    await act(async () => {
+      render(
+        <SettingsProvider>
+          <TestComponent />
+        </SettingsProvider>
+      )
+    })
 
     expect(screen.getByTestId('date-format')).toHaveTextContent('')
     expect(screen.getByTestId('time-format')).toHaveTextContent('')
