@@ -285,7 +285,7 @@ export default function NutGrid({ data }: Props) {
   }
 
   return (
-    <Card className='border-border-card bg-card w-full border shadow-none' data-testid='grid'>
+    <Card className='border-border-card bg-card w-full border py-0 shadow-none' data-testid='grid'>
       <CardContent className='p-0!'>
         <Accordion
           type='single'

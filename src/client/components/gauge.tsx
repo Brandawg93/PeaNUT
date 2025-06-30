@@ -47,7 +47,7 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
         }
       }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='border-border-card bg-card h-52 min-w-56 cursor-pointer border py-0 shadow-none'
+      className='border-border-card bg-card h-52 min-w-56 cursor-pointer overflow-hidden border py-0 shadow-none'
       data-testid='gauge'
     >
       <CardContent className='h-36 !px-0 !py-0'>
