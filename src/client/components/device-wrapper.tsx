@@ -256,7 +256,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
           </div>
           <ChartsContainer vars={vars} data={data} name={ups.name} />
           <div>
-            <MemoizedGrid data={ups} />
+            <MemoizedGrid data={ups} onRefetchAction={refetch} />
           </div>
         </div>
       </div>
