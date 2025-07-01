@@ -61,7 +61,7 @@ export default function Kpi({ text, description, onClick }: Props) {
       data-testid='kpi'
     >
       <div
-        style={{ width: 'calc(100% - 30px' }}
+        style={{ width: 'calc(100% - 30px)' }}
         className='motion-safe:animate-fade flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold'
       >
         <div className='inline-block' ref={containerRef}>
