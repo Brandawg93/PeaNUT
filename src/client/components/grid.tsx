@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useContext, useEffect } from 'react'
+import React, { useState, useMemo, useContext, useEffect, memo } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { Input } from '@/client/components/ui/input'
@@ -113,104 +113,108 @@ export default function NutGrid({ data }: Props) {
   )
 
   const columnHelper = createColumnHelper<HierarchicalTableProps>()
-  const columns = [
-    columnHelper.accessor('key', {
-      id: 'key',
-      cell: ({ row, getValue }) => {
-        const expandStyle = row.getCanExpand() ? undefined : { cursor: 'default' }
-        return (
-          <div
-            className='flex justify-between'
-            style={{
-              paddingLeft: `${row.depth * 2}rem`,
-            }}
-          >
-            <button onClick={row.getToggleExpandedHandler()} className='flex' style={{ ...expandStyle }}>
-              {row.getCanExpand() && (
-                <div className='flex h-full flex-col justify-center'>
-                  {row.getIsExpanded() ? (
-                    <HiOutlineChevronDown className='size-5!' />
-                  ) : (
-                    <HiOutlineChevronRight className='size-5!' />
+  const columns = useMemo(
+    () =>
+      [
+        columnHelper.accessor('key', {
+          id: 'key',
+          cell: ({ row, getValue }) => {
+            const expandStyle = row.getCanExpand() ? undefined : { cursor: 'default' }
+            return (
+              <div
+                className='flex justify-between'
+                style={{
+                  paddingLeft: `${row.depth * 2}rem`,
+                }}
+              >
+                <button onClick={row.getToggleExpandedHandler()} className='flex' style={{ ...expandStyle }}>
+                  {row.getCanExpand() && (
+                    <div className='flex h-full flex-col justify-center'>
+                      {row.getIsExpanded() ? (
+                        <HiOutlineChevronDown className='size-5!' />
+                      ) : (
+                        <HiOutlineChevronRight className='size-5!' />
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
-              <div className='flex h-full flex-col justify-center'>
-                <span
-                  className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} text-primary mb-0 inline font-normal`}
-                >
-                  {getValue()}
-                </span>
-              </div>
-            </button>
-            {row.original.description && (
-              <Popover>
-                <PopoverTrigger asChild className='flex flex-col justify-center'>
-                  <Button variant='ghost' size='icon' className='hover:bg-transparent'>
-                    <HiOutlineInformationCircle className='text-muted-foreground size-4' />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  side='right'
-                  className='border-border-card bg-muted text-muted-foreground border text-sm'
-                >
-                  <span>{row.original.description}</span>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-        )
-      },
-      header: ({ table }) => (
-        <div className='flex items-center justify-between'>
-          <button disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
-            {useTreeData && (
-              <div className='flex h-[28px] flex-col justify-center'>
-                {table.getIsAllRowsExpanded() ? (
-                  <HiOutlineChevronDown className='size-5!' />
-                ) : (
-                  <HiOutlineChevronRight className='size-5!' />
+                  <div className='flex h-full flex-col justify-center'>
+                    <span
+                      className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} text-primary mb-0 inline font-normal`}
+                    >
+                      {getValue()}
+                    </span>
+                  </div>
+                </button>
+                {row.original.description && (
+                  <Popover>
+                    <PopoverTrigger asChild className='flex flex-col justify-center'>
+                      <Button variant='ghost' size='icon' className='hover:bg-transparent'>
+                        <HiOutlineInformationCircle className='text-muted-foreground size-4' />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side='right'
+                      className='border-border-card bg-muted text-muted-foreground border text-sm'
+                    >
+                      <span>{row.original.description}</span>
+                    </PopoverContent>
+                  </Popover>
                 )}
               </div>
-            )}
-            <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
-          </button>
-          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='shadow-none'>
-            {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
-          </Button>
-        </div>
-      ),
-    }),
-    columnHelper.accessor('value', {
-      id: 'value',
-      cell: ({ row, getValue }) =>
-        edit === (useTreeData ? row.original.originalKey : row.original.key) ? (
-          editInput(row.getValue('key'), getValue().toString())
-        ) : (
-          <span className='text-primary mb-0 font-normal'>{getValue() || ' '}</span>
-        ),
-      header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.value')}</span>,
-    }),
-    columnHelper.display({
-      id: 'actions',
-      cell: ({ row }) => {
-        const key = useTreeData ? (row.original.originalKey ?? '') : row.original.key
-        const isRW = data.rwVars?.includes(key)
-        return isRW ? (
-          <span className='text-primary mb-0 font-normal'>
-            <Button
-              disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
-              onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
-              variant='secondary'
-              className='shadow-none'
-            >
-              <HiOutlinePencilSquare className='size-4!' />
-            </Button>
-          </span>
-        ) : null
-      },
-    }),
-  ].filter((column) => column.id !== 'actions' || anyRW) // Hide actions column if there are no RW vars
+            )
+          },
+          header: ({ table }) => (
+            <div className='flex items-center justify-between'>
+              <button disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
+                {useTreeData && (
+                  <div className='flex h-[28px] flex-col justify-center'>
+                    {table.getIsAllRowsExpanded() ? (
+                      <HiOutlineChevronDown className='size-5!' />
+                    ) : (
+                      <HiOutlineChevronRight className='size-5!' />
+                    )}
+                  </div>
+                )}
+                <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
+              </button>
+              <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='shadow-none'>
+                {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
+              </Button>
+            </div>
+          ),
+        }),
+        columnHelper.accessor('value', {
+          id: 'value',
+          cell: ({ row, getValue }) =>
+            edit === (useTreeData ? row.original.originalKey : row.original.key) ? (
+              editInput(row.getValue('key'), getValue().toString())
+            ) : (
+              <span className='text-primary mb-0 font-normal'>{getValue() || ' '}</span>
+            ),
+          header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.value')}</span>,
+        }),
+        columnHelper.display({
+          id: 'actions',
+          cell: ({ row }) => {
+            const key = useTreeData ? (row.original.originalKey ?? '') : row.original.key
+            const isRW = data.rwVars?.includes(key)
+            return isRW ? (
+              <span className='text-primary mb-0 font-normal'>
+                <Button
+                  disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
+                  onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
+                  variant='secondary'
+                  className='shadow-none'
+                >
+                  <HiOutlinePencilSquare className='size-4!' />
+                </Button>
+              </span>
+            ) : null
+          },
+        }),
+      ].filter((column) => column.id !== 'actions' || anyRW), // Hide actions column if there are no RW vars
+    [t, useTreeData, anyRW]
+  )
 
   const tableConfig = {
     data: flatData,
@@ -336,4 +340,4 @@ export default function NutGrid({ data }: Props) {
   )
 }
 
-export const MemoizedGrid = React.memo(NutGrid, (prev, next) => prev.data.vars === next.data.vars) as typeof NutGrid
+export const MemoizedGrid = memo(NutGrid, (prev, next) => prev.data.vars === next.data.vars) as typeof NutGrid
