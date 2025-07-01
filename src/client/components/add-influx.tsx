@@ -41,7 +41,7 @@ export default function AddInflux({
 
   const toggleShowPassword = () => setShowPassword(!showPassword)
 
-  const handleTestConnection = async () => {
+  const handleTestConnection = () => {
     if (server && token && org && bucket) {
       startTransition(async () => {
         const promise = testInfluxConnectionAction(server, token, org, bucket, interval)
@@ -165,7 +165,7 @@ export default function AddInflux({
             <Button
               variant='secondary'
               disabled={connecting}
-              onClick={async () => handleClearForm()}
+              onClick={() => handleClearForm()}
               className='cursor-pointer font-bold shadow-none'
               type='button'
             >
@@ -174,7 +174,7 @@ export default function AddInflux({
             <Button
               variant='destructive'
               disabled={connecting}
-              onClick={async () => handleTestConnection()}
+              onClick={() => handleTestConnection()}
               className='cursor-pointer font-bold shadow-none'
               type='button'
             >

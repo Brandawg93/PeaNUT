@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useContext, memo } from 'react'
+import React, { useContext, memo, useMemo } from 'react'
 import { LanguageContext } from '@/client/context/language'
-import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { createColumnHelper, getCoreRowModel, useReactTable, flexRender } from '@tanstack/react-table'
 import { DevicesData, DEVICE } from '@/common/types'
-import { useMemo } from 'react'
 import { Button } from '@/client/components/ui/button'
 import { Progress } from '@/client/components/ui/progress'
 import {
@@ -19,7 +18,6 @@ import { upsStatus } from '@/common/constants'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
-import { flexRender } from '@tanstack/react-table'
 
 type Props = Readonly<{
   data: DevicesData
@@ -143,7 +141,7 @@ export default function DeviceGrid({ data }: Props) {
 
   const tableData = useMemo(
     () =>
-      (data?.devices || []).filter((device) => {
+      (data?.devices ?? []).filter((device) => {
         return device?.vars && Object.keys(device.vars).length > 0 && device.vars['ups.status']?.value !== 'N/A'
       }),
     [data?.devices]
@@ -183,8 +181,8 @@ export default function DeviceGrid({ data }: Props) {
 
 export const MemoizedDeviceGrid = memo(DeviceGrid, (prev, next) => {
   // Only re-render if relevant device data has changed
-  const prevDevices = prev.data.devices || []
-  const nextDevices = next.data.devices || []
+  const prevDevices = prev.data.devices ?? []
+  const nextDevices = next.data.devices ?? []
 
   // Check if devices array length changed
   if (prevDevices.length !== nextDevices.length) {

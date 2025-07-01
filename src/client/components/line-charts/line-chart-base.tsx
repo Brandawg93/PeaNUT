@@ -64,7 +64,7 @@ export default function LineChartBase(props: Props) {
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
-                    tickFormatter={(timeStr) =>
+                    tickFormatter={(timeStr: string) =>
                       new Date(timeStr).toLocaleTimeString(lng, {
                         hour: 'numeric',
                         minute: 'numeric',
@@ -91,7 +91,7 @@ export default function LineChartBase(props: Props) {
                   />
                   <ChartLegend
                     verticalAlign='top'
-                    content={<ChartLegendContent handleClick={(e) => onLegendClick && onLegendClick(e)} />}
+                    content={<ChartLegendContent handleClick={(e: Payload) => onLegendClick && onLegendClick(e)} />}
                   />
                   <CartesianGrid horizontal vertical />
                   {referenceLineData?.map((line) => (
@@ -109,19 +109,20 @@ export default function LineChartBase(props: Props) {
                       <ChartTooltipContent
                         unit={unit}
                         labelKey='time'
-                        labelFormatter={(value, payload) =>
-                          new Date(payload[0].payload.time).toLocaleTimeString(lng, {
+                        labelFormatter={(value, payload) => {
+                          const timeValue = (payload[0]?.payload as { time?: string })?.time
+                          return new Date(timeValue ?? '').toLocaleTimeString(lng, {
                             hour: 'numeric',
                             minute: 'numeric',
                             second: 'numeric',
                             hour12: localStorage.getItem('use24Hour') !== 'true',
                           })
-                        }
+                        }}
                       />
                     }
                   />
                   {data.length > 0 &&
-                    Object.keys(data[0])
+                    Object.keys(data[0] as Record<string, unknown>)
                       .filter((k) => k !== 'time')
                       .map((key) => (
                         <Line

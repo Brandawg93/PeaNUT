@@ -45,7 +45,7 @@ export default function Kpi({ text, description, onClick }: Props) {
         role: 'button',
         tabIndex: 0,
         onClick: onClickHandler,
-        onKeyUp: (e: any) => {
+        onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => {
           if (e.key === 'Enter' && onClickHandler) {
             onClickHandler()
           }

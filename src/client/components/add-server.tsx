@@ -210,7 +210,7 @@ export default function AddServer({
               <div />
               <Button
                 variant='destructive'
-                onClick={async () => handleTestConnection()}
+                onClick={() => handleTestConnection()}
                 className='cursor-pointer font-bold shadow-none'
                 type='button'
               >

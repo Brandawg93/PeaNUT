@@ -79,14 +79,14 @@ export default function SettingsWrapper({
   const loadSettings = async () => {
     const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, format, timeFormat] =
       await Promise.all([
-        getSettingsAction('NUT_SERVERS'),
-        getSettingsAction('INFLUX_HOST'),
-        getSettingsAction('INFLUX_TOKEN'),
-        getSettingsAction('INFLUX_ORG'),
-        getSettingsAction('INFLUX_BUCKET'),
-        getSettingsAction('INFLUX_INTERVAL'),
-        getSettingsAction('DATE_FORMAT'),
-        getSettingsAction('TIME_FORMAT'),
+        getSettingsAction('NUT_SERVERS') as Promise<Array<server>>,
+        getSettingsAction('INFLUX_HOST') as Promise<string>,
+        getSettingsAction('INFLUX_TOKEN') as Promise<string>,
+        getSettingsAction('INFLUX_ORG') as Promise<string>,
+        getSettingsAction('INFLUX_BUCKET') as Promise<string>,
+        getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
+        getSettingsAction('DATE_FORMAT') as Promise<string>,
+        getSettingsAction('TIME_FORMAT') as Promise<string>,
       ])
     if (servers?.length) {
       setServerList([
@@ -151,7 +151,7 @@ export default function SettingsWrapper({
     })
   }
 
-  const handleServerRemove = async (index: number) => {
+  const handleServerRemove = (index: number) => {
     setServerList((prevList) => prevList.filter((_, i) => i !== index))
   }
 

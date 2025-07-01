@@ -74,7 +74,7 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
         currentLevel.push(newItem)
       }
 
-      currentLevel = cache[currentPath].children || []
+      currentLevel = cache[currentPath].children ?? []
     }
   })
 
@@ -253,14 +253,15 @@ export default function NutGrid({ data }: Props) {
     try {
       const res = await saveVar(data.name, key, value)
       if (res?.error) {
-        toast.error(res.error)
+        toast.error(String(res.error))
         return
       }
       // eslint-disable-next-line react-compiler/react-compiler
       data.vars[key].value = value
       handleClose()
-    } catch (e: any) {
-      toast.error(e.message)
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e)
+      toast.error(message)
     }
   }
 
@@ -272,7 +273,7 @@ export default function NutGrid({ data }: Props) {
         defaultValue={value}
       />
       <div className='flex'>
-        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
+        <Button className='px-2' size='icon' onClick={() => handleSave(key, value)} variant='ghost'>
           <HiOutlineCheckCircle className='size-6! text-green-500' />
         </Button>
         <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
