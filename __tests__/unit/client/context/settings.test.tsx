@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, act, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SettingsProvider, useSettings } from '@/client/context/settings'
 import { getSettings } from '@/app/actions'
 import { SettingsType } from '@/server/settings'
@@ -27,17 +27,18 @@ describe('Settings Context', () => {
     jest.clearAllMocks()
   })
 
-  it('provides initial empty settings', () => {
-    act(() => {
-      render(
-        <SettingsProvider>
-          <TestComponent />
-        </SettingsProvider>
-      )
-    })
+  it('provides initial empty settings', async () => {
+    render(
+      <SettingsProvider>
+        <TestComponent />
+      </SettingsProvider>
+    )
 
-    expect(screen.getByTestId('date-format')).toHaveTextContent('')
-    expect(screen.getByTestId('time-format')).toHaveTextContent('')
+    // Wait for the initial settings to load (which will be empty due to mock)
+    await waitFor(() => {
+      expect(screen.getByTestId('date-format')).toHaveTextContent('')
+      expect(screen.getByTestId('time-format')).toHaveTextContent('')
+    })
   })
 
   it('fetches and provides settings on mount', async () => {
