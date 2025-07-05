@@ -46,8 +46,9 @@ export class Nut {
     const socket = new PromiseSocket()
     try {
       await socket.connect(this.port, this.host)
-    } catch (e: any) {
-      return Promise.reject(new Error(`Connection failed: ${e.message}`))
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e)
+      return Promise.reject(new Error(`Connection failed: ${message}`))
     }
     if (checkCredentials) {
       await this.checkCredentials(socket)
@@ -67,7 +68,7 @@ export class Nut {
     socket?: PromiseSocket
   ): Promise<string> {
     // use existing socket if it exists, otherwise establish a new connection
-    const connection = socket || (await this.getConnection(checkCredentials))
+    const connection = socket ?? (await this.getConnection(checkCredentials))
     await connection.write(command)
     const data = await connection.readAll(command, until).catch((error) => {
       if (command.startsWith('LIST VAR')) {
@@ -87,7 +88,7 @@ export class Nut {
   }
 
   public async checkCredentials(socket?: PromiseSocket): Promise<void> {
-    const connection = socket || (await this.getConnection())
+    const connection = socket ?? (await this.getConnection())
     if (this.username) {
       const command = `USERNAME ${this.username}`
       await connection.write(command)
@@ -142,9 +143,10 @@ export class Nut {
         .then(() => {
           resolve('Connection successful')
         })
-        .catch((error: any) => {
-          console.error(error?.message)
-          reject(new Error(error?.message))
+        .catch((error: unknown) => {
+          const message = error instanceof Error ? error.message : String(error)
+          console.error(message)
+          reject(new Error(message))
         })
     })
   }
@@ -183,7 +185,7 @@ export class Nut {
     }
     const vars: VARS = {}
     const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
-    for await (const line of lines) {
+    for (const line of lines) {
       const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
       const value = line.split('"')[1].trim()
       const description = await this.getVarDescription(key, device, socket)

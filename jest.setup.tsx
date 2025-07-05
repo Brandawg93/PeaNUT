@@ -31,6 +31,9 @@ jest.mock('lucide-react', () => ({
   ChevronRight: jest.fn(),
   Check: jest.fn(),
   Circle: jest.fn(),
+  ChevronDownIcon: jest.fn(() => <div data-testid='chevron-down-icon' />),
+  CheckIcon: jest.fn(() => <div data-testid='check-icon' />),
+  ChevronUpIcon: jest.fn(() => <div data-testid='chevron-up-icon' />),
 }))
 
 jest.mock('recharts', () => {

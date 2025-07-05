@@ -96,8 +96,8 @@ describe('actions', () => {
     expect(data?.data?.['battery.charge']).toEqual('test')
   })
 
-  it('tests connection', () => {
-    expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
+  it('tests connection', async () => {
+    await expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
