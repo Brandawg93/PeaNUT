@@ -1,0 +1,15 @@
+apiVersion: v2
+name: pea-nut
+description: A Helm chart for running PeaNUT in Kubernetes
+
+type: application
+
+######
+# Changes 
+# 0.1.0: Initial version
+######
+version: 0.1.0
+
+# This helm chart doesn't need to match the version of the PeaNUT release, but
+# should reflect the latest release version when the chart was last updated.
+appVersion: "5.8.0"
