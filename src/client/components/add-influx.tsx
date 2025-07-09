@@ -1,13 +1,13 @@
 import React, { useContext, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
-import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { Button } from '@/client/components/ui/button'
 import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { Card } from '@/client/components/ui/card'
+import PasswordInput from '@/client/components/ui/password-input'
 
 type AddInfluxProps = Readonly<{
   initialValues: { server: string; token: string; org: string; bucket: string; interval: number }
@@ -36,10 +36,7 @@ export default function AddInflux({
   const [org, setOrg] = useState<string>(initialValues.org)
   const [bucket, setBucket] = useState<string>(initialValues.bucket)
   const [interval, setInterval] = useState<number>(initialValues.interval)
-  const [showPassword, setShowPassword] = useState<boolean>(false)
   const [connecting, startTransition] = useTransition()
-
-  const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = () => {
     if (server && token && org && bucket) {
@@ -90,32 +87,17 @@ export default function AddInflux({
           </div>
           <div className='mb-6'>
             <Label htmlFor='influxToken'>{t('connect.token')}</Label>
-            <div className='flex'>
-              <Input
-                required
-                type={showPassword ? 'text' : 'password'}
-                id='influxToken'
-                value={token}
-                onChange={(e) => {
-                  setToken(e.target.value)
-                  handleChange(server, e.target.value, org, bucket, interval)
-                }}
-                className='border-border-card bg-background! z-10 mt-1 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
-                data-testid='token'
-              />
-              <Button
-                size='icon'
-                data-testid='show-password'
-                onClick={toggleShowPassword}
-                className='border-border-card bg-background relative mt-1 cursor-pointer overflow-hidden rounded-l-none border border-l-0 p-0'
-                variant='ghost'
-                type='button'
-              >
-                <div className='text-muted-foreground'>
-                  {showPassword ? <HiOutlineEyeSlash className='stroke-1' /> : <HiOutlineEye className='stroke-1' />}
-                </div>
-              </Button>
-            </div>
+            <PasswordInput
+              required
+              id='influxToken'
+              value={token}
+              onChange={(e) => {
+                setToken(e.target.value)
+                handleChange(server, e.target.value, org, bucket, interval)
+              }}
+              data-testid='token'
+              buttonTestId='show-password'
+            />
           </div>
           <div className='mb-6'>
             <Label htmlFor='influxOrg'>{t('connect.org')}</Label>

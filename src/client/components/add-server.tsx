@@ -1,13 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
-import { HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
+import { HiOutlineXMark } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { Button } from '@/client/components/ui/button'
 import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { Card } from '@/client/components/ui/card'
+import PasswordInput from '@/client/components/ui/password-input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/client/components/ui/tooltip'
 
 const PING_INTERVAL = 10000
@@ -40,9 +41,7 @@ export default function AddServer({
   const [port, setPort] = useState<number>(initialPort ?? 3493)
   const [username, setUsername] = useState<string | undefined>(initialUsername ?? '')
   const [password, setPassword] = useState<string | undefined>(initialPassword ?? '')
-  const [showPassword, setShowPassword] = useState<boolean>(false)
   const [connectionStatus, setConnectionStatus] = useState<'success' | 'error' | 'untested'>('untested')
-  const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async (hideToast = false) => {
     if (server && port) {
@@ -180,31 +179,15 @@ export default function AddServer({
             </div>
             <div className='mb-6'>
               <Label htmlFor='password'>{t('connect.password')}</Label>
-              <div className='flex'>
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  id='password'
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value)
-                    handleChange(server, port, username, e.target.value)
-                  }}
-                  className='border-border-card bg-background! z-10 mt-1 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
-                  data-testid='password'
-                />
-                <Button
-                  size='icon'
-                  data-testid='toggle-password'
-                  onClick={toggleShowPassword}
-                  className='border-border-card bg-background relative mt-1 cursor-pointer overflow-hidden rounded-l-none border border-l-0 p-0'
-                  variant='ghost'
-                  type='button'
-                >
-                  <div className='text-muted-foreground'>
-                    {showPassword ? <HiOutlineEyeSlash className='stroke-1' /> : <HiOutlineEye className='stroke-1' />}
-                  </div>
-                </Button>
-              </div>
+              <PasswordInput
+                id='password'
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  handleChange(server, port, username, e.target.value)
+                }}
+                data-testid='password'
+              />
             </div>
             <div className='flex flex-row justify-between'>
               <div />
