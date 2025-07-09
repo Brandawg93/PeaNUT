@@ -29,7 +29,7 @@ export default function LoginForm() {
             <Label htmlFor='username'>{t('login.username')}</Label>
             <div className='flex'>
               <Input
-                className='border-border-card bg-background z-10 px-3 py-2'
+                className='border-border-card bg-background! z-10 mt-1 px-3 py-2'
                 id='username'
                 name='username'
                 placeholder={t('login.usernamePlaceholder')}
@@ -41,7 +41,7 @@ export default function LoginForm() {
             <Label htmlFor='password'>{t('login.password')}</Label>
             <div className='flex'>
               <Input
-                className='border-border-card bg-background z-10 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
+                className='border-border-card bg-background! z-10 mt-1 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
                 id='password'
                 type={showPassword ? 'text' : 'password'}
                 name='password'
@@ -53,7 +53,7 @@ export default function LoginForm() {
                 size='icon'
                 data-testid='toggle-password'
                 onClick={toggleShowPassword}
-                className='border-border-card bg-background relative overflow-hidden rounded-l-none border border-l-0 p-0'
+                className='border-border-card bg-background relative mt-1 overflow-hidden rounded-l-none border border-l-0 p-0'
                 variant='ghost'
                 type='button'
               >
