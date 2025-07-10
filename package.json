@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
-    "dev": "docker compose up -d && next dev --turbopack && docker compose down",
+    "dev": "docker compose up -d && (next dev --turbopack || true) && docker compose down",
     "build": "next build",
     "build:turbo": "next build --turbopack",
-    "build:local": "npm run build && cp -r .next/static .next/standalone/.next/",
+    "build:local": "npm run build:turbo && cp -r .next/static .next/standalone/.next/",
     "build:analyze": "ANALYZE=true next build",
     "start": "HOSTNAME=$WEB_HOST PORT=$WEB_PORT node server.js",
     "start:local": "node .next/standalone/server.js",
