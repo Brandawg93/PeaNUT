@@ -365,9 +365,23 @@ describe('Nut', () => {
   })
 
   describe('deviceExists', () => {
-    it('should return true when device exists', async () => {
+    const createNutWithMockDevices = (
+      devices: Array<{
+        name: string
+        description: string
+        rwVars: string[]
+        commands: string[]
+        clients: string[]
+        vars: Record<string, any>
+      }>
+    ) => {
       const nut = new Nut('localhost', 3493)
-      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue([
+      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue(devices)
+      return nut
+    }
+
+    it('should return true when device exists', async () => {
+      const nut = createNutWithMockDevices([
         { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
         { name: 'ups2', description: 'test2', rwVars: [], commands: [], clients: [], vars: {} },
       ])
@@ -377,8 +391,7 @@ describe('Nut', () => {
     })
 
     it('should return false when device does not exist', async () => {
-      const nut = new Nut('localhost', 3493)
-      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue([
+      const nut = createNutWithMockDevices([
         { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
         { name: 'ups2', description: 'test2', rwVars: [], commands: [], clients: [], vars: {} },
       ])
@@ -388,36 +401,32 @@ describe('Nut', () => {
     })
 
     it('should return false when no devices are available', async () => {
-      const nut = new Nut('localhost', 3493)
-      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue([])
+      const nut = createNutWithMockDevices([])
 
       const exists = await nut.deviceExists('anydevice')
       expect(exists).toBe(false)
     })
 
     it('should be case sensitive', async () => {
-      const nut = new Nut('localhost', 3493)
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'UPS1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} }])
+      const nut = createNutWithMockDevices([
+        { name: 'UPS1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
 
       const exists = await nut.deviceExists('ups1')
       expect(exists).toBe(false)
     })
 
     it('should handle exact match', async () => {
-      const nut = new Nut('localhost', 3493)
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} }])
+      const nut = createNutWithMockDevices([
+        { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
 
       const exists = await nut.deviceExists('ups1')
       expect(exists).toBe(true)
     })
 
     it('should handle partial matches correctly', async () => {
-      const nut = new Nut('localhost', 3493)
-      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue([
+      const nut = createNutWithMockDevices([
         { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
         { name: 'ups1-backup', description: 'test2', rwVars: [], commands: [], clients: [], vars: {} },
       ])
