@@ -66,8 +66,8 @@ RUN addgroup --system --gid ${PGID} nodejs && \
     adduser --system --uid ${PUID} nextjs
 
 # Copy built application
-COPY --link --from=build --chown=${PUID}:${PGID} /app/.next/standalone ./
-COPY --link --from=build --chown=${PUID}:${PGID} /app/.next/static ./.next/static
+COPY --link --from=build --chown=${PUID}:${PGID} --chmod=755 /app/.next/standalone ./
+COPY --link --from=build --chown=${PUID}:${PGID} --chmod=755 /app/.next/static ./.next/static
 
 # Set environment variables
 ENV CI=true
