@@ -92,6 +92,7 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
@@ -101,6 +102,7 @@ describe('InfluxWriter', () => {
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.floatField).toHaveBeenCalledWith('humidity', 60)
       expect(mockPoint.floatField).toHaveBeenCalledWith('voltage', 120.0)
+      consoleErrorSpy.mockRestore()
     })
 
     it('should write string fields correctly', () => {
@@ -113,6 +115,7 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
@@ -122,6 +125,7 @@ describe('InfluxWriter', () => {
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
       expect(mockPoint.stringField).toHaveBeenCalledWith('model', 'APC Smart-UPS 1500')
       expect(mockPoint.stringField).toHaveBeenCalledWith('serial', 'ABC123')
+      consoleErrorSpy.mockRestore()
     })
 
     it('should write mixed data types correctly', () => {
@@ -135,6 +139,7 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
@@ -143,6 +148,7 @@ describe('InfluxWriter', () => {
       expect(mockPoint.floatField).toHaveBeenCalledWith('voltage', 120.0)
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
       expect(mockPoint.stringField).toHaveBeenCalledWith('model', 'APC Smart-UPS 1500')
+      consoleErrorSpy.mockRestore()
     })
 
     it('should skip writing when device is unreachable', () => {
@@ -154,10 +160,12 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
       expect(writePointMock).not.toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle timestamp when provided as Date', () => {
@@ -169,11 +177,13 @@ describe('InfluxWriter', () => {
       }
       const timestamp = new Date('2023-01-01T12:00:00Z')
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device, timestamp)
 
       expect(writePointMock).toHaveBeenCalled()
       expect(mockPoint.timestamp).toHaveBeenCalledWith(timestamp)
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle timestamp when provided as number', () => {
@@ -185,11 +195,13 @@ describe('InfluxWriter', () => {
       }
       const timestamp = 1672574400000 // Unix timestamp
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device, timestamp)
 
       expect(writePointMock).toHaveBeenCalled()
       expect(mockPoint.timestamp).toHaveBeenCalledWith(timestamp)
+      consoleErrorSpy.mockRestore()
     })
 
     it('should not add timestamp when not provided', () => {
@@ -200,11 +212,13 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
       expect(writePointMock).toHaveBeenCalled()
       expect(mockPoint.timestamp).not.toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle writePoint errors gracefully', () => {
@@ -259,10 +273,12 @@ describe('InfluxWriter', () => {
         vars: {},
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
       expect(writePointMock).not.toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle device with null/undefined values', () => {
@@ -275,12 +291,14 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
       // Should only write the valid numeric field
       expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(mockPoint.floatField).toHaveBeenCalledWith('valid', 25.5)
+      consoleErrorSpy.mockRestore()
     })
 
     it('should handle device with complex var descriptions', () => {
@@ -302,12 +320,14 @@ describe('InfluxWriter', () => {
         },
       }
 
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
       expect(writePointMock).toHaveBeenCalledTimes(2)
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
+      consoleErrorSpy.mockRestore()
     })
   })
 
