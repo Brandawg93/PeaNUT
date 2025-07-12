@@ -62,6 +62,14 @@ export default class PromiseSocket {
             cleanup()
             resolve(buf)
           }
+          if (buf.startsWith('ERR')) {
+            const newlineIndex = buf.indexOf('\n')
+            if (newlineIndex !== -1) {
+              cleanup()
+              reject(new Error(buf.slice(0, newlineIndex + 1)))
+              return
+            }
+          }
         }
 
         const onEnd = () => {

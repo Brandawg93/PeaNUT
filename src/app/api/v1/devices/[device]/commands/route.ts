@@ -26,9 +26,11 @@ import { getSingleNutInstance } from '@/app/api/utils'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
   const nut = await getSingleNutInstance(device)
-  const data = await nut?.getCommands(device)
-  if (data === undefined) {
+  try {
+    const data = await nut?.getCommands(device)
+    return NextResponse.json(data)
+  } catch (e) {
+    console.error(e)
     return NextResponse.json(`Device ${device} not found`, { status: 404 })
   }
-  return NextResponse.json(data)
 }

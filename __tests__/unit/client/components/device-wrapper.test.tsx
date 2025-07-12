@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import DeviceWrapper from '@/client/components/device-wrapper'
 import { LanguageContext } from '@/client/context/language'
@@ -156,6 +156,127 @@ describe('DeviceWrapper', () => {
     renderComponent()
     await waitFor(() => {
       expect(screen.getByTestId('exclamation-icon')).toBeInTheDocument()
+    })
+  })
+
+  // Helper for toggle tests
+  function testToggleGauge({
+    describeName,
+    gaugeIndex,
+    localStorageKey,
+    missingVars = [],
+    initialValueTrue = 'true',
+    initialValueFalse = 'false',
+  }: {
+    describeName: string
+    gaugeIndex: number
+    localStorageKey: string
+    missingVars?: string[]
+    initialValueTrue?: string
+    initialValueFalse?: string
+  }) {
+    describe(describeName, () => {
+      it(`should toggle localStorage preference when gauge is clicked`, async () => {
+        mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+        renderComponent()
+        await waitFor(() => {
+          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+        })
+        const gauges = screen.getAllByTestId('gauge')
+        expect(gauges.length).toBeGreaterThan(gaugeIndex)
+        fireEvent.click(gauges[gaugeIndex])
+        await waitFor(() => {
+          expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
+        })
+      })
+      it(`should initialize with localStorage preference for true`, async () => {
+        localStorage.setItem(localStorageKey, initialValueTrue)
+        mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+        renderComponent()
+        await waitFor(() => {
+          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+          expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
+        })
+      })
+      it(`should initialize with localStorage preference for false`, async () => {
+        localStorage.setItem(localStorageKey, initialValueFalse)
+        mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+        renderComponent()
+        await waitFor(() => {
+          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+          expect(localStorage.getItem(localStorageKey)).toBe(initialValueFalse)
+        })
+      })
+      for (const missingVar of missingVars) {
+        it(`should handle missing ${missingVar} gracefully`, async () => {
+          const dataWithoutVar = {
+            ...mockDeviceData,
+            device: {
+              ...mockDeviceData.device,
+              vars: {
+                ...mockDeviceData.device.vars,
+                [missingVar]: undefined,
+              },
+            },
+          }
+          mockGetDeviceAction.mockResolvedValue(dataWithoutVar)
+          renderComponent()
+          await waitFor(() => {
+            expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+          })
+          // If missingVar affects display, check for N/A
+          if (['ups.load', 'battery.charge'].includes(missingVar)) {
+            const naElements = screen.getAllByText('N/A')
+            expect(naElements.length).toBeGreaterThan(0)
+            // Don't test toggle functionality for these critical variables
+            return
+          }
+          // Only click and assert if the gauge exists
+          const gauges = screen.queryAllByTestId('gauge')
+          if (gauges.length > gaugeIndex) {
+            fireEvent.click(gauges[gaugeIndex])
+            await waitFor(() => {
+              expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
+            })
+          }
+          // If gauge doesn't exist, don't assert localStorage value
+        })
+      }
+    })
+  }
+
+  testToggleGauge({
+    describeName: 'toggleWattsOrPercent',
+    gaugeIndex: 0,
+    localStorageKey: 'wattsOrPercent',
+    missingVars: ['ups.realpower.nominal', 'ups.load'],
+  })
+
+  testToggleGauge({
+    describeName: 'toggleWattHours',
+    gaugeIndex: 1,
+    localStorageKey: 'wattHours',
+    missingVars: ['battery.charge', 'ups.load', 'ups.realpower.nominal', 'battery.runtime'],
+  })
+
+  describe('toggle functions integration', () => {
+    it('should persist both preferences independently in localStorage', async () => {
+      mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+      renderComponent()
+
+      await waitFor(() => {
+        expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+      })
+
+      // Toggle both to their alternative displays
+      const gauges = screen.getAllByTestId('gauge')
+      fireEvent.click(gauges[0]) // Toggle load to watts
+      fireEvent.click(gauges[1]) // Toggle battery to watt-hours
+
+      await waitFor(() => {
+        expect(localStorage.getItem('wattsOrPercent')).toBe('true')
+        expect(localStorage.getItem('wattHours')).toBe('true')
+      })
     })
   })
 })

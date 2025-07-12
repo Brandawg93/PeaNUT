@@ -5,8 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const removeImports = require('next-remove-imports')()
-
 const nextConfig = {
   output: 'standalone',
   basePath: process.env.BASE_PATH,
@@ -24,5 +22,4 @@ const nextConfig = {
   },
 }
 
-module.exports =
-  process.env.ANALYZE === 'true' ? withBundleAnalyzer(removeImports(nextConfig)) : removeImports(nextConfig)
+module.exports = process.env.ANALYZE === 'true' ? withBundleAnalyzer(nextConfig) : nextConfig

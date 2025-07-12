@@ -48,7 +48,7 @@ export class YamlSettings {
           this.data[key] = envValue
         }
       } catch (error) {
-        console.error(`Error parsing environment variable ${key}: ${error}`)
+        console.error(`Error parsing environment variable ${key}:`, error)
       }
     }
 
@@ -89,7 +89,7 @@ export class YamlSettings {
         this.save()
       }
     } catch (error) {
-      console.error(`Error loading settings file: ${error instanceof Error ? error.message : error}`)
+      console.error('Error loading settings file:', error instanceof Error ? error.message : error)
     }
 
     // Ensure NUT_SERVERS is always an array using nullish coalescing
@@ -129,7 +129,7 @@ export class YamlSettings {
       this.data = { ...ISettings, ...fileData }
       this.save()
     } catch (error) {
-      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : error}`)
+      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 }

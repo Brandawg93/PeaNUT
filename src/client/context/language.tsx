@@ -21,5 +21,19 @@ i18next
 export const LanguageContext = createContext(i18next.language)
 
 export default function LanguageProvider({ children }: { readonly children: React.ReactNode }) {
-  return <LanguageContext.Provider value={i18next.language}>{children}</LanguageContext.Provider>
+  const [currentLanguage, setCurrentLanguage] = React.useState(i18next.language)
+
+  React.useEffect(() => {
+    const handleLanguageChange = () => {
+      setCurrentLanguage(i18next.language)
+    }
+
+    i18next.on('languageChanged', handleLanguageChange)
+
+    return () => {
+      i18next.off('languageChanged', handleLanguageChange)
+    }
+  }, [])
+
+  return <LanguageContext.Provider value={currentLanguage}>{children}</LanguageContext.Provider>
 }
