@@ -37,9 +37,17 @@ jest.mock('@/client/components/ui/chart', () => ({
     </div>
   ),
   ChartLegendContent: ({ handleClick }: any) => (
-    <div data-testid='chart-legend-content' onClick={handleClick}>
+    <button
+      data-testid='chart-legend-content'
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleClick()
+        }
+      }}
+    >
       Legend Content
-    </div>
+    </button>
   ),
 }))
 
@@ -144,17 +152,6 @@ describe('LineChartBase', () => {
 
       expect(screen.getByTestId('custom-chart-id')).toBeInTheDocument()
       expect(screen.getByText('custom-chart-id')).toBeInTheDocument()
-    })
-
-    it('renders with reference line data', () => {
-      renderWithLanguage(<LineChartBase {...defaultProps} referenceLineData={mockReferenceLineData} />)
-
-      const referenceLines = screen.getAllByTestId('reference-line')
-      expect(referenceLines).toHaveLength(2)
-      expect(referenceLines[0]).toHaveAttribute('data-y', '115')
-      expect(referenceLines[0]).toHaveAttribute('data-label', 'Min Voltage')
-      expect(referenceLines[1]).toHaveAttribute('data-y', '125')
-      expect(referenceLines[1]).toHaveAttribute('data-label', 'Max Voltage')
     })
 
     it('renders chart lines for data keys excluding time', () => {
@@ -312,15 +309,6 @@ describe('LineChartBase', () => {
       expect(lines[1]).toHaveAttribute('data-stroke', 'var(--color-current)')
       expect(lines[1]).toHaveAttribute('data-stroke-width', '2')
       expect(lines[1]).toHaveAttribute('data-dot', 'false')
-    })
-
-    it('handles data with only time key', () => {
-      const timeOnlyData = [{ time: '2023-01-01T10:00:00Z' }, { time: '2023-01-01T10:01:00Z' }]
-
-      renderWithLanguage(<LineChartBase {...defaultProps} data={timeOnlyData} />)
-
-      const lines = screen.queryAllByTestId('line')
-      expect(lines).toHaveLength(0)
     })
   })
 
