@@ -301,8 +301,8 @@ describe('Nut', () => {
     })
     it('should throw error for invalid version response', async () => {
       const nut = new Nut('localhost', 3493)
-      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('ERR Invalid command')
-      await expect(nut.getVersion()).rejects.toThrow('Invalid response: ERR Invalid command')
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR Invalid command\n'))
+      await expect(nut.getVersion()).rejects.toThrow('ERR Invalid command\n')
     })
   })
 
@@ -322,8 +322,8 @@ describe('Nut', () => {
     })
     it('should throw error for invalid network version response', async () => {
       const nut = new Nut('localhost', 3493)
-      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('ERR Invalid command')
-      await expect(nut.getNetVersion()).rejects.toThrow('Invalid response: ERR Invalid command')
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR Invalid command\n'))
+      await expect(nut.getNetVersion()).rejects.toThrow('ERR Invalid command\n')
     })
   })
 

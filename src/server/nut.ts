@@ -74,15 +74,12 @@ export class Nut {
       if (command.startsWith('LIST VAR')) {
         return upsStatus.DEVICE_UNREACHABLE
       }
-      throw new Error(`Error response: ${error}`)
+      throw error
     })
     // if we opened a new connection, close it
     if (!socket) {
       await connection.write('LOGOUT')
       await connection.close()
-    }
-    if (data.startsWith('ERR')) {
-      throw new Error(`Invalid response: ${data}`)
     }
     return data
   }

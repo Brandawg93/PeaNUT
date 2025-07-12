@@ -41,11 +41,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
   const paramString = param
   try {
     const data = await nut?.getVar(param, device)
-    if (data === undefined) {
-      return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
-        status: 404,
-      })
-    }
     return NextResponse.json(data)
   } catch (e) {
     console.error(e)
