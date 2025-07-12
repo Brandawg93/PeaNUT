@@ -31,7 +31,10 @@ import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
 
-const getStatus = (status: keyof typeof upsStatus) => {
+const getStatus = (status: string | number | undefined) => {
+  if (!status || typeof status !== 'string') {
+    return <></>
+  }
   if (status === 'OL CHRG') {
     return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
   } else if (status.startsWith('OL')) {
@@ -180,7 +183,12 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
 
   const currentWh = () => {
     if (vars['battery.charge']) {
-      if (vars['ups.load'] && vars['ups.realpower.nominal'] && wattHours) {
+      if (
+        vars['ups.load'] &&
+        vars['ups.realpower.nominal'] &&
+        wattHours &&
+        vars['battery.runtime']?.value !== undefined
+      ) {
         const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
         const capacity = (+vars['battery.runtime'].value / 3600) * currentWattage
         return (
@@ -237,9 +245,11 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
             </div>
             <div>
               <p className='text-2xl font-semibold'>
-                {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
+                {getStatus(vars['ups.status']?.value)}
                 &nbsp;
-                {upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] ||
+                {(vars['ups.status']?.value &&
+                  typeof vars['ups.status'].value === 'string' &&
+                  upsStatus[vars['ups.status'].value as keyof typeof upsStatus]) ||
                   (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
