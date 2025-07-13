@@ -13,6 +13,7 @@ import { Payload } from 'recharts/types/component/DefaultLegendContent'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
 import { LanguageContext } from '@/client/context/language'
 import { useTranslation } from 'react-i18next'
+import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 type ReferenceLineData = Array<{ label: string; value: number }>
 
@@ -33,14 +34,14 @@ export default function LineChartBase(props: Props) {
 
   useEffect(() => {
     // Get stored state from localStorage
-    const storedState = localStorage.getItem(`accordion-${id}`)
+    const storedState = getLocalStorageItem(`accordion-${id}`)
     // Set to stored value if exists, otherwise default to open (id)
     setAccordionValue(storedState === 'closed' ? undefined : id)
   }, [id])
 
   const handleAccordionChange = (value: string) => {
     // Store the new state in localStorage
-    localStorage.setItem(`accordion-${id}`, value === id ? 'open' : 'closed')
+    setLocalStorageItem(`accordion-${id}`, value === id ? 'open' : 'closed')
     setAccordionValue(value)
   }
 
@@ -69,7 +70,7 @@ export default function LineChartBase(props: Props) {
                         hour: 'numeric',
                         minute: 'numeric',
                         second: 'numeric',
-                        hour12: localStorage.getItem('use24Hour') !== 'true',
+                        hour12: getLocalStorageItem('use24Hour') !== 'true',
                       })
                     }
                   />
@@ -115,7 +116,7 @@ export default function LineChartBase(props: Props) {
                             hour: 'numeric',
                             minute: 'numeric',
                             second: 'numeric',
-                            hour12: localStorage.getItem('use24Hour') !== 'true',
+                            hour12: getLocalStorageItem('use24Hour') !== 'true',
                           })
                         }}
                       />

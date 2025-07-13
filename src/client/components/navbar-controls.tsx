@@ -11,6 +11,7 @@ import Refresh from '@/client/components/refresh'
 import TimeTruncation from '@/client/components/time-truncation'
 import LanguageSwitcher from '@/client/components/language-switcher'
 import DayNightSwitch from '@/client/components/daynight'
+import { getLocalStorageItem } from '@/lib/utils'
 
 type Props = Readonly<{
   onRefreshClick: () => void
@@ -23,7 +24,7 @@ type Props = Readonly<{
 export default function NavBarControls(props: Props) {
   const { onRefreshClick, onRefetch, onLogout, disableRefresh, failedServers } = props
   const [refreshInterval, setRefreshInterval] = useState<number>(() => {
-    const stored = localStorage.getItem('refreshInterval')
+    const stored = getLocalStorageItem('refreshInterval')
     return stored !== null ? Number(stored) : 0
   })
   const lng = useContext<string>(LanguageContext)
