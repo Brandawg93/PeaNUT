@@ -58,7 +58,7 @@ describe('Volts', () => {
   it('renders with no output voltage', () => {
     const vars = { ...device.vars }
     delete vars['output.voltage']
-    const { getByTestId } = renderVoltsChart(queryClient, vars, undefined)
+    const { getByTestId } = renderVoltsChart(queryClient, vars)
     expect(getByTestId('volts-chart')).toBeInTheDocument()
   })
 })
