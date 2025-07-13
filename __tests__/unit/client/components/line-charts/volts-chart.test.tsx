@@ -8,21 +8,6 @@ import { TimeRangeProvider } from '@/client/context/time-range'
 import { SettingsProvider } from '@/client/context/settings'
 import { ThemeProvider } from '@/client/context/theme-provider'
 
-// Mock window.matchMedia for next-themes
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-})
-
 const device: DEVICE = {
   vars: {
     'input.voltage': {
