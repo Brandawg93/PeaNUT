@@ -3,6 +3,9 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import DeviceWrapper from '@/client/components/device-wrapper'
 import { LanguageContext } from '@/client/context/language'
+import { TimeRangeProvider } from '@/client/context/time-range'
+import { SettingsProvider } from '@/client/context/settings'
+import { ThemeProvider } from '@/client/context/theme-provider'
 
 // Mock the next/navigation
 jest.mock('next/navigation', () => ({
@@ -33,6 +36,21 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
+})
+
+// Mock window.matchMedia for next-themes
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
 })
 
 const mockDeviceData = {
@@ -79,14 +97,20 @@ describe('DeviceWrapper', () => {
   const renderComponent = () => {
     return render(
       <QueryClientProvider client={queryClient}>
-        <LanguageContext.Provider value='en'>
-          <DeviceWrapper
-            device='test-ups'
-            getDeviceAction={mockGetDeviceAction}
-            runCommandAction={mockRunCommandAction}
-            logoutAction={mockLogoutAction}
-          />
-        </LanguageContext.Provider>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+          <SettingsProvider>
+            <TimeRangeProvider>
+              <LanguageContext.Provider value='en'>
+                <DeviceWrapper
+                  device='test-ups'
+                  getDeviceAction={mockGetDeviceAction}
+                  runCommandAction={mockRunCommandAction}
+                  logoutAction={mockLogoutAction}
+                />
+              </LanguageContext.Provider>
+            </TimeRangeProvider>
+          </SettingsProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     )
   }
