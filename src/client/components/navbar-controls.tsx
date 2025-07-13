@@ -39,13 +39,11 @@ export default function NavBarControls(props: Props) {
   return (
     <div className='flex items-center justify-between space-x-2 pl-2 sm:justify-end'>
       <div className='flex items-center space-x-2'>
-        <div>
-          <TimeTruncation
-            disabled={disableRefresh}
-            onTimeRangeChange={(range) => setTimeRange(range)}
-            timeRange={timeRange}
-          />
-        </div>
+        <TimeTruncation
+          disabled={disableRefresh}
+          onTimeRangeChange={(range) => setTimeRange(range)}
+          timeRange={timeRange}
+        />
         <div>
           <Refresh
             disabled={disableRefresh}
