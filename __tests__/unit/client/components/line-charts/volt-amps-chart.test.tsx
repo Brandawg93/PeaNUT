@@ -7,25 +7,7 @@ import { LanguageContext } from '@/client/context/language'
 import { TimeRangeProvider } from '@/client/context/time-range'
 import { SettingsProvider } from '@/client/context/settings'
 import { ThemeProvider } from '@/client/context/theme-provider'
-
-const device: DEVICE = {
-  vars: {
-    'ups.power': {
-      value: '1',
-    },
-    'device.serial': {
-      value: 'test',
-    },
-    'ups.power.nominal': {
-      value: '1',
-    },
-  },
-  rwVars: [],
-  commands: [],
-  description: 'test',
-  clients: [],
-  name: 'test',
-}
+import { device } from '../../../../__mocks__/chartData'
 
 // Helper function to create a test wrapper component
 const createTestWrapper = (children: React.ReactNode, queryClient: QueryClient) => (
