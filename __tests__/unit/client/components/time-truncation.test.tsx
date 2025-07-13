@@ -24,15 +24,13 @@ describe('TimeTruncation', () => {
   })
 
   it('renders time truncation control', () => {
-    const mockOnTimeRangeChange = jest.fn()
-    renderWithProvider(<TimeTruncation timeRange={0} onTimeRangeChange={mockOnTimeRangeChange} disabled={false} />)
+    renderWithProvider(<TimeTruncation disabled={false} />)
 
     expect(screen.getByTitle('sidebar.timeRange.title')).toBeInTheDocument()
   })
 
   it('is disabled when disabled prop is true', () => {
-    const mockOnTimeRangeChange = jest.fn()
-    renderWithProvider(<TimeTruncation timeRange={0} onTimeRangeChange={mockOnTimeRangeChange} disabled={true} />)
+    renderWithProvider(<TimeTruncation disabled={true} />)
 
     const buttons = screen.getAllByRole('button')
     buttons.forEach((button) => {
@@ -41,8 +39,7 @@ describe('TimeTruncation', () => {
   })
 
   it('has correct button structure', () => {
-    const mockOnTimeRangeChange = jest.fn()
-    renderWithProvider(<TimeTruncation timeRange={0} onTimeRangeChange={mockOnTimeRangeChange} disabled={false} />)
+    renderWithProvider(<TimeTruncation disabled={false} />)
 
     // Should have two buttons: one for the clock icon and one for the dropdown
     const buttons = screen.getAllByRole('button')

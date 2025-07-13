@@ -7,7 +7,6 @@ import { Button } from '@/client/components/ui/button'
 import { TbSettings, TbSettingsExclamation } from 'react-icons/tb'
 import { LuLogOut } from 'react-icons/lu'
 import { LanguageContext } from '@/client/context/language'
-import { useTimeRange } from '@/client/context/time-range'
 import Refresh from '@/client/components/refresh'
 import TimeTruncation from '@/client/components/time-truncation'
 import LanguageSwitcher from '@/client/components/language-switcher'
@@ -23,8 +22,10 @@ type Props = Readonly<{
 
 export default function NavBarControls(props: Props) {
   const { onRefreshClick, onRefetch, onLogout, disableRefresh, failedServers } = props
-  const [refreshInterval, setRefreshInterval] = useState<number>(Number(localStorage.getItem('refreshInterval')) || 0)
-  const { timeRange, setTimeRange } = useTimeRange()
+  const [refreshInterval, setRefreshInterval] = useState<number>(() => {
+    const stored = localStorage.getItem('refreshInterval')
+    return stored !== null ? Number(stored) : 0
+  })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
@@ -39,11 +40,7 @@ export default function NavBarControls(props: Props) {
   return (
     <div className='flex items-center justify-between space-x-2 pl-2 sm:justify-end'>
       <div className='flex items-center space-x-2'>
-        <TimeTruncation
-          disabled={disableRefresh}
-          onTimeRangeChange={(range) => setTimeRange(range)}
-          timeRange={timeRange}
-        />
+        <TimeTruncation disabled={disableRefresh} />
         <div>
           <Refresh
             disabled={disableRefresh}

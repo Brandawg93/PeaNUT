@@ -10,10 +10,9 @@ import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
+import { useTimeRange } from '@/client/context/time-range'
 
 type Props = Readonly<{
-  onTimeRangeChange: (value: number) => void
-  timeRange: number
   disabled: boolean
 }>
 
@@ -28,14 +27,14 @@ const timeRanges = [
 ]
 
 export default function TimeTruncation(props: Props) {
-  const { onTimeRangeChange, timeRange, disabled } = props
+  const { disabled } = props
+  const { timeRange, setTimeRange } = useTimeRange()
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [isOpen, setIsOpen] = React.useState(false)
 
   const handleSelect = (value: number) => {
-    onTimeRangeChange(value)
-    localStorage.setItem('timeRange', `${value}`)
+    setTimeRange(value)
     setIsOpen(false)
   }
 
