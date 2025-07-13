@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import { SettingsProvider, useSettings } from '@/client/context/settings'
 import { getSettings } from '@/app/actions'
 import { SettingsType } from '@/server/settings'
@@ -96,8 +96,10 @@ describe('Settings Context', () => {
       return Promise.resolve('')
     })
 
-    // Click refresh button
-    screen.getByText('Refresh').click()
+    // Click refresh button and wait for the async operation to complete
+    await act(async () => {
+      screen.getByText('Refresh').click()
+    })
 
     // Wait for new settings to load
     await waitFor(() => {

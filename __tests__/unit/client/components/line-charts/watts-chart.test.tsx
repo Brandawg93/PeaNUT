@@ -42,6 +42,33 @@ const device: DEVICE = {
   name: 'test',
 }
 
+// Helper function to create a test wrapper component
+const createTestWrapper = (children: React.ReactNode, queryClient: QueryClient) => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+      <SettingsProvider>
+        <TimeRangeProvider>
+          <LanguageContext.Provider value='en'>{children}</LanguageContext.Provider>
+        </TimeRangeProvider>
+      </SettingsProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+)
+
+// Helper function to render WattsChart with common props
+const renderWattsChart = (queryClient: QueryClient, vars: DEVICE['vars']) => {
+  const chart = (
+    <WattsChart
+      id={device.name}
+      realpower={+vars['ups.realpower'].value}
+      realpowerNominal={+vars['ups.realpower.nominal']?.value}
+      updated={new Date()}
+    />
+  )
+
+  return render(createTestWrapper(chart, queryClient))
+}
+
 describe('Watts', () => {
   let queryClient: QueryClient
 
@@ -56,26 +83,7 @@ describe('Watts', () => {
   })
 
   it('renders', () => {
-    const vars = device.vars
-    const chart = (
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <SettingsProvider>
-            <TimeRangeProvider>
-              <LanguageContext.Provider value='en'>
-                <WattsChart
-                  id={device.name}
-                  realpower={+vars['ups.realpower'].value}
-                  realpowerNominal={+vars['ups.realpower.nominal']?.value}
-                  updated={new Date()}
-                />
-              </LanguageContext.Provider>
-            </TimeRangeProvider>
-          </SettingsProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    )
-    const { getByTestId } = render(chart)
+    const { getByTestId } = renderWattsChart(queryClient, device.vars)
     expect(getByTestId('watts-chart')).toBeInTheDocument()
   })
 })
