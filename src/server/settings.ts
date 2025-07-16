@@ -77,7 +77,18 @@ export class YamlSettings {
 
   private load(): void {
     // Create directory if it doesn't exist
-    fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
+    try {
+      const absolutePath = path.resolve(this.filePath)
+      const dirPath = path.dirname(absolutePath)
+
+      // Check if directory exists first to avoid unnecessary mkdir calls
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true })
+      }
+    } catch (error) {
+      console.error('Error creating config directory:', error instanceof Error ? error.message : error)
+      // Continue without creating directory - settings will still work with environment variables
+    }
 
     try {
       if (fs.existsSync(this.filePath)) {
@@ -86,7 +97,13 @@ export class YamlSettings {
         // Merge settings, giving priority to file data
         this.data = { ...this.data, ...fileData }
       } else {
-        this.save()
+        // Only try to save if we can create the directory
+        try {
+          this.save()
+        } catch (saveError) {
+          console.error('Error saving settings file:', saveError instanceof Error ? saveError.message : saveError)
+          // Continue without saving - settings will work with environment variables
+        }
       }
     } catch (error) {
       console.error('Error loading settings file:', error instanceof Error ? error.message : error)
@@ -97,8 +114,13 @@ export class YamlSettings {
   }
 
   private save(): void {
-    const yamlStr = dump(this.data)
-    fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+    try {
+      const yamlStr = dump(this.data)
+      fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+    } catch (error) {
+      console.error('Error saving settings file:', error instanceof Error ? error.message : error)
+      // Don't throw - allow the application to continue with environment variables
+    }
   }
 
   public get<K extends keyof SettingsType>(key: K): SettingsType[K] {
