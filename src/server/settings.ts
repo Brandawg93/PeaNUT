@@ -98,12 +98,7 @@ export class YamlSettings {
         this.data = { ...this.data, ...fileData }
       } else {
         // Only try to save if we can create the directory
-        try {
-          this.save()
-        } catch (saveError) {
-          console.error('Error saving settings file:', saveError instanceof Error ? saveError.message : saveError)
-          // Continue without saving - settings will work with environment variables
-        }
+        this.save()
       }
     } catch (error) {
       console.error('Error loading settings file:', error instanceof Error ? error.message : error)
@@ -113,13 +108,15 @@ export class YamlSettings {
     this.data.NUT_SERVERS ??= []
   }
 
-  private save(): void {
+  private save(): boolean {
     try {
       const yamlStr = dump(this.data)
       fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+      return true
     } catch (error) {
       console.error('Error saving settings file:', error instanceof Error ? error.message : error)
       // Don't throw - allow the application to continue with environment variables
+      return false
     }
   }
 
@@ -127,14 +124,14 @@ export class YamlSettings {
     return this.data[key]
   }
 
-  public set<K extends keyof SettingsType>(key: K, value: SettingsType[K]): void {
+  public set<K extends keyof SettingsType>(key: K, value: SettingsType[K]): boolean {
     this.data[key] = value
-    this.save()
+    return this.save()
   }
 
-  public delete(key: keyof SettingsType): void {
+  public delete(key: keyof SettingsType): boolean {
     delete this.data[key]
-    this.save()
+    return this.save()
   }
 
   public getAll(): SettingsType {
@@ -145,11 +142,11 @@ export class YamlSettings {
     return dump(this.data)
   }
 
-  public import(contents: string): void {
+  public import(contents: string): boolean {
     try {
       const fileData = load(contents) as SettingsType
       this.data = { ...ISettings, ...fileData }
-      this.save()
+      return this.save()
     } catch (error) {
       throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`)
     }
