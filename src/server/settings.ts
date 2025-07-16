@@ -77,7 +77,18 @@ export class YamlSettings {
 
   private load(): void {
     // Create directory if it doesn't exist
-    fs.mkdirSync(path.dirname(this.filePath), { recursive: true })
+    try {
+      const absolutePath = path.resolve(this.filePath)
+      const dirPath = path.dirname(absolutePath)
+
+      // Check if directory exists first to avoid unnecessary mkdir calls
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true })
+      }
+    } catch (error) {
+      console.error('Error creating config directory:', error instanceof Error ? error.message : error)
+      // Continue without creating directory - settings will still work with environment variables
+    }
 
     try {
       if (fs.existsSync(this.filePath)) {
@@ -86,6 +97,7 @@ export class YamlSettings {
         // Merge settings, giving priority to file data
         this.data = { ...this.data, ...fileData }
       } else {
+        // Only try to save if we can create the directory
         this.save()
       }
     } catch (error) {
@@ -96,23 +108,30 @@ export class YamlSettings {
     this.data.NUT_SERVERS ??= []
   }
 
-  private save(): void {
-    const yamlStr = dump(this.data)
-    fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+  private save(): boolean {
+    try {
+      const yamlStr = dump(this.data)
+      fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+      return true
+    } catch (error) {
+      console.error('Error saving settings file:', error instanceof Error ? error.message : error)
+      // Don't throw - allow the application to continue with environment variables
+      return false
+    }
   }
 
   public get<K extends keyof SettingsType>(key: K): SettingsType[K] {
     return this.data[key]
   }
 
-  public set<K extends keyof SettingsType>(key: K, value: SettingsType[K]): void {
+  public set<K extends keyof SettingsType>(key: K, value: SettingsType[K]): boolean {
     this.data[key] = value
-    this.save()
+    return this.save()
   }
 
-  public delete(key: keyof SettingsType): void {
+  public delete(key: keyof SettingsType): boolean {
     delete this.data[key]
-    this.save()
+    return this.save()
   }
 
   public getAll(): SettingsType {
@@ -123,11 +142,11 @@ export class YamlSettings {
     return dump(this.data)
   }
 
-  public import(contents: string): void {
+  public import(contents: string): boolean {
     try {
       const fileData = load(contents) as SettingsType
       this.data = { ...ISettings, ...fileData }
-      this.save()
+      return this.save()
     } catch (error) {
       throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`)
     }
