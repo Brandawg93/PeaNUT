@@ -101,12 +101,12 @@ export class YamlSettings {
         try {
           this.save()
         } catch (saveError) {
-          console.error('Error saving settings file:', saveError instanceof Error ? saveError.message : saveError)
+          console.error('Error saving settings file:', getErrorMessage(saveError))
           // Continue without saving - settings will work with environment variables
         }
       }
     } catch (error) {
-      console.error('Error loading settings file:', error instanceof Error ? error.message : error)
+      console.error('Error loading settings file:', getErrorMessage(error))
     }
 
     // Ensure NUT_SERVERS is always an array using nullish coalescing
