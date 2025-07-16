@@ -31,7 +31,16 @@
     "settings": "Paramètres",
     "disconnect": "Déconnecter",
     "refresh": "Rafraîchir",
-    "language": "Langue"
+    "language": "Langue",
+    "timeRange": {
+      "title": "Plage de temps",
+      "all": "Toutes les données",
+      "1min": "Dernière minute",
+      "5min": "5 dernières minutes",
+      "30min": "30 dernières minutes",
+      "1hour": "Dernière heure",
+      "24hours": "24 dernières heures"
+    }
   },
   "settings": {
     "title": "Paramètres",

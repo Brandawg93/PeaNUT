@@ -31,6 +31,7 @@ import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
 import { DEVICE } from '@/common/types'
 import { saveVar } from '@/app/actions'
+import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 type Props = Readonly<{
   data: DEVICE
@@ -94,7 +95,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
 
   useEffect(() => {
     // Get stored state from localStorage
-    const storedState = localStorage.getItem(GRID_ID)
+    const storedState = getLocalStorageItem(GRID_ID)
     // Set to stored value if exists, otherwise default to open (id)
     setAccordionOpen(!storedState || storedState === 'open')
   }, [])
@@ -282,7 +283,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
 
   const handleAccordionChange = (value: boolean) => {
     // Store the new state in localStorage
-    localStorage.setItem(GRID_ID, value ? 'open' : 'closed')
+    setLocalStorageItem(GRID_ID, value ? 'open' : 'closed')
     setAccordionOpen(value)
   }
 

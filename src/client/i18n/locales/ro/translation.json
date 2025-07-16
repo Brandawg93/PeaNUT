@@ -31,7 +31,16 @@
     "settings": "Setări",
     "disconnect": "Deconectare",
     "refresh": "Actualizare",
-    "language": "Limbă"
+    "language": "Limbă",
+    "timeRange": {
+      "title": "Interval de timp",
+      "all": "Toate datele",
+      "1min": "Ultimul minut",
+      "5min": "Ultimele 5 minute",
+      "30min": "Ultimele 30 de minute",
+      "1hour": "Ultima oră",
+      "24hours": "Ultimele 24 de ore"
+    }
   },
   "settings": {
     "title": "Setări",

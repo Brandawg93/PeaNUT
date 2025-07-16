@@ -1,4 +1,4 @@
-import { HiOutlineChevronDown, HiOutlineArrowPath } from 'react-icons/hi2'
+import { HiOutlineChevronDown, HiOutlineClock } from 'react-icons/hi2'
 import React, { useContext } from 'react'
 import {
   DropdownMenu,
@@ -10,53 +10,54 @@ import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
-import { setLocalStorageItem } from '@/lib/utils'
+import { useTimeRange } from '@/client/context/time-range'
+
 type Props = Readonly<{
-  onClick: () => void
-  onRefreshChange: (value: number) => void
-  refreshInterval: number
   disabled: boolean
 }>
 
-const intervals = [0, 1, 3, 5, 10, 30]
+// Time ranges in minutes (0 = all data)
+const timeRanges = [
+  { value: 0, label: 'all' },
+  { value: 1, label: '1min' },
+  { value: 5, label: '5min' },
+  { value: 30, label: '30min' },
+  { value: 60, label: '1hour' },
+  { value: 1440, label: '24hours' },
+]
 
-export default function Refresh(props: Props) {
-  const { onClick, onRefreshChange, refreshInterval, disabled } = props
+export default function TimeTruncation(props: Props) {
+  const { disabled } = props
+  const { timeRange, setTimeRange } = useTimeRange()
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [isOpen, setIsOpen] = React.useState(false)
-  const [effect, setEffect] = React.useState(false)
 
   const handleSelect = (value: number) => {
-    onRefreshChange(value)
-    setLocalStorageItem('refreshInterval', `${value}`)
+    setTimeRange(value)
     setIsOpen(false)
   }
 
   const isActive = (value: number) => {
-    return refreshInterval === value ? 'bg-secondary-highlight!' : ''
+    return timeRange === value ? 'bg-secondary-highlight!' : ''
   }
 
   return (
     <div className='flex'>
       <Button
         variant='secondary'
-        title={t('sidebar.refresh')}
-        className='border-border-card cursor-pointer rounded-r-none border border-r-0 px-3 shadow-none'
-        onClick={() => {
-          setEffect(true)
-          onClick()
-        }}
-        onAnimationEnd={() => setEffect(false)}
-        disabled={disabled}
+        title={t('sidebar.timeRange.title')}
+        className='border-border-card pointer-events-none rounded-r-none border border-r-0 px-3 shadow-none disabled:opacity-100'
+        disabled={true}
       >
-        <HiOutlineArrowPath className={`size-4! stroke-2 ${effect && 'animate-spin-once'}`.trim()} />
+        <HiOutlineClock className='size-4! stroke-2' />
       </Button>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button
             variant='secondary'
             className='border-border-card cursor-pointer rounded-l-none border px-3 shadow-none'
+            disabled={disabled}
           >
             <HiOutlineChevronDown
               className={`size-4 stroke-2 transition-transform ${isOpen ? 'rotate-180' : ''}`.trim()}
@@ -64,13 +65,13 @@ export default function Refresh(props: Props) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='min-w-0'>
-          {intervals.map((value) => (
+          {timeRanges.map((range) => (
             <DropdownMenuItem
-              key={value}
-              className={`cursor-pointer text-lg font-semibold ${isActive(value)}`}
-              onClick={() => handleSelect(value)}
+              key={range.value}
+              className={`cursor-pointer text-lg font-semibold ${isActive(range.value)}`}
+              onClick={() => handleSelect(range.value)}
             >
-              {value === 0 ? 'off' : `${value}s`}
+              {t(`sidebar.timeRange.${range.label}`)}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

@@ -30,6 +30,7 @@ import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
+import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -70,12 +71,14 @@ type Props = Readonly<{
 }>
 
 export default function DeviceWrapper({ device, getDeviceAction, runCommandAction, logoutAction }: Props) {
-  const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
-    typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
-  )
-  const [wattHours, setWattHours] = useState<boolean>(
-    typeof window !== 'undefined' ? localStorage.getItem('wattHours') === 'true' : false
-  )
+  const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(() => {
+    const stored = getLocalStorageItem('wattsOrPercent')
+    return stored === 'true'
+  })
+  const [wattHours, setWattHours] = useState<boolean>(() => {
+    const stored = getLocalStorageItem('wattHours')
+    return stored === 'true'
+  })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
@@ -145,14 +148,14 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
 
   const toggleWattsOrPercent = () => {
     setWattsOrPercent((prev) => {
-      localStorage.setItem('wattsOrPercent', (!prev).toString())
+      setLocalStorageItem('wattsOrPercent', (!prev).toString())
       return !prev
     })
   }
 
   const toggleWattHours = () => {
     setWattHours((prev) => {
-      localStorage.setItem('wattHours', (!prev).toString())
+      setLocalStorageItem('wattHours', (!prev).toString())
       return !prev
     })
   }
