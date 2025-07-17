@@ -21,12 +21,17 @@ export class YamlSettings {
   private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
+  private disableFileSaving: boolean
 
   constructor(filePath: string) {
     this.filePath = filePath
     this.data = { ...ISettings }
     // Cache environment variables
     this.envVars = { ...process.env }
+
+    // Check if file saving should be disabled
+    this.disableFileSaving = this.envVars.DISABLE_CONFIG_FILE === 'true'
+
     this.loadFromEnvVars()
     this.load()
   }
@@ -76,6 +81,12 @@ export class YamlSettings {
   }
 
   private load(): void {
+    // Check if we should disable file saving
+    if (this.disableFileSaving) {
+      console.log('Config file saving disabled via DISABLE_CONFIG_FILE environment variable')
+      return
+    }
+
     // Create directory if it doesn't exist
     try {
       const absolutePath = path.resolve(this.filePath)
@@ -85,9 +96,18 @@ export class YamlSettings {
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true })
       }
+
+      // Test if the directory is writable
+      const testFile = path.join(dirPath, '.test-write')
+      fs.writeFileSync(testFile, 'test')
+      fs.unlinkSync(testFile)
     } catch (error) {
-      console.error('Error creating config directory:', error instanceof Error ? error.message : error)
-      // Continue without creating directory - settings will still work with environment variables
+      console.error(
+        'Config directory is not writable, disabling file saving:',
+        error instanceof Error ? error.message : error
+      )
+      this.disableFileSaving = true
+      return
     }
 
     try {
@@ -109,6 +129,10 @@ export class YamlSettings {
   }
 
   private save(): boolean {
+    if (this.disableFileSaving) {
+      return false
+    }
+
     try {
       const yamlStr = dump(this.data)
       fs.writeFileSync(this.filePath, yamlStr, 'utf8')
