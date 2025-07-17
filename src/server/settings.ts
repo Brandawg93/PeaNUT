@@ -83,31 +83,31 @@ export class YamlSettings {
   private load(): void {
     // Check if we should disable file saving
     if (this.disableFileSaving) {
-      console.log('Config file saving disabled via DISABLE_CONFIG_FILE environment variable')
-      return
+      console.warn('File saving has been disabled, but attempting to load existing settings.')
     }
 
-    // Create directory if it doesn't exist
-    try {
-      const absolutePath = path.resolve(this.filePath)
-      const dirPath = path.dirname(absolutePath)
+    // Create directory if it doesn't exist (only if file saving is enabled)
+    if (!this.disableFileSaving) {
+      try {
+        const absolutePath = path.resolve(this.filePath)
+        const dirPath = path.dirname(absolutePath)
 
-      // Check if directory exists first to avoid unnecessary mkdir calls
-      if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true })
+        // Check if directory exists first to avoid unnecessary mkdir calls
+        if (!fs.existsSync(dirPath)) {
+          fs.mkdirSync(dirPath, { recursive: true })
+        }
+
+        // Test if the directory is writable
+        const testFile = path.join(dirPath, '.test-write')
+        fs.writeFileSync(testFile, 'test')
+        fs.unlinkSync(testFile)
+      } catch (error) {
+        console.error(
+          'Config directory is not writable, disabling file saving:',
+          error instanceof Error ? error.message : error
+        )
+        this.disableFileSaving = true
       }
-
-      // Test if the directory is writable
-      const testFile = path.join(dirPath, '.test-write')
-      fs.writeFileSync(testFile, 'test')
-      fs.unlinkSync(testFile)
-    } catch (error) {
-      console.error(
-        'Config directory is not writable, disabling file saving:',
-        error instanceof Error ? error.message : error
-      )
-      this.disableFileSaving = true
-      return
     }
 
     try {
@@ -116,8 +116,8 @@ export class YamlSettings {
         const fileData = load(fileContents) as SettingsType
         // Merge settings, giving priority to file data
         this.data = { ...this.data, ...fileData }
-      } else {
-        // Only try to save if we can create the directory
+      } else if (!this.disableFileSaving) {
+        // Only try to save if file saving is enabled and the file doesn't exist
         this.save()
       }
     } catch (error) {
