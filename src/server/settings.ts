@@ -81,11 +81,6 @@ export class YamlSettings {
   }
 
   private load(): void {
-    // Check if we should disable file saving
-    if (this.disableFileSaving) {
-      console.warn('File saving has been disabled, but attempting to load existing settings.')
-    }
-
     // Create directory if it doesn't exist (only if file saving is enabled)
     if (!this.disableFileSaving) {
       try {
