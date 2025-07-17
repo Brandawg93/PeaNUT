@@ -28,6 +28,7 @@ export default [
       '.husky',
       '.devcontainer',
       '.gitignore',
+      'coverage',
     ],
   },
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },

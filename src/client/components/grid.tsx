@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useContext, useEffect } from 'react'
+import React, { useState, useMemo, useContext, useEffect, memo } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { Input } from '@/client/components/ui/input'
@@ -31,9 +31,11 @@ import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
 import { DEVICE } from '@/common/types'
 import { saveVar } from '@/app/actions'
+import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 type Props = Readonly<{
   data: DEVICE
+  onRefetchAction: () => void
 }>
 
 interface TableProps {
@@ -74,14 +76,14 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
         currentLevel.push(newItem)
       }
 
-      currentLevel = cache[currentPath].children || []
+      currentLevel = cache[currentPath].children ?? []
     }
   })
 
   return root
 }
 
-export default function NutGrid({ data }: Props) {
+export default function NutGrid({ data, onRefetchAction }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { theme } = useTheme()
   const { t } = useTranslation(lng)
@@ -93,7 +95,7 @@ export default function NutGrid({ data }: Props) {
 
   useEffect(() => {
     // Get stored state from localStorage
-    const storedState = localStorage.getItem(GRID_ID)
+    const storedState = getLocalStorageItem(GRID_ID)
     // Set to stored value if exists, otherwise default to open (id)
     setAccordionOpen(!storedState || storedState === 'open')
   }, [])
@@ -146,7 +148,7 @@ export default function NutGrid({ data }: Props) {
             {row.original.description && (
               <Popover>
                 <PopoverTrigger asChild className='flex flex-col justify-center'>
-                  <Button variant='ghost' size='icon' className='hover:bg-transparent'>
+                  <Button variant='ghost' size='icon' className='cursor-pointer hover:bg-transparent'>
                     <HiOutlineInformationCircle className='text-muted-foreground size-4' />
                   </Button>
                 </PopoverTrigger>
@@ -175,7 +177,7 @@ export default function NutGrid({ data }: Props) {
             )}
             <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
           </button>
-          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='shadow-none'>
+          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='cursor-pointer shadow-none'>
             {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
           </Button>
         </div>
@@ -202,7 +204,7 @@ export default function NutGrid({ data }: Props) {
               disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
               onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
               variant='secondary'
-              className='shadow-none'
+              className='cursor-pointer shadow-none'
             >
               <HiOutlinePencilSquare className='size-4!' />
             </Button>
@@ -249,14 +251,15 @@ export default function NutGrid({ data }: Props) {
     try {
       const res = await saveVar(data.name, key, value)
       if (res?.error) {
-        toast.error(res.error)
+        toast.error(String(res.error))
         return
       }
-      // eslint-disable-next-line react-compiler/react-compiler
-      data.vars[key].value = value
+
       handleClose()
-    } catch (e: any) {
-      toast.error(e.message)
+      onRefetchAction()
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e)
+      toast.error(message)
     }
   }
 
@@ -268,10 +271,10 @@ export default function NutGrid({ data }: Props) {
         defaultValue={value}
       />
       <div className='flex'>
-        <Button className='px-2' size='icon' onClick={async () => await handleSave(key, value)} variant='ghost'>
+        <Button className='cursor-pointer px-2' size='icon' onClick={() => handleSave(key, value)} variant='ghost'>
           <HiOutlineCheckCircle className='size-6! text-green-500' />
         </Button>
-        <Button className='px-2' size='icon' variant='ghost' onClick={handleClose}>
+        <Button className='cursor-pointer px-2' size='icon' variant='ghost' onClick={handleClose}>
           <HiOutlineXCircle className='size-6! text-red-500' />
         </Button>
       </div>
@@ -280,12 +283,12 @@ export default function NutGrid({ data }: Props) {
 
   const handleAccordionChange = (value: boolean) => {
     // Store the new state in localStorage
-    localStorage.setItem(GRID_ID, value ? 'open' : 'closed')
+    setLocalStorageItem(GRID_ID, value ? 'open' : 'closed')
     setAccordionOpen(value)
   }
 
   return (
-    <Card className='border-border-card bg-card w-full border shadow-none' data-testid='grid'>
+    <Card className='border-border-card bg-card w-full border py-0 shadow-none' data-testid='grid'>
       <CardContent className='p-0!'>
         <Accordion
           type='single'
@@ -336,4 +339,4 @@ export default function NutGrid({ data }: Props) {
   )
 }
 
-export const MemoizedGrid = React.memo(NutGrid, (prev, next) => prev.data.vars === next.data.vars) as typeof NutGrid
+export const MemoizedGrid = memo(NutGrid, (prev, next) => prev.data.vars === next.data.vars) as typeof NutGrid

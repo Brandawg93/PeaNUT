@@ -20,7 +20,7 @@ describe('Daynight', () => {
 
   it('changes theme on selection', async () => {
     const { getByTestId } = render(component)
-    const select = await getByTestId('daynight-trigger')
+    const select = getByTestId('daynight-trigger')
     fireEvent.pointerDown(select)
     const option = await screen.findByText('theme.dark')
     fireEvent.click(option)
@@ -29,7 +29,7 @@ describe('Daynight', () => {
 
   it('displays the correct icon for each theme', async () => {
     const { getByTestId } = render(component)
-    const select = await getByTestId('daynight-trigger')
+    const select = getByTestId('daynight-trigger')
     fireEvent.pointerDown(select)
     const optionDark = await screen.findByText('theme.dark')
     const optionLight = await screen.findByText('theme.light')

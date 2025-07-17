@@ -26,10 +26,15 @@ import { getSingleNutInstance } from '@/app/api/utils'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
   const nut = await getSingleNutInstance(device)
-  const data = await nut?.getData(device)
-  if (data === undefined) {
+  try {
+    const data = await nut?.getData(device)
+    if (!data) {
+      return NextResponse.json(`Device ${device} not found`, { status: 404 })
+    }
+    const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
+    return NextResponse.json(ret)
+  } catch (e) {
+    console.error(e)
     return NextResponse.json(`Device ${device} not found`, { status: 404 })
   }
-  const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
-  return NextResponse.json(ret)
 }

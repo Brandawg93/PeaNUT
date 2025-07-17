@@ -39,11 +39,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
   const { device, param } = await params
   const nut = await getSingleNutInstance(device)
   const paramString = param
-  const data = await nut?.getRange(param, device)
-  if (data === undefined) {
-    return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
-      status: 404,
-    })
+  try {
+    const data = await nut?.getRange(param, device)
+    return NextResponse.json(data)
+  } catch (e) {
+    console.error(e)
+    return NextResponse.json(`Parameter ${paramString.toString()} on device ${device} not found`, { status: 404 })
   }
-  return NextResponse.json(data)
 }

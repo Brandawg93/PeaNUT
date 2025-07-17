@@ -10,6 +10,7 @@ import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
 
 import { LanguageContext } from '@/client/context/language'
+import { setLocalStorageItem } from '@/lib/utils'
 type Props = Readonly<{
   onClick: () => void
   onRefreshChange: (value: number) => void
@@ -28,7 +29,7 @@ export default function Refresh(props: Props) {
 
   const handleSelect = (value: number) => {
     onRefreshChange(value)
-    localStorage.setItem('refreshInterval', `${value}`)
+    setLocalStorageItem('refreshInterval', `${value}`)
     setIsOpen(false)
   }
 
