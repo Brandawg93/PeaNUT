@@ -7,9 +7,10 @@ metadata:
   annotations:
     "helm.sh/hook": test
 spec:
+  automountServiceAccountToken: false
   containers:
     - name: wget
-      image: busybox
+      image: busybox:stable
       command: ['wget']
       args: ['{{ include "pea-nut.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never
