@@ -21,12 +21,17 @@ export class YamlSettings {
   private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
+  private disableFileSaving: boolean
 
   constructor(filePath: string) {
     this.filePath = filePath
     this.data = { ...ISettings }
     // Cache environment variables
     this.envVars = { ...process.env }
+
+    // Check if file saving should be disabled
+    this.disableFileSaving = this.envVars.DISABLE_CONFIG_FILE === 'true'
+
     this.loadFromEnvVars()
     this.load()
   }
@@ -76,18 +81,26 @@ export class YamlSettings {
   }
 
   private load(): void {
-    // Create directory if it doesn't exist
-    try {
-      const absolutePath = path.resolve(this.filePath)
-      const dirPath = path.dirname(absolutePath)
+    // Create directory if it doesn't exist (only if file saving is enabled)
+    if (!this.disableFileSaving) {
+      try {
+        const absolutePath = path.resolve(this.filePath)
+        const dirPath = path.dirname(absolutePath)
 
-      // Check if directory exists first to avoid unnecessary mkdir calls
-      if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true })
+        // Check if directory exists first to avoid unnecessary mkdir calls
+        if (!fs.existsSync(dirPath)) {
+          fs.mkdirSync(dirPath, { recursive: true })
+        } else {
+          // Test if the directory is writable only if it already exists
+          fs.accessSync(dirPath, fs.constants.W_OK)
+        }
+      } catch (error) {
+        console.error(
+          'Config directory is not writable, disabling file saving:',
+          error instanceof Error ? error.message : error
+        )
+        this.disableFileSaving = true
       }
-    } catch (error) {
-      console.error('Error creating config directory:', error instanceof Error ? error.message : error)
-      // Continue without creating directory - settings will still work with environment variables
     }
 
     try {
@@ -96,8 +109,8 @@ export class YamlSettings {
         const fileData = load(fileContents) as SettingsType
         // Merge settings, giving priority to file data
         this.data = { ...this.data, ...fileData }
-      } else {
-        // Only try to save if we can create the directory
+      } else if (!this.disableFileSaving) {
+        // Only try to save if file saving is enabled and the file doesn't exist
         this.save()
       }
     } catch (error) {
@@ -109,6 +122,10 @@ export class YamlSettings {
   }
 
   private save(): boolean {
+    if (this.disableFileSaving) {
+      return false
+    }
+
     try {
       const yamlStr = dump(this.data)
       fs.writeFileSync(this.filePath, yamlStr, 'utf8')
