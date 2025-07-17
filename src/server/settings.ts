@@ -95,10 +95,10 @@ export class YamlSettings {
         // Check if directory exists first to avoid unnecessary mkdir calls
         if (!fs.existsSync(dirPath)) {
           fs.mkdirSync(dirPath, { recursive: true })
+        } else {
+          // Test if the directory is writable only if it already exists
+          fs.accessSync(dirPath, fs.constants.W_OK)
         }
-
-        // Test if the directory is writable
-        fs.accessSync(dirPath, fs.constants.W_OK)
       } catch (error) {
         console.error(
           'Config directory is not writable, disabling file saving:',
