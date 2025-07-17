@@ -98,9 +98,7 @@ export class YamlSettings {
         }
 
         // Test if the directory is writable
-        const testFile = path.join(dirPath, '.test-write')
-        fs.writeFileSync(testFile, 'test')
-        fs.unlinkSync(testFile)
+        fs.accessSync(dirPath, fs.constants.W_OK)
       } catch (error) {
         console.error(
           'Config directory is not writable, disabling file saving:',
