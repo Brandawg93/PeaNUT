@@ -54,6 +54,15 @@ export default function Footer({ updated }: Props) {
   }
 
   useEffect(() => {
+    // Skip version checking if disabled in localStorage
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('disableVersionCheck') === 'true') {
+        return
+      }
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+
     const checkVersions = async () => {
       const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
       const json = (await res.json()) as Array<{ name: string; published_at: string; html_url: string }>
