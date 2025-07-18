@@ -58,10 +58,6 @@ LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
-# Copy built application
-COPY --link --chown=node:node --from=build /app/.next/standalone ./
-COPY --link --chown=node:node --from=build /app/.next/static ./.next/static
-
 # Set environment variables
 ENV CI=true
 ENV NODE_ENV=production
@@ -69,8 +65,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 
-# Switch to non-root user (node user is built into the image)
+# Switch to non-root user first
 USER node
+
+# Copy built application
+COPY --link --from=build /app/.next/standalone ./
+COPY --link --from=build /app/.next/static ./.next/static
 
 EXPOSE $WEB_PORT
 
