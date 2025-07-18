@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
 import { LanguageContext } from '@/client/context/language'
 import { HiOutlineExclamationCircle } from 'react-icons/hi2'
+import { FaDonate, FaGithub } from 'react-icons/fa'
 import pJson from '../../../package.json'
 import { useSettings } from '../context/settings'
 
@@ -93,16 +94,36 @@ export default function Footer({ updated }: Props) {
             </p>
           )}
         </div>
-        <div className='text-right'>
+        <div className='flex flex-col items-end text-right'>
+          <div className='flex items-center'>
+            <Link
+              className='no-underline-text text-muted-foreground ml-1'
+              href='https://www.github.com/brandawg93/peanut'
+              target='_blank'
+              rel='noreferrer'
+              aria-label='GitHub'
+            >
+              <FaGithub />
+            </Link>
+            <Link
+              className='no-underline-text text-muted-foreground ml-1'
+              href='https://www.github.com/sponsors/brandawg93'
+              target='_blank'
+              rel='noreferrer'
+              aria-label='Sponsor'
+            >
+              <FaDonate />
+            </Link>
+          </div>
           <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
             {t('docs')}
           </Link>
-          <p className='m-0'>
+          <p className='m-0 text-sm'>
             <Link
               href={currentVersion.url}
               target='_blank'
               rel='noreferrer'
-              className='no-underline-text text-muted-foreground'
+              className='no-underline-text text-muted-foreground text-xs'
             >
               {currentVersion.version} ({formatDate(currentVersion.created)})
             </Link>
