@@ -55,8 +55,12 @@ export default function Footer({ updated }: Props) {
 
   useEffect(() => {
     // Skip version checking if disabled in localStorage
-    if (typeof window !== 'undefined' && localStorage.getItem('disableVersionCheck') === 'true') {
-      return
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('disableVersionCheck') === 'true') {
+        return
+      }
+    } catch {
+      // Silently fail if localStorage is not available
     }
 
     const checkVersions = async () => {
