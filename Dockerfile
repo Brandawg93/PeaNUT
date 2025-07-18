@@ -59,8 +59,8 @@ LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
 # Copy built application
-COPY --link --from=build /app/.next/standalone ./
-COPY --link --from=build /app/.next/static ./.next/static
+COPY --link --chown=node:node --from=build /app/.next/standalone ./
+COPY --link --chown=node:node --from=build /app/.next/static ./.next/static
 
 # Set environment variables
 ENV CI=true
