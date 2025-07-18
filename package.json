@@ -1,6 +1,6 @@
 {
   "name": "peanut",
-  "version": "5.9.2",
+  "version": "5.9.3",
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
