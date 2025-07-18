@@ -101,6 +101,7 @@ export default function Footer({ updated }: Props) {
               href='https://www.github.com/brandawg93/peanut'
               target='_blank'
               rel='noreferrer'
+              aria-label='GitHub'
             >
               <FaGithub />
             </Link>
@@ -109,11 +110,12 @@ export default function Footer({ updated }: Props) {
               href='https://www.github.com/sponsors/brandawg93'
               target='_blank'
               rel='noreferrer'
+              aria-label='Sponsor'
             >
               <FaDonate />
             </Link>
           </div>
-          <Link className='text-muted-foreground underline' href='/api/docs' target='_blank' rel='noreferrer'>
+          <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
             {t('docs')}
           </Link>
           <p className='m-0 text-sm'>
