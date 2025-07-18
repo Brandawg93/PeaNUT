@@ -58,16 +58,9 @@ LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
-ARG PUID=1001
-ARG PGID=1001
-
-# Create non-root user for security
-RUN addgroup --system --gid ${PGID} nodejs && \
-    adduser --system --uid ${PUID} nextjs
-
 # Copy built application
-COPY --link --from=build --chown=${PUID}:${PGID} /app/.next/standalone ./
-COPY --link --from=build --chown=${PUID}:${PGID} /app/.next/static ./.next/static
+COPY --link --from=build /app/.next/standalone ./
+COPY --link --from=build /app/.next/static ./.next/static
 
 # Set environment variables
 ENV CI=true
@@ -76,8 +69,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 
-# Switch to non-root user
-USER nextjs
+# Switch to non-root user (node user is built into the image)
+USER node
 
 EXPOSE $WEB_PORT
 
