@@ -62,6 +62,10 @@ LABEL org.opencontainers.image.licenses='Apache-2.0'
 COPY --link --chown=1000:1000 --from=build /app/.next/standalone ./
 COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
 
+# Copy and set up entrypoint script
+COPY --link --chown=1000:1000 entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Set environment variables
 ENV CI=true
 ENV NODE_ENV=production
@@ -78,4 +82,4 @@ EXPOSE $WEB_PORT
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
-CMD ["npm", "start"]
+ENTRYPOINT ["/app/entrypoint.sh"]
