@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getSingleNutInstance } from '@/app/api/utils'
+import { NextRequest } from 'next/server'
+import { handleDeviceOperation } from '@/app/api/utils'
 
 /**
  * Retrieves data for a specific device.
@@ -23,18 +23,16 @@ import { getSingleNutInstance } from '@/app/api/utils'
  *     tags:
  *       - Devices
  */
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
-  const nut = await getSingleNutInstance(device)
-  try {
-    const data = await nut?.getData(device)
-    if (!data) {
-      return NextResponse.json(`Device ${device} not found`, { status: 404 })
+  return handleDeviceOperation(device, async (nut) => {
+    const varsData = await nut.getData(device)
+    // Return just the values instead of the full VAR objects
+    const varsValues: Record<string, string | number> = {}
+    for (const [key, varData] of Object.entries(varsData)) {
+      varsValues[key] = varData.value
     }
-    const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
-    return NextResponse.json(ret)
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(`Device ${device} not found`, { status: 404 })
-  }
+    return varsValues
+  })
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getNutInstances } from '@/app/api/utils'
 
 /**
@@ -14,11 +14,18 @@ import { getNutInstances } from '@/app/api/utils'
  *     tags:
  *       - Version
  */
-export async function GET() {
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(request: NextRequest) {
   const nuts = await getNutInstances()
-  const promises = nuts.map((nut) => nut.getNetVersion())
-  const data = await Promise.all(promises)
-  return NextResponse.json(data)
+
+  const netVersionPromises = nuts.map(async (nut) => {
+    const netVersion = await nut.getNetVersion()
+    return netVersion
+  })
+
+  const netVersions = await Promise.all(netVersionPromises)
+  return NextResponse.json(netVersions)
 }
 
 // forces the route handler to be dynamic
