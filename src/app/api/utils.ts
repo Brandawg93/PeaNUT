@@ -59,8 +59,13 @@ export const handleDeviceOperation = async <T>(
     return deviceNotFoundError()
   }
 
-  const result = await operation(nut)
-  return NextResponse.json(result)
+  try {
+    const result = await operation(nut)
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error(error)
+    return failedOperationError('perform operation', 'unknown', device)
+  }
 }
 
 // Utility function to handle variable operations with automatic cleanup
@@ -70,7 +75,6 @@ export const handleVariableOperation = async <T>(
   operation: (nut: Nut) => Promise<T>
 ): Promise<NextResponse> => {
   const nut = await getSingleNutInstance(device)
-  const paramString = param
 
   if (!nut) {
     return deviceNotFoundError()
@@ -81,7 +85,7 @@ export const handleVariableOperation = async <T>(
     return NextResponse.json(result)
   } catch (e) {
     console.error(e)
-    return parameterNotFoundError(paramString, device)
+    return parameterNotFoundError(param, device)
   }
 }
 

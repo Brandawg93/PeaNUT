@@ -15,15 +15,10 @@ import { getNutInstances } from '@/app/api/utils'
  *       - Version
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const nuts = await getNutInstances()
 
-  const versionPromises = nuts.map(async (nut) => {
-    const version = await nut.getVersion()
-    return version
-  })
-
+  const versionPromises = nuts.map((nut) => nut.getVersion())
   const versions = await Promise.all(versionPromises)
   return NextResponse.json(versions)
 }
