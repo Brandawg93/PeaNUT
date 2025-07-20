@@ -90,26 +90,6 @@ export const handleVariableOperation = async <T>(
   }
 }
 
-// Utility function to handle command operations with automatic cleanup
-export const handleCommandOperation = async (
-  device: string,
-  param: string,
-  operation: (nut: Nut) => Promise<void>
-): Promise<NextResponse> => {
-  const nut = await getSingleNutInstance(device)
-
-  if (!nut) {
-    return deviceNotFoundError()
-  }
-
-  try {
-    await operation(nut)
-    return NextResponse.json({ message: 'Command executed successfully' })
-  } catch {
-    return NextResponse.json({ error: 'Invalid command' }, { status: 400 })
-  }
-}
-
 // Utility function to get device variables data
 export const getDeviceVariablesData = async (device: string): Promise<Record<string, string | number>> => {
   const nut = await getSingleNutInstance(device)
