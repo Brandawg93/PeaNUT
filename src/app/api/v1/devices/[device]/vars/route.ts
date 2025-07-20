@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { handleDeviceOperation } from '@/app/api/utils'
+import { getDeviceVariablesData, deviceNotFoundError } from '@/app/api/utils'
 
 /**
  * Retrieves data for a specific device.
@@ -26,13 +26,10 @@ import { handleDeviceOperation } from '@/app/api/utils'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
-  return handleDeviceOperation(device, async (nut) => {
-    const varsData = await nut.getData(device)
-    // Return just the values instead of the full VAR objects
-    const varsValues: Record<string, string | number> = {}
-    for (const [key, varData] of Object.entries(varsData)) {
-      varsValues[key] = varData.value
-    }
-    return varsValues
-  })
+  try {
+    const varsValues = await getDeviceVariablesData(device)
+    return Response.json(varsValues)
+  } catch {
+    return deviceNotFoundError()
+  }
 }

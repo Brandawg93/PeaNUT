@@ -104,3 +104,20 @@ export const handleCommandOperation = async (
     return NextResponse.json({ error: 'Invalid command' }, { status: 400 })
   }
 }
+
+// Utility function to get device variables data
+export const getDeviceVariablesData = async (device: string): Promise<Record<string, string | number>> => {
+  const nut = await getSingleNutInstance(device)
+
+  if (!nut) {
+    throw new Error('Device not found')
+  }
+
+  const varsData = await nut.getData(device)
+  // Return just the values instead of the full VAR objects
+  const varsValues: Record<string, string | number> = {}
+  for (const [key, varData] of Object.entries(varsData)) {
+    varsValues[key] = varData.value
+  }
+  return varsValues
+}
