@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getDeviceVariablesData, deviceNotFoundError } from '@/app/api/utils'
 
 /**
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { device } = await params
   try {
     const varsValues = await getDeviceVariablesData(device)
-    return Response.json(varsValues)
+    return NextResponse.json(varsValues)
   } catch {
     return deviceNotFoundError()
   }

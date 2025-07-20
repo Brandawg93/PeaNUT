@@ -45,7 +45,7 @@ export const failedOperationError = (operation: string, param: string, device: s
 // Utility function for successful operation message
 export const successfulOperationMessage = (operation: string, param: string, device: string) => {
   const isSaveOperation = operation === 'Variable' || operation === 'save'
-  return `${operation} ${param} on device ${device} ${isSaveOperation ? 'saved' : 'run'} successfully on device ${device}`
+  return `${operation} ${param} on device ${device} ${isSaveOperation ? 'saved' : 'run'} successfully`
 }
 
 // Utility function to handle device operations with automatic cleanup
@@ -64,7 +64,8 @@ export const handleDeviceOperation = async <T>(
     return NextResponse.json(result)
   } catch (error) {
     console.error(error)
-    return failedOperationError('perform operation', 'unknown', device)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return failedOperationError(errorMessage, 'unknown', device)
   }
 }
 
