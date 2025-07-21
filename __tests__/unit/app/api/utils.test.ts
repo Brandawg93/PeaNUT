@@ -32,6 +32,46 @@ jest.mock('@/server/nut')
 
 const mockGetSettings = getSettings as jest.MockedFunction<typeof getSettings>
 
+// Test utilities and common mocks
+const createMockServer = (
+  host: string = 'server1',
+  port: number = 3493,
+  username: string = 'user',
+  password?: string
+) => ({
+  HOST: host,
+  PORT: port,
+  USERNAME: username,
+  PASSWORD: password,
+})
+
+const createMockNut = (deviceExistsResult: boolean | Error = true, additionalMethods: Record<string, any> = {}) =>
+  ({
+    deviceExists: jest.fn().mockImplementation(() => {
+      if (deviceExistsResult instanceof Error) {
+        return Promise.reject(deviceExistsResult)
+      }
+      return Promise.resolve(deviceExistsResult)
+    }),
+    ...additionalMethods,
+  }) as unknown as Nut
+
+const setupNutMock = (mockNut: Nut) => {
+  const NutMock = Nut as jest.MockedClass<typeof Nut>
+  NutMock.mockReturnValue(mockNut)
+  return NutMock
+}
+
+const setupServerSettings = (servers: any[] = [createMockServer()]) => {
+  mockGetSettings.mockResolvedValue(servers)
+}
+
+const testErrorResponse = (response: any, expectedStatus: number, expectedMessage: string | object) => {
+  expect(response).toBeDefined()
+  expect(response.status).toBe(expectedStatus)
+  expect(response.json()).resolves.toEqual(expectedMessage)
+}
+
 describe('API Utils', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -39,11 +79,8 @@ describe('API Utils', () => {
 
   describe('getNutInstances', () => {
     it('should return array of Nut instances from settings', async () => {
-      const mockServers = [
-        { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
-        { HOST: '192.168.1.100', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
-      ]
-      mockGetSettings.mockResolvedValue(mockServers)
+      const mockServers = [createMockServer('localhost'), createMockServer('192.168.1.100', 3493, 'admin', 'secret')]
+      setupServerSettings(mockServers)
 
       const result = await getNutInstances()
 
@@ -51,11 +88,10 @@ describe('API Utils', () => {
       expect(result).toHaveLength(2)
       expect(result[0]).toBeInstanceOf(Nut)
       expect(result[1]).toBeInstanceOf(Nut)
-      // Remove the getHost/getPort checks since they're not part of the Nut interface
     })
 
     it('should handle empty servers array', async () => {
-      mockGetSettings.mockResolvedValue([])
+      setupServerSettings([])
 
       const result = await getNutInstances()
 
@@ -65,19 +101,11 @@ describe('API Utils', () => {
 
   describe('getSingleNutInstance', () => {
     it('should return the first Nut instance that has the device', async () => {
-      const mockNut1 = {
-        deviceExists: jest.fn().mockResolvedValue(false),
-      } as unknown as Nut
-      const mockNut2 = {
-        deviceExists: jest.fn().mockResolvedValue(true),
-      } as unknown as Nut
+      const mockNut1 = createMockNut(false)
+      const mockNut2 = createMockNut(true)
 
-      mockGetSettings.mockResolvedValue([
-        { HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
-        { HOST: 'server2', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
-      ])
+      setupServerSettings([createMockServer('server1'), createMockServer('server2')])
 
-      // Mock Nut constructor to return our mock instances
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockImplementation((host: string) => {
         if (host === 'server1') return mockNut1
@@ -92,14 +120,9 @@ describe('API Utils', () => {
     })
 
     it('should return undefined when device is not found on any instance', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(false),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(false)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const result = await getSingleNutInstance('nonexistent-device')
 
@@ -108,14 +131,9 @@ describe('API Utils', () => {
     })
 
     it('should return undefined when deviceExists throws an error', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockRejectedValue(new Error('Connection failed')),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(new Error('Connection failed'))
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const result = await getSingleNutInstance('test-device')
       expect(result).toBeUndefined()
@@ -126,73 +144,53 @@ describe('API Utils', () => {
   describe('deviceNotFoundError', () => {
     it('should return 404 response with device not found error', () => {
       const result = deviceNotFoundError()
-
-      expect(result).toBeDefined()
-      expect(result.status).toBe(404)
-      expect(result.json()).resolves.toEqual({ error: 'Device not found' })
+      testErrorResponse(result, 404, { error: 'Device not found' })
     })
   })
 
   describe('parameterNotFoundError', () => {
     it('should return 404 response with parameter not found error', () => {
       const result = parameterNotFoundError('battery.charge', 'test-device')
-
-      expect(result).toBeDefined()
-      expect(result.status).toBe(404)
-      expect(result.json()).resolves.toBe('Parameter battery.charge on device test-device not found')
+      testErrorResponse(result, 404, 'Parameter battery.charge on device test-device not found')
     })
   })
 
   describe('deviceNotFoundOnAnyInstanceError', () => {
     it('should return 404 response with device not found on any instance error', () => {
       const result = deviceNotFoundOnAnyInstanceError('test-device')
-
-      expect(result).toBeDefined()
-      expect(result.status).toBe(404)
-      expect(result.json()).resolves.toBe('Device test-device not found on any instance')
+      testErrorResponse(result, 404, 'Device test-device not found on any instance')
     })
   })
 
   describe('failedOperationError', () => {
     it('should return 500 response with failed operation error', () => {
       const result = failedOperationError('get', 'battery.charge', 'test-device')
-
-      expect(result).toBeDefined()
-      expect(result.status).toBe(500)
-      expect(result.json()).resolves.toBe('Failed to get battery.charge on device test-device')
+      testErrorResponse(result, 500, 'Failed to get battery.charge on device test-device')
     })
   })
 
   describe('successfulOperationMessage', () => {
     it('should return success message for non-save operations', () => {
       const result = successfulOperationMessage('get', 'battery.charge', 'test-device')
-
       expect(result).toBe('get battery.charge on device test-device run successfully')
     })
 
     it('should return success message for Variable save operations', () => {
       const result = successfulOperationMessage('Variable', 'battery.charge', 'test-device')
-
       expect(result).toBe('Variable battery.charge on device test-device saved successfully')
     })
 
     it('should return success message for save operations', () => {
       const result = successfulOperationMessage('save', 'battery.charge', 'test-device')
-
       expect(result).toBe('save battery.charge on device test-device saved successfully')
     })
   })
 
   describe('handleDeviceOperation', () => {
     it('should handle successful device operation', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(true),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const operation = jest.fn().mockResolvedValue({ success: true })
 
@@ -204,33 +202,22 @@ describe('API Utils', () => {
     })
 
     it('should return device not found error when device does not exist', async () => {
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(false),
-      } as unknown as Nut
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(false)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const operation = jest.fn()
 
       const result = await handleDeviceOperation('nonexistent-device', operation)
 
-      expect(result).toBeDefined()
-      expect(result.status).toBe(404)
-      expect(result.json()).resolves.toEqual({ error: 'Device not found' })
+      testErrorResponse(result, 404, { error: 'Device not found' })
       expect(operation).not.toHaveBeenCalled()
     })
 
     it('should handle operation errors', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(true),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const operation = jest.fn().mockRejectedValue(new Error('Operation failed'))
 
@@ -249,14 +236,9 @@ describe('API Utils', () => {
 
   describe('handleVariableOperation', () => {
     it('should handle successful variable operation', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(true),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const operation = jest.fn().mockResolvedValue({ value: '100' })
 
@@ -268,33 +250,22 @@ describe('API Utils', () => {
     })
 
     it('should return device not found error when device does not exist', async () => {
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(false),
-      } as unknown as Nut
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(false)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const operation = jest.fn()
 
       const result = await handleVariableOperation('nonexistent-device', 'battery.charge', operation)
 
-      expect(result).toBeDefined()
-      expect(result.status).toBe(404)
-      expect(result.json()).resolves.toEqual({ error: 'Device not found' })
+      testErrorResponse(result, 404, { error: 'Device not found' })
       expect(operation).not.toHaveBeenCalled()
     })
 
     it('should handle variable operation errors', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(true),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const operation = jest.fn().mockRejectedValue(new Error('Variable not found'))
 
@@ -319,15 +290,11 @@ describe('API Utils', () => {
         'ups.status': { value: 'OL' },
       }
 
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(true),
+      const mockNut = createMockNut(true, {
         getData: jest.fn().mockResolvedValue(mockVarsData),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      })
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const result = await getDeviceVariablesData('test-device')
 
@@ -340,27 +307,19 @@ describe('API Utils', () => {
     })
 
     it('should throw error when device is not found', async () => {
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(false),
-      } as unknown as Nut
-      NutMock.mockReturnValue(mockNut)
+      const mockNut = createMockNut(false)
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       await expect(getDeviceVariablesData('nonexistent-device')).rejects.toThrow('Device not found')
     })
 
     it('should handle empty variables data', async () => {
-      const mockNut = {
-        deviceExists: jest.fn().mockResolvedValue(true),
+      const mockNut = createMockNut(true, {
         getData: jest.fn().mockResolvedValue({}),
-      } as unknown as Nut
-
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
-
-      const NutMock = Nut as jest.MockedClass<typeof Nut>
-      NutMock.mockReturnValue(mockNut)
+      })
+      setupServerSettings()
+      setupNutMock(mockNut)
 
       const result = await getDeviceVariablesData('test-device')
 
