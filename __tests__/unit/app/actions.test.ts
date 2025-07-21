@@ -73,7 +73,7 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }],
+      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }],
     }
     return settings[key as keyof typeof settings]
   })
@@ -166,7 +166,7 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' },
+      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
       { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
     ]
     await updateServers(servers)

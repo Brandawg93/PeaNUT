@@ -40,7 +40,7 @@ describe('API Utils', () => {
   describe('getNutInstances', () => {
     it('should return array of Nut instances from settings', async () => {
       const mockServers = [
-        { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' },
+        { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
         { HOST: '192.168.1.100', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
       ]
       mockGetSettings.mockResolvedValue(mockServers)
@@ -73,8 +73,8 @@ describe('API Utils', () => {
       } as unknown as Nut
 
       mockGetSettings.mockResolvedValue([
-        { HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' },
-        { HOST: 'server2', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' },
+        { HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
+        { HOST: 'server2', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
       ])
 
       // Mock Nut constructor to return our mock instances
@@ -96,7 +96,7 @@ describe('API Utils', () => {
         deviceExists: jest.fn().mockResolvedValue(false),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -112,7 +112,7 @@ describe('API Utils', () => {
         deviceExists: jest.fn().mockRejectedValue(new Error('Connection failed')),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -189,7 +189,7 @@ describe('API Utils', () => {
         deviceExists: jest.fn().mockResolvedValue(true),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -204,7 +204,7 @@ describe('API Utils', () => {
     })
 
     it('should return device not found error when device does not exist', async () => {
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       const mockNut = {
@@ -227,7 +227,7 @@ describe('API Utils', () => {
         deviceExists: jest.fn().mockResolvedValue(true),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -253,7 +253,7 @@ describe('API Utils', () => {
         deviceExists: jest.fn().mockResolvedValue(true),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -268,7 +268,7 @@ describe('API Utils', () => {
     })
 
     it('should return device not found error when device does not exist', async () => {
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       const mockNut = {
@@ -291,7 +291,7 @@ describe('API Utils', () => {
         deviceExists: jest.fn().mockResolvedValue(true),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -324,7 +324,7 @@ describe('API Utils', () => {
         getData: jest.fn().mockResolvedValue(mockVarsData),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
@@ -340,7 +340,7 @@ describe('API Utils', () => {
     })
 
     it('should throw error when device is not found', async () => {
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       const mockNut = {
@@ -357,7 +357,7 @@ describe('API Utils', () => {
         getData: jest.fn().mockResolvedValue({}),
       } as unknown as Nut
 
-      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }])
+      mockGetSettings.mockResolvedValue([{ HOST: 'server1', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }])
 
       const NutMock = Nut as jest.MockedClass<typeof Nut>
       NutMock.mockReturnValue(mockNut)
