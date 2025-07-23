@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { DEVICE } from '@/common/types'
-import { getSingleNutInstance } from '@/app/api/utils'
+import { handleVariableOperation, handleDeviceOperation, successfulOperationMessage } from '@/app/api/utils'
 
 type Params = {
   device: string
@@ -37,15 +37,9 @@ type Params = {
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
-  const nut = await getSingleNutInstance(device)
-  const paramString = param
-  try {
-    const data = await nut?.getVar(param, device)
-    return NextResponse.json(data)
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(`Parameter ${paramString.toString()} on device ${device} not found`, { status: 404 })
-  }
+  return handleVariableOperation(device, param, async (nut) => {
+    return await nut.getVar(param, device)
+  })
 }
 
 /**
@@ -85,22 +79,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
  */
 export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
-  const nut = await getSingleNutInstance(device)
   const value = await request.text()
 
-  try {
-    const deviceExists = await nut?.deviceExists(device)
+  return handleDeviceOperation(device, async (nut) => {
+    const deviceExists = await nut.deviceExists(device)
     if (!deviceExists) {
-      return NextResponse.json(`Device ${device} not found on any instance`, { status: 404 })
+      throw new Error('Device not found on any instance')
     }
 
-    // Only save the variable on the first instance that has the device
-    await nut?.setVar(param, value, device)
-    return NextResponse.json(`Variable ${param} on device ${device} saved successfully on device ${device}`)
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(`Failed to save variable ${param} on device ${device}`, {
-      status: 500,
-    })
-  }
+    await nut.setVar(param, value, device)
+    return successfulOperationMessage('Variable', param, device)
+  })
 }

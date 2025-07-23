@@ -55,6 +55,12 @@ describe('Nut', () => {
     jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
   })
 
+  afterEach(async () => {
+    // Clean up any Nut instances that might have been created
+    // This is a safety measure in case any tests don't properly clean up
+    jest.restoreAllMocks()
+  })
+
   it('should get devices', async () => {
     const nut = new Nut('localhost', 3493)
     jest
