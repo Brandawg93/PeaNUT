@@ -58,16 +58,13 @@ LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
-ARG PUID=1001
-ARG PGID=1001
+# Copy built application and set permissions to default node user
+COPY --link --chown=1000:1000 --from=build /app/.next/standalone ./
+COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
 
-# Create non-root user for security
-RUN addgroup --system --gid ${PGID} nodejs && \
-    adduser --system --uid ${PUID} nextjs
-
-# Copy built application
-COPY --link --from=build --chown=${PUID}:${PGID} /app/.next/standalone ./
-COPY --link --from=build --chown=${PUID}:${PGID} /app/.next/static ./.next/static
+# Copy and set up entrypoint script
+COPY --link --chown=1000:1000 entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Set environment variables
 ENV CI=true
@@ -76,8 +73,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 
-# Switch to non-root user
-USER nextjs
+# Switch to non-root user (node user is built into the image)
+# USER 1000
 
 EXPOSE $WEB_PORT
 
@@ -85,4 +82,4 @@ EXPOSE $WEB_PORT
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
-CMD ["npm", "start"]
+ENTRYPOINT ["/app/entrypoint.sh"]

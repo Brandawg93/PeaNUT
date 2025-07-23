@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSingleNutInstance } from '@/app/api/utils'
+import { getDeviceVariablesData, deviceNotFoundError } from '@/app/api/utils'
 
 /**
  * Retrieves data for a specific device.
@@ -23,18 +23,13 @@ import { getSingleNutInstance } from '@/app/api/utils'
  *     tags:
  *       - Vars
  */
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
-  const nut = await getSingleNutInstance(device)
   try {
-    const data = await nut?.getData(device)
-    if (!data) {
-      return NextResponse.json(`Device ${device} not found`, { status: 404 })
-    }
-    const ret = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value.value]))
-    return NextResponse.json(ret)
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(`Device ${device} not found`, { status: 404 })
+    const varsValues = await getDeviceVariablesData(device)
+    return NextResponse.json(varsValues)
+  } catch {
+    return deviceNotFoundError()
   }
 }

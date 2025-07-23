@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
 import { LanguageContext } from '@/client/context/language'
 import { HiOutlineExclamationCircle } from 'react-icons/hi2'
+import { FaDonate, FaGithub } from 'react-icons/fa'
 import pJson from '../../../package.json'
 import { useSettings } from '../context/settings'
 
@@ -53,6 +54,15 @@ export default function Footer({ updated }: Props) {
   }
 
   useEffect(() => {
+    // Skip version checking if disabled in localStorage
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('disableVersionCheck') === 'true') {
+        return
+      }
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+
     const checkVersions = async () => {
       const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
       const json = (await res.json()) as Array<{ name: string; published_at: string; html_url: string }>
@@ -93,16 +103,36 @@ export default function Footer({ updated }: Props) {
             </p>
           )}
         </div>
-        <div className='text-right'>
+        <div className='flex flex-col items-end text-right'>
+          <div className='flex items-center'>
+            <Link
+              className='no-underline-text text-muted-foreground ml-1'
+              href='https://www.github.com/brandawg93/peanut'
+              target='_blank'
+              rel='noreferrer'
+              aria-label='GitHub'
+            >
+              <FaGithub />
+            </Link>
+            <Link
+              className='no-underline-text text-muted-foreground ml-1'
+              href='https://www.github.com/sponsors/brandawg93'
+              target='_blank'
+              rel='noreferrer'
+              aria-label='Sponsor'
+            >
+              <FaDonate />
+            </Link>
+          </div>
           <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
             {t('docs')}
           </Link>
-          <p className='m-0'>
+          <p className='m-0 text-sm'>
             <Link
               href={currentVersion.url}
               target='_blank'
               rel='noreferrer'
-              className='no-underline-text text-muted-foreground'
+              className='no-underline-text text-muted-foreground text-xs'
             >
               {currentVersion.version} ({formatDate(currentVersion.created)})
             </Link>

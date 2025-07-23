@@ -71,16 +71,14 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-| Variable             | Default   | Description                                         |
-| -------------------- | --------- | --------------------------------------------------- |
-| WEB_HOST             | localhost | Hostname of web server                              |
-| WEB_PORT             | 8080      | Port of web server                                  |
-| WEB_USERNAME         | undefined | Username of web app                                 |
-| WEB_PASSWORD         | undefined | Password of web app                                 |
-| BASE_PATH            | undefined | Base path for reverse proxy                         |
-| PUID                 | 1001      | User ID for the container                           |
-| PGID                 | 1001      | Group ID for the container                          |
-| DISABLE_CONFIG_FILE  | undefined | If set to 'true', disables all config file saving   |
+| Variable            | Default   | Description                                       |
+| ------------------- | --------- | ------------------------------------------------- |
+| WEB_HOST            | localhost | Hostname of web server                            |
+| WEB_PORT            | 8080      | Port of web server                                |
+| WEB_USERNAME        | undefined | Username of web app                               |
+| WEB_PASSWORD        | undefined | Password of web app                               |
+| BASE_PATH           | undefined | Base path for reverse proxy                       |
+| DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
 
 ## Configuration
 

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getNutInstances } from '@/app/api/utils'
 
 /**
@@ -14,11 +14,13 @@ import { getNutInstances } from '@/app/api/utils'
  *     tags:
  *       - Version
  */
-export async function GET() {
+
+export async function GET(_request: NextRequest) {
   const nuts = await getNutInstances()
-  const promises = nuts.map((nut) => nut.getVersion())
-  const data = await Promise.all(promises)
-  return NextResponse.json(data)
+
+  const versionPromises = nuts.map((nut) => nut.getVersion())
+  const versions = await Promise.all(versionPromises)
+  return NextResponse.json(versions)
 }
 
 // forces the route handler to be dynamic
