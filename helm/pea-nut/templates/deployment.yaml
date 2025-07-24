@@ -1,3 +1,4 @@
+{{- include "pea-nut.validate" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,7 +54,14 @@ spec:
                   name: {{ include "pea-nut.fullname" . }}
                   key: webPassword
             - name: NUT_SERVERS
-              value: {{ toJson .Values.servers | quote }}
+              value: {{ toJson .Values.nutServers | quote }}
+            {{- if .Values.secrets.INFLUX_TOKEN }}
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pea-nut.fullname" . }}
+                  key: influxToken
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -131,10 +131,40 @@ nutServers: []
 #   USERNAME: observer
 #   PASSWORD: secret-observer-pass
 
+# Environment variables configuration
 env:
-  # username to log into PeaNUT UI
-  WEB_USERNAME:
+  # Authentication
+  WEB_USERNAME: ""
+  AUTH_SECRET: ""
+  
+  # Web server configuration
+  WEB_HOST: "0.0.0.0"
+  
+  # NUT server configuration (legacy single server)
+  NUT_HOST: ""
+  NUT_PORT: ""
+  USERNAME: ""
+  PASSWORD: ""
+  
+  # InfluxDB configuration
+  INFLUX_HOST: ""
+  INFLUX_TOKEN: ""
+  INFLUX_ORG: ""
+  INFLUX_BUCKET: ""
+  INFLUX_INTERVAL: 10
+  
+  # Application configuration
+  DISABLE_CONFIG_FILE: "false"
+  
+  # Next.js configuration
+  NODE_ENV: "production"
+  NEXT_TELEMETRY_DISABLED: "1"
+  ANALYZE: "false"
+  BASE_PATH: ""
 
+# Secrets configuration
 secrets:
   # PeaNUT UI user password
-  WEB_PASSWORD:
+  WEB_PASSWORD: ""
+  # InfluxDB token (alternative to env.INFLUX_TOKEN)
+  INFLUX_TOKEN: ""
