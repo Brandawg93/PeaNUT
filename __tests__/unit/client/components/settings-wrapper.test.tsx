@@ -85,7 +85,7 @@ describe('SettingsWrapper', () => {
       expect(screen.getByTestId('server')).toBeInTheDocument()
     })
 
-    const serverInput = screen.getByTestId('server') as HTMLInputElement
+    const serverInput = screen.getByTestId('server')
     fireEvent.change(serverInput, { target: { value: 'newhost' } })
 
     await waitFor(() => {

@@ -1,13 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
-import { HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
+import { HiOutlineXMark } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { Button } from '@/client/components/ui/button'
 import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { Card } from '@/client/components/ui/card'
+import PasswordInput from '@/client/components/ui/password-input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/client/components/ui/tooltip'
 
 const PING_INTERVAL = 10000
@@ -36,13 +37,11 @@ export default function AddServer({
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { theme } = useTheme()
-  const [server, setServer] = useState<string>(initialServer)
-  const [port, setPort] = useState<number>(initialPort)
-  const [username, setUsername] = useState<string | undefined>(initialUsername)
-  const [password, setPassword] = useState<string | undefined>(initialPassword)
-  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [server, setServer] = useState<string>(initialServer ?? '')
+  const [port, setPort] = useState<number>(initialPort ?? 3493)
+  const [username, setUsername] = useState<string | undefined>(initialUsername ?? '')
+  const [password, setPassword] = useState<string | undefined>(initialPassword ?? '')
   const [connectionStatus, setConnectionStatus] = useState<'success' | 'error' | 'untested'>('untested')
-  const toggleShowPassword = () => setShowPassword(!showPassword)
 
   const handleTestConnection = async (hideToast = false) => {
     if (server && port) {
@@ -117,7 +116,7 @@ export default function AddServer({
 
   return (
     <TooltipProvider>
-      <Card className='border-border bg-card mb-4 w-full border pb-6 shadow-none'>
+      <Card className='border-border bg-card mb-4 w-full gap-0 border pt-0 shadow-none'>
         <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
         <div className='flex justify-between'>
           <div className='pt-2 pl-2'>{pingIcon()}</div>
@@ -132,7 +131,7 @@ export default function AddServer({
         </div>
         <div className='px-6'>
           <form className='w-full'>
-            <div className='mb-4'>
+            <div className='mb-6'>
               <Label htmlFor='serverHost'>{t('connect.server')}</Label>
               <Input
                 required
@@ -143,7 +142,7 @@ export default function AddServer({
                   setServer(e.target.value)
                   handleChange(e.target.value, port, username, password)
                 }}
-                className='border-border-card bg-background w-full px-3 py-2'
+                className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='server'
               />
             </div>
@@ -158,7 +157,7 @@ export default function AddServer({
                   setPort(+e.target.value)
                   handleChange(server, +e.target.value, username, password)
                 }}
-                className='border-border-card bg-background w-full px-3 py-2'
+                className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='port'
                 min={0}
                 max={65535}
@@ -174,43 +173,27 @@ export default function AddServer({
                   setUsername(e.target.value)
                   handleChange(server, port, e.target.value, password)
                 }}
-                className='border-border-card bg-background w-full px-3 py-2'
+                className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='username'
               />
             </div>
             <div className='mb-6'>
               <Label htmlFor='password'>{t('connect.password')}</Label>
-              <div className='flex'>
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  id='password'
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value)
-                    handleChange(server, port, username, e.target.value)
-                  }}
-                  className='border-border-card bg-background z-10 rounded-r-none border-r-0 px-3 py-2 focus:rounded focus:border-r'
-                  data-testid='password'
-                />
-                <Button
-                  size='icon'
-                  data-testid='toggle-password'
-                  onClick={toggleShowPassword}
-                  className='border-border-card bg-background relative cursor-pointer overflow-hidden rounded-l-none border border-l-0 p-0'
-                  variant='ghost'
-                  type='button'
-                >
-                  <div className='text-muted-foreground'>
-                    {showPassword ? <HiOutlineEyeSlash className='stroke-1' /> : <HiOutlineEye className='stroke-1' />}
-                  </div>
-                </Button>
-              </div>
+              <PasswordInput
+                id='password'
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  handleChange(server, port, username, e.target.value)
+                }}
+                data-testid='password'
+              />
             </div>
             <div className='flex flex-row justify-between'>
               <div />
               <Button
                 variant='destructive'
-                onClick={async () => handleTestConnection()}
+                onClick={() => handleTestConnection()}
                 className='cursor-pointer font-bold shadow-none'
                 type='button'
               >

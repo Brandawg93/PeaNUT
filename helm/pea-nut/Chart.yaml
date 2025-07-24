@@ -1,0 +1,47 @@
+apiVersion: v2
+name: pea-nut
+description: A Helm chart for running PeaNUT in Kubernetes
+
+type: application
+
+# Chart version - increment this when making changes to the chart
+version: 0.2.0
+
+# Application version - should match the PeaNUT release version
+appVersion: '5.10.0'
+
+# Keywords for chart discovery
+keywords:
+  - ups
+  - nut
+  - monitoring
+  - dashboard
+  - network-ups-tools
+
+# Home page for the chart
+home: https://github.com/Brandawg93/PeaNUT
+
+# Source code repository
+sources:
+  - https://github.com/Brandawg93/PeaNUT
+
+# Maintainer information
+maintainers:
+  - name: Brandawg93
+    email: brandawg93@gmail.com
+    url: https://github.com/Brandawg93
+
+# Chart annotations
+annotations:
+  category: Monitoring
+  licenses: Apache-2.0
+######
+# Changes
+# 0.1.0: Initial version
+# 0.2.0: Added comprehensive environment variable support, validation, and documentation
+#        - Added support for all PeaNUT environment variables
+#        - Added validation template for configuration validation
+#        - Added comprehensive documentation and examples
+#        - Added InfluxDB token support in secrets
+#        - Fixed NUT_SERVERS configuration
+######

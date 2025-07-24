@@ -29,15 +29,19 @@ const createInfluxDbTask = () =>
 
     // Check if all required InfluxDB settings are available
     if (influxHost && influxToken && influxOrg && influxBucket) {
-      getDevices().then(({ devices }) => {
-        const influxdata = new InfluxWriter(influxHost, influxToken, influxOrg, influxBucket)
-        const writePromises = (devices || []).map((device) => influxdata.writePoint(device, new Date()))
-        return Promise.all(writePromises)
-          .then(() => influxdata.close())
-          .catch((error) => {
-            console.error('Error writing to InfluxDB:', error)
-          })
-      })
+      getDevices()
+        .then(({ devices }) => {
+          const influxdata = new InfluxWriter(influxHost, influxToken, influxOrg, influxBucket)
+          const writePromises = (devices ?? []).map((device) => influxdata.writePoint(device, new Date()))
+          return Promise.all(writePromises)
+            .then(() => influxdata.close())
+            .catch((error) => {
+              console.error('Error writing to InfluxDB:', error)
+            })
+        })
+        .catch((error) => {
+          console.error('Error getting devices:', error)
+        })
     }
   })
 

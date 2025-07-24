@@ -44,7 +44,7 @@ export default function Actions({ commands, runCommandAction, device }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
-  const handleCommand = async (command: string, successMessage: string) => {
+  const handleCommand = (command: string, successMessage: string) => {
     toast.promise(runCommandAction(device, command), {
       loading: t('loading'),
       success: successMessage,

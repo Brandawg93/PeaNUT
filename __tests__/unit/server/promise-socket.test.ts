@@ -110,5 +110,33 @@ describe('PromiseSocket', () => {
     })
 
     test('should reject on timeout', () => testTimeout(promiseSocket.readAll('COMMAND', 'END COMMAND', 100)))
+
+    test('should reject when data starts with ERR and contains newline', async () => {
+      const callbacks = mockSocketEvents()
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      callbacks.data(Buffer.from('ERR Invalid command\n'))
+
+      await expect(readPromise).rejects.toThrow('ERR Invalid command\n')
+      expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
+    })
+
+    test('should not reject when data starts with ERR but no newline', async () => {
+      const callbacks = mockSocketEvents()
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      callbacks.data(Buffer.from('ERR Invalid command'))
+      callbacks.data(Buffer.from('END COMMAND'))
+
+      await expect(readPromise).resolves.toBe('ERR Invalid commandEND COMMAND')
+    })
+
+    test('should not reject when data contains ERR but does not start with it', async () => {
+      const callbacks = mockSocketEvents()
+      const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')
+      callbacks.data(Buffer.from('some ERR data\nEND COMMAND'))
+
+      await expect(readPromise).resolves.toBe('some ERR data\nEND COMMAND')
+    })
   })
 })

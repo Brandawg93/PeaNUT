@@ -99,15 +99,15 @@ export default function SettingsWrapper({
       format,
       timeFormat,
     ] = await Promise.all([
-      getSettingsAction('NUT_SERVERS'),
-      getSettingsAction('INFLUX_HOST'),
-      getSettingsAction('INFLUX_TOKEN'),
-      getSettingsAction('INFLUX_ORG'),
-      getSettingsAction('INFLUX_BUCKET'),
-      getSettingsAction('INFLUX_INTERVAL'),
-      getSettingsAction('NOTIFICATION_PROVIDERS'),
-      getSettingsAction('DATE_FORMAT'),
-      getSettingsAction('TIME_FORMAT'),
+      getSettingsAction('NUT_SERVERS') as Promise<Array<server>>,
+      getSettingsAction('INFLUX_HOST') as Promise<string>,
+      getSettingsAction('INFLUX_TOKEN') as Promise<string>,
+      getSettingsAction('INFLUX_ORG') as Promise<string>,
+      getSettingsAction('INFLUX_BUCKET') as Promise<string>,
+      getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
+      getSettingsAction('NOTIFICATION_PROVIDERS') as Promise<Array<NotifierSettings>>,
+      getSettingsAction('DATE_FORMAT') as Promise<string>,
+      getSettingsAction('TIME_FORMAT') as Promise<string>,
     ])
     if (servers?.length) {
       setServerList([
@@ -175,7 +175,7 @@ export default function SettingsWrapper({
     })
   }
 
-  const handleServerRemove = async (index: number) => {
+  const handleServerRemove = (index: number) => {
     setServerList((prevList) => prevList.filter((_, i) => i !== index))
   }
 
@@ -277,11 +277,18 @@ export default function SettingsWrapper({
           >
             <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
               {menuItems.map(({ label, Icon, value }) => (
-                <TabsTrigger key={value} value={value} className='w-full cursor-pointer justify-start'>
-                  <div className='mr-4'>
-                    <Icon className='size-6!' />
+                <TabsTrigger
+                  asChild
+                  key={value}
+                  value={value}
+                  className='data-[state=active]:bg-background! w-full cursor-pointer justify-start'
+                >
+                  <div>
+                    <div className='mr-4'>
+                      <Icon className='size-6!' />
+                    </div>
+                    <span>{label}</span>
                   </div>
-                  <span>{label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>

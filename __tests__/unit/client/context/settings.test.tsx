@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, act } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import { SettingsProvider, useSettings } from '@/client/context/settings'
 import { getSettings } from '@/app/actions'
 import { SettingsType } from '@/server/settings'
@@ -27,37 +27,41 @@ describe('Settings Context', () => {
     jest.clearAllMocks()
   })
 
-  it('provides initial empty settings', () => {
+  it('provides initial empty settings', async () => {
     render(
       <SettingsProvider>
         <TestComponent />
       </SettingsProvider>
     )
 
-    expect(screen.getByTestId('date-format')).toHaveTextContent('')
-    expect(screen.getByTestId('time-format')).toHaveTextContent('')
+    // Wait for the initial settings to load (which will be empty due to mock)
+    await waitFor(() => {
+      expect(screen.getByTestId('date-format')).toHaveTextContent('')
+      expect(screen.getByTestId('time-format')).toHaveTextContent('')
+    })
   })
 
   it('fetches and provides settings on mount', async () => {
     const mockDateFormat = 'DD/MM/YYYY'
     const mockTimeFormat = '24-hour'
 
-    jest.mocked(getSettings).mockImplementation(async (key: keyof SettingsType) => {
-      if (key === 'DATE_FORMAT') return mockDateFormat
-      if (key === 'TIME_FORMAT') return mockTimeFormat
-      return ''
+    jest.mocked(getSettings).mockImplementation((key: keyof SettingsType) => {
+      if (key === 'DATE_FORMAT') return Promise.resolve(mockDateFormat)
+      if (key === 'TIME_FORMAT') return Promise.resolve(mockTimeFormat)
+      return Promise.resolve('')
     })
 
-    await act(async () => {
-      render(
-        <SettingsProvider>
-          <TestComponent />
-        </SettingsProvider>
-      )
-    })
+    render(
+      <SettingsProvider>
+        <TestComponent />
+      </SettingsProvider>
+    )
 
-    expect(screen.getByTestId('date-format')).toHaveTextContent(mockDateFormat)
-    expect(screen.getByTestId('time-format')).toHaveTextContent(mockTimeFormat)
+    // Wait for settings to load
+    await waitFor(() => {
+      expect(screen.getByTestId('date-format')).toHaveTextContent(mockDateFormat)
+      expect(screen.getByTestId('time-format')).toHaveTextContent(mockTimeFormat)
+    })
   })
 
   it('refreshes settings when refreshSettings is called', async () => {
@@ -67,36 +71,40 @@ describe('Settings Context', () => {
     const newTimeFormat = '24-hour'
 
     // First call returns initial values
-    jest.mocked(getSettings).mockImplementation(async (key: keyof SettingsType) => {
-      if (key === 'DATE_FORMAT') return initialDateFormat
-      if (key === 'TIME_FORMAT') return initialTimeFormat
-      return ''
+    jest.mocked(getSettings).mockImplementation((key: keyof SettingsType) => {
+      if (key === 'DATE_FORMAT') return Promise.resolve(initialDateFormat)
+      if (key === 'TIME_FORMAT') return Promise.resolve(initialTimeFormat)
+      return Promise.resolve('')
     })
 
-    await act(async () => {
-      render(
-        <SettingsProvider>
-          <TestComponent />
-        </SettingsProvider>
-      )
-    })
+    render(
+      <SettingsProvider>
+        <TestComponent />
+      </SettingsProvider>
+    )
 
-    expect(screen.getByTestId('date-format')).toHaveTextContent(initialDateFormat)
-    expect(screen.getByTestId('time-format')).toHaveTextContent(initialTimeFormat)
+    // Wait for initial settings to load
+    await waitFor(() => {
+      expect(screen.getByTestId('date-format')).toHaveTextContent(initialDateFormat)
+      expect(screen.getByTestId('time-format')).toHaveTextContent(initialTimeFormat)
+    })
 
     // Update mock to return new values
-    jest.mocked(getSettings).mockImplementation(async (key: keyof SettingsType) => {
-      if (key === 'DATE_FORMAT') return newDateFormat
-      if (key === 'TIME_FORMAT') return newTimeFormat
-      return ''
+    jest.mocked(getSettings).mockImplementation((key: keyof SettingsType) => {
+      if (key === 'DATE_FORMAT') return Promise.resolve(newDateFormat)
+      if (key === 'TIME_FORMAT') return Promise.resolve(newTimeFormat)
+      return Promise.resolve('')
     })
 
-    // Click refresh button
+    // Click refresh button and wait for the async operation to complete
     await act(async () => {
       screen.getByText('Refresh').click()
     })
 
-    expect(screen.getByTestId('date-format')).toHaveTextContent(newDateFormat)
-    expect(screen.getByTestId('time-format')).toHaveTextContent(newTimeFormat)
+    // Wait for new settings to load
+    await waitFor(() => {
+      expect(screen.getByTestId('date-format')).toHaveTextContent(newDateFormat)
+      expect(screen.getByTestId('time-format')).toHaveTextContent(newTimeFormat)
+    })
   })
 })

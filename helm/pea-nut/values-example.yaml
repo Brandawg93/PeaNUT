@@ -1,0 +1,167 @@
+# Example values file for PeaNUT Helm chart
+# This file demonstrates all available configuration options
+
+# Basic deployment configuration
+replicaCount: 1
+
+# Container image configuration
+image:
+  repository: brandawg93/peanut
+  tag: 'latest'
+  pullPolicy: IfNotPresent
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+# - name: regcred
+
+# Service account configuration
+serviceAccount:
+  create: true
+  automount: false
+  annotations: {}
+  name: ''
+
+# Pod annotations and labels
+podAnnotations: {}
+podLabels: {}
+
+# Security context
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Container port configuration
+containerPort: 8080
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ''
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: pea-nut.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  # - secretName: pea-nut-tls
+  #   hosts:
+  #     - pea-nut.example.com
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Health check probes
+livenessProbe:
+  httpGet:
+    path: /api/ping
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/ping
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes and volume mounts
+volumes: []
+# - name: config-volume
+#   configMap:
+#     name: pea-nut-config
+
+volumeMounts: []
+# - name: config-volume
+#   mountPath: /app/config
+#   readOnly: true
+
+# Node selector, tolerations, and affinity
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# NUT Server Configuration
+# Method 1: Multiple NUT servers (recommended)
+nutServers:
+  - HOST: 'nut-server1.local'
+    PORT: 3493
+    USERNAME: 'observer'
+    PASSWORD: 'password1'
+  - HOST: 'nut-server2.local'
+    PORT: 3493
+    USERNAME: 'observer'
+    PASSWORD: 'password2'
+
+# Environment Variables Configuration
+env:
+  # Authentication
+  WEB_USERNAME: 'admin'
+  AUTH_SECRET: 'your-super-secret-auth-key-here'
+
+  # Web server configuration
+  WEB_HOST: '0.0.0.0'
+
+  # NUT server configuration (legacy single server - alternative to nutServers array)
+  # NUT_HOST: "nut-server.local"
+  # NUT_PORT: "3493"
+  # USERNAME: "observer"
+  # PASSWORD: "secret-password"
+
+  # InfluxDB configuration
+  INFLUX_HOST: 'http://influxdb:8086'
+  INFLUX_ORG: 'home'
+  INFLUX_BUCKET: 'ups'
+  INFLUX_INTERVAL: 10
+
+  # Application configuration
+  DISABLE_CONFIG_FILE: 'false'
+
+  # Next.js configuration
+  NODE_ENV: 'production'
+  NEXT_TELEMETRY_DISABLED: '1'
+  ANALYZE: 'false'
+  BASE_PATH: ''
+
+# Secrets Configuration
+secrets:
+  # PeaNUT UI user password (required if WEB_USERNAME is set)
+  WEB_PASSWORD: 'your-secure-password-here'
+
+  # InfluxDB token (alternative to env.INFLUX_TOKEN)
+  INFLUX_TOKEN: 'your-influxdb-token-here'

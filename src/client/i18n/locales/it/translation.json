@@ -31,7 +31,16 @@
     "settings": "Impostazioni",
     "disconnect": "Disconnetti",
     "refresh": "Aggiorna",
-    "language": "Lingua"
+    "language": "Lingua",
+    "timeRange": {
+      "title": "Intervallo di tempo",
+      "all": "Tutti i dati",
+      "1min": "Ultimo minuto",
+      "5min": "Ultimi 5 minuti",
+      "30min": "Ultimi 30 minuti",
+      "1hour": "Ultima ora",
+      "24hours": "Ultime 24 ore"
+    }
   },
   "settings": {
     "title": "Impostazioni",

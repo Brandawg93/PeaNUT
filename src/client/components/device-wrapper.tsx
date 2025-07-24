@@ -30,8 +30,12 @@ import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
+import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
-const getStatus = (status: keyof typeof upsStatus) => {
+const getStatus = (status: string | number | undefined) => {
+  if (!status || typeof status !== 'string') {
+    return <></>
+  }
   if (status === 'OL CHRG') {
     return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
   } else if (status.startsWith('OL')) {
@@ -67,12 +71,14 @@ type Props = Readonly<{
 }>
 
 export default function DeviceWrapper({ device, getDeviceAction, runCommandAction, logoutAction }: Props) {
-  const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(
-    typeof window !== 'undefined' ? localStorage.getItem('wattsOrPercent') === 'true' : false
-  )
-  const [wattHours, setWattHours] = useState<boolean>(
-    typeof window !== 'undefined' ? localStorage.getItem('wattHours') === 'true' : false
-  )
+  const [wattsOrPercent, setWattsOrPercent] = useState<boolean>(() => {
+    const stored = getLocalStorageItem('wattsOrPercent')
+    return stored === 'true'
+  })
+  const [wattHours, setWattHours] = useState<boolean>(() => {
+    const stored = getLocalStorageItem('wattHours')
+    return stored === 'true'
+  })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
@@ -142,14 +148,14 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
 
   const toggleWattsOrPercent = () => {
     setWattsOrPercent((prev) => {
-      localStorage.setItem('wattsOrPercent', (!prev).toString())
+      setLocalStorageItem('wattsOrPercent', (!prev).toString())
       return !prev
     })
   }
 
   const toggleWattHours = () => {
     setWattHours((prev) => {
-      localStorage.setItem('wattHours', (!prev).toString())
+      setLocalStorageItem('wattHours', (!prev).toString())
       return !prev
     })
   }
@@ -180,7 +186,12 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
 
   const currentWh = () => {
     if (vars['battery.charge']) {
-      if (vars['ups.load'] && vars['ups.realpower.nominal'] && wattHours) {
+      if (
+        vars['ups.load'] &&
+        vars['ups.realpower.nominal'] &&
+        wattHours &&
+        vars['battery.runtime']?.value !== undefined
+      ) {
         const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
         const capacity = (+vars['battery.runtime'].value / 3600) * currentWattage
         return (
@@ -237,9 +248,11 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
             </div>
             <div>
               <p className='text-2xl font-semibold'>
-                {getStatus(vars['ups.status']?.value as keyof typeof upsStatus)}
+                {getStatus(vars['ups.status']?.value)}
                 &nbsp;
-                {upsStatus[vars['ups.status']?.value as keyof typeof upsStatus] ||
+                {(vars['ups.status']?.value &&
+                  typeof vars['ups.status'].value === 'string' &&
+                  upsStatus[vars['ups.status'].value as keyof typeof upsStatus]) ||
                   (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
@@ -256,7 +269,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
           </div>
           <ChartsContainer vars={vars} data={data} name={ups.name} />
           <div>
-            <MemoizedGrid data={ups} />
+            <MemoizedGrid data={ups} onRefetchAction={refetch} />
           </div>
         </div>
       </div>

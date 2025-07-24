@@ -31,7 +31,16 @@
     "settings": "Paramètres",
     "disconnect": "Déconnecter",
     "refresh": "Rafraîchir",
-    "language": "Langue"
+    "language": "Langue",
+    "timeRange": {
+      "title": "Plage de temps",
+      "all": "Toutes les données",
+      "1min": "Dernière minute",
+      "5min": "5 dernières minutes",
+      "30min": "30 dernières minutes",
+      "1hour": "Dernière heure",
+      "24hours": "Dernières 24 heures"
+    }
   },
   "settings": {
     "title": "Paramètres",
@@ -44,7 +53,7 @@
     "manageServers": "Gérer les serveurs",
     "influxDb": "InfluxDB",
     "influxNotice": "Cela ne fonctionnera qu'avec InfluxDB 2.x",
-    "influxInterval": "Influx Interval (s)",
+    "influxInterval": "Intervalle d'Influx (s)",
     "addServer": "Ajouter un serveur",
     "apply": "Appliquer",
     "saved": "Modifications enregistrées",
@@ -56,7 +65,7 @@
     "manageNotifications": "Notifications",
     "serversNotice": "Le nom d'utilisateur et le mot de passe sont requis pour les commandes",
     "terminal": "Terminal",
-    "terminalNotice": "Tapez \"Aide\" pour une liste de commandes.",
+    "terminalNotice": "Tapez \"help\" pour une liste de commandes.",
     "selectServer": "Sélectionnez un serveur"
   },
   "connect": {
@@ -90,43 +99,43 @@
     "title": "Actes",
     "batteryTestQuick": {
       "title": "Effectuer un test de batterie rapide",
-      "description": "Souhaitez-vous effectuer un test de batterie rapide sur les UPS?",
+      "description": "Souhaitez-vous effectuer un test de batterie rapide sur les onduleurs ?",
       "successMessage": "Le test de batterie rapide a commencé",
       "actionText": "Exécutez un test rapide"
     },
     "batteryTestDeep": {
       "title": "Effectuer un test de batterie profonde",
-      "description": "Souhaitez-vous effectuer un test de batterie en profondeur sur les UPS?",
+      "description": "Souhaitez-vous effectuer un test de batterie en profondeur sur les onduleurs ?",
       "actionText": "Exécuter un test profond",
       "successMessage": "Le test de batterie profonde a commencé"
     },
     "restart": {
       "title": "Redémarrage",
-      "description": "Souhaitez-vous redémarrer les UPS?",
+      "description": "Souhaitez-vous redémarrer les onduleurs ?",
       "actionText": "Redémarrage",
       "successMessage": "Redémarrage"
     },
     "shutdown": {
       "title": "Fermer",
-      "description": "Souhaitez-vous fermer les UPS?",
+      "description": "Souhaitez-vous fermer les onduleurs ?",
       "actionText": "Fermer",
       "successMessage": "Fermer"
     },
     "beeperDisable": {
       "title": "Désactiver le bip",
-      "description": "Souhaitez-vous désactiver le bip?",
+      "description": "Souhaitez-vous désactiver le bip ?",
       "actionText": "Désactiver le bip",
       "successMessage": "Bip désactivé"
     },
     "beeperEnable": {
       "title": "Activer le bip",
-      "description": "Souhaitez-vous activer le bip?",
+      "description": "Souhaitez-vous activer le bip ?",
       "actionText": "Activer le bip",
       "successMessage": "Beeper activé"
     },
     "beeperMute": {
       "title": "Bip muet",
-      "description": "Souhaitez-vous couper le bip?",
+      "description": "Souhaitez-vous couper le bip ?",
       "actionText": "Bip muet",
       "successMessage": "Bip"
     }
@@ -137,8 +146,8 @@
   },
   "volt-amps-chart": "Puissance apparente",
   "volts-chart": "Tension",
-  "watts-chart": "Réel pouvoir",
-  "accordion-grid": "Données UPS",
+  "watts-chart": "Puissance réelle",
+  "accordion-grid": "Données onduleur",
   "login": {
     "title": "Veuillez vous connecter pour continuer.",
     "username": "Nom d'utilisateur",

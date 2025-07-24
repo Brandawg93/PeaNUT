@@ -73,12 +73,12 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }],
+      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }],
     }
     return settings[key as keyof typeof settings]
   })
-  jest.spyOn(YamlSettings.prototype, 'set').mockImplementation(() => {})
-  jest.spyOn(YamlSettings.prototype, 'delete').mockImplementation(() => {})
+  jest.spyOn(YamlSettings.prototype, 'set').mockImplementation(() => true)
+  jest.spyOn(YamlSettings.prototype, 'delete').mockImplementation(() => true)
   jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
   jest.spyOn(Nut.prototype, 'runCommand').mockResolvedValue()
   jest.spyOn(YamlSettings.prototype, 'export').mockReturnValue('exported yaml')
@@ -96,8 +96,8 @@ describe('actions', () => {
     expect(data?.data?.['battery.charge']).toEqual('test')
   })
 
-  it('tests connection', () => {
-    expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
+  it('tests connection', async () => {
+    await expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
@@ -166,7 +166,7 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' },
+      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
       { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
     ]
     await updateServers(servers)

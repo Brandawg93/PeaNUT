@@ -1,0 +1,57 @@
+# Chart testing configuration file
+# See: https://github.com/helm/chart-testing/blob/main/README.md#configuration
+
+# Chart directories to test
+chart-dirs:
+  - helm
+
+# Chart repositories to add
+chart-repos:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+# Chart testing configuration
+chart-testing:
+  # Lint configuration
+  lint:
+    # Additional values files to use during linting
+    additional-values:
+      - env.NUT_HOST=localhost
+      - env.NUT_PORT=3493
+      - env.WEB_USERNAME=admin
+      - secrets.WEB_PASSWORD=password123
+      - containerPort=8080
+
+  # Install configuration
+  install:
+    # Additional values files to use during installation
+    additional-values:
+      - env.NUT_HOST=localhost
+      - env.NUT_PORT=3493
+      - env.WEB_USERNAME=admin
+      - secrets.WEB_PASSWORD=password123
+      - containerPort=8080
+
+    # Timeout for chart installation
+    timeout: 5m
+
+    # Wait for resources to be ready
+    wait: true
+
+    # Clean up after installation
+    cleanup: true
+
+# Helm configuration
+helm:
+  # Additional arguments for helm commands
+  extra-args: []
+
+# Yaml lint configuration
+yamllint:
+  # Yaml lint configuration file
+  config: .yamllint
+
+# Yamale configuration
+yamale:
+  # Yamale configuration file
+  config: .yamale

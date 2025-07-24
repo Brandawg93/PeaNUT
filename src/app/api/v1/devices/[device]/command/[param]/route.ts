@@ -1,10 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getSingleNutInstance } from '@/app/api/utils'
-
-type Params = {
-  device: string
-  param: string
-}
+import { NextRequest } from 'next/server'
+import { handleDeviceOperation, successfulOperationMessage } from '@/app/api/utils'
 
 /**
  * Saves value for a specific var.
@@ -34,23 +29,11 @@ type Params = {
  *     tags:
  *       - Devices
  */
-export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
+
+export async function POST(request: NextRequest, { params }: { params: Promise<{ device: string; param: string }> }) {
   const { device, param } = await params
-  const nut = await getSingleNutInstance(device)
-
-  try {
-    const deviceExists = await nut?.deviceExists(device)
-    if (!deviceExists) {
-      return NextResponse.json(`Device ${device} not found on any instance`, { status: 404 })
-    }
-
-    // Only save the variable on the first instance that has the device
-    await nut?.runCommand(param, device)
-    return NextResponse.json(`Command ${param} on device ${device} run successfully on device ${device}`)
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(`Failed to run command ${param} on device ${device}`, {
-      status: 500,
-    })
-  }
+  return handleDeviceOperation(device, async (nut) => {
+    await nut.runCommand(param, device)
+    return successfulOperationMessage('Command', param, device)
+  })
 }

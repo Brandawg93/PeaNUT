@@ -45,7 +45,7 @@ export default function Kpi({ text, description, onClick }: Props) {
         role: 'button',
         tabIndex: 0,
         onClick: onClickHandler,
-        onKeyUp: (e: any) => {
+        onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => {
           if (e.key === 'Enter' && onClickHandler) {
             onClickHandler()
           }
@@ -61,7 +61,7 @@ export default function Kpi({ text, description, onClick }: Props) {
       data-testid='kpi'
     >
       <div
-        style={{ width: 'calc(100% - 30px' }}
+        style={{ width: 'calc(100% - 30px)' }}
         className='motion-safe:animate-fade flex h-full flex-col justify-around pb-5 align-middle text-3xl font-semibold'
       >
         <div className='inline-block' ref={containerRef}>
@@ -70,7 +70,7 @@ export default function Kpi({ text, description, onClick }: Props) {
           </div>
         </div>
       </div>
-      <div className='text-muted-foreground motion-safe:animate-fade absolute bottom-3.5 w-full text-xs font-semibold'>
+      <div className='text-muted-foreground motion-safe:animate-fade absolute bottom-5.5 w-full text-xs font-semibold'>
         {description}
       </div>
     </Card>

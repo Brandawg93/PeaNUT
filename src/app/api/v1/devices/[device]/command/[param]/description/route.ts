@@ -1,10 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getSingleNutInstance } from '@/app/api/utils'
-
-type Params = {
-  device: string
-  param: string
-}
+import { NextRequest } from 'next/server'
+import { handleDeviceOperation } from '@/app/api/utils'
 
 /**
  * Retrieves description for a specific command.
@@ -34,15 +29,10 @@ type Params = {
  *     tags:
  *       - Devices
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string; param: string }> }) {
   const { device, param } = await params
-  const nut = await getSingleNutInstance(device)
-  const paramString = param
-  const data = await nut?.getCommandDescription(param, device)
-  if (data === undefined) {
-    return NextResponse.json(`Parameter ${paramString.toString()} not found`, {
-      status: 404,
-    })
-  }
-  return NextResponse.json(data)
+  return handleDeviceOperation(device, async (nut) => {
+    return await nut.getCommandDescription(param, device)
+  })
 }
