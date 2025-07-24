@@ -48,11 +48,13 @@ spec:
           {{- end }}
             - name: WEB_PORT
               value: {{ .Values.containerPort | quote }}
+            {{- if .Values.webPassword }}
             - name: WEB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "pea-nut.fullname" . }}
                   key: webPassword
+            {{- end }}
             - name: NUT_SERVERS
               value: {{ toJson .Values.nutServers | quote }}
             {{- if .Values.secrets.INFLUX_TOKEN }}

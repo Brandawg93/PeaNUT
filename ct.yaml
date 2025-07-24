@@ -31,13 +31,13 @@ chart-testing:
       - env.WEB_USERNAME=admin
       - secrets.WEB_PASSWORD=password123
       - containerPort=8080
-    
+
     # Timeout for chart installation
     timeout: 5m
-    
+
     # Wait for resources to be ready
     wait: true
-    
+
     # Clean up after installation
     cleanup: true
 
@@ -54,4 +54,4 @@ yamllint:
 # Yamale configuration
 yamale:
   # Yamale configuration file
-  config: .yamale 
+  config: .yamale

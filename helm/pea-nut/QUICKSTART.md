@@ -61,16 +61,16 @@ helm install pea-nut ./helm/pea-nut \
 ```yaml
 # my-values.yaml
 env:
-  WEB_USERNAME: "admin"
-  NUT_HOST: "nut-server.local"
-  NUT_PORT: "3493"
-  INFLUX_HOST: "http://influxdb:8086"
-  INFLUX_ORG: "home"
-  INFLUX_BUCKET: "ups"
+  WEB_USERNAME: 'admin'
+  NUT_HOST: 'nut-server.local'
+  NUT_PORT: '3493'
+  INFLUX_HOST: 'http://influxdb:8086'
+  INFLUX_ORG: 'home'
+  INFLUX_BUCKET: 'ups'
 
 secrets:
-  WEB_PASSWORD: "password123"
-  INFLUX_TOKEN: "your-token"
+  WEB_PASSWORD: 'password123'
+  INFLUX_TOKEN: 'your-token'
 
 ingress:
   enabled: true
@@ -92,35 +92,38 @@ helm install pea-nut ./helm/pea-nut -f my-values.yaml
 ```yaml
 # multi-nut-values.yaml
 nutServers:
-  - HOST: "nut-server1.local"
+  - HOST: 'nut-server1.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password1"
-  - HOST: "nut-server2.local"
+    USERNAME: 'observer'
+    PASSWORD: 'password1'
+  - HOST: 'nut-server2.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password2"
+    USERNAME: 'observer'
+    PASSWORD: 'password2'
 
 env:
-  WEB_USERNAME: "admin"
+  WEB_USERNAME: 'admin'
 
 secrets:
-  WEB_PASSWORD: "password123"
+  WEB_PASSWORD: 'password123'
 ```
 
 ## Common Commands
 
 ### Check deployment status
+
 ```bash
 kubectl get pods -l app.kubernetes.io/name=pea-nut
 ```
 
 ### View logs
+
 ```bash
 kubectl logs -l app.kubernetes.io/name=pea-nut
 ```
 
 ### Access the application
+
 ```bash
 # Port forward to access locally
 kubectl port-forward svc/pea-nut 8080:80
@@ -129,11 +132,13 @@ kubectl port-forward svc/pea-nut 8080:80
 ```
 
 ### Upgrade deployment
+
 ```bash
 helm upgrade pea-nut ./helm/pea-nut -f my-values.yaml
 ```
 
 ### Uninstall
+
 ```bash
 helm uninstall pea-nut
 ```
@@ -141,17 +146,20 @@ helm uninstall pea-nut
 ## Troubleshooting
 
 ### Check if validation passed
+
 ```bash
 # Test chart rendering
 helm template pea-nut ./helm/pea-nut -f my-values.yaml
 ```
 
 ### Common validation errors
+
 - `WEB_USERNAME is set but WEB_PASSWORD is not provided`: Add password to secrets
 - `Either NUT_HOST/NUT_PORT or nutServers array must be configured`: Configure NUT servers
 - `INFLUX_HOST is set but INFLUX_ORG is not provided`: Add missing InfluxDB configuration
 
 ### Check application logs
+
 ```bash
 kubectl logs -l app.kubernetes.io/name=pea-nut --tail=100 -f
 ```
@@ -160,4 +168,4 @@ kubectl logs -l app.kubernetes.io/name=pea-nut --tail=100 -f
 
 - Read the full [README.md](README.md) for detailed configuration options
 - Check [values-example.yaml](values-example.yaml) for all available settings
-- Visit the [PeaNUT documentation](https://github.com/Brandawg93/PeaNUT) for application features 
+- Visit the [PeaNUT documentation](https://github.com/Brandawg93/PeaNUT) for application features

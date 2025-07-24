@@ -7,7 +7,7 @@ replicaCount: 1
 # Container image configuration
 image:
   repository: brandawg93/peanut
-  tag: "latest"
+  tag: 'latest'
   pullPolicy: IfNotPresent
 
 # Image pull secrets for private registries
@@ -19,7 +19,7 @@ serviceAccount:
   create: true
   automount: false
   annotations: {}
-  name: ""
+  name: ''
 
 # Pod annotations and labels
 podAnnotations: {}
@@ -48,7 +48,7 @@ containerPort: 8080
 # Ingress configuration
 ingress:
   enabled: false
-  className: ""
+  className: ''
   annotations: {}
   # kubernetes.io/ingress.class: nginx
   # cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -119,49 +119,49 @@ affinity: {}
 # NUT Server Configuration
 # Method 1: Multiple NUT servers (recommended)
 nutServers:
-  - HOST: "nut-server1.local"
+  - HOST: 'nut-server1.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password1"
-  - HOST: "nut-server2.local"
+    USERNAME: 'observer'
+    PASSWORD: 'password1'
+  - HOST: 'nut-server2.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password2"
+    USERNAME: 'observer'
+    PASSWORD: 'password2'
 
 # Environment Variables Configuration
 env:
   # Authentication
-  WEB_USERNAME: "admin"
-  AUTH_SECRET: "your-super-secret-auth-key-here"
-  
+  WEB_USERNAME: 'admin'
+  AUTH_SECRET: 'your-super-secret-auth-key-here'
+
   # Web server configuration
-  WEB_HOST: "0.0.0.0"
-  
+  WEB_HOST: '0.0.0.0'
+
   # NUT server configuration (legacy single server - alternative to nutServers array)
   # NUT_HOST: "nut-server.local"
   # NUT_PORT: "3493"
   # USERNAME: "observer"
   # PASSWORD: "secret-password"
-  
+
   # InfluxDB configuration
-  INFLUX_HOST: "http://influxdb:8086"
-  INFLUX_ORG: "home"
-  INFLUX_BUCKET: "ups"
+  INFLUX_HOST: 'http://influxdb:8086'
+  INFLUX_ORG: 'home'
+  INFLUX_BUCKET: 'ups'
   INFLUX_INTERVAL: 10
-  
+
   # Application configuration
-  DISABLE_CONFIG_FILE: "false"
-  
+  DISABLE_CONFIG_FILE: 'false'
+
   # Next.js configuration
-  NODE_ENV: "production"
-  NEXT_TELEMETRY_DISABLED: "1"
-  ANALYZE: "false"
-  BASE_PATH: ""
+  NODE_ENV: 'production'
+  NEXT_TELEMETRY_DISABLED: '1'
+  ANALYZE: 'false'
+  BASE_PATH: ''
 
 # Secrets Configuration
 secrets:
   # PeaNUT UI user password (required if WEB_USERNAME is set)
-  WEB_PASSWORD: "your-secure-password-here"
-  
+  WEB_PASSWORD: 'your-secure-password-here'
+
   # InfluxDB token (alternative to env.INFLUX_TOKEN)
-  INFLUX_TOKEN: "your-influxdb-token-here" 
+  INFLUX_TOKEN: 'your-influxdb-token-here'

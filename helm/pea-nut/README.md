@@ -38,22 +38,23 @@ The following table lists the configurable parameters of the PeaNUT chart and th
 #### Port Configuration
 
 PeaNUT uses two different port configurations:
+
 - **`service.port`**: The external port exposed by the Kubernetes service (default: `80`)
 - **`containerPort`**: The internal port the application listens on (default: `8080`)
 
 The `WEB_PORT` environment variable is automatically set to match the `containerPort` value, ensuring the application listens on the correct internal port.
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `replicaCount` | Number of PeaNUT replicas | `1` |
-| `image.repository` | PeaNUT image repository | `brandawg93/peanut` |
-| `image.tag` | PeaNUT image tag | `""` (uses Chart.AppVersion) |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `service.type` | Kubernetes service type | `ClusterIP` |
-| `service.port` | Kubernetes service port | `80` |
-| `containerPort` | Container internal port | `8080` |
-| `ingress.enabled` | Enable ingress | `false` |
-| `resources` | CPU/Memory resource requests/limits | `{}` |
+| Parameter          | Description                         | Default                      |
+| ------------------ | ----------------------------------- | ---------------------------- |
+| `replicaCount`     | Number of PeaNUT replicas           | `1`                          |
+| `image.repository` | PeaNUT image repository             | `brandawg93/peanut`          |
+| `image.tag`        | PeaNUT image tag                    | `""` (uses Chart.AppVersion) |
+| `image.pullPolicy` | Image pull policy                   | `IfNotPresent`               |
+| `service.type`     | Kubernetes service type             | `ClusterIP`                  |
+| `service.port`     | Kubernetes service port             | `80`                         |
+| `containerPort`    | Container internal port             | `8080`                       |
+| `ingress.enabled`  | Enable ingress                      | `false`                      |
+| `resources`        | CPU/Memory resource requests/limits | `{}`                         |
 
 ### Authentication Configuration
 
@@ -62,11 +63,11 @@ PeaNUT supports basic authentication using username and password.
 ```yaml
 env:
   # Authentication
-  WEB_USERNAME: "admin"
-  AUTH_SECRET: "your-auth-secret-here"  # Optional, auto-generated if not provided
+  WEB_USERNAME: 'admin'
+  AUTH_SECRET: 'your-auth-secret-here' # Optional, auto-generated if not provided
 
 secrets:
-  WEB_PASSWORD: "your-secure-password"
+  WEB_PASSWORD: 'your-secure-password'
 ```
 
 ### NUT Server Configuration
@@ -78,24 +79,24 @@ You can configure NUT servers in two ways:
 ```yaml
 env:
   # Single NUT server configuration
-  NUT_HOST: "nut-server.local"
-  NUT_PORT: "3493"
-  USERNAME: "observer"
-  PASSWORD: "secret-password"
+  NUT_HOST: 'nut-server.local'
+  NUT_PORT: '3493'
+  USERNAME: 'observer'
+  PASSWORD: 'secret-password'
 ```
 
 #### Method 2: Multiple NUT Servers (Recommended)
 
 ```yaml
 nutServers:
-  - HOST: "nut-server1.local"
+  - HOST: 'nut-server1.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password1"
-  - HOST: "nut-server2.local"
+    USERNAME: 'observer'
+    PASSWORD: 'password1'
+  - HOST: 'nut-server2.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password2"
+    USERNAME: 'observer'
+    PASSWORD: 'password2'
 ```
 
 ### InfluxDB Configuration
@@ -105,13 +106,13 @@ Configure InfluxDB for metrics storage and visualization:
 ```yaml
 env:
   # InfluxDB configuration
-  INFLUX_HOST: "http://influxdb:8086"
-  INFLUX_ORG: "home"
-  INFLUX_BUCKET: "ups"
-  INFLUX_INTERVAL: 10  # Data collection interval in seconds
+  INFLUX_HOST: 'http://influxdb:8086'
+  INFLUX_ORG: 'home'
+  INFLUX_BUCKET: 'ups'
+  INFLUX_INTERVAL: 10 # Data collection interval in seconds
 
 secrets:
-  INFLUX_TOKEN: "your-influxdb-token"
+  INFLUX_TOKEN: 'your-influxdb-token'
 ```
 
 ### Application Configuration
@@ -119,16 +120,16 @@ secrets:
 ```yaml
 env:
   # Web server configuration
-  WEB_HOST: "0.0.0.0"
-  
+  WEB_HOST: '0.0.0.0'
+
   # Application settings
-  DISABLE_CONFIG_FILE: "false"  # Set to "true" to disable config file saving
-  
+  DISABLE_CONFIG_FILE: 'false' # Set to "true" to disable config file saving
+
   # Next.js configuration
-  NODE_ENV: "production"
-  NEXT_TELEMETRY_DISABLED: "1"
-  ANALYZE: "false"  # Enable bundle analysis
-  BASE_PATH: ""     # Application base path
+  NODE_ENV: 'production'
+  NEXT_TELEMETRY_DISABLED: '1'
+  ANALYZE: 'false' # Enable bundle analysis
+  BASE_PATH: '' # Application base path
 ```
 
 ### Complete Example
@@ -141,7 +142,7 @@ replicaCount: 1
 
 image:
   repository: brandawg93/peanut
-  tag: "latest"
+  tag: 'latest'
   pullPolicy: IfNotPresent
 
 service:
@@ -153,7 +154,7 @@ containerPort: 8080
 
 ingress:
   enabled: true
-  className: "nginx"
+  className: 'nginx'
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -178,44 +179,44 @@ resources:
 # Environment variables
 env:
   # Authentication
-  WEB_USERNAME: "admin"
-  AUTH_SECRET: "your-super-secret-auth-key"
-  
+  WEB_USERNAME: 'admin'
+  AUTH_SECRET: 'your-super-secret-auth-key'
+
   # Web server
-  WEB_HOST: "0.0.0.0"
-  
+  WEB_HOST: '0.0.0.0'
+
   # NUT servers (legacy single server)
-  NUT_HOST: "nut-server.local"
-  NUT_PORT: "3493"
-  USERNAME: "observer"
-  PASSWORD: "secret-password"
-  
+  NUT_HOST: 'nut-server.local'
+  NUT_PORT: '3493'
+  USERNAME: 'observer'
+  PASSWORD: 'secret-password'
+
   # InfluxDB
-  INFLUX_HOST: "http://influxdb:8086"
-  INFLUX_ORG: "home"
-  INFLUX_BUCKET: "ups"
+  INFLUX_HOST: 'http://influxdb:8086'
+  INFLUX_ORG: 'home'
+  INFLUX_BUCKET: 'ups'
   INFLUX_INTERVAL: 10
-  
+
   # Application
-  DISABLE_CONFIG_FILE: "false"
-  NODE_ENV: "production"
-  NEXT_TELEMETRY_DISABLED: "1"
+  DISABLE_CONFIG_FILE: 'false'
+  NODE_ENV: 'production'
+  NEXT_TELEMETRY_DISABLED: '1'
 
 # Multiple NUT servers (alternative to single server config)
 nutServers:
-  - HOST: "nut-server1.local"
+  - HOST: 'nut-server1.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password1"
-  - HOST: "nut-server2.local"
+    USERNAME: 'observer'
+    PASSWORD: 'password1'
+  - HOST: 'nut-server2.local'
     PORT: 3493
-    USERNAME: "observer"
-    PASSWORD: "password2"
+    USERNAME: 'observer'
+    PASSWORD: 'password2'
 
 # Secrets
 secrets:
-  WEB_PASSWORD: "your-secure-password"
-  INFLUX_TOKEN: "your-influxdb-token"
+  WEB_PASSWORD: 'your-secure-password'
+  INFLUX_TOKEN: 'your-influxdb-token'
 ```
 
 ## Validation

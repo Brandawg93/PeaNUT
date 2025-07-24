@@ -11,14 +11,14 @@ image:
   # pullPolicy should be 'Always' when tag is 'latest', otherwise it should be 'IfNotPresent'
   pullPolicy: IfNotPresent
   # tag identifies the container image release. If blank will use the chart's appVersion
-  tag: ""
+  tag: ''
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 
 # This is to override the chart name.
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -30,7 +30,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: ''
 
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -63,7 +63,7 @@ containerPort: 8080
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: false
-  className: ""
+  className: ''
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -137,37 +137,37 @@ nutServers: []
 # Environment variables configuration
 env:
   # Authentication
-  WEB_USERNAME: ""
-  AUTH_SECRET: ""
-  
+  WEB_USERNAME: ''
+  AUTH_SECRET: ''
+
   # Web server configuration
-  WEB_HOST: "0.0.0.0"
-  
+  WEB_HOST: '0.0.0.0'
+
   # NUT server configuration (legacy single server)
-  NUT_HOST: ""
-  NUT_PORT: ""
-  USERNAME: ""
-  PASSWORD: ""
-  
+  NUT_HOST: ''
+  NUT_PORT: ''
+  USERNAME: ''
+  PASSWORD: ''
+
   # InfluxDB configuration
-  INFLUX_HOST: ""
-  INFLUX_TOKEN: ""
-  INFLUX_ORG: ""
-  INFLUX_BUCKET: ""
+  INFLUX_HOST: ''
+  INFLUX_TOKEN: ''
+  INFLUX_ORG: ''
+  INFLUX_BUCKET: ''
   INFLUX_INTERVAL: 10
-  
+
   # Application configuration
-  DISABLE_CONFIG_FILE: "false"
-  
+  DISABLE_CONFIG_FILE: 'false'
+
   # Next.js configuration
-  NODE_ENV: "production"
-  NEXT_TELEMETRY_DISABLED: "1"
-  ANALYZE: "false"
-  BASE_PATH: ""
+  NODE_ENV: 'production'
+  NEXT_TELEMETRY_DISABLED: '1'
+  ANALYZE: 'false'
+  BASE_PATH: ''
 
 # Secrets configuration
 secrets:
   # PeaNUT UI user password
-  WEB_PASSWORD: ""
+  WEB_PASSWORD: ''
   # InfluxDB token (alternative to env.INFLUX_TOKEN)
-  INFLUX_TOKEN: ""
+  INFLUX_TOKEN: ''
