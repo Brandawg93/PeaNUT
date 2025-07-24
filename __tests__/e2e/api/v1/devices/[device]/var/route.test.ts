@@ -22,6 +22,6 @@ test.describe('Var', () => {
     const createJson = await create.json()
 
     expect(create.status()).toBe(200)
-    expect(createJson).toBe('Variable battery.charge.low on device ups saved successfully on device ups')
+    expect(createJson).toBe('Variable battery.charge.low on device ups saved successfully')
   })
 })

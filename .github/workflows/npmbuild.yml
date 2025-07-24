@@ -6,10 +6,12 @@ on:
       - main
     paths-ignore:
       - 'README.md'
+      - 'helm/**'
   pull_request:
     types: [opened, synchronize, reopened]
     paths-ignore:
       - 'README.md'
+      - 'helm/**'
 jobs:
   build:
     runs-on: ubuntu-latest

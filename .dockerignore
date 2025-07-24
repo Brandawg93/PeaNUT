@@ -16,6 +16,7 @@ Dockerfile*
 __tests__
 config
 examples
+helm
 images
 test_results
 coverage

@@ -1,0 +1,23 @@
+extends: default
+
+rules:
+  # 80 chars should be enough, but don't fail if a line is longer
+  line-length: disable
+  
+  # Allow document start
+  document-start: disable
+  
+  # Allow trailing spaces
+  trailing-spaces: disable
+  
+  # Allow comments
+  comments-indentation: disable
+  
+  # Allow empty lines
+  empty-lines: disable
+  
+  # Allow indentation
+  indentation: disable
+  
+  # Allow truthy values
+  truthy: disable 
