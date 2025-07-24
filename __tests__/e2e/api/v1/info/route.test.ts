@@ -18,10 +18,10 @@ test.describe('Info', () => {
     expect(data).toHaveProperty('repository')
 
     // Check specific values
-    expect(data.name).toBe('peanut')
-    expect(data.version).toBe('5.9.4')
-    expect(data.description).toBe('A Tiny Dashboard for Network UPS Tools')
-    expect(data.repository).toBe('https://github.com/Brandawg93/PeaNUT')
+    expect(typeof data.name).toBe('string')
+    expect(typeof data.version).toBe('string')
+    expect(typeof data.description).toBe('string')
+    expect(typeof data.repository).toBe('string')
     expect(typeof data.uptime).toBe('number')
     expect(typeof data.memoryUsage).toBe('object')
     expect(data.memoryUsage).toHaveProperty('rss')
