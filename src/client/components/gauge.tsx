@@ -69,7 +69,7 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
                     const cy = viewBox && 'cy' in viewBox && viewBox.cy !== undefined ? viewBox.cy : 140
                     return (
                       <text x={cx} y={cy - 10} textAnchor='middle'>
-                        <tspan x={cx} y={cy - 10} className='text-5xl' fill='#fff'>
+                        <tspan x={cx} y={cy - 10} className='fill-foreground text-5xl'>
                           {percentage}%
                         </tspan>
                       </text>
