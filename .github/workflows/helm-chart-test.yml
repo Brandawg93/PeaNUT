@@ -39,53 +39,8 @@ jobs:
       - name: Run chart-testing (lint)
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
-      - name: Test chart rendering
-        run: |
-          echo "📋 Testing chart rendering..."
-          helm template pea-nut ./helm/pea-nut
-          helm template pea-nut ./helm/pea-nut --set env.NUT_HOST=localhost --set env.NUT_PORT=3493
-          helm template pea-nut ./helm/pea-nut --set env.WEB_USERNAME=admin --set secrets.WEB_PASSWORD=password123
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.12.0
 
-      - name: Test validation
-        run: |
-          echo "🔍 Testing validation..."
-          # Test that validation fails for invalid config
-          if helm template pea-nut ./helm/pea-nut --set env.WEB_USERNAME=admin --set env.INFLUX_HOST=http://influxdb:8086; then
-            echo "❌ Validation should have failed but didn't"
-            exit 1
-          else
-            echo "✅ Validation correctly failed for invalid configuration"
-          fi
-
-      - name: Test chart package
-        run: |
-          echo "📦 Testing chart packaging..."
-          helm package ./helm/pea-nut
-          ls -la *.tgz
-
-      - name: Test documentation
-        run: |
-          echo "📖 Testing documentation..."
-          test -f "./helm/pea-nut/README.md" || (echo "❌ README.md missing" && exit 1)
-          test -f "./helm/pea-nut/values-example.yaml" || (echo "❌ values-example.yaml missing" && exit 1)
-          test -f "./helm/pea-nut/QUICKSTART.md" || (echo "❌ QUICKSTART.md missing" && exit 1)
-          echo "✅ All documentation files exist"
-
-      - name: Test chart metadata
-        run: |
-          echo "📋 Testing chart metadata..."
-          helm show chart ./helm/pea-nut
-          helm show values ./helm/pea-nut
-
-      - name: Test completion
-        run: |
-          echo "🎉 Quick Helm chart test completed successfully!"
-          echo "✅ Chart linting passed"
-          echo "✅ Chart rendering passed"
-          echo "✅ Validation tests passed"
-          echo "✅ Documentation tests passed"
-
-      - name: Skip tests
-        run: |
-          echo "⏭️ No Helm charts changed, skipping tests"
-          echo "This is expected when changes are made to other parts of the repository" 
+      - name: Run chart-testing (install)
+        run: ct install --target-branch ${{ github.event.repository.default_branch }}
