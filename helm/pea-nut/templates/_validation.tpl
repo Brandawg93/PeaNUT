@@ -144,4 +144,4 @@ This template provides validation rules for required configuration
 {{- printf "\nPlease fix the above errors and try again.\n" -}}
 {{- fail "PeaNUT Helm chart validation failed" -}}
 {{- end -}}
-{{- end -}} 
+{{- end -}}
