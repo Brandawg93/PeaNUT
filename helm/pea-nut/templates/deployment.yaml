@@ -48,7 +48,7 @@ spec:
           {{- end }}
             - name: WEB_PORT
               value: {{ .Values.containerPort | quote }}
-            {{- if .Values.webPassword }}
+            {{- if .Values.secrets.webPassword }}
             - name: WEB_PASSWORD
               valueFrom:
                 secretKeyRef:
