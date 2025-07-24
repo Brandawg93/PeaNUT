@@ -36,24 +36,10 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
 
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Changed charts: $changed"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No charts changed"
-          fi
-
       - name: Run chart-testing (lint)
-        if: steps.list-changed.outputs.changed == 'true'
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
       - name: Test chart rendering
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "📋 Testing chart rendering..."
           helm template pea-nut ./helm/pea-nut
@@ -61,7 +47,6 @@ jobs:
           helm template pea-nut ./helm/pea-nut --set env.WEB_USERNAME=admin --set secrets.WEB_PASSWORD=password123
 
       - name: Test validation
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "🔍 Testing validation..."
           # Test that validation fails for invalid config
@@ -73,14 +58,12 @@ jobs:
           fi
 
       - name: Test chart package
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "📦 Testing chart packaging..."
           helm package ./helm/pea-nut
           ls -la *.tgz
 
       - name: Test documentation
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "📖 Testing documentation..."
           test -f "./helm/pea-nut/README.md" || (echo "❌ README.md missing" && exit 1)
@@ -89,14 +72,12 @@ jobs:
           echo "✅ All documentation files exist"
 
       - name: Test chart metadata
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "📋 Testing chart metadata..."
           helm show chart ./helm/pea-nut
           helm show values ./helm/pea-nut
 
       - name: Test completion
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "🎉 Quick Helm chart test completed successfully!"
           echo "✅ Chart linting passed"
@@ -105,7 +86,6 @@ jobs:
           echo "✅ Documentation tests passed"
 
       - name: Skip tests
-        if: steps.list-changed.outputs.changed == 'false'
         run: |
           echo "⏭️ No Helm charts changed, skipping tests"
           echo "This is expected when changes are made to other parts of the repository" 

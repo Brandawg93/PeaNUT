@@ -10,12 +10,14 @@ A Helm chart for deploying PeaNUT (A tiny dashboard for Network UPS Tools) in Ku
 ## Installation
 
 ### Add the Helm repository (if available)
+
 ```bash
 helm repo add pea-nut https://your-repo-url
 helm repo update
 ```
 
 ### Install the chart
+
 ```bash
 # Install with default values
 helm install pea-nut ./helm/pea-nut
@@ -63,6 +65,7 @@ secrets:
 You can configure NUT servers in two ways:
 
 #### Method 1: Single NUT Server (Legacy)
+
 ```yaml
 env:
   # Single NUT server configuration
@@ -73,6 +76,7 @@ env:
 ```
 
 #### Method 2: Multiple NUT Servers (Recommended)
+
 ```yaml
 nutServers:
   - HOST: "nut-server1.local"
@@ -213,6 +217,7 @@ The Helm chart includes validation to ensure required configuration is provided:
 ## Deployment Examples
 
 ### Basic Deployment
+
 ```bash
 helm install pea-nut ./helm/pea-nut \
   --set env.WEB_USERNAME=admin \
@@ -222,6 +227,7 @@ helm install pea-nut ./helm/pea-nut \
 ```
 
 ### With InfluxDB
+
 ```bash
 helm install pea-nut ./helm/pea-nut \
   --set env.WEB_USERNAME=admin \
@@ -233,6 +239,7 @@ helm install pea-nut ./helm/pea-nut \
 ```
 
 ### With Ingress
+
 ```bash
 helm install pea-nut ./helm/pea-nut \
   --set ingress.enabled=true \
@@ -251,6 +258,7 @@ helm install pea-nut ./helm/pea-nut \
 4. **High memory usage**: Adjust resource limits in the values file
 
 ### Checking Logs
+
 ```bash
 # Get pod name
 kubectl get pods -l app.kubernetes.io/name=pea-nut
@@ -263,6 +271,7 @@ kubectl logs -f <pod-name>
 ```
 
 ### Checking Configuration
+
 ```bash
 # Get the deployed values
 helm get values pea-nut
@@ -298,4 +307,4 @@ When contributing to this Helm chart, please ensure:
 
 ## License
 
-This Helm chart is licensed under the same license as PeaNUT (Apache 2.0). 
+This Helm chart is licensed under the same license as PeaNUT (Apache 2.0).
