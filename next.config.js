@@ -7,7 +7,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   output: 'standalone',
-  basePath: process.env.BASE_PATH,
   images: {
     unoptimized: true,
   },
