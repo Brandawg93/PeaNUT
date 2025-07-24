@@ -13,6 +13,7 @@ import { Payload } from 'recharts/types/component/DefaultLegendContent'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
 import { LanguageContext } from '@/client/context/language'
 import { useTranslation } from 'react-i18next'
+import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 type ReferenceLineData = Array<{ label: string; value: number }>
 
@@ -33,14 +34,14 @@ export default function LineChartBase(props: Props) {
 
   useEffect(() => {
     // Get stored state from localStorage
-    const storedState = localStorage.getItem(`accordion-${id}`)
+    const storedState = getLocalStorageItem(`accordion-${id}`)
     // Set to stored value if exists, otherwise default to open (id)
     setAccordionValue(storedState === 'closed' ? undefined : id)
   }, [id])
 
   const handleAccordionChange = (value: string) => {
     // Store the new state in localStorage
-    localStorage.setItem(`accordion-${id}`, value === id ? 'open' : 'closed')
+    setLocalStorageItem(`accordion-${id}`, value === id ? 'open' : 'closed')
     setAccordionValue(value)
   }
 
@@ -64,12 +65,12 @@ export default function LineChartBase(props: Props) {
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
-                    tickFormatter={(timeStr) =>
+                    tickFormatter={(timeStr: string) =>
                       new Date(timeStr).toLocaleTimeString(lng, {
                         hour: 'numeric',
                         minute: 'numeric',
                         second: 'numeric',
-                        hour12: localStorage.getItem('use24Hour') !== 'true',
+                        hour12: getLocalStorageItem('use24Hour') !== 'true',
                       })
                     }
                   />
@@ -91,7 +92,7 @@ export default function LineChartBase(props: Props) {
                   />
                   <ChartLegend
                     verticalAlign='top'
-                    content={<ChartLegendContent handleClick={(e) => onLegendClick && onLegendClick(e)} />}
+                    content={<ChartLegendContent handleClick={(e: Payload) => onLegendClick && onLegendClick(e)} />}
                   />
                   <CartesianGrid horizontal vertical />
                   {referenceLineData?.map((line) => (
@@ -109,19 +110,20 @@ export default function LineChartBase(props: Props) {
                       <ChartTooltipContent
                         unit={unit}
                         labelKey='time'
-                        labelFormatter={(value, payload) =>
-                          new Date(payload[0].payload.time).toLocaleTimeString(lng, {
+                        labelFormatter={(value, payload) => {
+                          const timeValue = (payload[0]?.payload as { time?: string })?.time
+                          return new Date(timeValue ?? '').toLocaleTimeString(lng, {
                             hour: 'numeric',
                             minute: 'numeric',
                             second: 'numeric',
-                            hour12: localStorage.getItem('use24Hour') !== 'true',
+                            hour12: getLocalStorageItem('use24Hour') !== 'true',
                           })
-                        }
+                        }}
                       />
                     }
                   />
                   {data.length > 0 &&
-                    Object.keys(data[0])
+                    Object.keys(data[0] as Record<string, unknown>)
                       .filter((k) => k !== 'time')
                       .map((key) => (
                         <Line

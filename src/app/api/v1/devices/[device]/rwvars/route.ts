@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getSingleNutInstance } from '@/app/api/utils'
+import { NextRequest } from 'next/server'
+import { handleDeviceOperation } from '@/app/api/utils'
 
 /**
  * Retrieves writable vars for specific device.
@@ -23,12 +23,10 @@ import { getSingleNutInstance } from '@/app/api/utils'
  *     tags:
  *       - Vars
  */
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
-  const nut = await getSingleNutInstance(device)
-  const data = await nut?.getRWVars(device)
-  if (data === undefined) {
-    return NextResponse.json(`Device ${device} not found`, { status: 404 })
-  }
-  return NextResponse.json(data)
+  return handleDeviceOperation(device, async (nut) => {
+    return await nut.getRWVars(device)
+  })
 }

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
-const hostname = process.env.HOSTNAME || 'localhost'
-const port = process.env.PORT || '3000'
+const hostname = process.env.HOSTNAME ?? 'localhost'
+const port = process.env.PORT ?? '3000'
 
 test.describe('Settings', () => {
   test('renders the settings', async ({ page }) => {

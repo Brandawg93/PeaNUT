@@ -9,13 +9,15 @@
   "batteryCharge": "Battery Charge",
   "batteryRuntime": "Battery Runtime",
   "lastUpdated": "Last Updated",
+  "toggleTime": "Click to toggle 12/24 hour format",
   "docs": "API Docs",
   "voltsChart": {
     "inputVoltage": "Input Voltage",
     "outputVoltage": "Output Voltage",
     "nominalInputVoltage": "Nominal Input Voltage",
     "nominalOutputVoltage": "Nominal Output Voltage",
-    "nominalVoltage": "Nominal Voltage"
+    "nominalVoltage": "Nominal Voltage",
+    "title": "Volts"
   },
   "wattsChart": {
     "realpower": "Realpower",
@@ -29,9 +31,25 @@
     "settings": "Settings",
     "disconnect": "Disconnect",
     "refresh": "Refresh",
-    "language": "Language"
+    "language": "Language",
+    "timeRange": {
+      "title": "Time Range",
+      "all": "All Data",
+      "1min": "Last Minute",
+      "5min": "Last 5 Minutes",
+      "30min": "Last 30 Minutes",
+      "1hour": "Last Hour",
+      "24hours": "Last 24 Hours"
+    }
   },
   "settings": {
+    "title": "Settings",
+    "general": "General",
+    "generalNotice": "General application settings",
+    "dateFormat": "Date Format",
+    "selectDateFormat": "Select a date format",
+    "timeFormat": "Time Format",
+    "selectTimeFormat": "Select a time format",
     "manageServers": "Manage Servers",
     "influxDb": "InfluxDB",
     "influxNotice": "This will only work with Influxdb 2.x",
@@ -39,7 +57,7 @@
     "addServer": "Add Server",
     "apply": "Apply",
     "saved": "Changes saved",
-    "configExport": "YAML Configuration",
+    "configExport": "Import/Export Config",
     "configExportNotice": "Manually edit the YAML configuration file.",
     "download": "Download",
     "save": "Save",

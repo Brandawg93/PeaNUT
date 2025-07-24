@@ -64,22 +64,12 @@ describe('SettingsWrapper', () => {
     })
   })
 
-  it('adds a new server when add server button is clicked', async () => {
-    mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
-
-    renderComponent()
-
-    await waitFor(() => {
-      expect(screen.getByTitle('settings.addServer')).toBeInTheDocument()
-    })
-
-    fireEvent.click(screen.getByTitle('settings.addServer'))
-  })
-
   it('handles server change correctly', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
+    const servers = [
+      { server: { HOST: 'localhost', PORT: 8080, USERNAME: jest.fn(), PASSWORD: jest.fn() }, saved: true },
+    ]
+    mockGetSettingsAction.mockResolvedValueOnce(servers)
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
     mockGetSettingsAction.mockResolvedValueOnce('influxToken')
     mockGetSettingsAction.mockResolvedValueOnce('influxOrg')

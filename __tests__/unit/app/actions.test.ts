@@ -24,13 +24,20 @@ import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
 import { signIn } from '@/auth'
+import { AuthError } from 'next-auth'
 
 global.TextDecoder = TextDecoder as any
 global.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
 
-// Mock signIn
-jest.mock('@/src/auth', () => ({
+// Mock auth
+jest.mock('@/auth', () => ({
   signIn: jest.fn(),
+  signOut: jest.fn(),
+  auth: jest.fn(),
+  handlers: {
+    GET: jest.fn(),
+    POST: jest.fn(),
+  },
 }))
 
 const vars: VARS = {}
@@ -66,12 +73,12 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' }],
+      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }],
     }
     return settings[key as keyof typeof settings]
   })
-  jest.spyOn(YamlSettings.prototype, 'set').mockImplementation(() => {})
-  jest.spyOn(YamlSettings.prototype, 'delete').mockImplementation(() => {})
+  jest.spyOn(YamlSettings.prototype, 'set').mockImplementation(() => true)
+  jest.spyOn(YamlSettings.prototype, 'delete').mockImplementation(() => true)
   jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
   jest.spyOn(Nut.prototype, 'runCommand').mockResolvedValue()
   jest.spyOn(YamlSettings.prototype, 'export').mockReturnValue('exported yaml')
@@ -89,8 +96,8 @@ describe('actions', () => {
     expect(data?.data?.['battery.charge']).toEqual('test')
   })
 
-  it('tests connection', () => {
-    expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
+  it('tests connection', async () => {
+    await expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
@@ -159,7 +166,7 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: 'pass' },
+      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
       { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
     ]
     await updateServers(servers)
@@ -194,6 +201,30 @@ describe('actions', () => {
       formData.append('password', 'test')
       await authenticate(undefined, formData)
       expect(signIn).toHaveBeenCalledWith('credentials', formData)
+    })
+
+    it('handles invalid credentials error', async () => {
+      const formData = new FormData()
+      formData.append('username', 'test')
+      formData.append('password', 'wrong')
+
+      const authError = new AuthError('CredentialsSignin')
+      ;(signIn as jest.Mock).mockRejectedValueOnce(authError)
+
+      const result = await authenticate(undefined, formData)
+      expect(result).toBe('Invalid credentials.')
+    })
+
+    it('handles generic auth error', async () => {
+      const formData = new FormData()
+      formData.append('username', 'test')
+      formData.append('password', 'test')
+
+      const authError = new AuthError('Some other error')
+      ;(signIn as jest.Mock).mockRejectedValueOnce(authError)
+
+      const result = await authenticate(undefined, formData)
+      expect(result).toBe('Something went wrong.')
     })
   })
 })

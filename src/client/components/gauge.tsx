@@ -47,10 +47,10 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
         }
       }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className='border-border-card bg-card h-52 min-w-56 cursor-pointer overflow-hidden border shadow-none'
+      className='border-border-card bg-card h-52 min-w-56 cursor-pointer overflow-hidden border py-0 shadow-none'
       data-testid='gauge'
     >
-      <CardContent className='h-44 p-0!'>
+      <CardContent className='h-36 !px-0 !py-0'>
         <div className='motion-safe:animate-fade'>
           <ChartContainer config={chartConfig} className='mx-auto aspect-square h-full w-full max-w-[280px]'>
             <PieChart>
@@ -65,21 +65,15 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
               >
                 <Label
                   content={({ viewBox }) => {
-                    if (
-                      viewBox &&
-                      'cx' in viewBox &&
-                      viewBox.cx !== undefined &&
-                      'cy' in viewBox &&
-                      viewBox.cy !== undefined
-                    ) {
-                      return (
-                        <text x={viewBox.cx} y={viewBox.cy - 10} textAnchor='middle'>
-                          <tspan x={viewBox.cx} y={viewBox.cy - 10} className='fill-foreground text-5xl'>
-                            {percentage}%
-                          </tspan>
-                        </text>
-                      )
-                    }
+                    const cx = viewBox && 'cx' in viewBox && viewBox.cx !== undefined ? viewBox.cx : 140
+                    const cy = viewBox && 'cy' in viewBox && viewBox.cy !== undefined ? viewBox.cy : 140
+                    return (
+                      <text x={cx} y={cy - 10} textAnchor='middle'>
+                        <tspan x={cx} y={cy - 10} className='text-5xl' fill='#fff'>
+                          {percentage}%
+                        </tspan>
+                      </text>
+                    )
                   }}
                 />
               </Pie>

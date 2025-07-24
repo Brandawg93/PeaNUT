@@ -3,6 +3,9 @@ import { render } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
+import { TimeRangeProvider } from '@/client/context/time-range'
+import { SettingsProvider } from '@/client/context/settings'
+import { ThemeProvider } from '@/client/context/theme-provider'
 
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
@@ -13,6 +16,21 @@ global.fetch = jest.fn(() =>
     json: () => Promise.resolve([{ name: '1.0.0' }]),
   })
 ) as jest.Mock
+
+// Mock window.matchMedia for next-themes
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})
 
 describe('Wrapper Component', () => {
   const mockDevicesData = {
@@ -44,9 +62,15 @@ describe('Wrapper Component', () => {
 
   const renderComponent = (getDevicesAction = {}) =>
     render(
-      <LanguageContext.Provider value='en'>
-        <Wrapper getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)} logoutAction={jest.fn()} />
-      </LanguageContext.Provider>
+      <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+        <SettingsProvider>
+          <TimeRangeProvider>
+            <LanguageContext.Provider value='en'>
+              <Wrapper getDevicesAction={jest.fn().mockResolvedValue(getDevicesAction)} logoutAction={jest.fn()} />
+            </LanguageContext.Provider>
+          </TimeRangeProvider>
+        </SettingsProvider>
+      </ThemeProvider>
     )
 
   beforeEach(() => {
@@ -108,7 +132,7 @@ describe('Wrapper Component', () => {
     })
 
     const { findByTestId } = renderComponent()
-    const icon = await findByTestId('check-icon')
+    const icon = await findByTestId('bolt-icon')
     expect(icon).toBeInTheDocument()
   })
 

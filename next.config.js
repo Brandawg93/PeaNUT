@@ -5,8 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const removeImports = require('next-remove-imports')()
-
 const nextConfig = {
   output: 'standalone',
   images: {
@@ -16,7 +14,11 @@ const nextConfig = {
     esmExternals: true,
     reactCompiler: true,
   },
+  turbopack: {
+    rules: {
+      // Configure any specific rules for your project here
+    },
+  },
 }
 
-module.exports =
-  process.env.ANALYZE === 'true' ? withBundleAnalyzer(removeImports(nextConfig)) : removeImports(nextConfig)
+module.exports = process.env.ANALYZE === 'true' ? withBundleAnalyzer(nextConfig) : nextConfig

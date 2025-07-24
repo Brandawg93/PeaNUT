@@ -4,8 +4,14 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'helm/**'
   pull_request:
     types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'README.md'
+      - 'helm/**'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,7 +25,7 @@ jobs:
           version: 9
           run_install: false
 
-      - uses: actions/setup-node@v4.3.0
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version: 22
           cache: 'pnpm'

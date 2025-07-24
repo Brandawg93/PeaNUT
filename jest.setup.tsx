@@ -22,6 +22,7 @@ jest.mock('fs', () => ({
   writeFileSync: jest.fn(),
   existsSync: jest.fn(),
   mkdirSync: jest.fn(),
+  unlinkSync: jest.fn(),
   watch: jest.fn(),
 }))
 
@@ -31,6 +32,9 @@ jest.mock('lucide-react', () => ({
   ChevronRight: jest.fn(),
   Check: jest.fn(),
   Circle: jest.fn(),
+  ChevronDownIcon: jest.fn(() => <div data-testid='chevron-down-icon' />),
+  CheckIcon: jest.fn(() => <div data-testid='check-icon' />),
+  ChevronUpIcon: jest.fn(() => <div data-testid='chevron-up-icon' />),
 }))
 
 jest.mock('recharts', () => {
@@ -44,6 +48,21 @@ jest.mock('recharts', () => {
 })
 
 window.PointerEvent = MouseEvent as typeof PointerEvent
+
+// Mock window.matchMedia for next-themes
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})
 
 jest.mock('next-auth/react', () => {
   const originalModule = jest.requireActual('next-auth/react')

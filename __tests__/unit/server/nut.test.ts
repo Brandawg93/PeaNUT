@@ -48,11 +48,17 @@ VAR ups ups.vendorid "0764"
 END LIST VAR ups`
 
 describe('Nut', () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    jest.restoreAllMocks()
     jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
     jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
     jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
-    jest.spyOn(Nut.prototype, 'checkCredentials').mockResolvedValue()
+  })
+
+  afterEach(async () => {
+    // Clean up any Nut instances that might have been created
+    // This is a safety measure in case any tests don't properly clean up
+    jest.restoreAllMocks()
   })
 
   it('should get devices', async () => {
@@ -184,8 +190,255 @@ describe('Nut', () => {
     const nut = new Nut('localhost', 3493)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('OK\n')
     jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
-
+    jest
+      .spyOn(Nut.prototype, 'getDevices')
+      .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
     await nut.setVar('battery.charge', '90', 'ups')
     expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('SET VAR ups battery.charge 90')
+  })
+
+  describe('checkCredentials', () => {
+    it('should successfully check credentials with username and password', async () => {
+      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // USERNAME response
+        .mockResolvedValueOnce('OK\n') // PASSWORD response
+        .mockResolvedValueOnce('OK\n') // LOGIN response
+      jest
+        .spyOn(Nut.prototype, 'getDevices')
+        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      await nut.checkCredentials()
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('USERNAME testuser')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('PASSWORD testpass')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGIN ups')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGOUT')
+      expect(PromiseSocket.prototype.close).toHaveBeenCalled()
+    })
+
+    it('should successfully check credentials without username and password', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('OK\n') // LOGIN response
+      jest
+        .spyOn(Nut.prototype, 'getDevices')
+        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      await nut.checkCredentials()
+      expect(PromiseSocket.prototype.write).not.toHaveBeenCalledWith('USERNAME testuser')
+      expect(PromiseSocket.prototype.write).not.toHaveBeenCalledWith('PASSWORD testpass')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGIN ups')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGOUT')
+      expect(PromiseSocket.prototype.close).toHaveBeenCalled()
+    })
+
+    it('should throw error for invalid username', async () => {
+      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('ERR\n') // USERNAME response
+      await expect(nut.checkCredentials()).rejects.toThrow('Invalid username')
+    })
+
+    it('should throw error for invalid password', async () => {
+      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // USERNAME response
+        .mockResolvedValueOnce('ERR\n') // PASSWORD response
+      await expect(nut.checkCredentials()).rejects.toThrow('Invalid password')
+    })
+
+    it('should throw error when no devices found', async () => {
+      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // USERNAME response
+        .mockResolvedValueOnce('OK\n') // PASSWORD response
+      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue([])
+      await expect(nut.checkCredentials()).rejects.toThrow('No devices found')
+    })
+
+    it('should throw error for invalid login credentials', async () => {
+      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // USERNAME response
+        .mockResolvedValueOnce('OK\n') // PASSWORD response
+        .mockResolvedValueOnce('ERR\n') // LOGIN response
+      jest
+        .spyOn(Nut.prototype, 'getDevices')
+        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      await expect(nut.checkCredentials()).rejects.toThrow('Invalid credentials')
+    })
+
+    it('should not close connection when socket is provided', async () => {
+      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const mockSocket = {
+        write: jest.fn().mockResolvedValue(undefined),
+        readAll: jest
+          .fn()
+          .mockResolvedValueOnce('OK\n') // USERNAME response
+          .mockResolvedValueOnce('OK\n') // PASSWORD response
+          .mockResolvedValueOnce('OK\n'), // LOGIN response
+        close: jest.fn().mockResolvedValue(undefined),
+      }
+      jest
+        .spyOn(Nut.prototype, 'getDevices')
+        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      await nut.checkCredentials(mockSocket as any)
+      expect(mockSocket.write).toHaveBeenCalledWith('USERNAME testuser')
+      expect(mockSocket.write).toHaveBeenCalledWith('PASSWORD testpass')
+      expect(mockSocket.write).toHaveBeenCalledWith('LOGIN ups')
+      expect(mockSocket.write).not.toHaveBeenCalledWith('LOGOUT')
+      expect(mockSocket.close).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getVersion', () => {
+    it('should get version successfully', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('2.8.1\n')
+      const version = await nut.getVersion()
+      expect(version).toEqual('2.8.1')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('VER')
+    })
+    it('should handle version with extra whitespace', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('  2.8.1  \n')
+      const version = await nut.getVersion()
+      expect(version).toEqual('  2.8.1  ')
+    })
+    it('should throw error for invalid version response', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR Invalid command\n'))
+      await expect(nut.getVersion()).rejects.toThrow('ERR Invalid command\n')
+    })
+  })
+
+  describe('getNetVersion', () => {
+    it('should get network version successfully', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('1.0\n')
+      const netVersion = await nut.getNetVersion()
+      expect(netVersion).toEqual('1.0')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('NETVER')
+    })
+    it('should handle network version with extra whitespace', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('  1.0  \n')
+      const netVersion = await nut.getNetVersion()
+      expect(netVersion).toEqual('  1.0  ')
+    })
+    it('should throw error for invalid network version response', async () => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR Invalid command\n'))
+      await expect(nut.getNetVersion()).rejects.toThrow('ERR Invalid command\n')
+    })
+  })
+
+  describe('getter methods', () => {
+    it('should get host', () => {
+      const nut = new Nut('testhost', 3493)
+      expect(nut.getHost()).toEqual('testhost')
+    })
+
+    it('should get port', () => {
+      const nut = new Nut('localhost', 1234)
+      expect(nut.getPort()).toEqual(1234)
+    })
+
+    it('should return true when credentials are provided', () => {
+      const nut = new Nut('localhost', 3493, 'username', 'password')
+      expect(nut.hasCredentials()).toBe(true)
+    })
+
+    it('should return false when no credentials are provided', () => {
+      const nut = new Nut('localhost', 3493)
+      expect(nut.hasCredentials()).toBe(false)
+    })
+
+    it('should return false when only username is provided', () => {
+      const nut = new Nut('localhost', 3493, 'username')
+      expect(nut.hasCredentials()).toBe(false)
+    })
+
+    it('should return false when only password is provided', () => {
+      const nut = new Nut('localhost', 3493, undefined, 'password')
+      expect(nut.hasCredentials()).toBe(false)
+    })
+
+    it('should return false when empty strings are provided', () => {
+      const nut = new Nut('localhost', 3493, '', '')
+      expect(nut.hasCredentials()).toBe(false)
+    })
+  })
+
+  describe('deviceExists', () => {
+    const createNutWithMockDevices = (
+      devices: Array<{
+        name: string
+        description: string
+        rwVars: string[]
+        commands: string[]
+        clients: string[]
+        vars: Record<string, any>
+      }>
+    ) => {
+      const nut = new Nut('localhost', 3493)
+      jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue(devices)
+      return nut
+    }
+
+    it('should return true when device exists', async () => {
+      const nut = createNutWithMockDevices([
+        { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+        { name: 'ups2', description: 'test2', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
+
+      const exists = await nut.deviceExists('ups1')
+      expect(exists).toBe(true)
+    })
+
+    it('should return false when device does not exist', async () => {
+      const nut = createNutWithMockDevices([
+        { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+        { name: 'ups2', description: 'test2', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
+
+      const exists = await nut.deviceExists('nonexistent')
+      expect(exists).toBe(false)
+    })
+
+    it('should return false when no devices are available', async () => {
+      const nut = createNutWithMockDevices([])
+
+      const exists = await nut.deviceExists('anydevice')
+      expect(exists).toBe(false)
+    })
+
+    it('should be case sensitive', async () => {
+      const nut = createNutWithMockDevices([
+        { name: 'UPS1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
+
+      const exists = await nut.deviceExists('ups1')
+      expect(exists).toBe(false)
+    })
+
+    it('should handle exact match', async () => {
+      const nut = createNutWithMockDevices([
+        { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
+
+      const exists = await nut.deviceExists('ups1')
+      expect(exists).toBe(true)
+    })
+
+    it('should handle partial matches correctly', async () => {
+      const nut = createNutWithMockDevices([
+        { name: 'ups1', description: 'test1', rwVars: [], commands: [], clients: [], vars: {} },
+        { name: 'ups1-backup', description: 'test2', rwVars: [], commands: [], clients: [], vars: {} },
+      ])
+
+      const exists = await nut.deviceExists('ups1')
+      expect(exists).toBe(true)
+    })
   })
 })

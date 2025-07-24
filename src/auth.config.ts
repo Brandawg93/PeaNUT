@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from 'next-auth'
+import { ensureAuthSecret } from './server/auth-config'
 
 export const authConfig = {
   pages: {
@@ -50,4 +51,6 @@ export const authConfig = {
     },
   },
   providers: [], // Add providers with an empty array for now
+  trustHost: true,
+  secret: process.env.AUTH_SECRET ?? ensureAuthSecret(),
 } satisfies NextAuthConfig

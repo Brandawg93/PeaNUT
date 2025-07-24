@@ -39,7 +39,7 @@ describe('Grid', () => {
   it('renders', () => {
     const { getByTestId } = render(
       <QueryClientProvider client={queryClient}>
-        <NutGrid data={device} />
+        <NutGrid data={device} onRefetchAction={jest.fn()} />
       </QueryClientProvider>
     )
 

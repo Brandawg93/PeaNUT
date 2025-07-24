@@ -21,6 +21,7 @@ import {
   HiOutlineCodeBracket,
   HiOutlineLink,
   HiOutlineLinkSlash,
+  HiOutlineWrenchScrewdriver,
 } from 'react-icons/hi2'
 import { LuTerminal, LuCircleHelp } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
@@ -31,6 +32,7 @@ import { SettingsType } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import dynamic from 'next/dynamic'
+import { useSettings } from '../context/settings'
 
 const NutTerminal = dynamic(() => import('@/client/components/terminal'), { ssr: false })
 
@@ -65,50 +67,66 @@ export default function SettingsWrapper({
   const [influxOrg, setInfluxOrg] = useState<string>('')
   const [influxBucket, setInfluxBucket] = useState<string>('')
   const [influxInterval, setInfluxInterval] = useState<number>(10)
+  const [dateFormat, setDateFormat] = useState<string>('MM/DD/YYYY')
+  const [timeFormat, setTimeFormat] = useState<string>('12-hour')
   const [selectedServer, setSelectedServer] = useState<string>('')
   const [connected, setConnected] = useState(false)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { resolvedTheme, theme } = useTheme()
+  const { refreshSettings } = useSettings()
+
+  const loadSettings = async () => {
+    const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, format, timeFormat] =
+      await Promise.all([
+        getSettingsAction('NUT_SERVERS') as Promise<Array<server>>,
+        getSettingsAction('INFLUX_HOST') as Promise<string>,
+        getSettingsAction('INFLUX_TOKEN') as Promise<string>,
+        getSettingsAction('INFLUX_ORG') as Promise<string>,
+        getSettingsAction('INFLUX_BUCKET') as Promise<string>,
+        getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
+        getSettingsAction('DATE_FORMAT') as Promise<string>,
+        getSettingsAction('TIME_FORMAT') as Promise<string>,
+      ])
+    if (servers?.length) {
+      setServerList([
+        ...servers.map((server: server) => ({
+          id: `${server.HOST}:${server.PORT}-${Date.now()}`,
+          server,
+          saved: true,
+        })),
+      ])
+      if (servers.length === 1) {
+        setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
+      }
+    }
+    if (influxHost && influxToken && influxOrg && influxBucket) {
+      setInfluxServer(influxHost)
+      setInfluxToken(influxToken)
+      setInfluxOrg(influxOrg)
+      setInfluxBucket(influxBucket)
+    }
+    if (influxInterval) {
+      setInfluxInterval(influxInterval)
+    }
+    if (format) {
+      setDateFormat(format)
+    }
+    if (timeFormat) {
+      setTimeFormat(timeFormat)
+    }
+    setSettingsLoaded(true)
+  }
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
       if (!res) {
         setSettingsLoaded(true)
       } else {
-        const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval] = await Promise.all([
-          getSettingsAction('NUT_SERVERS'),
-          getSettingsAction('INFLUX_HOST'),
-          getSettingsAction('INFLUX_TOKEN'),
-          getSettingsAction('INFLUX_ORG'),
-          getSettingsAction('INFLUX_BUCKET'),
-          getSettingsAction('INFLUX_INTERVAL'),
-        ])
-        if (servers?.length) {
-          setServerList([
-            ...servers.map((server: server) => ({
-              id: `${server.HOST}:${server.PORT}-${Date.now()}`,
-              server,
-              saved: true,
-            })),
-          ])
-          if (servers.length === 1) {
-            setSelectedServer(`${servers[0].HOST}:${servers[0].PORT}`)
-          }
-        }
-        if (influxHost && influxToken && influxOrg && influxBucket) {
-          setInfluxServer(influxHost)
-          setInfluxToken(influxToken)
-          setInfluxOrg(influxOrg)
-          setInfluxBucket(influxBucket)
-        }
-        if (influxInterval) {
-          setInfluxInterval(influxInterval)
-        }
-        setSettingsLoaded(true)
+        await loadSettings()
       }
     })
-  }, [])
+  }, [checkSettingsAction, getSettingsAction])
 
   const handleServerChange = (
     server: string,
@@ -133,7 +151,7 @@ export default function SettingsWrapper({
     })
   }
 
-  const handleServerRemove = async (index: number) => {
+  const handleServerRemove = (index: number) => {
     setServerList((prevList) => prevList.filter((_, i) => i !== index))
   }
 
@@ -141,6 +159,12 @@ export default function SettingsWrapper({
     await updateServersAction(serverList.map(({ server }) => server))
     setServerList((prevList) => prevList.map((item) => ({ ...item, saved: true })))
     toast.success(t('settings.saved'))
+  }
+
+  const handleSaveGeneral = async () => {
+    await Promise.all([setSettingsAction('DATE_FORMAT', dateFormat), setSettingsAction('TIME_FORMAT', timeFormat)])
+    toast.success(t('settings.saved'))
+    refreshSettings()
   }
 
   const handleSaveInflux = async () => {
@@ -184,6 +208,7 @@ export default function SettingsWrapper({
     { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
     { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
     { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
+    { label: t('settings.general'), Icon: HiOutlineWrenchScrewdriver, value: 'general' },
   ]
 
   return (
@@ -203,11 +228,18 @@ export default function SettingsWrapper({
           >
             <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
               {menuItems.map(({ label, Icon, value }) => (
-                <TabsTrigger key={value} value={value} className='w-full cursor-pointer justify-start'>
-                  <div className='mr-4'>
-                    <Icon className='size-6!' />
+                <TabsTrigger
+                  asChild
+                  key={value}
+                  value={value}
+                  className='data-[state=active]:bg-background! w-full cursor-pointer justify-start'
+                >
+                  <div>
+                    <div className='mr-4'>
+                      <Icon className='size-6!' />
+                    </div>
+                    <span>{label}</span>
                   </div>
-                  <span>{label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -243,14 +275,17 @@ export default function SettingsWrapper({
                         title={t('settings.addServer')}
                         className='cursor-pointer shadow-none'
                         onClick={() =>
-                          setServerList((prevList) => [
-                            ...prevList,
-                            {
-                              id: `new-server-${Date.now()}`,
-                              server: { HOST: '', PORT: 0 },
-                              saved: false,
-                            },
-                          ])
+                          setServerList((prevList) => {
+                            const newList = [
+                              ...prevList,
+                              {
+                                id: `new-server-${Date.now()}`,
+                                server: { HOST: '', PORT: 0, USERNAME: '', PASSWORD: '' },
+                                saved: false,
+                              },
+                            ]
+                            return newList
+                          })
                         }
                       >
                         <HiOutlinePlus className='size-6! stroke-2' />
@@ -412,6 +447,53 @@ export default function SettingsWrapper({
                   {connected && selectedServer && (
                     <NutTerminal host={selectedServer.split(':')[0]} port={parseInt(selectedServer.split(':')[1])} />
                   )}
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value='general' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='text-xl font-bold'>{t('settings.general')}</h2>
+                  <div className='mb-4'>
+                    <span className='text-muted-foreground text-sm'>
+                      <HiOutlineInformationCircle className='inline-block size-4' />
+                      &nbsp;{t('settings.generalNotice')}
+                    </span>
+                  </div>
+                  <div className='flex flex-col gap-4'>
+                    <div className='flex items-center gap-4'>
+                      <span className='w-1/4'>{t('settings.dateFormat')}</span>
+                      <Select value={dateFormat} onValueChange={setDateFormat}>
+                        <SelectTrigger className='w-3/4'>
+                          <SelectValue placeholder={t('settings.selectDateFormat')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='MM/DD/YYYY'>MM/DD/YYYY</SelectItem>
+                          <SelectItem value='DD/MM/YYYY'>DD/MM/YYYY</SelectItem>
+                          <SelectItem value='YYYY/MM/DD'>YYYY/MM/DD</SelectItem>
+                          <SelectItem value='Month D, YYYY'>Month D, YYYY</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className='flex items-center gap-4'>
+                      <span className='w-1/4'>{t('settings.timeFormat')}</span>
+                      <Select value={timeFormat} onValueChange={setTimeFormat}>
+                        <SelectTrigger className='w-3/4'>
+                          <SelectValue placeholder={t('settings.selectTimeFormat')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='12-hour'>12-hour</SelectItem>
+                          <SelectItem value='24-hour'>24-hour</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+                <div className='mt-4 flex flex-row justify-between'>
+                  <div />
+                  <Button onClick={handleSaveGeneral} className='cursor-pointer shadow-none'>
+                    {t('settings.apply')}
+                  </Button>
                 </div>
               </Card>
             </TabsContent>

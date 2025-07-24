@@ -9,13 +9,15 @@
   "batteryCharge": "Carica della batteria",
   "batteryRuntime": "Durata della batteria",
   "lastUpdated": "Ultimo aggiornamento",
+  "toggleTime": "Fare clic per alternare il formato 12/24 ore",
   "docs": "Documentazione API",
   "voltsChart": {
     "inputVoltage": "Tensione d'ingresso",
     "outputVoltage": "Tensione di uscita",
     "nominalInputVoltage": "Tensione d'ingresso nominale",
     "nominalOutputVoltage": "Tensione di uscita nominale",
-    "nominalVoltage": "Tensione nominale"
+    "nominalVoltage": "Tensione nominale",
+    "title": "Volt"
   },
   "wattsChart": {
     "realpower": "Potenza reale",
@@ -29,9 +31,25 @@
     "settings": "Impostazioni",
     "disconnect": "Disconnetti",
     "refresh": "Aggiorna",
-    "language": "Lingua"
+    "language": "Lingua",
+    "timeRange": {
+      "title": "Intervallo di tempo",
+      "all": "Tutti i dati",
+      "1min": "Ultimo minuto",
+      "5min": "Ultimi 5 minuti",
+      "30min": "Ultimi 30 minuti",
+      "1hour": "Ultima ora",
+      "24hours": "Ultime 24 ore"
+    }
   },
   "settings": {
+    "title": "Impostazioni",
+    "general": "Generale",
+    "generalNotice": "Impostazioni generali dell'applicazione",
+    "dateFormat": "Formato data",
+    "selectDateFormat": "Seleziona un formato di data",
+    "timeFormat": "Formato ora",
+    "selectTimeFormat": "Seleziona un formato di ora",
     "manageServers": "Gestisci server",
     "influxDb": "InfluxDB",
     "influxNotice": "Questo funzionerà solo con InfluxDB 2.x",
@@ -39,7 +57,7 @@
     "addServer": "Aggiungi server",
     "apply": "Applica",
     "saved": "Modifiche salvate",
-    "configExport": "Configurazione YAML",
+    "configExport": "Importa/Esporta configurazione",
     "configExportNotice": "Modifica manualmente il file di configurazione YAML.",
     "save": "Salva",
     "download": "Scaricamento",
