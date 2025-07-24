@@ -20,6 +20,7 @@ chart-testing:
       - env.NUT_PORT=3493
       - env.WEB_USERNAME=admin
       - secrets.WEB_PASSWORD=password123
+      - containerPort=8080
 
   # Install configuration
   install:
@@ -29,6 +30,7 @@ chart-testing:
       - env.NUT_PORT=3493
       - env.WEB_USERNAME=admin
       - secrets.WEB_PASSWORD=password123
+      - containerPort=8080
     
     # Timeout for chart installation
     timeout: 5m

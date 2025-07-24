@@ -35,6 +35,14 @@ helm install pea-nut ./helm/pea-nut --namespace monitoring --create-namespace
 
 The following table lists the configurable parameters of the PeaNUT chart and their default values.
 
+#### Port Configuration
+
+PeaNUT uses two different port configurations:
+- **`service.port`**: The external port exposed by the Kubernetes service (default: `80`)
+- **`containerPort`**: The internal port the application listens on (default: `8080`)
+
+The `WEB_PORT` environment variable is automatically set to match the `containerPort` value, ensuring the application listens on the correct internal port.
+
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `replicaCount` | Number of PeaNUT replicas | `1` |
@@ -43,6 +51,7 @@ The following table lists the configurable parameters of the PeaNUT chart and th
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `service.type` | Kubernetes service type | `ClusterIP` |
 | `service.port` | Kubernetes service port | `80` |
+| `containerPort` | Container internal port | `8080` |
 | `ingress.enabled` | Enable ingress | `false` |
 | `resources` | CPU/Memory resource requests/limits | `{}` |
 
@@ -138,6 +147,9 @@ image:
 service:
   type: ClusterIP
   port: 80
+
+# Container port configuration
+containerPort: 8080
 
 ingress:
   enabled: true

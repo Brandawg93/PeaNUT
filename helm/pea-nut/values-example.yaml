@@ -42,6 +42,9 @@ service:
   type: ClusterIP
   port: 80
 
+# Container port configuration
+containerPort: 8080
+
 # Ingress configuration
 ingress:
   enabled: false

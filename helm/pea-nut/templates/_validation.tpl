@@ -18,13 +18,16 @@ This template provides validation rules for required configuration
 {{- $hasNutPort := and .Values.env.NUT_PORT (ne .Values.env.NUT_PORT "") -}}
 {{- $hasNutServers := and .Values.nutServers (gt (len .Values.nutServers) 0) -}}
 {{- if and $hasNutHost $hasNutPort -}}
-  {{- if not (kindIs "string" .Values.env.NUT_PORT) -}}
-    {{- $errors = append $errors "NUT_PORT must be a string" -}}
+  {{- $port := 0 -}}
+  {{- if kindIs "string" .Values.env.NUT_PORT -}}
+    {{- $port = atoi .Values.env.NUT_PORT -}}
+  {{- else if kindIs "int" .Values.env.NUT_PORT -}}
+    {{- $port = .Values.env.NUT_PORT -}}
   {{- else -}}
-    {{- $port := atoi .Values.env.NUT_PORT -}}
-    {{- if eq $port 0 -}}
-      {{- $errors = append $errors "NUT_PORT must be a valid number" -}}
-    {{- end -}}
+    {{- $errors = append $errors "NUT_PORT must be a string or number" -}}
+  {{- end -}}
+  {{- if or (eq $port 0) (lt $port 1) (gt $port 65535) -}}
+    {{- $errors = append $errors "NUT_PORT must be a valid port number between 1 and 65535" -}}
   {{- end -}}
 {{- else if not $hasNutServers -}}
   {{- $errors = append $errors "Either NUT_HOST/NUT_PORT or nutServers array must be configured" -}}
