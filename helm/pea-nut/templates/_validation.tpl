@@ -26,7 +26,7 @@ This template provides validation rules for required configuration
   {{- else -}}
     {{- $errors = append $errors "NUT_PORT must be a string or number" -}}
   {{- end -}}
-  {{- if or (eq $port 0) (lt $port 1) (gt $port 65535) -}}
+  {{- if or (lt $port 1) (gt $port 65535) -}}
     {{- $errors = append $errors "NUT_PORT must be a valid port number between 1 and 65535" -}}
   {{- end -}}
 {{- else if not $hasNutServers -}}
