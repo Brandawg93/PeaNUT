@@ -6,6 +6,6 @@ test.describe('Command', () => {
     const text = await create.text()
 
     expect(create.status()).toBe(200)
-    expect(text).toBe('"Command driver.reload on device ups run successfully on device ups"')
+    expect(text).toBe('"Command driver.reload on device ups run successfully"')
   })
 })
