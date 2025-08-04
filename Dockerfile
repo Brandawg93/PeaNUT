@@ -69,8 +69,8 @@ COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
 # Copy and set up entrypoint script
 COPY --link --chown=1000:1000 entrypoint.sh /entrypoint.sh
 
-# Install dumb-init
-RUN apk add --no-cache dumb-init libstdc++ nodejs && chmod +x /entrypoint.sh
+# Install nodejs and tini
+RUN apk add --no-cache libstdc++ nodejs tini && chmod +x /entrypoint.sh
 
 # Set environment variables
 ENV CI=true
