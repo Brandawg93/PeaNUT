@@ -1,4 +1,4 @@
-FROM node:lts-slim AS deps
+FROM node:lts-slim AS pnpm
 
 WORKDIR /app
 
@@ -9,8 +9,15 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Install pnpm globally with better caching
-RUN npm i -g corepack && \
-    corepack enable pnpm
+RUN corepack enable
+
+FROM pnpm AS deps
+
+# Set environment variables for better performance
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy package files first for better layer caching
 COPY --link package.json pnpm-lock.yaml* ./
@@ -24,20 +31,17 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm i --frozen-lockfile --ignore-scripts --prefer-offline
 
 # Build stage with optimized caching
-FROM node:lts-slim AS build
+FROM pnpm AS build
 
-WORKDIR /app
+# Set environment variables for build stage
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy dependencies from deps stage
 COPY --link --from=deps /app/node_modules ./node_modules/
 COPY --link . /app
-# Install build dependencies and prepare
-RUN npm i -g corepack && \
-    corepack enable pnpm
 
-RUN pnpm run prepare && \
+RUN pnpm run next-ws && \
     if [ "$(uname -m)" = "armv7l" ]; then \
         echo "Building for ARMv7 architecture" && \
         pnpm run build; \
@@ -49,7 +53,7 @@ RUN pnpm run prepare && \
     rm -rf .next/standalone/.next/cache
 
 # Production stage with minimal footprint
-FROM node:lts-alpine AS runner
+FROM alpine:3 AS runner
 
 # Add labels for better image metadata
 LABEL org.opencontainers.image.title="PeaNUT"
@@ -63,8 +67,10 @@ COPY --link --chown=1000:1000 --from=build /app/.next/standalone ./
 COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
 
 # Copy and set up entrypoint script
-COPY --link --chown=1000:1000 entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY --link --chown=1000:1000 entrypoint.sh /entrypoint.sh
+
+# Install dumb-init
+RUN apk add --no-cache dumb-init libstdc++ nodejs && chmod +x /entrypoint.sh
 
 # Set environment variables
 ENV CI=true
@@ -82,4 +88,4 @@ EXPOSE $WEB_PORT
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
