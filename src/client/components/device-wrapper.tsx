@@ -31,6 +31,7 @@ import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
+import UPSNotificationControls from './ups-notification-controls'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -226,6 +227,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       </NavBar>
       <div className='flex grow justify-center px-3'>
         <div className='container'>
+          <UPSNotificationControls />
           <div className='mb-4 flex flex-row justify-between'>
             <div>
               {vars['ups.mfr']?.value || vars['ups.model']?.value ? (

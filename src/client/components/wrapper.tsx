@@ -17,6 +17,7 @@ import DayNightSwitch from './daynight'
 import LanguageSwitcher from '@/client/components/language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { MemoizedDeviceGrid } from '@/client/components/device-grid'
+import UPSNotificationControls from './ups-notification-controls'
 
 type Props = Readonly<{
   getDevicesAction: () => Promise<DevicesData>
@@ -98,6 +99,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
       </NavBar>
       <div className='flex grow justify-center px-3'>
         <div className='container'>
+          <UPSNotificationControls />
           <Card className='border-border-card bg-card mb-4 w-full border shadow-none'>
             <div className='p-4'>
               <MemoizedDeviceGrid key={lng} data={data} />
