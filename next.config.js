@@ -11,10 +11,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    esmExternals: true,
-    reactCompiler: true,
-  },
   turbopack: {
     rules: {
       // Configure any specific rules for your project here
