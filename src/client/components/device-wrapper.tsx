@@ -264,7 +264,14 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
             <div className='mb-4'>{currentLoad()}</div>
             <div className='mb-4'>{currentWh()}</div>
             <div className='mb-4'>
-              <Runtime runtime={+vars['battery.runtime']?.value} />
+              <Runtime
+                runtime={+vars['battery.runtime']?.value}
+                batteryCapacity={+vars['battery.capacity']?.value}
+                batteryVoltage={+vars['battery.voltage']?.value}
+                batteryCharge={+vars['battery.charge']?.value}
+                upsLoad={+vars['ups.load']?.value}
+                upsRealpowerNominal={+vars['ups.realpower.nominal']?.value}
+              />
             </div>
           </div>
           <ChartsContainer vars={vars} data={data} name={ups.name} />
