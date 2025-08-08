@@ -6,6 +6,7 @@
   "model": "Modèle",
   "serial": "Série",
   "currentLoad": "Charge actuelle",
+  "currentWattage": "Puissance actuelle",
   "batteryCharge": "Charge de la batterie",
   "batteryRuntime": "Autonomie de la batterie",
   "lastUpdated": "Dernière mise à jour",

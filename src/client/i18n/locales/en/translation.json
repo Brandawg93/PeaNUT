@@ -6,6 +6,7 @@
   "model": "Model",
   "serial": "Serial",
   "currentLoad": "Current Load",
+  "currentWattage": "Current Wattage",
   "batteryCharge": "Battery Charge",
   "batteryRuntime": "Battery Runtime",
   "lastUpdated": "Last Updated",
