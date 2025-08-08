@@ -6,6 +6,7 @@
   "model": "Model",
   "serial": "Serie",
   "currentLoad": "Sarcină curentă",
+  "currentWattage": "Puterea curentă",
   "batteryCharge": "Nivel baterie",
   "batteryRuntime": "Durata de funcționare",
   "lastUpdated": "Ultima actualizare",

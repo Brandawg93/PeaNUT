@@ -6,6 +6,7 @@ import { createColumnHelper, getCoreRowModel, useReactTable, flexRender } from '
 import { DevicesData, DEVICE } from '@/common/types'
 import { Button } from '@/client/components/ui/button'
 import { Progress } from '@/client/components/ui/progress'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/client/components/ui/tooltip'
 import {
   HiOutlineCheck,
   HiBolt,
@@ -18,6 +19,7 @@ import { upsStatus } from '@/common/constants'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
+import { secondsToDhms } from '@/lib/utils'
 
 type Props = Readonly<{
   data: DevicesData
@@ -94,13 +96,35 @@ export default function DeviceGrid({ data }: Props) {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('batteryCharge')}</span>,
         cell: (info) => {
           const value = info.getValue() as number
+          const device = info.row.original
+          const runtime = device.vars['battery.runtime']?.value
+          const hasRuntime = runtime && +runtime > 0
+
           if (!value) return <>N/A</>
-          return (
+
+          const cellContent = (
             <div className='flex items-center gap-2'>
               <Progress value={value} />
               <span>{value}%</span>
             </div>
           )
+
+          if (hasRuntime) {
+            return (
+              <Tooltip delayDuration={500}>
+                <TooltipTrigger asChild>
+                  <div className='w-full'>{cellContent}</div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {t('batteryRuntime')}: {secondsToDhms(+runtime)}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )
+          }
+
+          return cellContent
         },
       }),
       columnHelper.accessor((row) => row.vars['ups.load']?.value, {
@@ -108,13 +132,35 @@ export default function DeviceGrid({ data }: Props) {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('currentLoad')}</span>,
         cell: (info) => {
           const value = info.getValue()
+          const device = info.row.original
+          const realpower = device.vars['ups.realpower']?.value
+          const hasWattage = realpower && +realpower > 0
+
           if (!value) return <>N/A</>
-          return (
+
+          const cellContent = (
             <div className='flex items-center gap-2'>
               <Progress value={value as number} />
               <span>{value}%</span>
             </div>
           )
+
+          if (hasWattage) {
+            return (
+              <Tooltip delayDuration={500}>
+                <TooltipTrigger asChild>
+                  <div className='w-full'>{cellContent}</div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {t('currentWattage')}: {realpower}W
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )
+          }
+
+          return cellContent
         },
       }),
       columnHelper.accessor('name', {

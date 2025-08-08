@@ -5,9 +5,10 @@
   "manufacturer": "Fabricante",
   "model": "Modelo",
   "serial": "Número de serie",
-  "currentLoad": "Carga Actual",
-  "batteryCharge": "Carga de Batería",
-  "batteryRuntime": "Duración de la Batería",
+  "currentLoad": "Carga actual",
+  "currentWattage": "Potencia actual",
+  "batteryCharge": "Carga de batería",
+  "batteryRuntime": "Duración de la batería",
   "lastUpdated": "Última actualización",
   "docs": "Documentos de API",
   "voltsChart": {
