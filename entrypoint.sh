@@ -4,5 +4,5 @@
 export HOSTNAME=${WEB_HOST:-0.0.0.0}
 export PORT=${WEB_PORT:-8080}
 
-# Execute the Node.js server
+# Execute the Node.js server with tini
 exec node server.js
