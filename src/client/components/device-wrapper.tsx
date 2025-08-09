@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
@@ -90,13 +90,16 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     queryFn: async () => await getDeviceAction(device),
   })
 
-  const loadingWrapper = (
-    <div
-      className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
-      data-testid='loading-wrapper'
-    >
-      <Loader />
-    </div>
+  const loadingWrapper = useMemo(
+    () => (
+      <div
+        className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
+        data-testid='loading-wrapper'
+      >
+        <Loader />
+      </div>
+    ),
+    []
   )
 
   const sections = useMemo<DashboardSectionConfig>(() => {
@@ -108,6 +111,122 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     const configured = settings.DASHBOARD_SECTIONS
     return configured?.length ? configured : defaultSections
   }, [settings.DASHBOARD_SECTIONS])
+
+  const toggleWattsOrPercent = useCallback(() => {
+    setWattsOrPercent((prev) => {
+      setLocalStorageItem('wattsOrPercent', (!prev).toString())
+      return !prev
+    })
+  }, [])
+
+  const toggleWattHours = useCallback(() => {
+    setWattHours((prev) => {
+      setLocalStorageItem('wattHours', (!prev).toString())
+      return !prev
+    })
+  }, [])
+
+  const currentLoad = useMemo(() => {
+    if (!data?.device?.vars) return <Kpi text='N/A' description={t('currentLoad')} />
+
+    const vars = data.device.vars
+    if (vars['ups.load']) {
+      if (vars['ups.realpower.nominal'] && wattsOrPercent) {
+        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
+        return (
+          <Kpi
+            onClick={toggleWattsOrPercent}
+            text={`${roundIfNeeded(currentWattage)}W`}
+            description={`${t('currentLoad')} (W)`}
+          />
+        )
+      }
+      return (
+        <Gauge
+          onClick={toggleWattsOrPercent}
+          percentage={+vars['ups.load'].value}
+          title={`${t('currentLoad')} (%)`}
+          invert
+        />
+      )
+    }
+    return <Kpi text='N/A' description={t('currentLoad')} />
+  }, [data?.device?.vars, wattsOrPercent, toggleWattsOrPercent, t])
+
+  const currentWh = useMemo(() => {
+    if (!data?.device?.vars) return <Kpi text='N/A' description={t('batteryCharge')} />
+
+    const vars = data.device.vars
+    if (vars['battery.charge']) {
+      if (
+        vars['ups.load'] &&
+        vars['ups.realpower.nominal'] &&
+        wattHours &&
+        vars['battery.runtime']?.value !== undefined
+      ) {
+        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
+        const capacity = (+vars['battery.runtime'].value / 3600) * currentWattage
+        return (
+          <Kpi
+            onClick={toggleWattHours}
+            text={`${roundIfNeeded(capacity)}Wh`}
+            description={`${t('batteryCharge')} (Wh)`}
+          />
+        )
+      }
+      return (
+        <Gauge
+          onClick={toggleWattHours}
+          percentage={+vars['battery.charge']?.value}
+          warningAt={+vars['battery.charge.warning']?.value}
+          lowAt={+vars['battery.charge.low']?.value}
+          title={`${t('batteryCharge')} (%)`}
+        />
+      )
+    } else {
+      return <Kpi text='N/A' description={t('batteryCharge')} />
+    }
+  }, [data?.device?.vars, wattHours, toggleWattHours, t])
+
+  const renderSection = useCallback(
+    (key: string) => {
+      if (!data?.device?.vars) return null
+
+      const vars = data.device.vars
+      const ups = data.device
+
+      switch (key) {
+        case 'KPIS':
+          return (
+            <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+              <div className='mb-4'>{currentLoad}</div>
+              <div className='mb-4'>{currentWh}</div>
+              <div className='mb-4'>
+                <Runtime
+                  runtime={+vars['battery.runtime']?.value}
+                  batteryCapacity={+vars['battery.capacity']?.value}
+                  batteryVoltage={+vars['battery.voltage']?.value}
+                  batteryCharge={+vars['battery.charge']?.value}
+                  upsLoad={+vars['ups.load']?.value}
+                  upsRealpowerNominal={+vars['ups.realpower.nominal']?.value}
+                />
+              </div>
+            </div>
+          )
+        case 'CHARTS':
+          return <ChartsContainer vars={vars} data={data} name={ups.name} />
+        case 'VARIABLES':
+          return (
+            <div>
+              <MemoizedGrid data={ups} onRefetchAction={refetch} />
+            </div>
+          )
+        default:
+          return null
+      }
+    },
+    [currentLoad, currentWh, data, refetch]
+  )
 
   if (isLoading) {
     return loadingWrapper
@@ -157,108 +276,6 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   const vars = ups.vars
   if (!vars) {
     return loadingWrapper
-  }
-
-  const toggleWattsOrPercent = () => {
-    setWattsOrPercent((prev) => {
-      setLocalStorageItem('wattsOrPercent', (!prev).toString())
-      return !prev
-    })
-  }
-
-  const toggleWattHours = () => {
-    setWattHours((prev) => {
-      setLocalStorageItem('wattHours', (!prev).toString())
-      return !prev
-    })
-  }
-
-  const currentLoad = () => {
-    if (vars['ups.load']) {
-      if (vars['ups.realpower.nominal'] && wattsOrPercent) {
-        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
-        return (
-          <Kpi
-            onClick={toggleWattsOrPercent}
-            text={`${roundIfNeeded(currentWattage)}W`}
-            description={`${t('currentLoad')} (W)`}
-          />
-        )
-      }
-      return (
-        <Gauge
-          onClick={toggleWattsOrPercent}
-          percentage={+vars['ups.load'].value}
-          title={`${t('currentLoad')} (%)`}
-          invert
-        />
-      )
-    }
-    return <Kpi text='N/A' description={t('currentLoad')} />
-  }
-
-  const currentWh = () => {
-    if (vars['battery.charge']) {
-      if (
-        vars['ups.load'] &&
-        vars['ups.realpower.nominal'] &&
-        wattHours &&
-        vars['battery.runtime']?.value !== undefined
-      ) {
-        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
-        const capacity = (+vars['battery.runtime'].value / 3600) * currentWattage
-        return (
-          <Kpi
-            onClick={toggleWattHours}
-            text={`${roundIfNeeded(capacity)}Wh`}
-            description={`${t('batteryCharge')} (Wh)`}
-          />
-        )
-      }
-      return (
-        <Gauge
-          onClick={toggleWattHours}
-          percentage={+vars['battery.charge']?.value}
-          warningAt={+vars['battery.charge.warning']?.value}
-          lowAt={+vars['battery.charge.low']?.value}
-          title={`${t('batteryCharge')} (%)`}
-        />
-      )
-    } else {
-      return <Kpi text='N/A' description={t('batteryCharge')} />
-    }
-  }
-
-  const renderSection = (key: string) => {
-    switch (key) {
-      case 'KPIS':
-        return (
-          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-            <div className='mb-4'>{currentLoad()}</div>
-            <div className='mb-4'>{currentWh()}</div>
-            <div className='mb-4'>
-              <Runtime
-                runtime={+vars['battery.runtime']?.value}
-                batteryCapacity={+vars['battery.capacity']?.value}
-                batteryVoltage={+vars['battery.voltage']?.value}
-                batteryCharge={+vars['battery.charge']?.value}
-                upsLoad={+vars['ups.load']?.value}
-                upsRealpowerNominal={+vars['ups.realpower.nominal']?.value}
-              />
-            </div>
-          </div>
-        )
-      case 'CHARTS':
-        return <ChartsContainer vars={vars} data={data} name={ups.name} />
-      case 'VARIABLES':
-        return (
-          <div>
-            <MemoizedGrid data={ups} onRefetchAction={refetch} />
-          </div>
-        )
-      default:
-        return null
-    }
   }
 
   return (

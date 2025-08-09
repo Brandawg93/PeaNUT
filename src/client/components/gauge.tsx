@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { ChartConfig, ChartContainer } from '@/client/components/ui/chart'
 import { Label, Pie, PieChart } from 'recharts'
 import { Card, CardContent, CardFooter } from '@/client/components/ui/card'
@@ -26,22 +26,30 @@ type Props = Readonly<{
 
 export default function Gauge({ percentage, invert, title, onClick, warningAt, lowAt }: Props) {
   const { resolvedTheme } = useTheme()
-  const data = [
-    { percentage, fill: 'var(--color-percentage)', stroke: 'var(--primary-foreground)' },
-    { percentage: 100 - percentage, fill: 'var(--border-card)' },
-  ]
 
-  const chartConfig = {
-    percentage: {
-      label: title,
-      color: getColor(percentage, resolvedTheme, invert),
-    },
-  } satisfies ChartConfig
+  const data = useMemo(
+    () => [
+      { percentage, fill: 'var(--color-percentage)', stroke: 'var(--primary-foreground)' },
+      { percentage: 100 - percentage, fill: 'var(--border-card)' },
+    ],
+    [percentage]
+  )
+
+  const chartConfig = useMemo(
+    () =>
+      ({
+        percentage: {
+          label: title,
+          color: getColor(percentage, resolvedTheme, invert),
+        },
+      }) satisfies ChartConfig,
+    [percentage, resolvedTheme, invert, title]
+  )
 
   const innerR = 85
   const outerR = 105
 
-  const renderMarker = (cx: number, cy: number, pct: number, color: string, label?: string) => {
+  const renderMarker = useCallback((cx: number, cy: number, pct: number, color: string, label?: string) => {
     const angleDeg = -180 + (Math.max(0, Math.min(100, pct)) / 100) * 180
     const angleRad = (Math.PI / 180) * angleDeg
     const r1 = innerR
@@ -74,7 +82,7 @@ export default function Gauge({ percentage, invert, title, onClick, warningAt, l
         )}
       </g>
     )
-  }
+  }, [])
 
   return (
     <Card

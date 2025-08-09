@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react'
 import { Card } from '@/client/components/ui/card'
 import { Button } from '@/client/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/client/components/ui/tabs'
@@ -85,7 +85,7 @@ export default function SettingsWrapper({
   const { resolvedTheme, theme } = useTheme()
   const { refreshSettings } = useSettings()
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     const [
       servers,
       influxHost,
@@ -138,7 +138,7 @@ export default function SettingsWrapper({
       setSections(dashboardSections)
     }
     setSettingsLoaded(true)
-  }
+  }, [getSettingsAction])
 
   useEffect(() => {
     checkSettingsAction().then(async (res) => {
@@ -148,48 +148,45 @@ export default function SettingsWrapper({
         await loadSettings()
       }
     })
-  }, [checkSettingsAction, getSettingsAction])
+  }, [checkSettingsAction, loadSettings])
 
-  const handleServerChange = (
-    server: string,
-    port: number,
-    username: string | undefined,
-    password: string | undefined,
-    index: number
-  ) => {
-    setServerList((prevList) => {
-      const updatedList = [...prevList]
-      updatedList[index] = {
-        ...updatedList[index],
-        server: {
-          ...updatedList[index].server,
-          HOST: server,
-          PORT: port,
-          USERNAME: username,
-          PASSWORD: password,
-        },
-      }
-      return updatedList
-    })
-  }
+  const handleServerChange = useCallback(
+    (server: string, port: number, username: string | undefined, password: string | undefined, index: number) => {
+      setServerList((prevList) => {
+        const updatedList = [...prevList]
+        updatedList[index] = {
+          ...updatedList[index],
+          server: {
+            ...updatedList[index].server,
+            HOST: server,
+            PORT: port,
+            USERNAME: username,
+            PASSWORD: password,
+          },
+        }
+        return updatedList
+      })
+    },
+    []
+  )
 
-  const handleServerRemove = (index: number) => {
+  const handleServerRemove = useCallback((index: number) => {
     setServerList((prevList) => prevList.filter((_, i) => i !== index))
-  }
+  }, [])
 
-  const handleSaveServers = async () => {
+  const handleSaveServers = useCallback(async () => {
     await updateServersAction(serverList.map(({ server }) => server))
     setServerList((prevList) => prevList.map((item) => ({ ...item, saved: true })))
     toast.success(t('settings.saved'))
-  }
+  }, [updateServersAction, serverList, t])
 
-  const handleSaveGeneral = async () => {
+  const handleSaveGeneral = useCallback(async () => {
     await Promise.all([setSettingsAction('DATE_FORMAT', dateFormat), setSettingsAction('TIME_FORMAT', timeFormat)])
     toast.success(t('settings.saved'))
     refreshSettings()
-  }
+  }, [setSettingsAction, dateFormat, timeFormat, t, refreshSettings])
 
-  const handleSaveInflux = async () => {
+  const handleSaveInflux = useCallback(async () => {
     await Promise.all([
       setSettingsAction('INFLUX_HOST', influxServer),
       setSettingsAction('INFLUX_TOKEN', influxToken),
@@ -198,41 +195,50 @@ export default function SettingsWrapper({
       setSettingsAction('INFLUX_INTERVAL', influxInterval),
     ])
     toast.success(t('settings.saved'))
-  }
+  }, [setSettingsAction, influxServer, influxToken, influxOrg, influxBucket, influxInterval, t])
 
-  const handleSettingsImport = async () => {
+  const handleSettingsImport = useCallback(async () => {
     await importSettingsAction(config)
     toast.success(t('settings.saved'))
-  }
+  }, [importSettingsAction, config, t])
 
-  const handleCodeChange = (value: string) => {
+  const handleCodeChange = useCallback((value: string) => {
     setConfig(value)
-  }
+  }, [])
 
-  const handleSettingsMenuChange = (value: string) => {
-    if (value === 'config') {
-      exportSettingsAction().then((res) => {
-        setConfig(res)
-      })
-    }
-  }
-
-  const skeleton = (
-    <div className='flex flex-col gap-3'>
-      <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
-      <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
-      <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
-    </div>
+  const handleSettingsMenuChange = useCallback(
+    (value: string) => {
+      if (value === 'config') {
+        exportSettingsAction().then((res) => {
+          setConfig(res)
+        })
+      }
+    },
+    [exportSettingsAction]
   )
 
-  const menuItems = [
-    { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
-    { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
-    { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
-    { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
-    { label: t('settings.general'), Icon: HiOutlineWrenchScrewdriver, value: 'general' },
-    { label: t('settings.dashboard'), Icon: LuLayoutDashboard, value: 'dashboard' },
-  ]
+  const skeleton = useMemo(
+    () => (
+      <div className='flex flex-col gap-3'>
+        <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
+        <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
+        <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
+      </div>
+    ),
+    []
+  )
+
+  const menuItems = useMemo(
+    () => [
+      { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
+      { label: t('settings.influxDb'), Icon: SiInfluxdb, value: 'influx' },
+      { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
+      { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
+      { label: t('settings.general'), Icon: HiOutlineWrenchScrewdriver, value: 'general' },
+      { label: t('settings.dashboard'), Icon: LuLayoutDashboard, value: 'dashboard' },
+    ],
+    [t]
+  )
 
   const DraggableSection = ({
     id,
