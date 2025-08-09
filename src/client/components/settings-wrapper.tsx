@@ -249,16 +249,22 @@ export default function SettingsWrapper({
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
+      touchAction: 'none', // Prevent touch scrolling conflicts on mobile
     }
+
+    // Check if device is mobile
+    const isMobile = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+
     return (
       <div ref={setNodeRef} style={style} className='flex w-full max-w-xl items-center gap-3 rounded-md border p-2'>
         <button
           aria-label='drag-handle'
-          className='shrink-0 cursor-grab px-2 text-lg leading-none select-none'
+          className='shrink-0 cursor-grab touch-manipulation px-2 text-lg leading-none select-none'
+          style={{ touchAction: 'none' }}
           {...attributes}
           {...listeners}
         >
-          ⋮⋮
+          {isMobile ? '⋮' : '⋮⋮'}
         </button>
         <span className='flex-1 truncate'>{label}</span>
         <Switch className='ml-auto' checked={enabled} onCheckedChange={onChange} aria-label={label} />
@@ -574,6 +580,13 @@ export default function SettingsWrapper({
                       })
                     }}
                   >
+                    {/* 
+                      Note: Mobile Safari has known limitations with drag-and-drop.
+                      The following improvements help but may not work perfectly:
+                      - touchAction: 'none' prevents scroll conflicts
+                      - touch-manipulation class improves touch handling
+                      - Simplified drag handle for mobile devices
+                    */}
                     <SortableContext items={sections.map((s) => s.key)} strategy={verticalListSortingStrategy}>
                       <div className='flex flex-col items-center gap-2'>
                         {sections.map((section) => (
