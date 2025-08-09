@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
@@ -31,6 +31,8 @@ import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
+import { useSettings } from '@/client/context/settings'
+import { DashboardSectionConfig } from '@/server/settings'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -82,6 +84,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const router = useRouter()
+  const { settings } = useSettings()
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['deviceData', device],
     queryFn: async () => await getDeviceAction(device),
@@ -95,6 +98,16 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       <Loader />
     </div>
   )
+
+  const sections = useMemo<DashboardSectionConfig>(() => {
+    const defaultSections: DashboardSectionConfig = [
+      { key: 'KPIS', enabled: true },
+      { key: 'CHARTS', enabled: true },
+      { key: 'VARIABLES', enabled: true },
+    ]
+    const configured = settings.DASHBOARD_SECTIONS as DashboardSectionConfig | undefined
+    return configured && configured.length ? configured : defaultSections
+  }, [settings.DASHBOARD_SECTIONS])
 
   if (isLoading) {
     return loadingWrapper
@@ -206,11 +219,45 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
         <Gauge
           onClick={toggleWattHours}
           percentage={+vars['battery.charge']?.value}
+          warningAt={+vars['battery.charge.warning']?.value}
+          lowAt={+vars['battery.charge.low']?.value}
           title={`${t('batteryCharge')} (%)`}
         />
       )
     } else {
       return <Kpi text='N/A' description={t('batteryCharge')} />
+    }
+  }
+
+  const renderSection = (key: string) => {
+    switch (key) {
+      case 'KPIS':
+        return (
+          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+            <div className='mb-4'>{currentLoad()}</div>
+            <div className='mb-4'>{currentWh()}</div>
+            <div className='mb-4'>
+              <Runtime
+                runtime={+vars['battery.runtime']?.value}
+                batteryCapacity={+vars['battery.capacity']?.value}
+                batteryVoltage={+vars['battery.voltage']?.value}
+                batteryCharge={+vars['battery.charge']?.value}
+                upsLoad={+vars['ups.load']?.value}
+                upsRealpowerNominal={+vars['ups.realpower.nominal']?.value}
+              />
+            </div>
+          </div>
+        )
+      case 'CHARTS':
+        return <ChartsContainer vars={vars} data={data} name={ups.name} />
+      case 'VARIABLES':
+        return (
+          <div>
+            <MemoizedGrid data={ups} onRefetchAction={refetch} />
+          </div>
+        )
+      default:
+        return null
     }
   }
 
@@ -260,24 +307,13 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               </div>
             </div>
           </div>
-          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-            <div className='mb-4'>{currentLoad()}</div>
-            <div className='mb-4'>{currentWh()}</div>
-            <div className='mb-4'>
-              <Runtime
-                runtime={+vars['battery.runtime']?.value}
-                batteryCapacity={+vars['battery.capacity']?.value}
-                batteryVoltage={+vars['battery.voltage']?.value}
-                batteryCharge={+vars['battery.charge']?.value}
-                upsLoad={+vars['ups.load']?.value}
-                upsRealpowerNominal={+vars['ups.realpower.nominal']?.value}
-              />
-            </div>
-          </div>
-          <ChartsContainer vars={vars} data={data} name={ups.name} />
-          <div>
-            <MemoizedGrid data={ups} onRefetchAction={refetch} />
-          </div>
+          {sections
+            .filter((s) => s.enabled)
+            .map((s) => (
+              <div key={s.key} className='mb-4'>
+                {renderSection(s.key)}
+              </div>
+            ))}
         </div>
       </div>
       <div className='flex justify-center px-3'>

@@ -290,15 +290,11 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
   return (
     <Card className='border-border-card bg-card w-full border py-0 shadow-none' data-testid='grid'>
       <CardContent className='p-0!'>
-        <Accordion
-          type='single'
-          collapsible
-          className='w-full'
-          value={accordionOpen ? GRID_ID : ''}
-          onValueChange={() => handleAccordionChange(!accordionOpen)}
-        >
+        <Accordion type='single' className='w-full' value={GRID_ID}>
           <AccordionItem value={GRID_ID} className='border-b-0!'>
-            <AccordionTrigger className='cursor-pointer p-3'>{t(GRID_ID)}</AccordionTrigger>
+            <AccordionTrigger showChevron={false} className='cursor-default p-3 hover:no-underline'>
+              {t(GRID_ID)}
+            </AccordionTrigger>
             <AccordionContent className='overflow-auto pb-0!'>
               <Toaster position='top-center' theme={theme as 'light' | 'dark' | 'system'} richColors />
               <Table className='w-full'>

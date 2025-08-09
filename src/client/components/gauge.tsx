@@ -20,9 +20,11 @@ type Props = Readonly<{
   invert?: boolean
   title: string
   onClick?: () => void
+  warningAt?: number
+  lowAt?: number
 }>
 
-export default function Gauge({ percentage, invert, title, onClick }: Props) {
+export default function Gauge({ percentage, invert, title, onClick, warningAt, lowAt }: Props) {
   const { resolvedTheme } = useTheme()
   const data = [
     { percentage, fill: 'var(--color-percentage)', stroke: 'var(--primary-foreground)' },
@@ -35,6 +37,44 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
       color: getColor(percentage, resolvedTheme, invert),
     },
   } satisfies ChartConfig
+
+  const innerR = 85
+  const outerR = 105
+
+  const renderMarker = (cx: number, cy: number, pct: number, color: string, label?: string) => {
+    const angleDeg = -180 + (Math.max(0, Math.min(100, pct)) / 100) * 180
+    const angleRad = (Math.PI / 180) * angleDeg
+    const r1 = innerR
+    const r2 = outerR
+    const x1 = cx + r1 * Math.cos(angleRad)
+    const y1 = cy + r1 * Math.sin(angleRad)
+    const x2 = cx + r2 * Math.cos(angleRad)
+    const y2 = cy + r2 * Math.sin(angleRad)
+
+    // Calculate label position
+    const labelR = outerR + 15
+    const labelX = cx + labelR * Math.cos(angleRad)
+    const labelY = cy + labelR * Math.sin(angleRad)
+
+    return (
+      <g>
+        <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={3} />
+        {label && (
+          <text
+            x={labelX}
+            y={labelY}
+            textAnchor='middle'
+            dominantBaseline='middle'
+            fill={color}
+            fontSize='12'
+            fontWeight='bold'
+          >
+            {label}
+          </text>
+        )}
+      </g>
+    )
+  }
 
   return (
     <Card
@@ -59,8 +99,8 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
                 dataKey='percentage'
                 startAngle={-180}
                 endAngle={-360}
-                innerRadius={85}
-                outerRadius={105}
+                innerRadius={innerR}
+                outerRadius={outerR}
                 isAnimationActive={false}
               >
                 <Label
@@ -68,11 +108,15 @@ export default function Gauge({ percentage, invert, title, onClick }: Props) {
                     const cx = viewBox && 'cx' in viewBox && viewBox.cx !== undefined ? viewBox.cx : 140
                     const cy = viewBox && 'cy' in viewBox && viewBox.cy !== undefined ? viewBox.cy : 140
                     return (
-                      <text x={cx} y={cy - 10} textAnchor='middle'>
-                        <tspan x={cx} y={cy - 10} className='fill-foreground text-5xl'>
-                          {percentage}%
-                        </tspan>
-                      </text>
+                      <g>
+                        {typeof warningAt === 'number' && renderMarker(cx, cy, warningAt, '#f59e0b', `${warningAt}%`)}
+                        {typeof lowAt === 'number' && renderMarker(cx, cy, lowAt, '#ef4444', `${lowAt}%`)}
+                        <text x={cx} y={cy - 10} textAnchor='middle'>
+                          <tspan x={cx} y={cy - 10} className='fill-foreground text-5xl'>
+                            {percentage}%
+                          </tspan>
+                        </text>
+                      </g>
                     )
                   }}
                 />

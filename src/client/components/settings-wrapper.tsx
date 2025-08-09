@@ -23,16 +23,20 @@ import {
   HiOutlineLinkSlash,
   HiOutlineWrenchScrewdriver,
 } from 'react-icons/hi2'
-import { LuTerminal, LuCircleHelp } from 'react-icons/lu'
+import { LuTerminal, LuCircleHelp, LuLayoutDashboard } from 'react-icons/lu'
 import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
-import { SettingsType } from '@/server/settings'
+import { SettingsType, DashboardSectionConfig } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import dynamic from 'next/dynamic'
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core'
+import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useSettings } from '../context/settings'
+import { Switch } from '@/client/components/ui/switch'
 
 const NutTerminal = dynamic(() => import('@/client/components/terminal'), { ssr: false })
 
@@ -70,6 +74,11 @@ export default function SettingsWrapper({
   const [dateFormat, setDateFormat] = useState<string>('MM/DD/YYYY')
   const [timeFormat, setTimeFormat] = useState<string>('12-hour')
   const [selectedServer, setSelectedServer] = useState<string>('')
+  const [sections, setSections] = useState<DashboardSectionConfig>([
+    { key: 'KPIS', enabled: true },
+    { key: 'CHARTS', enabled: true },
+    { key: 'VARIABLES', enabled: true },
+  ])
   const [connected, setConnected] = useState(false)
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
@@ -77,17 +86,27 @@ export default function SettingsWrapper({
   const { refreshSettings } = useSettings()
 
   const loadSettings = async () => {
-    const [servers, influxHost, influxToken, influxOrg, influxBucket, influxInterval, format, timeFormat] =
-      await Promise.all([
-        getSettingsAction('NUT_SERVERS') as Promise<Array<server>>,
-        getSettingsAction('INFLUX_HOST') as Promise<string>,
-        getSettingsAction('INFLUX_TOKEN') as Promise<string>,
-        getSettingsAction('INFLUX_ORG') as Promise<string>,
-        getSettingsAction('INFLUX_BUCKET') as Promise<string>,
-        getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
-        getSettingsAction('DATE_FORMAT') as Promise<string>,
-        getSettingsAction('TIME_FORMAT') as Promise<string>,
-      ])
+    const [
+      servers,
+      influxHost,
+      influxToken,
+      influxOrg,
+      influxBucket,
+      influxInterval,
+      format,
+      timeFormat,
+      dashboardSections,
+    ] = await Promise.all([
+      getSettingsAction('NUT_SERVERS') as Promise<Array<server>>,
+      getSettingsAction('INFLUX_HOST') as Promise<string>,
+      getSettingsAction('INFLUX_TOKEN') as Promise<string>,
+      getSettingsAction('INFLUX_ORG') as Promise<string>,
+      getSettingsAction('INFLUX_BUCKET') as Promise<string>,
+      getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
+      getSettingsAction('DATE_FORMAT') as Promise<string>,
+      getSettingsAction('TIME_FORMAT') as Promise<string>,
+      getSettingsAction('DASHBOARD_SECTIONS') as Promise<DashboardSectionConfig>,
+    ])
     if (servers?.length) {
       setServerList([
         ...servers.map((server: server) => ({
@@ -114,6 +133,9 @@ export default function SettingsWrapper({
     }
     if (timeFormat) {
       setTimeFormat(timeFormat)
+    }
+    if (dashboardSections && Array.isArray(dashboardSections) && dashboardSections.length > 0) {
+      setSections(dashboardSections)
     }
     setSettingsLoaded(true)
   }
@@ -209,7 +231,40 @@ export default function SettingsWrapper({
     { label: t('settings.configExport'), Icon: HiOutlineCodeBracket, value: 'config' },
     { label: t('settings.terminal'), Icon: LuTerminal, value: 'terminal' },
     { label: t('settings.general'), Icon: HiOutlineWrenchScrewdriver, value: 'general' },
+    { label: t('settings.dashboard'), Icon: LuLayoutDashboard, value: 'dashboard' },
   ]
+
+  const DraggableSection = ({
+    id,
+    label,
+    enabled,
+    onChange,
+  }: {
+    id: string
+    label: string
+    enabled: boolean
+    onChange: (checked: boolean) => void
+  }) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    }
+    return (
+      <div ref={setNodeRef} style={style} className='flex w-full max-w-xl items-center gap-3 rounded-md border p-2'>
+        <button
+          aria-label='drag-handle'
+          className='shrink-0 cursor-grab px-2 text-lg leading-none select-none'
+          {...attributes}
+          {...listeners}
+        >
+          ⋮⋮
+        </button>
+        <span className='flex-1 truncate'>{label}</span>
+        <Switch className='ml-auto' checked={enabled} onCheckedChange={onChange} aria-label={label} />
+      </div>
+    )
+  }
 
   return (
     <div className='flex flex-1 flex-col px-3' data-testid='settings-wrapper'>
@@ -492,6 +547,62 @@ export default function SettingsWrapper({
                 <div className='mt-4 flex flex-row justify-between'>
                   <div />
                   <Button onClick={handleSaveGeneral} className='cursor-pointer shadow-none'>
+                    {t('settings.apply')}
+                  </Button>
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value='dashboard' className='mt-0 h-full flex-1'>
+              <Card className='p-4 shadow-none'>
+                <div className='container'>
+                  <h2 className='text-xl font-bold'>{t('settings.dashboard')}</h2>
+                  <div className='mb-4'>
+                    <span className='text-muted-foreground text-sm'>
+                      <HiOutlineInformationCircle className='inline-block size-4' />
+                      &nbsp;{t('settings.dashboardNotice')}
+                    </span>
+                  </div>
+                  <DndContext
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event: DragEndEvent) => {
+                      const { active, over } = event
+                      if (!over || active.id === over.id) return
+                      setSections((prev) => {
+                        const oldIndex = prev.findIndex((s) => s.key === active.id)
+                        const newIndex = prev.findIndex((s) => s.key === over.id)
+                        return arrayMove(prev, oldIndex, newIndex)
+                      })
+                    }}
+                  >
+                    <SortableContext items={sections.map((s) => s.key)} strategy={verticalListSortingStrategy}>
+                      <div className='flex flex-col items-center gap-2'>
+                        {sections.map((section) => (
+                          <DraggableSection
+                            key={section.key}
+                            id={section.key}
+                            label={t(`settings.section.${section.key.toLowerCase()}`)}
+                            enabled={section.enabled}
+                            onChange={(checked) =>
+                              setSections((prev) =>
+                                prev.map((s) => (s.key === section.key ? { ...s, enabled: checked } : s))
+                              )
+                            }
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </div>
+                <div className='mt-4 flex flex-row justify-between'>
+                  <div />
+                  <Button
+                    onClick={async () => {
+                      await setSettingsAction('DASHBOARD_SECTIONS', sections)
+                      toast.success(t('settings.saved'))
+                      refreshSettings()
+                    }}
+                    className='cursor-pointer shadow-none'
+                  >
                     {t('settings.apply')}
                   </Button>
                 </div>
