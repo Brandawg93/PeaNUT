@@ -4,6 +4,13 @@ import { load, dump } from 'js-yaml'
 import { server } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 
+export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
+
+export type DashboardSectionConfig = Array<{
+  key: DashboardSectionKey
+  enabled: boolean
+}>
+
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
   INFLUX_HOST: '',
@@ -13,6 +20,11 @@ const ISettings = {
   INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
   DATE_FORMAT: 'MM/DD/YYYY',
   TIME_FORMAT: '12-hour',
+  DASHBOARD_SECTIONS: [
+    { key: 'KPIS', enabled: true },
+    { key: 'CHARTS', enabled: true },
+    { key: 'VARIABLES', enabled: true },
+  ] as DashboardSectionConfig,
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
@@ -45,6 +57,8 @@ export class YamlSettings {
       try {
         if (key === 'NUT_SERVERS') {
           this.data[key] = JSON.parse(envValue) as server[]
+        } else if (key === 'DASHBOARD_SECTIONS') {
+          this.data[key] = JSON.parse(envValue) as DashboardSectionConfig
         } else if (key === 'INFLUX_INTERVAL') {
           const parsed = Number(envValue)
           if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
@@ -119,6 +133,12 @@ export class YamlSettings {
 
     // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
+    // Ensure DASHBOARD_SECTIONS has a default value
+    this.data.DASHBOARD_SECTIONS ??= [
+      { key: 'KPIS', enabled: true },
+      { key: 'CHARTS', enabled: true },
+      { key: 'VARIABLES', enabled: true },
+    ]
   }
 
   private save(): boolean {

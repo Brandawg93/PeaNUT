@@ -18,6 +18,7 @@ A Tiny Dashboard for Network UPS Tools
 
 - Monitor UPS devices connected to your network via [NUT](https://networkupstools.org)
 - View real-time statistics and status of UPS devices
+- Customizable dashboard layout
 - Supports multiple UPS devices
 - Execute commands on UPS devices
 - Configure settings through a user-friendly UI
