@@ -2,7 +2,7 @@
 
 import { getSettings } from '@/app/actions'
 import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react'
-import { SettingsType, DashboardSectionConfig } from '@/server/settings'
+import { SettingsType } from '@/server/settings'
 
 type SettingsContextType = {
   settings: Partial<SettingsType>
@@ -25,7 +25,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
     try {
       const dateFormat = await getSettings('DATE_FORMAT')
       const timeFormat = await getSettings('TIME_FORMAT')
-      const sections = (await getSettings('DASHBOARD_SECTIONS')) as DashboardSectionConfig
+      const sections = await getSettings('DASHBOARD_SECTIONS')
       setSettings({ DATE_FORMAT: dateFormat || '', TIME_FORMAT: timeFormat || '', DASHBOARD_SECTIONS: sections })
     } catch {
       // Handle error silently in tests
