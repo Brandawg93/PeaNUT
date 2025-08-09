@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useContext, useEffect, memo } from 'react'
+import React, { useState, useMemo, useContext, memo } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { Input } from '@/client/components/ui/input'
@@ -31,7 +31,6 @@ import { LanguageContext } from '@/client/context/language'
 import { useTheme } from 'next-themes'
 import { DEVICE } from '@/common/types'
 import { saveVar } from '@/app/actions'
-import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 type Props = Readonly<{
   data: DEVICE
@@ -90,15 +89,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
   const [edit, setEdit] = useState<string>('')
   const [useTreeData, setUseTreeData] = useState<boolean>(false)
   const [expanded, setExpanded] = useState<ExpandedState>(true)
-  const [accordionOpen, setAccordionOpen] = useState<boolean>(true)
   const anyRW = data.rwVars?.length > 0
-
-  useEffect(() => {
-    // Get stored state from localStorage
-    const storedState = getLocalStorageItem(GRID_ID)
-    // Set to stored value if exists, otherwise default to open (id)
-    setAccordionOpen(!storedState || storedState === 'open')
-  }, [])
 
   const hierarchicalData = useMemo<HierarchicalTableProps[]>(
     () =>
@@ -280,12 +271,6 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
       </div>
     </div>
   )
-
-  const handleAccordionChange = (value: boolean) => {
-    // Store the new state in localStorage
-    setLocalStorageItem(GRID_ID, value ? 'open' : 'closed')
-    setAccordionOpen(value)
-  }
 
   return (
     <Card className='border-border-card bg-card w-full border py-0 shadow-none' data-testid='grid'>

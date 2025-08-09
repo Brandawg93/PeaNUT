@@ -109,8 +109,14 @@ export default function Gauge({ percentage, invert, title, onClick, warningAt, l
                     const cy = viewBox && 'cy' in viewBox && viewBox.cy !== undefined ? viewBox.cy : 140
                     return (
                       <g>
-                        {typeof warningAt === 'number' && renderMarker(cx, cy, warningAt, '#f59e0b', `${warningAt}%`)}
-                        {typeof lowAt === 'number' && renderMarker(cx, cy, lowAt, '#ef4444', `${lowAt}%`)}
+                        {typeof warningAt === 'number' &&
+                          !isNaN(warningAt) &&
+                          warningAt > 0 &&
+                          renderMarker(cx, cy, warningAt, '#f59e0b', `${warningAt}%`)}
+                        {typeof lowAt === 'number' &&
+                          !isNaN(lowAt) &&
+                          lowAt > 0 &&
+                          renderMarker(cx, cy, lowAt, '#ef4444', `${lowAt}%`)}
                         <text x={cx} y={cy - 10} textAnchor='middle'>
                           <tspan x={cx} y={cy - 10} className='fill-foreground text-5xl'>
                             {percentage}%

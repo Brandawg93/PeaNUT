@@ -17,8 +17,6 @@ import DayNightSwitch from './daynight'
 import LanguageSwitcher from '@/client/components/language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { MemoizedDeviceGrid } from '@/client/components/device-grid'
-import { useSettings } from '@/client/context/settings'
-import { DashboardSectionConfig } from '@/server/settings'
 
 type Props = Readonly<{
   getDevicesAction: () => Promise<DevicesData>
