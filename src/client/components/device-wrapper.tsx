@@ -105,8 +105,8 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       { key: 'CHARTS', enabled: true },
       { key: 'VARIABLES', enabled: true },
     ]
-    const configured = settings.DASHBOARD_SECTIONS as DashboardSectionConfig | undefined
-    return configured && configured.length ? configured : defaultSections
+    const configured = settings.DASHBOARD_SECTIONS
+    return configured?.length ? configured : defaultSections
   }, [settings.DASHBOARD_SECTIONS])
 
   if (isLoading) {
