@@ -75,7 +75,8 @@
       "kpis": "KPIs",
       "charts": "Charts",
       "variables": "Variables"
-    }
+    },
+    "remove": "Remove"
   },
   "connect": {
     "server": "Server Address",
