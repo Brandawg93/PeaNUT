@@ -53,9 +53,7 @@ export default function LineChartBase(props: Props) {
           onValueChange={handleAccordionChange}
         >
           <AccordionItem value={id} className='border-b-0!'>
-            <AccordionTrigger showChevron={false} className='cursor-default p-0 hover:no-underline'>
-              {t(id)}
-            </AccordionTrigger>
+            <AccordionTrigger className='cursor-pointer p-0 hover:underline'>{t(id)}</AccordionTrigger>
             <AccordionContent className='pb-0!'>
               <ChartContainer config={config} className='mx-auto aspect-square h-96 w-full'>
                 <LineChart accessibilityLayer data={data}>
