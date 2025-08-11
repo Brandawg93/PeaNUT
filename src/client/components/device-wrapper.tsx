@@ -12,6 +12,7 @@ import {
 } from 'react-icons/hi2'
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
+import { Skeleton } from '@/client/components/ui/skeleton'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { MemoizedGrid } from '@/client/components/grid'
@@ -21,7 +22,6 @@ import NavBar from '@/client/components/navbar'
 import NavBarControls from '@/client/components/navbar-controls'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
-import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
 import { LanguageContext } from '@/client/context/language'
@@ -33,6 +33,7 @@ import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 import { useSettings } from '@/client/context/settings'
 import { DashboardSectionConfig } from '@/server/settings'
+import DeviceGridSkeleton from './device-grid-skeleton'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -90,18 +91,6 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     queryFn: async () => await getDeviceAction(device),
   })
 
-  const loadingWrapper = useMemo(
-    () => (
-      <div
-        className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
-        data-testid='loading-wrapper'
-      >
-        <Loader />
-      </div>
-    ),
-    []
-  )
-
   const sections = useMemo<DashboardSectionConfig>(() => {
     const defaultSections: DashboardSectionConfig = [
       { key: 'KPIS', enabled: true },
@@ -111,6 +100,73 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     const configured = settings.DASHBOARD_SECTIONS
     return configured?.length ? configured : defaultSections
   }, [settings.DASHBOARD_SECTIONS])
+
+  const loadingWrapper = useMemo(
+    () => (
+      <div data-testid='wrapper' className='bg-background flex h-full min-h-screen flex-col'>
+        <NavBar>
+          <NavBarControls
+            disableRefresh={true}
+            onRefreshClick={() => refetch()}
+            onRefetch={() => refetch()}
+            onLogout={logoutAction}
+          />
+        </NavBar>
+        <div className='flex grow justify-center px-3'>
+          <div className='container'>
+            <div className='mb-4 flex flex-row justify-between'>
+              <div>
+                <Skeleton className='bg-muted mb-2 h-4 w-32' />
+                <Skeleton className='bg-muted mb-2 h-4 w-40' />
+                <Skeleton className='bg-muted h-4 w-36' />
+              </div>
+              <div>
+                <Skeleton className='bg-muted mb-2 h-8 w-48' />
+                <div className='flex justify-end'>
+                  <Skeleton className='bg-muted h-8 w-20' />
+                </div>
+              </div>
+            </div>
+            {sections
+              .filter((s) => s.enabled)
+              .map((s) => (
+                <div key={s.key} className='mb-4'>
+                  {s.key === 'VARIABLES' ? (
+                    <DeviceGridSkeleton />
+                  ) : s.key === 'KPIS' ? (
+                    <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <div key={index} className='mb-4'>
+                          <div className='border-border-card bg-card relative flex h-52 flex-row justify-around rounded-xl border text-center shadow-none'>
+                            <div className='motion-safe:animate-fade flex h-full w-full flex-col justify-around pb-5 align-middle text-3xl font-semibold'>
+                              <Skeleton className='bg-muted mx-auto h-8 w-24' />
+                            </div>
+                            <div className='absolute bottom-5.5 w-full'>
+                              <Skeleton className='bg-muted mx-auto h-3 w-20' />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : s.key === 'CHARTS' ? (
+                    <div className='border-border-card bg-card rounded-xl border p-6 shadow-none'>
+                      <Skeleton className='bg-muted mb-4 h-6 w-32' />
+                      <Skeleton className='bg-muted h-64 w-full' />
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+          </div>
+        </div>
+        <div className='flex justify-center px-3'>
+          <div className='container'>
+            <Skeleton className='bg-muted h-4 w-32' />
+          </div>
+        </div>
+      </div>
+    ),
+    [sections, refetch, logoutAction]
+  )
 
   const toggleWattsOrPercent = useCallback(() => {
     setWattsOrPercent((prev) => {

@@ -10,13 +10,14 @@ import { useRouter } from 'next/navigation'
 import NavBar from '@/client/components/navbar'
 import NavBarControls from '@/client/components/navbar-controls'
 import Footer from '@/client/components/footer'
-import Loader from '@/client/components/loader'
 import { LanguageContext } from '@/client/context/language'
 import { DevicesData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from '@/client/components/language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { MemoizedDeviceGrid } from '@/client/components/device-grid'
+import { Skeleton } from '@/client/components/ui/skeleton'
+import DeviceGridSkeleton from './device-grid-skeleton'
 
 type Props = Readonly<{
   getDevicesAction: () => Promise<DevicesData>
@@ -32,17 +33,29 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
     queryFn: async () => await getDevicesAction(),
   })
 
-  const loadingWrapper = (
-    <div
-      className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
-      data-testid='loading-wrapper'
-    >
-      <Loader />
-    </div>
-  )
-
   if (!data?.devices || isLoading) {
-    return loadingWrapper
+    return (
+      <div data-testid='wrapper' className='bg-background flex h-full min-h-screen flex-col'>
+        <NavBar>
+          <NavBarControls
+            disableRefresh={true}
+            onRefreshClick={() => refetch()}
+            onRefetch={() => refetch()}
+            onLogout={logoutAction}
+          />
+        </NavBar>
+        <div className='flex grow justify-center px-3'>
+          <div className='container'>
+            <DeviceGridSkeleton rows={5} />
+          </div>
+        </div>
+        <div className='flex justify-center px-3'>
+          <div className='container'>
+            <Skeleton className='bg-muted h-4 w-32' />
+          </div>
+        </div>
+      </div>
+    )
   }
   if (data.devices.length === 0) {
     return (
