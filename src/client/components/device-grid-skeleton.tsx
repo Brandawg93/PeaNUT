@@ -4,9 +4,9 @@ import React from 'react'
 import { Skeleton } from '@/client/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 
-type DeviceGridSkeletonProps = {
+type DeviceGridSkeletonProps = Readonly<{
   rows?: number
-}
+}>
 
 export default function DeviceGridSkeleton({ rows = 3 }: DeviceGridSkeletonProps) {
   return (
@@ -34,8 +34,8 @@ export default function DeviceGridSkeleton({ rows = 3 }: DeviceGridSkeletonProps
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array.from({ length: rows }).map((_, index) => (
-          <TableRow key={index}>
+        {Array.from({ length: rows }, (_, index) => (
+          <TableRow key={`skeleton-row-${index}`}>
             <TableCell className='border-t p-3'>
               <Skeleton className='bg-muted h-4 w-32' />
             </TableCell>
