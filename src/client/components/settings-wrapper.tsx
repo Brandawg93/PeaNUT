@@ -37,6 +37,14 @@ import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } 
 import { CSS } from '@dnd-kit/utilities'
 import { useSettings } from '../context/settings'
 import { Switch } from '@/client/components/ui/switch'
+import {
+  ServersSkeleton,
+  InfluxSkeleton,
+  ConfigSkeleton,
+  TerminalSkeleton,
+  GeneralSkeleton,
+  DashboardSkeleton,
+} from './settings-skeletons'
 
 const NutTerminal = dynamic(() => import('@/client/components/terminal'), { ssr: false })
 
@@ -217,17 +225,6 @@ export default function SettingsWrapper({
     [exportSettingsAction]
   )
 
-  const skeleton = useMemo(
-    () => (
-      <div className='flex flex-col gap-3'>
-        <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
-        <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
-        <Card className='border-card bg-card h-[150px] w-full animate-pulse rounded-lg border p-6' />
-      </div>
-    ),
-    []
-  )
-
   const menuItems = useMemo(
     () => [
       { label: t('settings.manageServers'), Icon: HiOutlineServerStack, value: 'servers' },
@@ -367,265 +364,288 @@ export default function SettingsWrapper({
                   </div>
                 </Card>
               ) : (
-                skeleton
+                <ServersSkeleton />
               )}
             </TabsContent>
             <TabsContent value='influx' className='mt-0 h-full flex-1'>
-              <Card className='p-4 shadow-none'>
-                <div className='container'>
-                  <h2 className='text-xl font-bold'>{t('settings.manageServers')}</h2>
-                  <div className='mb-4'>
-                    <span className='text-muted-foreground text-sm'>
-                      <HiOutlineInformationCircle className='inline-block size-4' />
-                      &nbsp;{t('settings.influxNotice')}
-                    </span>
+              {settingsLoaded ? (
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='text-xl font-bold'>{t('settings.manageServers')}</h2>
+                    <div className='mb-4'>
+                      <span className='text-muted-foreground text-sm'>
+                        <HiOutlineInformationCircle className='inline-block size-4' />
+                        &nbsp;{t('settings.influxNotice')}
+                      </span>
+                    </div>
+                    <AddInflux
+                      initialValues={{
+                        server: influxServer,
+                        token: influxToken,
+                        org: influxOrg,
+                        bucket: influxBucket,
+                        interval: influxInterval,
+                      }}
+                      handleChange={(server, token, org, bucket, interval) => {
+                        setInfluxServer(server)
+                        setInfluxToken(token)
+                        setInfluxOrg(org)
+                        setInfluxBucket(bucket)
+                        setInfluxInterval(interval)
+                      }}
+                      handleClear={() => {
+                        setInfluxServer('')
+                        setInfluxToken('')
+                        setInfluxOrg('')
+                        setInfluxBucket('')
+                        setInfluxInterval(DEFAULT_INFLUX_INTERVAL)
+                        deleteSettingsAction('INFLUX_HOST')
+                        deleteSettingsAction('INFLUX_TOKEN')
+                        deleteSettingsAction('INFLUX_ORG')
+                        deleteSettingsAction('INFLUX_BUCKET')
+                        setSettingsAction('INFLUX_INTERVAL', DEFAULT_INFLUX_INTERVAL)
+                      }}
+                      testInfluxConnectionAction={testInfluxConnectionAction}
+                    />
                   </div>
-                  <AddInflux
-                    initialValues={{
-                      server: influxServer,
-                      token: influxToken,
-                      org: influxOrg,
-                      bucket: influxBucket,
-                      interval: influxInterval,
-                    }}
-                    handleChange={(server, token, org, bucket, interval) => {
-                      setInfluxServer(server)
-                      setInfluxToken(token)
-                      setInfluxOrg(org)
-                      setInfluxBucket(bucket)
-                      setInfluxInterval(interval)
-                    }}
-                    handleClear={() => {
-                      setInfluxServer('')
-                      setInfluxToken('')
-                      setInfluxOrg('')
-                      setInfluxBucket('')
-                      setInfluxInterval(DEFAULT_INFLUX_INTERVAL)
-                      deleteSettingsAction('INFLUX_HOST')
-                      deleteSettingsAction('INFLUX_TOKEN')
-                      deleteSettingsAction('INFLUX_ORG')
-                      deleteSettingsAction('INFLUX_BUCKET')
-                      setSettingsAction('INFLUX_INTERVAL', DEFAULT_INFLUX_INTERVAL)
-                    }}
-                    testInfluxConnectionAction={testInfluxConnectionAction}
-                  />
-                </div>
-                <div className='flex flex-row justify-between'>
-                  <div />
-                  <Button onClick={handleSaveInflux} className='cursor-pointer shadow-none'>
-                    {t('settings.apply')}
-                  </Button>
-                </div>
-              </Card>
+                  <div className='flex flex-row justify-between'>
+                    <div />
+                    <Button onClick={handleSaveInflux} className='cursor-pointer shadow-none'>
+                      {t('settings.apply')}
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <InfluxSkeleton />
+              )}
             </TabsContent>
             <TabsContent value='config' className='mt-0 h-full flex-1'>
-              <Card className='p-4 shadow-none'>
-                <div className='container'>
-                  <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
-                  <span>{t('settings.configExportNotice')}</span>
-                  <Accordion type='single' collapsible className='mb-2 w-full'>
-                    <AccordionItem value='item-1'>
-                      <AccordionTrigger>{t('settings.viewConfig')}</AccordionTrigger>
-                      <AccordionContent>
-                        <div className='border-border-card mb-2 overflow-hidden rounded-lg border'>
-                          <CodeMirror
-                            theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
-                            value={config}
-                            extensions={[yaml()]}
-                            onChange={handleCodeChange}
-                          />
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                  <div className='flex flex-row'>
-                    <Button onClick={handleSettingsImport} className='flex cursor-pointer shadow-none'>
-                      <AiOutlineSave className='size-4' />
+              {settingsLoaded ? (
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='mb-4 text-xl font-bold'>{t('settings.configExport')}</h2>
+                    <span>{t('settings.configExportNotice')}</span>
+                    <Accordion type='single' collapsible className='mb-2 w-full'>
+                      <AccordionItem value='item-1'>
+                        <AccordionTrigger>{t('settings.viewConfig')}</AccordionTrigger>
+                        <AccordionContent>
+                          <div className='border-border-card mb-2 overflow-hidden rounded-lg border'>
+                            <CodeMirror
+                              theme={resolvedTheme === 'dark' ? vscodeDark : vscodeLight}
+                              value={config}
+                              extensions={[yaml()]}
+                              onChange={handleCodeChange}
+                            />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                    <div className='flex flex-row'>
+                      <Button onClick={handleSettingsImport} className='flex cursor-pointer shadow-none'>
+                        <AiOutlineSave className='size-4' />
+                        &nbsp;
+                        <span className='self-center'>{t('settings.save')}</span>
+                      </Button>
                       &nbsp;
-                      <span className='self-center'>{t('settings.save')}</span>
-                    </Button>
-                    &nbsp;
-                    <Button
-                      onClick={async () => {
-                        const a = document.createElement('a')
-                        const text = await exportSettingsAction()
-                        const file = new Blob([text], { type: 'application/yaml' })
-                        a.href = URL.createObjectURL(file)
-                        a.download = 'peanut_config.yaml'
-                        a.click()
-                      }}
-                      className='flex cursor-pointer shadow-none'
-                    >
-                      <AiOutlineDownload className='size-4' />
-                      &nbsp;
-                      <span className='self-center'>{t('settings.download')}</span>
-                    </Button>
+                      <Button
+                        onClick={async () => {
+                          const a = document.createElement('a')
+                          const text = await exportSettingsAction()
+                          const file = new Blob([text], { type: 'application/yaml' })
+                          a.href = URL.createObjectURL(file)
+                          a.download = 'peanut_config.yaml'
+                          a.click()
+                        }}
+                        className='flex cursor-pointer shadow-none'
+                      >
+                        <AiOutlineDownload className='size-4' />
+                        &nbsp;
+                        <span className='self-center'>{t('settings.download')}</span>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              ) : (
+                <ConfigSkeleton />
+              )}
             </TabsContent>
             <TabsContent value='terminal' className='mt-0 h-full flex-1 overflow-x-hidden'>
-              <Card className='p-4 shadow-none'>
-                <div className='container'>
-                  <h2 className='mb-4 text-xl font-bold'>
-                    {t('settings.terminal')}
-                    <a
-                      href='https://networkupstools.org/docs/developer-guide.chunked/net-protocol.html'
-                      target='_blank'
-                      rel='noreferrer'
-                      className='ml-2 inline-block'
-                    >
-                      <LuCircleHelp className='size-4' />
-                    </a>
-                  </h2>
-                  <span>{t('settings.terminalNotice')}</span>
-                  <div className='mt-4 mb-4 flex gap-2'>
-                    {!connected && (
-                      <>
-                        <Select onValueChange={setSelectedServer} value={selectedServer}>
-                          <SelectTrigger className='w-[200px]'>
-                            <SelectValue placeholder={t('settings.selectServer')} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {serverList.map(({ server }) => (
-                              <SelectItem key={`${server.HOST}:${server.PORT}`} value={`${server.HOST}:${server.PORT}`}>
-                                {server.HOST}:{server.PORT}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          className='cursor-pointer'
-                          onClick={() => setConnected(true)}
-                          disabled={!selectedServer}
-                        >
-                          <HiOutlineLink />
-                          {t('connect.connect')}
+              {settingsLoaded ? (
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='mb-4 text-xl font-bold'>
+                      {t('settings.terminal')}
+                      <a
+                        href='https://networkupstools.org/docs/developer-guide.chunked/net-protocol.html'
+                        target='_blank'
+                        rel='noreferrer'
+                        className='ml-2 inline-block'
+                      >
+                        <LuCircleHelp className='size-4' />
+                      </a>
+                    </h2>
+                    <span>{t('settings.terminalNotice')}</span>
+                    <div className='mt-4 mb-4 flex gap-2'>
+                      {!connected && (
+                        <>
+                          <Select onValueChange={setSelectedServer} value={selectedServer}>
+                            <SelectTrigger className='w-[200px]'>
+                              <SelectValue placeholder={t('settings.selectServer')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {serverList.map(({ server }) => (
+                                <SelectItem
+                                  key={`${server.HOST}:${server.PORT}`}
+                                  value={`${server.HOST}:${server.PORT}`}
+                                >
+                                  {server.HOST}:{server.PORT}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            className='cursor-pointer'
+                            onClick={() => setConnected(true)}
+                            disabled={!selectedServer}
+                          >
+                            <HiOutlineLink />
+                            {t('connect.connect')}
+                          </Button>
+                        </>
+                      )}
+                      {connected && (
+                        <Button onClick={() => setConnected(false)} variant='destructive' className='cursor-pointer'>
+                          <HiOutlineLinkSlash />
+                          {t('sidebar.disconnect')}
                         </Button>
-                      </>
-                    )}
-                    {connected && (
-                      <Button onClick={() => setConnected(false)} variant='destructive' className='cursor-pointer'>
-                        <HiOutlineLinkSlash />
-                        {t('sidebar.disconnect')}
-                      </Button>
+                      )}
+                    </div>
+                    {connected && selectedServer && (
+                      <NutTerminal host={selectedServer.split(':')[0]} port={parseInt(selectedServer.split(':')[1])} />
                     )}
                   </div>
-                  {connected && selectedServer && (
-                    <NutTerminal host={selectedServer.split(':')[0]} port={parseInt(selectedServer.split(':')[1])} />
-                  )}
-                </div>
-              </Card>
+                </Card>
+              ) : (
+                <TerminalSkeleton />
+              )}
             </TabsContent>
             <TabsContent value='general' className='mt-0 h-full flex-1'>
-              <Card className='p-4 shadow-none'>
-                <div className='container'>
-                  <h2 className='text-xl font-bold'>{t('settings.general')}</h2>
-                  <div className='mb-4'>
-                    <span className='text-muted-foreground text-sm'>
-                      <HiOutlineInformationCircle className='inline-block size-4' />
-                      &nbsp;{t('settings.generalNotice')}
-                    </span>
-                  </div>
-                  <div className='flex flex-col gap-4'>
-                    <div className='flex items-center gap-4'>
-                      <span className='w-1/4'>{t('settings.dateFormat')}</span>
-                      <Select value={dateFormat} onValueChange={setDateFormat}>
-                        <SelectTrigger className='w-3/4'>
-                          <SelectValue placeholder={t('settings.selectDateFormat')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='MM/DD/YYYY'>MM/DD/YYYY</SelectItem>
-                          <SelectItem value='DD/MM/YYYY'>DD/MM/YYYY</SelectItem>
-                          <SelectItem value='YYYY/MM/DD'>YYYY/MM/DD</SelectItem>
-                          <SelectItem value='Month D, YYYY'>Month D, YYYY</SelectItem>
-                        </SelectContent>
-                      </Select>
+              {settingsLoaded ? (
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='text-xl font-bold'>{t('settings.general')}</h2>
+                    <div className='mb-4'>
+                      <span className='text-muted-foreground text-sm'>
+                        <HiOutlineInformationCircle className='inline-block size-4' />
+                        &nbsp;{t('settings.generalNotice')}
+                      </span>
                     </div>
-                    <div className='flex items-center gap-4'>
-                      <span className='w-1/4'>{t('settings.timeFormat')}</span>
-                      <Select value={timeFormat} onValueChange={setTimeFormat}>
-                        <SelectTrigger className='w-3/4'>
-                          <SelectValue placeholder={t('settings.selectTimeFormat')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='12-hour'>12-hour</SelectItem>
-                          <SelectItem value='24-hour'>24-hour</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className='flex flex-col gap-4'>
+                      <div className='flex items-center gap-4'>
+                        <span className='w-1/4'>{t('settings.dateFormat')}</span>
+                        <Select value={dateFormat} onValueChange={setDateFormat}>
+                          <SelectTrigger className='w-3/4'>
+                            <SelectValue placeholder={t('settings.selectDateFormat')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='MM/DD/YYYY'>MM/DD/YYYY</SelectItem>
+                            <SelectItem value='DD/MM/YYYY'>DD/MM/YYYY</SelectItem>
+                            <SelectItem value='YYYY/MM/DD'>YYYY/MM/DD</SelectItem>
+                            <SelectItem value='Month D, YYYY'>Month D, YYYY</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className='flex items-center gap-4'>
+                        <span className='w-1/4'>{t('settings.timeFormat')}</span>
+                        <Select value={timeFormat} onValueChange={setTimeFormat}>
+                          <SelectTrigger className='w-3/4'>
+                            <SelectValue placeholder={t('settings.selectTimeFormat')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='12-hour'>12-hour</SelectItem>
+                            <SelectItem value='24-hour'>24-hour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className='mt-4 flex flex-row justify-between'>
-                  <div />
-                  <Button onClick={handleSaveGeneral} className='cursor-pointer shadow-none'>
-                    {t('settings.apply')}
-                  </Button>
-                </div>
-              </Card>
+                  <div className='mt-4 flex flex-row justify-between'>
+                    <div />
+                    <Button onClick={handleSaveGeneral} className='cursor-pointer shadow-none'>
+                      {t('settings.apply')}
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <GeneralSkeleton />
+              )}
             </TabsContent>
             <TabsContent value='dashboard' className='mt-0 h-full flex-1'>
-              <Card className='p-4 shadow-none'>
-                <div className='container'>
-                  <h2 className='text-xl font-bold'>{t('settings.dashboard')}</h2>
-                  <div className='mb-4'>
-                    <span className='text-muted-foreground text-sm'>
-                      <HiOutlineInformationCircle className='inline-block size-4' />
-                      &nbsp;{t('settings.dashboardNotice')}
-                    </span>
+              {settingsLoaded ? (
+                <Card className='p-4 shadow-none'>
+                  <div className='container'>
+                    <h2 className='text-xl font-bold'>{t('settings.dashboard')}</h2>
+                    <div className='mb-4'>
+                      <span className='text-muted-foreground text-sm'>
+                        <HiOutlineInformationCircle className='inline-block size-4' />
+                        &nbsp;{t('settings.dashboardNotice')}
+                      </span>
+                    </div>
+                    <DndContext
+                      collisionDetection={closestCenter}
+                      onDragEnd={(event: DragEndEvent) => {
+                        const { active, over } = event
+                        if (!over || active.id === over.id) return
+                        setSections((prev) => {
+                          const oldIndex = prev.findIndex((s) => s.key === active.id)
+                          const newIndex = prev.findIndex((s) => s.key === over.id)
+                          return arrayMove(prev, oldIndex, newIndex)
+                        })
+                      }}
+                    >
+                      {/* 
+                        Note: Mobile Safari has known limitations with drag-and-drop.
+                        The following improvements help but may not work perfectly:
+                        - touchAction: 'none' prevents scroll conflicts
+                        - touch-manipulation class improves touch handling
+                        - Simplified drag handle for mobile devices
+                      */}
+                      <SortableContext items={sections.map((s) => s.key)} strategy={verticalListSortingStrategy}>
+                        <div className='flex flex-col items-center gap-2'>
+                          {sections.map((section) => (
+                            <DraggableSection
+                              key={section.key}
+                              id={section.key}
+                              label={t(`settings.section.${section.key.toLowerCase()}`)}
+                              enabled={section.enabled}
+                              onChange={(checked) =>
+                                setSections((prev) =>
+                                  prev.map((s) => (s.key === section.key ? { ...s, enabled: checked } : s))
+                                )
+                              }
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
                   </div>
-                  <DndContext
-                    collisionDetection={closestCenter}
-                    onDragEnd={(event: DragEndEvent) => {
-                      const { active, over } = event
-                      if (!over || active.id === over.id) return
-                      setSections((prev) => {
-                        const oldIndex = prev.findIndex((s) => s.key === active.id)
-                        const newIndex = prev.findIndex((s) => s.key === over.id)
-                        return arrayMove(prev, oldIndex, newIndex)
-                      })
-                    }}
-                  >
-                    {/* 
-                      Note: Mobile Safari has known limitations with drag-and-drop.
-                      The following improvements help but may not work perfectly:
-                      - touchAction: 'none' prevents scroll conflicts
-                      - touch-manipulation class improves touch handling
-                      - Simplified drag handle for mobile devices
-                    */}
-                    <SortableContext items={sections.map((s) => s.key)} strategy={verticalListSortingStrategy}>
-                      <div className='flex flex-col items-center gap-2'>
-                        {sections.map((section) => (
-                          <DraggableSection
-                            key={section.key}
-                            id={section.key}
-                            label={t(`settings.section.${section.key.toLowerCase()}`)}
-                            enabled={section.enabled}
-                            onChange={(checked) =>
-                              setSections((prev) =>
-                                prev.map((s) => (s.key === section.key ? { ...s, enabled: checked } : s))
-                              )
-                            }
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                </div>
-                <div className='mt-4 flex flex-row justify-between'>
-                  <div />
-                  <Button
-                    onClick={async () => {
-                      await setSettingsAction('DASHBOARD_SECTIONS', sections)
-                      toast.success(t('settings.saved'))
-                      refreshSettings()
-                    }}
-                    className='cursor-pointer shadow-none'
-                  >
-                    {t('settings.apply')}
-                  </Button>
-                </div>
-              </Card>
+                  <div className='mt-4 flex flex-row justify-between'>
+                    <div />
+                    <Button
+                      onClick={async () => {
+                        await setSettingsAction('DASHBOARD_SECTIONS', sections)
+                        toast.success(t('settings.saved'))
+                        refreshSettings()
+                      }}
+                      className='cursor-pointer shadow-none'
+                    >
+                      {t('settings.apply')}
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <DashboardSkeleton />
+              )}
             </TabsContent>
           </Tabs>
         </div>
