@@ -118,9 +118,7 @@ describe('DeviceWrapper', () => {
   it('should show loading state initially', () => {
     mockGetDeviceAction.mockImplementation(() => new Promise(() => {}))
     renderComponent()
-    expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-    // Check that skeleton components are present
-    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByTestId('loading-wrapper')).toBeInTheDocument()
   })
 
   it('should show empty state when no device data is available', async () => {

@@ -46,12 +46,16 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
         </NavBar>
         <div className='flex grow justify-center px-3'>
           <div className='container'>
-            <DeviceGridSkeleton rows={5} />
+            <Card className='border-border-card bg-card mb-4 w-full border shadow-none'>
+              <div className='p-4'>
+                <DeviceGridSkeleton rows={4} />
+              </div>
+            </Card>
           </div>
         </div>
         <div className='flex justify-center px-3'>
           <div className='container'>
-            <Skeleton className='bg-muted h-4 w-32' />
+            <Skeleton className='bg-muted mb-3 h-4 w-32' />
           </div>
         </div>
       </div>
