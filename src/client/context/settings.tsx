@@ -25,7 +25,8 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
     try {
       const dateFormat = await getSettings('DATE_FORMAT')
       const timeFormat = await getSettings('TIME_FORMAT')
-      setSettings({ DATE_FORMAT: dateFormat || '', TIME_FORMAT: timeFormat || '' })
+      const sections = await getSettings('DASHBOARD_SECTIONS')
+      setSettings({ DATE_FORMAT: dateFormat || '', TIME_FORMAT: timeFormat || '', DASHBOARD_SECTIONS: sections })
     } catch {
       // Handle error silently in tests
       setSettings({ DATE_FORMAT: '', TIME_FORMAT: '' })

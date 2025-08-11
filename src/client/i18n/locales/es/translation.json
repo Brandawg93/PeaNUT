@@ -65,7 +65,17 @@
     "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos",
     "terminal": "Terminal",
     "terminalNotice": "Escriba \"Ayuda\" para una lista de comandos.",
-    "selectServer": "Seleccione un servidor"
+    "selectServer": "Seleccione un servidor",
+    "dashboard": "Panel de control",
+    "dashboardNotice": "Reordenar secciones y alternar su visibilidad.",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "section": {
+      "kpis": "KPIs",
+      "charts": "Gráficos",
+      "variables": "Variables"
+    },
+    "remove": "Eliminar"
   },
   "connect": {
     "server": "Servidor",

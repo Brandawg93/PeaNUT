@@ -66,7 +66,17 @@
     "serversNotice": "Benutzername und Passwort sind für Befehle erforderlich",
     "terminal": "Terminal",
     "terminalNotice": "Geben Sie \"Hilfe\" für eine Liste von Befehlen ein.",
-    "selectServer": "Wählen Sie einen Server aus"
+    "selectServer": "Wählen Sie einen Server aus",
+    "dashboard": "Dashboard",
+    "dashboardNotice": "Abschnitte neu anordnen und ihre Sichtbarkeit umschalten.",
+    "hide": "Ausblenden",
+    "show": "Anzeigen",
+    "section": {
+      "kpis": "KPIs",
+      "charts": "Diagramme",
+      "variables": "Variablen"
+    },
+    "remove": "Entfernen"
   },
   "connect": {
     "server": "Serveradresse",
