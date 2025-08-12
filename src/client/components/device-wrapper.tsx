@@ -90,6 +90,16 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     queryFn: async () => await getDeviceAction(device),
   })
 
+  const sections = useMemo<DashboardSectionConfig>(() => {
+    const defaultSections: DashboardSectionConfig = [
+      { key: 'KPIS', enabled: true },
+      { key: 'CHARTS', enabled: true },
+      { key: 'VARIABLES', enabled: true },
+    ]
+    const configured = settings.DASHBOARD_SECTIONS
+    return configured?.length ? configured : defaultSections
+  }, [settings.DASHBOARD_SECTIONS])
+
   const loadingWrapper = useMemo(
     () => (
       <div
@@ -101,16 +111,6 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     ),
     []
   )
-
-  const sections = useMemo<DashboardSectionConfig>(() => {
-    const defaultSections: DashboardSectionConfig = [
-      { key: 'KPIS', enabled: true },
-      { key: 'CHARTS', enabled: true },
-      { key: 'VARIABLES', enabled: true },
-    ]
-    const configured = settings.DASHBOARD_SECTIONS
-    return configured?.length ? configured : defaultSections
-  }, [settings.DASHBOARD_SECTIONS])
 
   const toggleWattsOrPercent = useCallback(() => {
     setWattsOrPercent((prev) => {

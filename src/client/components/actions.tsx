@@ -139,7 +139,7 @@ export default function Actions({ commands, runCommandAction, device }: Props) {
       </AlertDialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild data-testid='daynight-trigger'>
-          <Button size='icon' variant='ghost' title={t('actions.title')}>
+          <Button size='icon' variant='ghost' title={t('actions.title')} className='cursor-pointer'>
             <HiOutlineEllipsisHorizontalCircle className='size-6!' />
           </Button>
         </DropdownMenuTrigger>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import Wrapper from '@/client/components/wrapper'
 import { LanguageContext } from '@/client/context/language'
@@ -89,8 +89,10 @@ describe('Wrapper Component', () => {
     })
 
     const { findByTestId } = renderComponent()
-    const wrapper = await findByTestId('loading-wrapper')
+    const wrapper = await findByTestId('wrapper')
     expect(wrapper).toBeInTheDocument()
+    // Check that skeleton components are present
+    expect(screen.getByRole('table')).toBeInTheDocument()
   })
 
   it('renders error state', async () => {
