@@ -171,6 +171,10 @@ widget:
 
 **Answer:** If you are using a Networked File Share, please see [#142](https://github.com/Brandawg93/PeaNUT/issues/142).
 
+**Question:** Why can't I see multiple NUT devices on the display?
+
+**Answer:** In order for PeaNUT to display multiple NUT devices, each UPS must have a unique identifier in the corresponding NUT configuration file. Make sure each UPS device has a distinct name/identifier in your NUT configuration to avoid conflicts and ensure proper display of all devices.
+
 ## Tested Devices
 
 [A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Feel free to look there for your device or add your device to the list by submitting an issue with the `tested device` label.
