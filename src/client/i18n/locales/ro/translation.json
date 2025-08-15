@@ -51,6 +51,8 @@
     "selectDateFormat": "Selectați un format de dată",
     "timeFormat": "Formatul orei",
     "selectTimeFormat": "Selectați un format de oră",
+    "disableVersionCheck": "Dezactivați verificarea versiunii",
+    "disableVersionCheckDescription": "Dezactivați verificarea actualizărilor în subsol",
     "manageServers": "Gestionați serverele",
     "influxDb": "InfluxDB",
     "influxNotice": "Funcționează doar cu InfluxDB 2.x",

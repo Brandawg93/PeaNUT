@@ -51,6 +51,8 @@
     "selectDateFormat": "Wählen Sie ein Datumsformat",
     "timeFormat": "Zeitformat",
     "selectTimeFormat": "Wählen Sie ein Zeitformat",
+    "disableVersionCheck": "Versionsprüfung deaktivieren",
+    "disableVersionCheckDescription": "Deaktivieren Sie die Überprüfung auf Updates in der Fußzeile",
     "manageServers": "Server verwalten",
     "influxDb": "InfluxDB",
     "influxNotice": "Dies funktioniert nur mit InfluxDB 2.x",

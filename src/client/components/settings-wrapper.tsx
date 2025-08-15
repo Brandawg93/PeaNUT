@@ -81,6 +81,7 @@ export default function SettingsWrapper({
   const [influxInterval, setInfluxInterval] = useState<number>(10)
   const [dateFormat, setDateFormat] = useState<string>('MM/DD/YYYY')
   const [timeFormat, setTimeFormat] = useState<string>('12-hour')
+  const [disableVersionCheck, setDisableVersionCheck] = useState<boolean>(false)
   const [selectedServer, setSelectedServer] = useState<string>('')
   const [sections, setSections] = useState<DashboardSectionConfig>([
     { key: 'KPIS', enabled: true },
@@ -104,6 +105,7 @@ export default function SettingsWrapper({
       format,
       timeFormat,
       dashboardSections,
+      disableVersionCheck,
     ] = await Promise.all([
       getSettingsAction('NUT_SERVERS') as Promise<Array<server>>,
       getSettingsAction('INFLUX_HOST') as Promise<string>,
@@ -114,6 +116,7 @@ export default function SettingsWrapper({
       getSettingsAction('DATE_FORMAT') as Promise<string>,
       getSettingsAction('TIME_FORMAT') as Promise<string>,
       getSettingsAction('DASHBOARD_SECTIONS') as Promise<DashboardSectionConfig>,
+      getSettingsAction('DISABLE_VERSION_CHECK') as Promise<boolean>,
     ])
     if (servers?.length) {
       setServerList([
@@ -144,6 +147,9 @@ export default function SettingsWrapper({
     }
     if (dashboardSections && Array.isArray(dashboardSections) && dashboardSections.length > 0) {
       setSections(dashboardSections)
+    }
+    if (disableVersionCheck !== undefined) {
+      setDisableVersionCheck(disableVersionCheck)
     }
     setSettingsLoaded(true)
   }, [getSettingsAction])
@@ -189,10 +195,14 @@ export default function SettingsWrapper({
   }, [updateServersAction, serverList, t])
 
   const handleSaveGeneral = useCallback(async () => {
-    await Promise.all([setSettingsAction('DATE_FORMAT', dateFormat), setSettingsAction('TIME_FORMAT', timeFormat)])
+    await Promise.all([
+      setSettingsAction('DATE_FORMAT', dateFormat),
+      setSettingsAction('TIME_FORMAT', timeFormat),
+      setSettingsAction('DISABLE_VERSION_CHECK', disableVersionCheck),
+    ])
     toast.success(t('settings.saved'))
     refreshSettings()
-  }, [setSettingsAction, dateFormat, timeFormat, t, refreshSettings])
+  }, [setSettingsAction, dateFormat, timeFormat, disableVersionCheck, t, refreshSettings])
 
   const handleSaveInflux = useCallback(async () => {
     await Promise.all([
@@ -290,7 +300,7 @@ export default function SettingsWrapper({
             className='flex h-full flex-col gap-4 md:flex-row'
             onValueChange={handleSettingsMenuChange}
           >
-            <TabsList className='flex h-min w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-col'>
+            <TabsList className='flex h-min w-full flex-col gap-2 md:w-auto md:flex-col'>
               {menuItems.map(({ label, Icon, value }) => (
                 <TabsTrigger
                   asChild
@@ -566,6 +576,19 @@ export default function SettingsWrapper({
                             <SelectItem value='24-hour'>24-hour</SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div className='flex items-center gap-4'>
+                        <span className='w-1/4'>{t('settings.disableVersionCheck')}</span>
+                        <div className='w-3/4'>
+                          <Switch
+                            checked={disableVersionCheck}
+                            onCheckedChange={setDisableVersionCheck}
+                            aria-label={t('settings.disableVersionCheck')}
+                          />
+                          <span className='text-muted-foreground ml-2 text-sm'>
+                            {t('settings.disableVersionCheckDescription')}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
