@@ -1,29 +1,12 @@
 import React from 'react'
-import { render } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 import VoltAmpsChart from '@/client/components/line-charts/volt-amps-chart'
 import { DEVICE } from '@/common/types'
-import { LanguageContext } from '@/client/context/language'
-import { TimeRangeProvider } from '@/client/context/time-range'
-import { SettingsProvider } from '@/client/context/settings'
-import { ThemeProvider } from '@/client/context/theme-provider'
+import { renderWithProviders, waitForSettings } from '../../../../utils/test-utils'
 import { device } from '../../../../__mocks__/chartData'
 
-// Helper function to create a test wrapper component
-const createTestWrapper = (children: React.ReactNode, queryClient: QueryClient) => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-      <SettingsProvider>
-        <TimeRangeProvider>
-          <LanguageContext.Provider value='en'>{children}</LanguageContext.Provider>
-        </TimeRangeProvider>
-      </SettingsProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-)
-
 // Helper function to render VoltAmpsChart with common props
-const renderVoltAmpsChart = (queryClient: QueryClient, vars: DEVICE['vars']) => {
+const renderVoltAmpsChart = async (queryClient: QueryClient, vars: DEVICE['vars']) => {
   const chart = (
     <VoltAmpsChart
       id={device.name}
@@ -33,7 +16,9 @@ const renderVoltAmpsChart = (queryClient: QueryClient, vars: DEVICE['vars']) => 
     />
   )
 
-  return render(createTestWrapper(chart, queryClient))
+  const result = renderWithProviders(chart, { queryClient })
+  await waitForSettings()
+  return result
 }
 
 describe('VoltAmps', () => {
@@ -49,8 +34,8 @@ describe('VoltAmps', () => {
     })
   })
 
-  it('renders', () => {
-    const { getByTestId } = renderVoltAmpsChart(queryClient, device.vars)
+  it('renders', async () => {
+    const { getByTestId } = await renderVoltAmpsChart(queryClient, device.vars)
     expect(getByTestId('volt-amps-chart')).toBeInTheDocument()
   })
 })

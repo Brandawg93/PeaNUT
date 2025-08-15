@@ -51,6 +51,8 @@
     "selectDateFormat": "Seleziona un formato di data",
     "timeFormat": "Formato ora",
     "selectTimeFormat": "Seleziona un formato di ora",
+    "disableVersionCheck": "Disabilita controllo versione",
+    "disableVersionCheckDescription": "Disabilita il controllo degli aggiornamenti nel footer",
     "manageServers": "Gestisci server",
     "influxDb": "InfluxDB",
     "influxNotice": "Questo funzionerà solo con InfluxDB 2.x",

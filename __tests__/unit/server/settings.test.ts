@@ -1,8 +1,18 @@
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, mkdirSync, accessSync } from 'fs'
 import { load, dump } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
 jest.mock('js-yaml')
+jest.mock('fs', () => ({
+  existsSync: jest.fn(),
+  readFileSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  mkdirSync: jest.fn(),
+  accessSync: jest.fn(),
+  constants: {
+    W_OK: 2,
+  },
+}))
 
 describe('YamlSettings', () => {
   const filePath = './__tests__/settings.yml'
@@ -27,6 +37,11 @@ describe('YamlSettings', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
+    // Default mock implementations to prevent console errors
+    ;(existsSync as jest.Mock).mockReturnValue(false)
+    ;(accessSync as jest.Mock).mockImplementation(() => {})
+    ;(mkdirSync as jest.Mock).mockImplementation(() => {})
+    ;(writeFileSync as jest.Mock).mockImplementation(() => {})
     yamlSettings = new YamlSettings(filePath)
   })
 

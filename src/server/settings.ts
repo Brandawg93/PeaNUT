@@ -25,6 +25,7 @@ const ISettings = {
     { key: 'CHARTS', enabled: true },
     { key: 'VARIABLES', enabled: true },
   ] as DashboardSectionConfig,
+  DISABLE_VERSION_CHECK: false,
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
@@ -63,6 +64,8 @@ export class YamlSettings {
           const parsed = Number(envValue)
           if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed
+        } else if (key === 'DISABLE_VERSION_CHECK') {
+          this.data[key] = envValue === 'true'
         } else {
           this.data[key] = envValue
         }

@@ -50,6 +50,8 @@
     "selectDateFormat": "Seleccione un formato de fecha",
     "timeFormat": "Formato de hora",
     "selectTimeFormat": "Seleccione un formato de hora",
+    "disableVersionCheck": "Desactivar verificación de versión",
+    "disableVersionCheckDescription": "Desactivar la verificación de actualizaciones en el pie de página",
     "manageServers": "Administraridores",
     "influxDb": "InfluxDB",
     "influxNotice": "Esto solo funcionará con InfluxDB 2.x",

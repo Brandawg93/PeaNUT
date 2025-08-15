@@ -1,11 +1,8 @@
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { screen, waitFor, fireEvent } from '@testing-library/react'
+import { QueryClient } from '@tanstack/react-query'
 import DeviceWrapper from '@/client/components/device-wrapper'
-import { LanguageContext } from '@/client/context/language'
-import { TimeRangeProvider } from '@/client/context/time-range'
-import { SettingsProvider } from '@/client/context/settings'
-import { ThemeProvider } from '@/client/context/theme-provider'
+import { renderWithProviders, waitForSettings } from '../../../utils/test-utils'
 
 // Mock the next/navigation
 jest.mock('next/navigation', () => ({
@@ -94,36 +91,29 @@ describe('DeviceWrapper', () => {
     jest.clearAllMocks()
   })
 
-  const renderComponent = () => {
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <SettingsProvider>
-            <TimeRangeProvider>
-              <LanguageContext.Provider value='en'>
-                <DeviceWrapper
-                  device='test-ups'
-                  getDeviceAction={mockGetDeviceAction}
-                  runCommandAction={mockRunCommandAction}
-                  logoutAction={mockLogoutAction}
-                />
-              </LanguageContext.Provider>
-            </TimeRangeProvider>
-          </SettingsProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+  const renderComponent = async () => {
+    const result = renderWithProviders(
+      <DeviceWrapper
+        device='test-ups'
+        getDeviceAction={mockGetDeviceAction}
+        runCommandAction={mockRunCommandAction}
+        logoutAction={mockLogoutAction}
+      />,
+      { queryClient }
     )
+    await waitForSettings()
+    return result
   }
 
-  it('should show loading state initially', () => {
+  it('should show loading state initially', async () => {
     mockGetDeviceAction.mockImplementation(() => new Promise(() => {}))
-    renderComponent()
+    await renderComponent()
     expect(screen.getByTestId('loading-wrapper')).toBeInTheDocument()
   })
 
   it('should show empty state when no device data is available', async () => {
     mockGetDeviceAction.mockResolvedValue({ device: null })
-    renderComponent()
+    await renderComponent()
     await waitFor(() => {
       expect(screen.getByTestId('empty-wrapper')).toBeInTheDocument()
     })
@@ -131,7 +121,7 @@ describe('DeviceWrapper', () => {
 
   it('should display device information when data is available', async () => {
     mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-    renderComponent()
+    await renderComponent()
     await waitFor(() => {
       expect(screen.getByText('Test Manufacturer')).toBeInTheDocument()
       expect(screen.getByText('Test Model')).toBeInTheDocument()
@@ -141,7 +131,7 @@ describe('DeviceWrapper', () => {
 
   it('should display correct status icon for OL status', async () => {
     mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-    renderComponent()
+    await renderComponent()
     await waitFor(() => {
       expect(screen.getByTestId('check-icon')).toBeInTheDocument()
     })
@@ -159,7 +149,7 @@ describe('DeviceWrapper', () => {
       },
     }
     mockGetDeviceAction.mockResolvedValue(obStatusData)
-    renderComponent()
+    await renderComponent()
     await waitFor(() => {
       expect(screen.getByTestId('triangle-icon')).toBeInTheDocument()
     })
@@ -177,7 +167,7 @@ describe('DeviceWrapper', () => {
       },
     }
     mockGetDeviceAction.mockResolvedValue(lbStatusData)
-    renderComponent()
+    await renderComponent()
     await waitFor(() => {
       expect(screen.getByTestId('exclamation-icon')).toBeInTheDocument()
     })
@@ -202,7 +192,7 @@ describe('DeviceWrapper', () => {
     describe(describeName, () => {
       it(`should toggle localStorage preference when gauge is clicked`, async () => {
         mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-        renderComponent()
+        await renderComponent()
         await waitFor(() => {
           expect(screen.getByTestId('wrapper')).toBeInTheDocument()
         })
@@ -216,7 +206,7 @@ describe('DeviceWrapper', () => {
       it(`should initialize with localStorage preference for true`, async () => {
         localStorage.setItem(localStorageKey, initialValueTrue)
         mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-        renderComponent()
+        await renderComponent()
         await waitFor(() => {
           expect(screen.getByTestId('wrapper')).toBeInTheDocument()
           expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
@@ -225,7 +215,7 @@ describe('DeviceWrapper', () => {
       it(`should initialize with localStorage preference for false`, async () => {
         localStorage.setItem(localStorageKey, initialValueFalse)
         mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-        renderComponent()
+        await renderComponent()
         await waitFor(() => {
           expect(screen.getByTestId('wrapper')).toBeInTheDocument()
           expect(localStorage.getItem(localStorageKey)).toBe(initialValueFalse)
@@ -244,7 +234,7 @@ describe('DeviceWrapper', () => {
             },
           }
           mockGetDeviceAction.mockResolvedValue(dataWithoutVar)
-          renderComponent()
+          await renderComponent()
           await waitFor(() => {
             expect(screen.getByTestId('wrapper')).toBeInTheDocument()
           })
@@ -286,7 +276,7 @@ describe('DeviceWrapper', () => {
   describe('toggle functions integration', () => {
     it('should persist both preferences independently in localStorage', async () => {
       mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-      renderComponent()
+      await renderComponent()
 
       await waitFor(() => {
         expect(screen.getByTestId('wrapper')).toBeInTheDocument()
