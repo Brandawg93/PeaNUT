@@ -1,6 +1,5 @@
 import React from 'react'
-import { render, RenderOptions, waitFor } from '@testing-library/react'
-import { act } from '@testing-library/react'
+import { render, RenderOptions, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SettingsProvider } from '@/client/context/settings'
 import { LanguageContext } from '@/client/context/language'
