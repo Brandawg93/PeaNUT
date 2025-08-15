@@ -63,6 +63,24 @@ export const useVersionCheck = () => {
   return settings.DISABLE_VERSION_CHECK || false
 }
 
+// Shared utility function for date formatting
+const formatDateWithSettings = (date: Date, dateFormat: string, lng: string) => {
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+
+  if (!dateFormat) {
+    return date.toLocaleDateString(lng)
+  }
+
+  return dateFormat
+    .replace('YYYY', year.toString())
+    .replace('MM', month)
+    .replace('DD', day)
+    .replace('Month', date.toLocaleString(lng, { month: 'long' }))
+    .replace('D', date.getDate().toString())
+}
+
 // Utility functions for formatting
 export const useFormatDateTime = () => {
   const { settings } = useSettings()
@@ -73,23 +91,6 @@ export const useFormatDateTime = () => {
       const dateFormat = settings.DATE_FORMAT || 'MM/DD/YYYY'
       const timeFormat = settings.TIME_FORMAT || '12-hour'
 
-      const formatDate = (date: Date) => {
-        const year = date.getFullYear()
-        const month = (date.getMonth() + 1).toString().padStart(2, '0')
-        const day = date.getDate().toString().padStart(2, '0')
-
-        if (!dateFormat) {
-          return date.toLocaleDateString(lng)
-        }
-
-        return dateFormat
-          .replace('YYYY', year.toString())
-          .replace('MM', month)
-          .replace('DD', day)
-          .replace('Month', date.toLocaleString(lng, { month: 'long' }))
-          .replace('D', date.getDate().toString())
-      }
-
       const formatTime = (date: Date) => {
         return date.toLocaleTimeString(lng, {
           hour: 'numeric',
@@ -99,7 +100,10 @@ export const useFormatDateTime = () => {
         })
       }
 
-      return `${formatDate(date)} ${formatTime(date)}`
+      const formattedDate = formatDateWithSettings(date, dateFormat, lng)
+      const formattedTime = formatTime(date)
+
+      return `${formattedDate} ${formattedTime}`
     },
     [settings.DATE_FORMAT, settings.TIME_FORMAT, lng]
   )
@@ -112,21 +116,7 @@ export const useFormatDate = () => {
   return useCallback(
     (date: Date) => {
       const dateFormat = settings.DATE_FORMAT || 'MM/DD/YYYY'
-
-      const year = date.getFullYear()
-      const month = (date.getMonth() + 1).toString().padStart(2, '0')
-      const day = date.getDate().toString().padStart(2, '0')
-
-      if (!dateFormat) {
-        return date.toLocaleDateString(lng)
-      }
-
-      return dateFormat
-        .replace('YYYY', year.toString())
-        .replace('MM', month)
-        .replace('DD', day)
-        .replace('Month', date.toLocaleString(lng, { month: 'long' }))
-        .replace('D', date.getDate().toString())
+      return formatDateWithSettings(date, dateFormat, lng)
     },
     [settings.DATE_FORMAT, lng]
   )
