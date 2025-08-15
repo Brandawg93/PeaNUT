@@ -1,11 +1,8 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { screen } from '@testing-library/react'
+import { QueryClient } from '@tanstack/react-query'
 import NavBarControls from '@/client/components/navbar-controls'
-import { LanguageContext } from '@/client/context/language'
-import { TimeRangeProvider } from '@/client/context/time-range'
-import { SettingsProvider } from '@/client/context/settings'
-import { ThemeProvider } from '@/client/context/theme-provider'
+import { renderWithProviders, waitForSettings } from '../../../utils/test-utils'
 
 // Mock window.matchMedia for next-themes
 Object.defineProperty(window, 'matchMedia', {
@@ -35,25 +32,12 @@ describe('NavBar', () => {
     })
   })
 
-  it('renders', () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <SettingsProvider>
-            <TimeRangeProvider>
-              <LanguageContext.Provider value='en'>
-                <NavBarControls
-                  onRefreshClick={() => {}}
-                  onRefetch={() => {}}
-                  onLogout={() => {}}
-                  disableRefresh={false}
-                />
-              </LanguageContext.Provider>
-            </TimeRangeProvider>
-          </SettingsProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+  it('renders', async () => {
+    renderWithProviders(
+      <NavBarControls onRefreshClick={() => {}} onRefetch={() => {}} onLogout={() => {}} disableRefresh={false} />,
+      { queryClient }
     )
+    await waitForSettings()
 
     const langSwitcher = screen.getByTitle('sidebar.language')
 
