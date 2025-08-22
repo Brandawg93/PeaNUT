@@ -72,14 +72,51 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-| Variable              | Default   | Description                                       |
-| --------------------- | --------- | ------------------------------------------------- |
-| WEB_HOST              | localhost | Hostname of web server                            |
-| WEB_PORT              | 8080      | Port of web server                                |
-| WEB_USERNAME          | undefined | Username of web app                               |
-| WEB_PASSWORD          | undefined | Password of web app                               |
-| NEXT_PUBLIC_BASE_PATH | undefined | Base path for reverse proxy                       |
-| DISABLE_CONFIG_FILE   | undefined | If set to 'true', disables all config file saving |
+| Variable            | Default   | Description                                       |
+| ------------------- | --------- | ------------------------------------------------- |
+| WEB_HOST            | localhost | Hostname of web server                            |
+| WEB_PORT            | 8080      | Port of web server                                |
+| WEB_USERNAME        | undefined | Username of web app                               |
+| WEB_PASSWORD        | undefined | Password of web app                               |
+| BASE_PATH           | undefined | Base path for reverse proxy                       |
+| DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
+
+### Using Base Path with Docker
+
+The `BASE_PATH` environment variable allows you to serve PeaNUT under a sub-path (e.g., `/my-app`) instead of the root path. This is useful when running behind a reverse proxy or when you want to serve multiple applications from the same domain.
+
+**Example Docker Compose configuration:**
+
+```yaml
+services:
+  peanut:
+    image: brandawg93/peanut:latest
+    container_name: PeaNUT
+    ports:
+      - 8080:8080
+    environment:
+      - WEB_PORT=8080
+      - BASE_PATH=/my-app
+    restart: unless-stopped
+```
+
+**With this configuration:**
+
+- The application will be accessible at `http://localhost:8080/my-app`
+- API endpoints will be available at `http://localhost:8080/my-app/api/*`
+- The root path `http://localhost:8080` will still work for backward compatibility
+
+**For reverse proxy setups (nginx example):**
+
+```nginx
+location /my-app {
+    proxy_pass http://localhost:8080/my-app;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
 
 ## Configuration
 
