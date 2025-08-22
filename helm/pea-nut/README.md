@@ -129,7 +129,7 @@ env:
   NODE_ENV: 'production'
   NEXT_TELEMETRY_DISABLED: '1'
   ANALYZE: 'false' # Enable bundle analysis
-  BASE_PATH: '' # Application base path
+  NEXT_PUBLIC_BASE_PATH: '' # Application base path
 ```
 
 ### Complete Example

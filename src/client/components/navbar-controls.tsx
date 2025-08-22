@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useContext, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/client/components/ui/button'
 import { TbSettings, TbSettingsExclamation } from 'react-icons/tb'
@@ -12,6 +11,7 @@ import TimeTruncation from '@/client/components/time-truncation'
 import LanguageSwitcher from '@/client/components/language-switcher'
 import DayNightSwitch from '@/client/components/daynight'
 import { getLocalStorageItem } from '@/lib/utils'
+import { useNavigation } from '@/hooks/useNavigation'
 
 type Props = Readonly<{
   onRefreshClick: () => void
@@ -29,7 +29,7 @@ export default function NavBarControls(props: Props) {
   })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
+  const { push } = useNavigation()
 
   useEffect(() => {
     if (refreshInterval > 0) {
@@ -75,7 +75,7 @@ export default function NavBarControls(props: Props) {
             size='icon'
             title={t('sidebar.settings')}
             aria-label={t('sidebar.settings')}
-            onClick={() => router.push('/settings')}
+            onClick={() => push('/settings')}
           >
             {failedServers ? (
               <TbSettingsExclamation className='size-6! stroke-[1.5px]' />

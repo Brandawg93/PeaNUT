@@ -12,7 +12,7 @@ function normalizeBasePath(path: string): string {
 // Create a wrapper middleware that handles dynamic basePath
 export async function middleware(request: NextRequest) {
   // Get the dynamic basePath from runtime environment or request headers and normalize it
-  const dynamicBasePath = normalizeBasePath(env('BASE_PATH') || request.headers.get('x-base-path') || '')
+  const dynamicBasePath = normalizeBasePath(env('NEXT_PUBLIC_BASE_PATH') || request.headers.get('x-base-path') || '')
 
   // If we have a dynamic basePath, rewrite the URL
   if (dynamicBasePath) {

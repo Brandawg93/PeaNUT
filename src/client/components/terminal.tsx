@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
+import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import { AttachAddon } from '@xterm/addon-attach'
-import { Terminal } from '@xterm/xterm'
-import '@xterm/xterm/css/xterm.css'
 import { useTheme } from 'next-themes'
+import { useBasePath } from '@/hooks/useBasePath'
 
 type Props = Readonly<{
   host: string
@@ -17,6 +17,7 @@ export default function NutTerminal({ host, port }: Props) {
   const terminalRef = useRef<Terminal | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { resolvedTheme } = useTheme()
+  const basePath = useBasePath()
 
   useEffect(() => {
     if (!containerRef.current || wsRef.current || terminalRef.current) return
@@ -34,7 +35,7 @@ export default function NutTerminal({ host, port }: Props) {
     terminal.open(containerRef.current)
 
     const ws = new WebSocket(
-      `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
+      `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}${basePath}/api/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
     )
     wsRef.current = ws
 
@@ -70,30 +71,13 @@ export default function NutTerminal({ host, port }: Props) {
       }
       window.removeEventListener('resize', handleResize)
     }
-  }, [host, port, resolvedTheme])
+  }, [host, port, resolvedTheme, basePath])
 
   const handleCommand = async (data: string) => {
-    const terminal = terminalRef.current
-    if (!terminal) return
-
-    try {
-      if (data === '\u007F') {
-        terminal.write('\b \b')
-        return
-      }
-
-      if (data) {
-        terminal.write(data)
-      }
-    } catch (error) {
-      console.error('Error in handleCommand:', error)
-      terminal.writeln('\r\nError executing command')
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(data)
     }
   }
 
-  return (
-    <div className='h-full w-full'>
-      <div ref={containerRef} className='h-full w-full' />
-    </div>
-  )
+  return <div ref={containerRef} className='h-96 w-full' />
 }

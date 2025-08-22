@@ -17,7 +17,7 @@ import {
 } from 'react-icons/hi2'
 import { upsStatus } from '@/common/constants'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/navigation'
+import { useNavigation } from '@/hooks/useNavigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { secondsToDhms } from '@/lib/utils'
 
@@ -28,7 +28,7 @@ type Props = Readonly<{
 export default function DeviceGrid({ data }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
+  const { push } = useNavigation()
 
   const getStatus = (status: string) => {
     if (!status) return <></>
@@ -173,7 +173,7 @@ export default function DeviceGrid({ data }: Props) {
             className='flex cursor-pointer items-center gap-2'
             onClick={(e) => {
               e.stopPropagation()
-              router.push(`/device/${info.getValue()}`)
+              push(`/device/${info.getValue()}`)
             }}
           >
             <HiOutlineInformationCircle className='size-4' />
@@ -182,7 +182,7 @@ export default function DeviceGrid({ data }: Props) {
         ),
       }),
     ],
-    [t, router, lng]
+    [t, push, lng]
   )
 
   const tableData = useMemo(

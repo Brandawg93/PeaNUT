@@ -47,6 +47,15 @@ jest.mock('recharts', () => {
   }
 })
 
+// Mock next-runtime-env
+jest.mock('next-runtime-env', () => ({
+  env: jest.fn(() => ''),
+  PublicEnvScript: jest.fn(() => null),
+  EnvScript: jest.fn(() => null),
+  PublicEnvProvider: jest.fn(({ children }) => children),
+  useEnvContext: jest.fn(() => ({})),
+}))
+
 window.PointerEvent = MouseEvent as typeof PointerEvent
 
 // Mock window.matchMedia for next-themes

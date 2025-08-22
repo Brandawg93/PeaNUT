@@ -6,7 +6,6 @@ import { HiQuestionMarkCircle } from 'react-icons/hi2'
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/navigation'
 import NavBar from '@/client/components/navbar'
 import NavBarControls from '@/client/components/navbar-controls'
 import Footer from '@/client/components/footer'
@@ -18,6 +17,7 @@ import { Card } from '@/client/components/ui/card'
 import { MemoizedDeviceGrid } from '@/client/components/device-grid'
 import { Skeleton } from '@/client/components/ui/skeleton'
 import DeviceGridSkeleton from './device-grid-skeleton'
+import { useNavigation } from '@/hooks/useNavigation'
 
 type Props = Readonly<{
   getDevicesAction: () => Promise<DevicesData>
@@ -27,7 +27,7 @@ type Props = Readonly<{
 export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
+  const { push } = useNavigation()
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevicesAction(),
@@ -63,40 +63,42 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   }
   if (data.devices.length === 0) {
     return (
-      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
+      <div data-testid='empty-wrapper' className='bg-background flex h-full min-h-screen flex-col'>
         <NavBar>
-          <div className='flex justify-end space-x-2'>
-            <DayNightSwitch />
-            <LanguageSwitcher />
-            <Button
-              variant='ghost'
-              size='lg'
-              className='px-3'
-              title={t('sidebar.settings')}
-              aria-label={t('sidebar.settings')}
-              onClick={() => router.push('/settings')}
-            >
-              <TbSettings className='size-6! stroke-[1.5px]' />
-            </Button>
-          </div>
+          <NavBarControls
+            disableRefresh={true}
+            onRefreshClick={() => refetch()}
+            onRefetch={() => refetch()}
+            onLogout={logoutAction}
+          />
         </NavBar>
-        <div className='flex flex-1 flex-col items-center justify-center'>
-          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
-            <div className='flex flex-col items-center pb-2'>
-              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
-              <p>{t('noDevicesError')}</p>
-            </div>
-            <div>
-              <Button
-                variant='default'
-                title={t('sidebar.settings')}
-                className='shadow-none'
-                onClick={() => router.push('/settings')}
-              >
-                <TbSettings className='size-6! stroke-[1.5px]' />
-              </Button>
-            </div>
-          </Card>
+        <div className='flex grow justify-center px-3'>
+          <div className='container'>
+            <Card className='border-border-card bg-card mb-4 w-full border shadow-none'>
+              <div className='flex flex-col items-center justify-center p-8'>
+                <HiQuestionMarkCircle className='text-muted-foreground mb-4 h-16 w-16' />
+                <h2 className='text-muted-foreground mb-2 text-xl font-semibold'>{t('noDevices.title')}</h2>
+                <p className='text-muted-foreground mb-4 text-center'>{t('noDevices.description')}</p>
+                <div className='flex gap-2'>
+                  <Button onClick={() => push('/settings')} className='cursor-pointer'>
+                    <TbSettings className='mr-2 h-4 w-4' />
+                    {t('sidebar.settings')}
+                  </Button>
+                  <div className='hidden sm:block'>
+                    <DayNightSwitch />
+                  </div>
+                  <div className='hidden sm:block'>
+                    <LanguageSwitcher />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+        <div className='flex justify-center px-3'>
+          <div className='container'>
+            <Footer updated={data.updated} />
+          </div>
         </div>
       </div>
     )
