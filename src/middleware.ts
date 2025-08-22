@@ -17,10 +17,18 @@ export async function middleware(request: NextRequest) {
   // If we have a dynamic basePath, rewrite the URL
   if (dynamicBasePath) {
     const url = new URL(request.url)
-    // Normalize the pathname for comparison
-    const normalizedPathname = normalizeBasePath(url.pathname)
-    if (normalizedPathname.startsWith(dynamicBasePath)) {
-      const rewrittenUrl = new URL(normalizedPathname.slice(dynamicBasePath.length), request.url)
+    const pathname = url.pathname
+
+    // Handle the case where the pathname exactly matches the base path (e.g., /my-app)
+    if (pathname === dynamicBasePath) {
+      const rewrittenUrl = new URL('/', request.url)
+      return NextResponse.rewrite(rewrittenUrl)
+    }
+
+    // Handle the case where the pathname starts with the base path (e.g., /my-app/something)
+    if (pathname.startsWith(dynamicBasePath + '/')) {
+      const newPathname = pathname.slice(dynamicBasePath.length)
+      const rewrittenUrl = new URL(newPathname, request.url)
       return NextResponse.rewrite(rewrittenUrl)
     }
   }
