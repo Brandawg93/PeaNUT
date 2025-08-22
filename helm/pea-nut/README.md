@@ -129,7 +129,7 @@ env:
   NODE_ENV: 'production'
   NEXT_TELEMETRY_DISABLED: '1'
   ANALYZE: 'false' # Enable bundle analysis
-  NEXT_PUBLIC_BASE_PATH: '' # Application base path
+  BASE_PATH: '' # Application base path
 ```
 
 ### Complete Example
@@ -201,6 +201,8 @@ env:
   DISABLE_CONFIG_FILE: 'false'
   NODE_ENV: 'production'
   NEXT_TELEMETRY_DISABLED: '1'
+  ANALYZE: 'false'
+  BASE_PATH: ''
 
 # Multiple NUT servers (alternative to single server config)
 nutServers:

@@ -156,7 +156,7 @@ env:
   NODE_ENV: 'production'
   NEXT_TELEMETRY_DISABLED: '1'
   ANALYZE: 'false'
-  NEXT_PUBLIC_BASE_PATH: ''
+  BASE_PATH: ''
 
 # Secrets Configuration
 secrets:
