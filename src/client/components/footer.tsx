@@ -8,6 +8,7 @@ import { HiOutlineExclamationCircle } from 'react-icons/hi2'
 import { FaDonate, FaGithub } from 'react-icons/fa'
 import pJson from '../../../package.json'
 import { useSettings } from '../context/settings'
+import { useBasePath } from '@/hooks/useBasePath'
 
 type Props = Readonly<{
   updated?: Date
@@ -24,6 +25,7 @@ export default function Footer({ updated }: Props) {
   const { t } = useTranslation(lng)
   const { settings } = useSettings()
   const { DATE_FORMAT: dateFormat, TIME_FORMAT: timeFormat } = settings
+  const basePath = useBasePath()
 
   const formatDateTime = (date: Date) => {
     const formattedDate = formatDate(date)
@@ -124,7 +126,12 @@ export default function Footer({ updated }: Props) {
               <FaDonate />
             </Link>
           </div>
-          <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+          <Link
+            className='text-muted-foreground text-sm underline'
+            href={`${basePath}/api/docs`}
+            target='_blank'
+            rel='noreferrer'
+          >
             {t('docs')}
           </Link>
           <p className='m-0 text-sm'>
