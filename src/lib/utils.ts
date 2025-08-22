@@ -5,6 +5,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Utility function to get base path on client side
+export function getBasePath(): string {
+  if (typeof window !== 'undefined') {
+    // Client-side: use next-runtime-env
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { env } = require('next-runtime-env')
+    return env('BASE_PATH') || ''
+  }
+  // Server-side: fallback to process.env
+  return process.env.BASE_PATH || ''
+}
+
 const TIME_CONSTANTS = {
   DAY: 3600 * 24,
   HOUR: 3600,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import authMiddleware from './auth.middleware'
+import { env } from 'next-runtime-env'
 
 // Normalize basePath to ensure consistent format (starts with /, no trailing slash)
 function normalizeBasePath(path: string): string {
@@ -11,14 +11,8 @@ function normalizeBasePath(path: string): string {
 
 // Create a wrapper middleware that handles dynamic basePath
 export async function middleware(request: NextRequest) {
-  // Get the dynamic basePath from environment or request headers and normalize it
-  const dynamicBasePath = normalizeBasePath(process.env.BASE_PATH || request.headers.get('x-base-path') || '')
-
-  // Check auth first
-  const authResult = await authMiddleware(request as any)
-  if (authResult) {
-    return authResult
-  }
+  // Get the dynamic basePath from runtime environment or request headers and normalize it
+  const dynamicBasePath = normalizeBasePath(env('BASE_PATH') || request.headers.get('x-base-path') || '')
 
   // If we have a dynamic basePath, rewrite the URL
   if (dynamicBasePath) {
