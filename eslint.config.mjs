@@ -9,7 +9,6 @@ import prettier from 'eslint-plugin-prettier'
 import nextPlugin from '@next/eslint-plugin-next'
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import pluginJest from 'eslint-plugin-jest'
-import reactCompiler from 'eslint-plugin-react-compiler'
 
 export default [
   {
@@ -79,14 +78,6 @@ export default [
       'jest/no-identical-title': 'error',
       'jest/prefer-to-have-length': 'warn',
       'jest/valid-expect': 'error',
-    },
-  },
-  {
-    plugins: {
-      'react-compiler': reactCompiler,
-    },
-    rules: {
-      'react-compiler/react-compiler': 'error',
     },
   },
 ]

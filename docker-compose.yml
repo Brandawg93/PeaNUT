@@ -1,6 +1,6 @@
 services:
   nut-upsd:
-    image: instantlinux/nut-upsd
+    image: brandawg93/nut-upsd:latest
     container_name: nut-upsd
     volumes:
       - ./config:/etc/nut

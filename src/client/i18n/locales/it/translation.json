@@ -6,6 +6,7 @@
   "model": "Modello",
   "serial": "Seriale",
   "currentLoad": "Carico corrente",
+  "currentWattage": "Potenza attuale",
   "batteryCharge": "Carica della batteria",
   "batteryRuntime": "Durata della batteria",
   "lastUpdated": "Ultimo aggiornamento",
@@ -65,7 +66,17 @@
     "serversNotice": "Nome utente e password sono richiesti per i comandi",
     "terminal": "terminale",
     "terminalNotice": "Digita \"aiuto\" per un elenco di comandi.",
-    "selectServer": "Seleziona un server"
+    "selectServer": "Seleziona un server",
+    "dashboard": "Dashboard",
+    "dashboardNotice": "Riordina le sezioni e attiva/disattiva la loro visibilità.",
+    "hide": "Nascondi",
+    "show": "Mostra",
+    "section": {
+      "kpis": "KPIs",
+      "charts": "Grafici",
+      "variables": "Variabili"
+    },
+    "remove": "Rimuovi"
   },
   "connect": {
     "server": "Server",
