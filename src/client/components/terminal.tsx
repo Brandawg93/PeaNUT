@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useRef, useEffect } from 'react'
-import { Terminal } from '@xterm/xterm'
+import React, { useEffect, useRef } from 'react'
 import { FitAddon } from '@xterm/addon-fit'
 import { AttachAddon } from '@xterm/addon-attach'
+import { Terminal } from '@xterm/xterm'
+import '@xterm/xterm/css/xterm.css'
 import { useTheme } from 'next-themes'
 import { useBasePath } from '@/hooks/useBasePath'
 
@@ -74,10 +75,27 @@ export default function NutTerminal({ host, port }: Props) {
   }, [host, port, resolvedTheme, basePath])
 
   const handleCommand = async (data: string) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(data)
+    const terminal = terminalRef.current
+    if (!terminal) return
+
+    try {
+      if (data === '\u007F') {
+        terminal.write('\b \b')
+        return
+      }
+
+      if (data) {
+        terminal.write(data)
+      }
+    } catch (error) {
+      console.error('Error in handleCommand:', error)
+      terminal.writeln('\r\nError executing command')
     }
   }
 
-  return <div ref={containerRef} className='h-96 w-full' />
+  return (
+    <div className='h-full w-full'>
+      <div ref={containerRef} className='h-full w-full' />
+    </div>
+  )
 }

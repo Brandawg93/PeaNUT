@@ -63,7 +63,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   }
   if (data.devices.length === 0) {
     return (
-      <div data-testid='empty-wrapper' className='bg-background flex h-full min-h-screen flex-col'>
+      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
         <NavBar>
           <NavBarControls
             disableRefresh={true}
@@ -72,33 +72,23 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
             onLogout={logoutAction}
           />
         </NavBar>
-        <div className='flex grow justify-center px-3'>
-          <div className='container'>
-            <Card className='border-border-card bg-card mb-4 w-full border shadow-none'>
-              <div className='flex flex-col items-center justify-center p-8'>
-                <HiQuestionMarkCircle className='text-muted-foreground mb-4 h-16 w-16' />
-                <h2 className='text-muted-foreground mb-2 text-xl font-semibold'>{t('noDevices.title')}</h2>
-                <p className='text-muted-foreground mb-4 text-center'>{t('noDevices.description')}</p>
-                <div className='flex gap-2'>
-                  <Button onClick={() => push('/settings')} className='cursor-pointer'>
-                    <TbSettings className='mr-2 h-4 w-4' />
-                    {t('sidebar.settings')}
-                  </Button>
-                  <div className='hidden sm:block'>
-                    <DayNightSwitch />
-                  </div>
-                  <div className='hidden sm:block'>
-                    <LanguageSwitcher />
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-        <div className='flex justify-center px-3'>
-          <div className='container'>
-            <Footer updated={data.updated} />
-          </div>
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
+            <div className='flex flex-col items-center pb-2'>
+              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
+              <p>{t('noDevicesError')}</p>
+            </div>
+            <div>
+              <Button
+                variant='default'
+                title={t('sidebar.settings')}
+                className='shadow-none'
+                onClick={() => push('/settings')}
+              >
+                <TbSettings className='size-6! stroke-[1.5px]' />
+              </Button>
+            </div>
+          </Card>
         </div>
       </div>
     )
