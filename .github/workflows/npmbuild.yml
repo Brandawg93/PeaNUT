@@ -73,7 +73,7 @@ jobs:
           pnpm run type-check
           pnpm run lint
           pnpm run test:all
-          pnpm run build
+          pnpm run build:turbo
         env:
           USERNAME: admin
           PASSWORD: nut_test
