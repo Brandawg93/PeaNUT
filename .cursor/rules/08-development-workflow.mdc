@@ -1,0 +1,68 @@
+---
+description: Development workflow and common tasks for PeaNUT project
+---
+# Development Workflow
+
+## Available Scripts
+
+From [package.json](mdc:package.json):
+
+### Development
+
+- `pnpm dev` - Start development server with Docker
+- `pnpm build` - Build for production
+- `pnpm build:turbo` - Build for production using turbopack
+- `pnpm start` - Start production server
+
+### Testing
+
+- `pnpm test` - Run unit tests
+- `pnpm test:coverage` - Run tests with coverage
+- `pnpm test:e2e` - Run E2E tests
+- `pnpm test:all` - Run all tests
+
+### Code Quality
+
+- `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Fix ESLint issues
+- `pnpm format` - Check Prettier formatting
+- `pnpm format:fix` - Fix formatting
+- `pnpm type-check` - Run TypeScript checks
+
+### Docker
+
+- `docker-compose up -d` - Start development services
+- `docker-compose down` - Stop development services
+
+## Development Environment
+
+- Use pnpm as package manager
+- Use Docker for development services
+- Use Turbopack for faster builds
+- Use ESLint + Prettier for code formatting
+
+## Testing Strategy
+
+- Unit tests for components and utilities
+- E2E tests for critical user flows
+- API tests for backend functionality
+- Use proper mocking and test data
+
+## Code Review Checklist
+
+- [ ] All tests pass
+- [ ] Code is properly formatted
+- [ ] TypeScript types are correct
+- [ ] No linting errors
+- [ ] Proper error handling
+- [ ] Accessibility considerations
+- [ ] Performance implications considered
+- [ ] **shadcn components in `ui/` folder are NOT modified**
+- [ ] Custom components properly compose/extend shadcn components
+
+## Deployment
+
+- Use Docker for containerization
+- Follow the Dockerfile patterns
+- Use proper environment variables
+- Test in staging environment first

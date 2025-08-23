@@ -1,0 +1,55 @@
+---
+globs: src/server/**/*.ts
+---
+# Server-Side Patterns
+
+## NUT Integration
+
+Follow the patterns in [src/server/nut.ts](mdc:src/server/nut.ts):
+
+- Use proper socket connections for NUT protocol
+- Implement proper error handling for network issues
+- Use connection pooling for multiple devices
+- Follow the promise-based socket patterns
+
+## Server Utilities
+
+- Use utilities from [src/server/](mdc:src/server/)
+- Implement proper logging and error tracking
+- Use proper environment variable handling
+- Follow the scheduler patterns in [src/server/scheduler.ts](mdc:src/server/scheduler.ts)
+
+## Database Integration
+
+- Use InfluxDB patterns from [src/server/influxdb.ts](mdc:src/server/influxdb.ts)
+- Implement proper data validation
+- Use proper connection management
+- Handle database errors gracefully
+
+## Configuration Management
+
+- Use settings patterns from [src/server/settings.ts](mdc:src/server/settings.ts)
+- Implement proper configuration validation
+- Use environment-based configuration
+- Follow the auth configuration patterns
+
+## Error Handling
+
+- Implement proper error types
+- Use proper HTTP status codes
+- Log errors appropriately
+- Return meaningful error messages
+
+## Performance
+
+- Use proper connection pooling
+- Implement caching where appropriate
+- Use proper async/await patterns
+- Optimize database queries
+
+## Security
+
+- Validate all inputs
+- Use proper authentication checks
+- Implement proper authorization
+- Follow security best practices
