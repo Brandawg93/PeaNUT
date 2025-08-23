@@ -8,11 +8,11 @@ export function useNavigation() {
   const basePath = useBasePath()
 
   const push = (path: string) => {
-    router.push(`${basePath}${path}`)
+    router.push(`${basePath}${path}` as any)
   }
 
   const replace = (path: string) => {
-    router.replace(`${basePath}${path}`)
+    router.replace(`${basePath}${path}` as any)
   }
 
   return { push, replace, basePath }

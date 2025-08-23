@@ -21,6 +21,8 @@ import { useNavigation } from '@/hooks/useNavigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { secondsToDhms } from '@/lib/utils'
 
+const columnHelper = createColumnHelper<DEVICE>()
+
 type Props = Readonly<{
   data: DevicesData
 }>
@@ -59,7 +61,6 @@ export default function DeviceGrid({ data }: Props) {
     }
   }
 
-  const columnHelper = createColumnHelper<DEVICE>()
   const columns = useMemo(
     () => [
       columnHelper.accessor('name', {
@@ -182,7 +183,7 @@ export default function DeviceGrid({ data }: Props) {
         ),
       }),
     ],
-    [t, push, lng]
+    [t, push]
   )
 
   const tableData = useMemo(

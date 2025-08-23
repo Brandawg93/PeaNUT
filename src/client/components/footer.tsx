@@ -83,7 +83,7 @@ export default function Footer({ updated }: Props) {
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link
       className='no-underline-text text-muted-foreground m-0 text-sm'
-      href={updateAvailable.url}
+      href={{ href: updateAvailable.url }}
       target='_blank'
       rel='noreferrer'
     >
@@ -109,7 +109,7 @@ export default function Footer({ updated }: Props) {
           <div className='flex items-center'>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href='https://www.github.com/brandawg93/peanut'
+              href={{ href: 'https://www.github.com/brandawg93/peanut' }}
               target='_blank'
               rel='noreferrer'
               aria-label='GitHub'
@@ -118,7 +118,7 @@ export default function Footer({ updated }: Props) {
             </Link>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href='https://www.github.com/sponsors/brandawg93'
+              href={{ href: 'https://www.github.com/sponsors/brandawg93' }}
               target='_blank'
               rel='noreferrer'
               aria-label='Sponsor'
@@ -128,7 +128,7 @@ export default function Footer({ updated }: Props) {
           </div>
           <Link
             className='text-muted-foreground text-sm underline'
-            href={`${basePath}/api/docs`}
+            href={{ pathname: `${basePath}/api/docs` }}
             target='_blank'
             rel='noreferrer'
           >
@@ -136,7 +136,7 @@ export default function Footer({ updated }: Props) {
           </Link>
           <p className='m-0 text-sm'>
             <Link
-              href={currentVersion.url}
+              href={{ href: currentVersion.url }}
               target='_blank'
               rel='noreferrer'
               className='no-underline-text text-muted-foreground text-xs'

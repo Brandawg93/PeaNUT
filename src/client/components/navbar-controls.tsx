@@ -36,7 +36,7 @@ export default function NavBarControls(props: Props) {
       const interval = setInterval(() => onRefetch(), refreshInterval * 1000)
       return () => clearInterval(interval)
     }
-  }, [refreshInterval])
+  }, [refreshInterval, onRefetch])
 
   return (
     <div className='flex items-center justify-between space-x-2 pl-2 sm:justify-end'>

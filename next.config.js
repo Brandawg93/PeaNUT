@@ -7,6 +7,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   output: 'standalone',
+  typedRoutes: true,
   images: {
     unoptimized: true,
   },
