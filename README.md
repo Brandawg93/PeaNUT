@@ -85,6 +85,8 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 For detailed reverse proxy configuration instructions, see the [Reverse Proxy Setup Wiki](https://github.com/Brandawg93/PeaNUT/wiki/Reverse-Proxy-Setup-for-PeaNUT).
 
+**Note**: If you encounter issues with missing favicon or font loading errors, please check the troubleshooting section in the wiki for additional `sub_filter` rules.
+
 ## Configuration
 
 Configuration is primarily done via the UI, but manual configuration can be done via the `/config/settings.yml` file within the container. More information can be found on the [wiki](https://github.com/Brandawg93/PeaNUT/wiki/YAML-Configuration).
