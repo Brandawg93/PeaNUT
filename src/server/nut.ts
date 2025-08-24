@@ -261,11 +261,15 @@ export class Nut {
   }
 
   public async getVarDescription(variable: string, device = 'UPS', socket?: PromiseSocket): Promise<string> {
-    const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n', false, socket)
-    if (!data.startsWith('DESC')) {
-      throw new Error('Invalid response')
+    try {
+      const data = await this.getCommand(`GET DESC ${device} ${variable}`, '\n', false, socket)
+      if (!data.startsWith('DESC')) {
+        return 'Description unavailable'
+      }
+      return data.split('"')[1].trim()
+    } catch {
+      return 'Description unavailable'
     }
-    return data.split('"')[1].trim()
   }
 
   public async getEnum(variable: string, device = 'UPS'): Promise<Array<string>> {
