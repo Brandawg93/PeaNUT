@@ -8,6 +8,7 @@ import { HiOutlineExclamationCircle } from 'react-icons/hi2'
 import { FaDonate, FaGithub } from 'react-icons/fa'
 import pJson from '../../../package.json'
 import { useVersionCheck, useFormatDateTime, useFormatDate } from '../context/settings'
+import { useBasePath } from '@/hooks/useBasePath'
 
 type Props = Readonly<{
   updated?: Date
@@ -25,6 +26,7 @@ export default function Footer({ updated }: Props) {
   const disableVersionCheck = useVersionCheck()
   const formatDateTime = useFormatDateTime()
   const formatDate = useFormatDate()
+  const basePath = useBasePath()
 
   useEffect(() => {
     // Skip version checking if disabled in settings
@@ -50,7 +52,7 @@ export default function Footer({ updated }: Props) {
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link
       className='no-underline-text text-muted-foreground m-0 text-sm'
-      href={updateAvailable.url}
+      href={{ href: updateAvailable.url }}
       target='_blank'
       rel='noreferrer'
     >
@@ -76,7 +78,7 @@ export default function Footer({ updated }: Props) {
           <div className='flex items-center'>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href='https://www.github.com/brandawg93/peanut'
+              href={{ href: 'https://www.github.com/brandawg93/peanut' }}
               target='_blank'
               rel='noreferrer'
               aria-label='GitHub'
@@ -85,7 +87,7 @@ export default function Footer({ updated }: Props) {
             </Link>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href='https://www.github.com/sponsors/brandawg93'
+              href={{ href: 'https://www.github.com/sponsors/brandawg93' }}
               target='_blank'
               rel='noreferrer'
               aria-label='Sponsor'
@@ -93,12 +95,17 @@ export default function Footer({ updated }: Props) {
               <FaDonate />
             </Link>
           </div>
-          <Link className='text-muted-foreground text-sm underline' href='/api/docs' target='_blank' rel='noreferrer'>
+          <Link
+            className='text-muted-foreground text-sm underline'
+            href={{ pathname: `${basePath}/api/docs` }}
+            target='_blank'
+            rel='noreferrer'
+          >
             {t('docs')}
           </Link>
           <p className='m-0 text-sm'>
             <Link
-              href={currentVersion.url}
+              href={{ href: currentVersion.url }}
               target='_blank'
               rel='noreferrer'
               className='no-underline-text text-muted-foreground text-xs'

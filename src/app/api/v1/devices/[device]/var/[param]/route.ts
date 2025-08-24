@@ -1,10 +1,9 @@
 import { NextRequest } from 'next/server'
-import { DEVICE } from '@/common/types'
 import { handleVariableOperation, handleDeviceOperation, successfulOperationMessage } from '@/app/api/utils'
 
 type Params = {
   device: string
-  param: keyof DEVICE
+  param: string
 }
 
 /**

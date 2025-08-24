@@ -31,7 +31,7 @@ export default function Kpi({ text, description, onClick }: Props) {
     return () => {
       window.removeEventListener('resize', resize)
     }
-  }, [text])
+  }, [text, resize])
 
   const onClickHandler = useCallback(() => {
     if (onClick) {
