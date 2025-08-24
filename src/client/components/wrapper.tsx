@@ -6,18 +6,16 @@ import { HiQuestionMarkCircle } from 'react-icons/hi2'
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/navigation'
 import NavBar from '@/client/components/navbar'
 import NavBarControls from '@/client/components/navbar-controls'
 import Footer from '@/client/components/footer'
 import { LanguageContext } from '@/client/context/language'
 import { DevicesData } from '@/common/types'
-import DayNightSwitch from './daynight'
-import LanguageSwitcher from '@/client/components/language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { MemoizedDeviceGrid } from '@/client/components/device-grid'
 import { Skeleton } from '@/client/components/ui/skeleton'
 import DeviceGridSkeleton from './device-grid-skeleton'
+import { useNavigation } from '@/hooks/useNavigation'
 
 type Props = Readonly<{
   getDevicesAction: () => Promise<DevicesData>
@@ -27,7 +25,7 @@ type Props = Readonly<{
 export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
+  const { push } = useNavigation()
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['devicesData'],
     queryFn: async () => await getDevicesAction(),
@@ -65,20 +63,12 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
     return (
       <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
         <NavBar>
-          <div className='flex justify-end space-x-2'>
-            <DayNightSwitch />
-            <LanguageSwitcher />
-            <Button
-              variant='ghost'
-              size='lg'
-              className='px-3'
-              title={t('sidebar.settings')}
-              aria-label={t('sidebar.settings')}
-              onClick={() => router.push('/settings')}
-            >
-              <TbSettings className='size-6! stroke-[1.5px]' />
-            </Button>
-          </div>
+          <NavBarControls
+            disableRefresh={true}
+            onRefreshClick={() => refetch()}
+            onRefetch={() => refetch()}
+            onLogout={logoutAction}
+          />
         </NavBar>
         <div className='flex flex-1 flex-col items-center justify-center'>
           <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
@@ -91,7 +81,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
                 variant='default'
                 title={t('sidebar.settings')}
                 className='shadow-none'
-                onClick={() => router.push('/settings')}
+                onClick={() => push('/settings')}
               >
                 <TbSettings className='size-6! stroke-[1.5px]' />
               </Button>

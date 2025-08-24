@@ -1,19 +1,30 @@
 import globals from 'globals'
 import pluginJs from '@eslint/js'
 import tseslint from 'typescript-eslint'
-import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js'
-import { fixupConfigRules } from '@eslint/compat'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
-import reactPlugin from 'eslint-plugin-react'
 import prettier from 'eslint-plugin-prettier'
 import nextPlugin from '@next/eslint-plugin-next'
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import pluginJest from 'eslint-plugin-jest'
+import { FlatCompat } from '@eslint/eslintrc'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
 
-export default [
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+})
+
+const config = [
+  ...compat.extends('next/core-web-vitals'),
+  {
+    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+  },
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-    plugins: { reactPlugin, prettier },
+    plugins: { prettier },
   },
   {
     ignores: [
@@ -35,7 +46,6 @@ export default [
   ...pluginQuery.configs['flat/recommended'],
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  ...fixupConfigRules(pluginReactConfig),
   eslintPluginPrettierRecommended,
   {
     settings: {
@@ -81,3 +91,5 @@ export default [
     },
   },
 ]
+
+export default config

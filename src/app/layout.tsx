@@ -5,6 +5,7 @@ import '@/app/globals.css'
 import { ThemeProvider } from '@/client/context/theme-provider'
 import LanguageProvider from '@/client/context/language'
 import { SettingsProvider } from '@/client/context/settings'
+import { PublicEnvScript } from 'next-runtime-env'
 import i18next from 'i18next'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -17,6 +18,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang={i18next.language}>
+      <head>
+        <PublicEnvScript />
+      </head>
       <body className={`${inter.className} bg-background`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
           <SettingsProvider>

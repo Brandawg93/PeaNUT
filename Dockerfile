@@ -78,6 +78,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
+ENV BASE_PATH=""
 
 # Switch to non-root user (node user is built into the image)
 # USER 1000

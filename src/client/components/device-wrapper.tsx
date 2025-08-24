@@ -13,7 +13,6 @@ import {
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/navigation'
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
@@ -33,6 +32,7 @@ import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 import { useSettings } from '@/client/context/settings'
 import { DashboardSectionConfig } from '@/server/settings'
+import { useNavigation } from '@/hooks/useNavigation'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -83,7 +83,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
+  const { push } = useNavigation()
   const { settings } = useSettings()
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['deviceData', device],
@@ -244,7 +244,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               className='px-3'
               title={t('sidebar.settings')}
               aria-label={t('sidebar.settings')}
-              onClick={() => router.push('/settings')}
+              onClick={() => push('/settings')}
             >
               <TbSettings className='size-6! stroke-[1.5px]' />
             </Button>
@@ -261,7 +261,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
                 variant='default'
                 title={t('sidebar.settings')}
                 className='shadow-none'
-                onClick={() => router.push('/settings')}
+                onClick={() => push('/settings')}
               >
                 <TbSettings className='size-6! stroke-[1.5px]' />
               </Button>

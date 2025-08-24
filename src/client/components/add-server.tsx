@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
 import { HiOutlineXMark } from 'react-icons/hi2'
@@ -43,28 +43,31 @@ export default function AddServer({
   const [password, setPassword] = useState<string | undefined>(initialPassword ?? '')
   const [connectionStatus, setConnectionStatus] = useState<'success' | 'error' | 'untested'>('untested')
 
-  const handleTestConnection = async (hideToast = false) => {
-    if (server && port) {
-      const promise = testConnectionAction(server, port, username, password)
-      if (!hideToast) {
-        toast.promise(promise, {
-          loading: t('connect.testing'),
-          success: t('connect.success'),
-          error: t('connect.error'),
-        })
-      }
-      try {
-        await promise
-        if (hideToast) {
-          setConnectionStatus('success')
+  const handleTestConnection = useCallback(
+    async (hideToast = false) => {
+      if (server && port) {
+        const promise = testConnectionAction(server, port, username, password)
+        if (!hideToast) {
+          toast.promise(promise, {
+            loading: t('connect.testing'),
+            success: t('connect.success'),
+            error: t('connect.error'),
+          })
         }
-      } catch {
-        if (hideToast) {
-          setConnectionStatus('error')
+        try {
+          await promise
+          if (hideToast) {
+            setConnectionStatus('success')
+          }
+        } catch {
+          if (hideToast) {
+            setConnectionStatus('error')
+          }
         }
       }
-    }
-  }
+    },
+    [server, port, username, password, t, testConnectionAction]
+  )
 
   const pingIcon = () => {
     switch (connectionStatus) {
@@ -112,7 +115,7 @@ export default function AddServer({
 
       return () => clearInterval(interval)
     }
-  }, [saved])
+  }, [saved, handleTestConnection])
 
   return (
     <TooltipProvider>
