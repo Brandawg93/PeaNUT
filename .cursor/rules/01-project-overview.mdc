@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 # PeaNUT Project Overview
 
 PeaNUT is a Tiny Dashboard for Network UPS Tools (NUT) - a Next.js web application for monitoring UPS devices connected to your network.

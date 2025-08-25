@@ -1,6 +1,8 @@
 ---
 globs: src/app/**/*.ts,src/app/**/*.tsx
+description: Next.js App Router patterns, API routes, server/client components, authentication, and performance guidelines
 ---
+
 # Next.js App Router Patterns
 
 ## App Router Structure

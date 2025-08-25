@@ -1,6 +1,8 @@
 ---
 globs: *.ts,*.tsx
+description: TypeScript coding standards for the project.
 ---
+
 # TypeScript Coding Standards
 
 ## Path Aliases

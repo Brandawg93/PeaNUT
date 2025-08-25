@@ -1,6 +1,8 @@
 ---
 globs: __tests__/**/*.ts,__tests__/**/*.tsx,*.test.ts,*.test.tsx,*.spec.ts,*.spec.tsx
+description: Defines the standards for testing in the project.
 ---
+
 # Testing Standards
 
 ## Test Organization
