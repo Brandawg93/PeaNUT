@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Card } from '@/client/components/ui/card'
 
 type Props = Readonly<{
@@ -12,7 +12,7 @@ export default function Kpi({ text, description, onClick }: Props) {
   const spanRef = React.useRef<HTMLDivElement>(null)
   const [scale, setScale] = React.useState(1)
 
-  const resize = () => {
+  const resize = useCallback(() => {
     const container = containerRef.current
     const span = spanRef.current
 
@@ -22,7 +22,7 @@ export default function Kpi({ text, description, onClick }: Props) {
       const newScale = containerWidth / spanWidth
       setScale(Math.min(newScale, 7))
     }
-  }
+  }, [])
 
   React.useEffect(() => {
     resize()
@@ -31,27 +31,31 @@ export default function Kpi({ text, description, onClick }: Props) {
     return () => {
       window.removeEventListener('resize', resize)
     }
-  }, [text])
+  }, [text, resize])
 
-  const onClickHandler = () => {
+  const onClickHandler = useCallback(() => {
     if (onClick) {
       onClick()
       resize()
     }
-  }
+  }, [onClick, resize])
 
-  const clickableProps = onClick
-    ? {
-        role: 'button',
-        tabIndex: 0,
-        onClick: onClickHandler,
-        onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => {
-          if (e.key === 'Enter' && onClickHandler) {
-            onClickHandler()
+  const clickableProps = useMemo(
+    () =>
+      onClick
+        ? {
+            role: 'button',
+            tabIndex: 0,
+            onClick: onClickHandler,
+            onKeyUp: (e: React.KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' && onClickHandler) {
+                onClickHandler()
+              }
+            },
           }
-        },
-      }
-    : {}
+        : {},
+    [onClick, onClickHandler]
+  )
 
   return (
     <Card

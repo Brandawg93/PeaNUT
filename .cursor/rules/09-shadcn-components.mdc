@@ -1,0 +1,71 @@
+---
+globs: src/client/components/ui/**/*.tsx
+description: This rule defines the shadcn/ui components that should not be modified. It explains why and provides guidelines for using them correctly.
+---
+
+# shadcn/ui Components - DO NOT MODIFY
+
+⚠️ **CRITICAL**: Components in [src/client/components/ui/](mdc:src/client/components/ui/) are shadcn/ui components that should **NEVER** be modified.
+
+## What are shadcn components?
+
+- These are pre-built, standardized UI components from the shadcn/ui library
+- They are built on top of Radix UI primitives and styled with Tailwind CSS
+- They follow a consistent design system and API
+
+## Why NOT to modify them?
+
+- They are designed to be used as-is
+- Modifications break the design system consistency
+- Updates from shadcn/ui will overwrite any changes
+- They are thoroughly tested and optimized
+
+## How to use shadcn components correctly
+
+```typescript
+// ✅ Correct - Use as-is with props
+import { Button } from "@/client/components/ui/button"
+
+<Button variant="default" size="lg">
+  Click me
+</Button>
+
+// ✅ Correct - Compose with other components
+import { Button } from "@/client/components/ui/button"
+import { Card } from "@/client/components/ui/card"
+
+<Card>
+  <Button>Action</Button>
+</Card>
+
+// ✅ Correct - Create custom components that use shadcn
+function CustomButton({ children, ...props }) {
+  return (
+    <Button variant="outline" {...props}>
+      {children}
+    </Button>
+  )
+}
+```
+
+## If you need custom functionality
+
+1. **Create a new component** that wraps the shadcn component
+2. **Extend the component** by creating a new file outside the `ui/` folder
+3. **Use composition** to combine multiple shadcn components
+4. **Never modify** the original shadcn component files
+
+## Available shadcn components
+
+- Button, Input, Label, Select, Switch
+- Card, Accordion, Alert Dialog, Popover
+- Table, Tabs, Tooltip, Progress
+- Dropdown Menu, Password Input, Skeleton
+- Chart (custom chart component)
+
+## Design System
+
+- All components use consistent Tailwind CSS classes
+- Follow the variant patterns (default, destructive, outline, etc.)
+- Use the `cn()` utility for class merging
+- Maintain accessibility standards from Radix UI

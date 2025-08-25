@@ -6,6 +6,7 @@
   "model": "Model",
   "serial": "Serie",
   "currentLoad": "Sarcină curentă",
+  "currentWattage": "Puterea curentă",
   "batteryCharge": "Nivel baterie",
   "batteryRuntime": "Durata de funcționare",
   "lastUpdated": "Ultima actualizare",
@@ -50,6 +51,8 @@
     "selectDateFormat": "Selectați un format de dată",
     "timeFormat": "Formatul orei",
     "selectTimeFormat": "Selectați un format de oră",
+    "disableVersionCheck": "Dezactivați verificarea versiunii",
+    "disableVersionCheckDescription": "Dezactivați verificarea actualizărilor în subsol",
     "manageServers": "Gestionați serverele",
     "influxDb": "InfluxDB",
     "influxNotice": "Funcționează doar cu InfluxDB 2.x",
@@ -66,7 +69,17 @@
     "serversNotice": "Numele de utilizator și parola sunt necesare pentru comenzi",
     "terminal": "Terminal",
     "terminalNotice": "Tastați „ajutor” pentru o listă de comenzi.",
-    "selectServer": "Selectați un server"
+    "selectServer": "Selectați un server",
+    "dashboard": "Dashboard",
+    "dashboardNotice": "Reordonați secțiunile și comutați vizibilitatea lor.",
+    "hide": "Ascunde",
+    "show": "Arată",
+    "section": {
+      "kpis": "KPIs",
+      "charts": "Grafice",
+      "variables": "Variabile"
+    },
+    "remove": "Elimină"
   },
   "connect": {
     "server": "Adresa serverului",

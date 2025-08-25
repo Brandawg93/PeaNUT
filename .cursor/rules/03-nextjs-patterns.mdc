@@ -1,0 +1,51 @@
+---
+globs: src/app/**/*.ts,src/app/**/*.tsx
+description: Next.js App Router patterns, API routes, server/client components, authentication, and performance guidelines
+---
+
+# Next.js App Router Patterns
+
+## App Router Structure
+
+Follow the App Router structure in [src/app/](mdc:src/app/):
+
+- Use `page.tsx` for route components
+- Use `layout.tsx` for shared layouts
+- Use `loading.tsx` for loading states
+- Use `error.tsx` for error boundaries
+- Use `not-found.tsx` for 404 pages
+
+## API Routes
+
+- Place API routes in `src/app/api/`
+- Use proper HTTP methods (GET, POST, PUT, DELETE)
+- Implement proper error handling and status codes
+- Use Zod for request/response validation
+- Follow the patterns in [src/app/api/v1/](mdc:src/app/api/v1/)
+
+## Server Components vs Client Components
+
+- Default to Server Components for data fetching
+- Use `"use client"` directive only when needed
+- Keep client components in [src/client/components/](mdc:src/client/components/)
+- Use proper data fetching patterns with TanStack Query
+
+## Authentication
+
+- Use NextAuth.js patterns from [src/auth.ts](mdc:src/auth.ts)
+- Implement proper middleware in [src/middleware.ts](mdc:src/middleware.ts)
+- Protect API routes and pages appropriately
+- Use session management correctly
+
+## Environment Variables
+
+- Use `next-runtime-env` for client-side env vars
+- Access server-side env vars directly
+- Follow the patterns in [src/app/actions.ts](mdc:src/app/actions.ts)
+
+## Performance
+
+- Use proper caching strategies
+- Implement proper loading states
+- Use Next.js Image component for images
+- Optimize bundle size with proper imports

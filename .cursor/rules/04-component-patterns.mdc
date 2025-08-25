@@ -1,0 +1,66 @@
+---
+globs: src/client/**/*.tsx
+description: Guidelines for organizing and structuring React components, including UI components, state management, styling, props, hooks, performance, and accessibility.
+---
+
+# React Component Patterns
+
+## Component Organization
+
+Follow the structure in [src/client/components/](mdc:src/client/components/):
+
+- **UI components in `ui/` subdirectory** - These are shadcn components that should NOT be modified
+- Feature components in their own directories
+- Use proper file naming conventions
+
+## shadcn UI Components
+
+⚠️ **IMPORTANT**: Components in [src/client/components/ui/](mdc:src/client/components/ui/) are shadcn components:
+
+- **DO NOT modify these components** - they come directly from shadcn/ui
+- Use them as-is with their predefined props and variants
+- If you need custom functionality, create a new component that wraps or extends the shadcn component
+- These components follow shadcn's design system and should remain unchanged
+
+## State Management
+
+- Use TanStack Query for server state in [src/client/context/query-client.tsx](mdc:src/client/context/query-client.tsx)
+- Use React Context for global client state
+- Follow patterns in [src/client/context/settings.tsx](mdc:src/client/context/settings.tsx)
+- Use proper state management patterns
+
+## Styling
+
+- Use Tailwind CSS for styling
+- Use shadcn components from [src/client/components/ui/](mdc:src/client/components/ui/) as the design system foundation
+- Create custom components that extend or compose shadcn components when needed
+- Use CSS modules for component-specific styles when needed
+- Implement responsive design patterns
+
+## Props and Interfaces
+
+- Define proper prop interfaces
+- Use proper TypeScript types
+- Implement proper default props
+- Use proper prop validation
+
+## Hooks
+
+- Create custom hooks in [src/hooks/](mdc:src/hooks/)
+- Follow React hooks best practices
+- Use proper dependency arrays
+- Implement proper cleanup in useEffect
+
+## Performance
+
+- Use React.memo for expensive components
+- Implement proper key props for lists
+- Use proper lazy loading patterns
+- Optimize re-renders with useMemo and useCallback
+
+## Accessibility
+
+- Use proper ARIA attributes
+- Implement keyboard navigation
+- Use semantic HTML elements
+- Follow WCAG guidelines

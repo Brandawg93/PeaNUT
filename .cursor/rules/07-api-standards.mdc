@@ -1,0 +1,63 @@
+---
+globs: src/app/api/**/*.ts
+description: API Development Standards
+---
+
+# API Development Standards
+
+## API Structure
+
+Follow the structure in [src/app/api/](mdc:src/app/api/):
+
+- Versioned APIs in `v1/` directory
+- Proper route organization
+- Use Next.js API route handlers
+
+## HTTP Methods
+
+- Use proper HTTP methods (GET, POST, PUT, DELETE)
+- Implement proper status codes
+- Use proper request/response patterns
+- Follow REST conventions
+
+## Request/Response Validation
+
+- Use Zod schemas for validation
+- Implement proper error responses
+- Use consistent response formats
+- Validate all inputs
+
+## Authentication & Authorization
+
+- Use NextAuth.js patterns
+- Implement proper middleware checks
+- Use proper session validation
+- Follow the auth patterns in [src/auth.ts](mdc:src/auth.ts)
+
+## Error Handling
+
+- Return proper HTTP status codes
+- Provide meaningful error messages
+- Log errors appropriately
+- Use consistent error format
+
+## Documentation
+
+- Use Swagger/OpenAPI patterns
+- Document all endpoints
+- Provide proper examples
+- Follow the documentation in [src/app/api/docs/](mdc:src/app/api/docs/)
+
+## Performance
+
+- Implement proper caching
+- Use efficient data fetching
+- Optimize response sizes
+- Use proper pagination
+
+## Testing
+
+- Write comprehensive API tests
+- Test error scenarios
+- Use proper test data
+- Follow the API test patterns in `__tests__/e2e/api/`

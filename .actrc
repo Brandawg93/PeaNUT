@@ -1,0 +1,5 @@
+# Use a more compatible image for act
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Set environment variables for act
+-e ACT=true

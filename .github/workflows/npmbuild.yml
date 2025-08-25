@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5
         # with:
         #   fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
@@ -37,11 +37,6 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-
-      - name: Cache Docker images.
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
 
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
@@ -70,17 +65,12 @@ jobs:
       - name: Build and test
         run: |
           export AUTH_SECRET=$(npx --yes auth secret)
-          pnpm run type-check
-          pnpm run lint
-          pnpm run test:all
-          pnpm run build
+          npm run fullcheck
+          npm run test:all
+          npm run build:turbo
         env:
           USERNAME: admin
           PASSWORD: nut_test
           NUT_HOST: localhost
           NUT_PORT: 3493
           WEB_PORT: 8080
-      # - name: SonarQube Scan
-      #   uses: SonarSource/sonarqube-scan-action@v4
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

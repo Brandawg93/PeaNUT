@@ -1,0 +1,45 @@
+---
+alwaysApply: true
+---
+
+# PeaNUT Project Overview
+
+PeaNUT is a Tiny Dashboard for Network UPS Tools (NUT) - a Next.js web application for monitoring UPS devices connected to your network.
+
+## Project Structure
+
+- **Entry Point**: [src/app/layout.tsx](mdc:src/app/layout.tsx) - Main app layout
+- **Configuration**: [package.json](mdc:package.json) - Dependencies and scripts
+- **TypeScript Config**: [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration with path aliases
+- **Testing**: [jest.config.ts](mdc:jest.config.ts) - Jest configuration for unit and e2e tests
+- **Linting**: [eslint.config.mjs](mdc:eslint.config.mjs) - ESLint configuration
+
+## Key Directories
+
+- `src/app/` - Next.js App Router pages and API routes
+- `src/client/` - React components and client-side logic
+- `src/server/` - Server-side utilities and NUT integration
+- `src/common/` - Shared types and constants
+- `__tests__/` - Test files (unit and e2e)
+- `config/` - Configuration files for NUT and UPS devices
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **UI**: React 19, Tailwind CSS, shadcn/ui components (Radix UI primitives)
+- **State Management**: TanStack Query (React Query)
+- **Authentication**: NextAuth.js
+- **Testing**: Jest, React Testing Library, Playwright
+- **Monitoring**: InfluxDB, Prometheus integration
+- **Package Manager**: pnpm
+
+## Key Features
+
+- Real-time UPS monitoring via NUT protocol
+- Customizable dashboard with drag-and-drop widgets
+- API access for external integrations
+- Terminal access to NUT servers
+- Multi-language support (i18n)
+- Dark/light theme support
+- Comprehensive testing suite

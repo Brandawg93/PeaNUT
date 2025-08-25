@@ -6,6 +6,7 @@
   "model": "Modell",
   "serial": "Seriennummer",
   "currentLoad": "Aktuelle Last",
+  "currentWattage": "Aktuelle Leistung",
   "batteryCharge": "Akkuladung",
   "batteryRuntime": "Batterielaufzeit",
   "lastUpdated": "Zuletzt aktualisiert",
@@ -50,6 +51,8 @@
     "selectDateFormat": "Wählen Sie ein Datumsformat",
     "timeFormat": "Zeitformat",
     "selectTimeFormat": "Wählen Sie ein Zeitformat",
+    "disableVersionCheck": "Versionsprüfung deaktivieren",
+    "disableVersionCheckDescription": "Deaktivieren Sie die Überprüfung auf Updates in der Fußzeile",
     "manageServers": "Server verwalten",
     "influxDb": "InfluxDB",
     "influxNotice": "Dies funktioniert nur mit InfluxDB 2.x",
@@ -66,7 +69,17 @@
     "serversNotice": "Benutzername und Passwort sind für Befehle erforderlich",
     "terminal": "Terminal",
     "terminalNotice": "Geben Sie \"Hilfe\" für eine Liste von Befehlen ein.",
-    "selectServer": "Wählen Sie einen Server aus"
+    "selectServer": "Wählen Sie einen Server aus",
+    "dashboard": "Dashboard",
+    "dashboardNotice": "Abschnitte neu anordnen und ihre Sichtbarkeit umschalten.",
+    "hide": "Ausblenden",
+    "show": "Anzeigen",
+    "section": {
+      "kpis": "KPIs",
+      "charts": "Diagramme",
+      "variables": "Variablen"
+    },
+    "remove": "Entfernen"
   },
   "connect": {
     "server": "Serveradresse",

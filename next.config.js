@@ -7,13 +7,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   output: 'standalone',
-  basePath: process.env.BASE_PATH,
+  typedRoutes: true,
   images: {
     unoptimized: true,
-  },
-  experimental: {
-    esmExternals: true,
-    reactCompiler: true,
   },
   turbopack: {
     rules: {

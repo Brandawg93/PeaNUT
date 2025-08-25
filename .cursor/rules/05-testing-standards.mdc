@@ -1,0 +1,57 @@
+---
+globs: __tests__/**/*.ts,__tests__/**/*.tsx,*.test.ts,*.test.tsx,*.spec.ts,*.spec.tsx
+description: Defines the standards for testing in the project.
+---
+
+# Testing Standards
+
+## Test Organization
+
+Follow the structure in [__tests__/](mdc:__tests__/):
+
+- Unit tests in `__tests__/unit/`
+- E2E tests in `__tests__/e2e/`
+- Test helpers in `__tests__/__helpers__/`
+- Mocks in `__tests__/__mocks__/`
+
+## Jest Configuration
+
+- Use the configuration in [jest.config.ts](mdc:jest.config.ts)
+- Follow setup patterns in [jest.setup.tsx](mdc:jest.setup.tsx)
+- Use proper test environment (jsdom)
+
+## Unit Testing
+
+- Use React Testing Library patterns
+- Test component behavior, not implementation
+- Use proper user interactions (click, type, etc.)
+- Mock external dependencies properly
+- Follow patterns in existing unit tests
+
+## E2E Testing
+
+- Use Playwright for E2E tests
+- Test critical user flows
+- Use proper page object patterns
+- Follow the configuration in [playwright.config.ts](mdc:playwright.config.ts)
+
+## Test Utilities
+
+- Use test utilities from [__tests__/__helpers__/test-utils.tsx](mdc:__tests__/__helpers__/test-utils.tsx)
+- Use API mocks from [__tests__/__helpers__/api-mocks.ts](mdc:__tests__/__helpers__/api-mocks.ts)
+- Use proper mock data from [__tests__/__mocks__/](mdc:__tests__/__mocks__/)
+
+## Coverage
+
+- Maintain good test coverage
+- Test edge cases and error scenarios
+- Use proper assertions and matchers
+- Follow the coverage configuration in Jest config
+
+## Best Practices
+
+- Write descriptive test names
+- Use proper test isolation
+- Clean up after tests
+- Use proper async/await patterns
+- Mock timers when needed

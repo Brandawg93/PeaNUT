@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useMemo } from 'react'
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 
 type TimeRangeContextType = {
@@ -16,10 +16,10 @@ export function TimeRangeProvider({ children }: { readonly children: React.React
     return stored !== null ? Number(stored) : 0
   })
 
-  const setTimeRange = (range: number) => {
+  const setTimeRange = useCallback((range: number) => {
     setTimeRangeState(range)
     setLocalStorageItem('timeRange', range.toString())
-  }
+  }, [])
 
   const value = useMemo(() => ({ timeRange, setTimeRange }), [timeRange, setTimeRange])
 

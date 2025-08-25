@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useState } from 'react'
+import React, { useContext, useMemo, useState, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineCheck,
@@ -13,7 +13,6 @@ import {
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/navigation'
 import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
@@ -31,6 +30,9 @@ import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
+import { useSettings } from '@/client/context/settings'
+import { DashboardSectionConfig } from '@/server/settings'
+import { useNavigation } from '@/hooks/useNavigation'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -81,86 +83,53 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const router = useRouter()
+  const { push } = useNavigation()
+  const { settings } = useSettings()
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['deviceData', device],
     queryFn: async () => await getDeviceAction(device),
   })
 
-  const loadingWrapper = (
-    <div
-      className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
-      data-testid='loading-wrapper'
-    >
-      <Loader />
-    </div>
+  const sections = useMemo<DashboardSectionConfig>(() => {
+    const defaultSections: DashboardSectionConfig = [
+      { key: 'KPIS', enabled: true },
+      { key: 'CHARTS', enabled: true },
+      { key: 'VARIABLES', enabled: true },
+    ]
+    const configured = settings.DASHBOARD_SECTIONS
+    return configured?.length ? configured : defaultSections
+  }, [settings.DASHBOARD_SECTIONS])
+
+  const loadingWrapper = useMemo(
+    () => (
+      <div
+        className='bg-background absolute top-0 left-0 flex h-full w-full items-center justify-center text-center'
+        data-testid='loading-wrapper'
+      >
+        <Loader />
+      </div>
+    ),
+    []
   )
 
-  if (isLoading) {
-    return loadingWrapper
-  }
-  if (!data?.device) {
-    return (
-      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
-        <NavBar>
-          <div className='flex justify-end space-x-2'>
-            <DayNightSwitch />
-            <LanguageSwitcher />
-            <Button
-              variant='ghost'
-              size='lg'
-              className='px-3'
-              title={t('sidebar.settings')}
-              aria-label={t('sidebar.settings')}
-              onClick={() => router.push('/settings')}
-            >
-              <TbSettings className='size-6! stroke-[1.5px]' />
-            </Button>
-          </div>
-        </NavBar>
-        <div className='flex flex-1 flex-col items-center justify-center'>
-          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
-            <div className='flex flex-col items-center pb-2'>
-              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
-              <p>{t('noDevicesError')}</p>
-            </div>
-            <div>
-              <Button
-                variant='default'
-                title={t('sidebar.settings')}
-                className='shadow-none'
-                onClick={() => router.push('/settings')}
-              >
-                <TbSettings className='size-6! stroke-[1.5px]' />
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
-  const ups = data.device
-  const vars = ups.vars
-  if (!vars) {
-    return loadingWrapper
-  }
-
-  const toggleWattsOrPercent = () => {
+  const toggleWattsOrPercent = useCallback(() => {
     setWattsOrPercent((prev) => {
       setLocalStorageItem('wattsOrPercent', (!prev).toString())
       return !prev
     })
-  }
+  }, [])
 
-  const toggleWattHours = () => {
+  const toggleWattHours = useCallback(() => {
     setWattHours((prev) => {
       setLocalStorageItem('wattHours', (!prev).toString())
       return !prev
     })
-  }
+  }, [])
 
-  const currentLoad = () => {
+  const currentLoad = useMemo(() => {
+    if (!data?.device?.vars) return <Kpi text='N/A' description={t('currentLoad')} />
+
+    const vars = data.device.vars
     if (vars['ups.load']) {
       if (vars['ups.realpower.nominal'] && wattsOrPercent) {
         const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
@@ -182,9 +151,12 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       )
     }
     return <Kpi text='N/A' description={t('currentLoad')} />
-  }
+  }, [data?.device?.vars, wattsOrPercent, toggleWattsOrPercent, t])
 
-  const currentWh = () => {
+  const currentWh = useMemo(() => {
+    if (!data?.device?.vars) return <Kpi text='N/A' description={t('batteryCharge')} />
+
+    const vars = data.device.vars
     if (vars['battery.charge']) {
       if (
         vars['ups.load'] &&
@@ -206,12 +178,104 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
         <Gauge
           onClick={toggleWattHours}
           percentage={+vars['battery.charge']?.value}
+          warningAt={+vars['battery.charge.warning']?.value}
+          lowAt={+vars['battery.charge.low']?.value}
           title={`${t('batteryCharge')} (%)`}
         />
       )
     } else {
       return <Kpi text='N/A' description={t('batteryCharge')} />
     }
+  }, [data?.device?.vars, wattHours, toggleWattHours, t])
+
+  const renderSection = useCallback(
+    (key: string) => {
+      if (!data?.device?.vars) return null
+
+      const vars = data.device.vars
+      const ups = data.device
+
+      switch (key) {
+        case 'KPIS':
+          return (
+            <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
+              <div className='mb-4'>{currentLoad}</div>
+              <div className='mb-4'>{currentWh}</div>
+              <div className='mb-4'>
+                <Runtime
+                  runtime={+vars['battery.runtime']?.value}
+                  batteryCapacity={+vars['battery.capacity']?.value}
+                  batteryVoltage={+vars['battery.voltage']?.value}
+                  batteryCharge={+vars['battery.charge']?.value}
+                  upsLoad={+vars['ups.load']?.value}
+                  upsRealpowerNominal={+vars['ups.realpower.nominal']?.value}
+                />
+              </div>
+            </div>
+          )
+        case 'CHARTS':
+          return <ChartsContainer vars={vars} data={data} name={ups.name} />
+        case 'VARIABLES':
+          return (
+            <div>
+              <MemoizedGrid data={ups} onRefetchAction={refetch} />
+            </div>
+          )
+        default:
+          return null
+      }
+    },
+    [currentLoad, currentWh, data, refetch]
+  )
+
+  if (isLoading) {
+    return loadingWrapper
+  }
+  if (!data?.device) {
+    return (
+      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
+        <NavBar>
+          <div className='flex justify-end space-x-2'>
+            <DayNightSwitch />
+            <LanguageSwitcher />
+            <Button
+              variant='ghost'
+              size='lg'
+              className='px-3'
+              title={t('sidebar.settings')}
+              aria-label={t('sidebar.settings')}
+              onClick={() => push('/settings')}
+            >
+              <TbSettings className='size-6! stroke-[1.5px]' />
+            </Button>
+          </div>
+        </NavBar>
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
+            <div className='flex flex-col items-center pb-2'>
+              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
+              <p>{t('noDevicesError')}</p>
+            </div>
+            <div>
+              <Button
+                variant='default'
+                title={t('sidebar.settings')}
+                className='shadow-none'
+                onClick={() => push('/settings')}
+              >
+                <TbSettings className='size-6! stroke-[1.5px]' />
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  const ups = data.device
+  const vars = ups.vars
+  if (!vars) {
+    return loadingWrapper
   }
 
   return (
@@ -260,17 +324,13 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               </div>
             </div>
           </div>
-          <div className='grid grid-flow-row grid-cols-1 gap-x-6 md:grid-cols-2 lg:grid-cols-3'>
-            <div className='mb-4'>{currentLoad()}</div>
-            <div className='mb-4'>{currentWh()}</div>
-            <div className='mb-4'>
-              <Runtime runtime={+vars['battery.runtime']?.value} />
-            </div>
-          </div>
-          <ChartsContainer vars={vars} data={data} name={ups.name} />
-          <div>
-            <MemoizedGrid data={ups} onRefetchAction={refetch} />
-          </div>
+          {sections
+            .filter((s) => s.enabled)
+            .map((s) => (
+              <div key={s.key} className='mb-4'>
+                {renderSection(s.key)}
+              </div>
+            ))}
         </div>
       </div>
       <div className='flex justify-center px-3'>

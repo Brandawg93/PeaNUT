@@ -6,6 +6,6 @@ test.describe('Var Description', () => {
     const createJson = await create.json()
 
     expect(create.status()).toBe(200)
-    expect(createJson).toBe('Description unavailable')
+    expect(createJson).toBe('Device serial number')
   })
 })

@@ -201,6 +201,8 @@ env:
   DISABLE_CONFIG_FILE: 'false'
   NODE_ENV: 'production'
   NEXT_TELEMETRY_DISABLED: '1'
+  ANALYZE: 'false'
+  BASE_PATH: ''
 
 # Multiple NUT servers (alternative to single server config)
 nutServers:

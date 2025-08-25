@@ -1,0 +1,49 @@
+---
+globs: *.ts,*.tsx
+description: TypeScript coding standards for the project.
+---
+
+# TypeScript Coding Standards
+
+## Path Aliases
+
+Always use the `@/` path alias for imports from the src directory:
+
+```typescript
+// ✅ Correct
+import { Button } from "@/client/components/ui/button"
+import { useSettings } from "@/client/context/settings"
+
+// ❌ Incorrect
+import { Button } from "../../../client/components/ui/button"
+```
+
+## Type Safety
+
+- Use strict TypeScript with `noEmit: true`
+- Prefer explicit types over `any`
+- Use proper type imports from [src/common/types.ts](mdc:src/common/types.ts)
+- Leverage Zod schemas for runtime validation
+
+## Component Patterns
+
+- Use functional components with hooks
+- Implement proper prop interfaces
+- Use React.FC sparingly, prefer explicit return types
+- Follow the component structure in [src/client/components/](mdc:src/client/components/)
+- **DO NOT modify shadcn components** in [src/client/components/ui/](mdc:src/client/components/ui/)
+- Create custom components that compose or extend shadcn components when needed
+
+## Error Handling
+
+- Use proper error boundaries
+- Implement proper error types
+- Handle async operations with try-catch
+- Use TanStack Query for data fetching with error states
+
+## Testing
+
+- Write unit tests for all components in `__tests__/unit/`
+- Use React Testing Library patterns
+- Mock external dependencies properly
+- Follow the testing patterns in existing test files

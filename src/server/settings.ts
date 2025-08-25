@@ -4,6 +4,13 @@ import { load, dump } from 'js-yaml'
 import { server, NotifierSettings } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL, DEFAULT_NOTIFICATION_INTERVAL } from '@/common/constants'
 
+export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
+
+export type DashboardSectionConfig = Array<{
+  key: DashboardSectionKey
+  enabled: boolean
+}>
+
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
   INFLUX_HOST: '',
@@ -15,6 +22,12 @@ const ISettings = {
   NOTIFICATION_PROVIDERS: [] as Array<NotifierSettings>,
   DATE_FORMAT: 'MM/DD/YYYY',
   TIME_FORMAT: '12-hour',
+  DASHBOARD_SECTIONS: [
+    { key: 'KPIS', enabled: true },
+    { key: 'CHARTS', enabled: true },
+    { key: 'VARIABLES', enabled: true },
+  ] as DashboardSectionConfig,
+  DISABLE_VERSION_CHECK: false,
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
@@ -49,10 +62,14 @@ export class YamlSettings {
           this.data[key] = JSON.parse(envValue) as server[]
         } else if (key === 'NOTIFICATION_PROVIDERS') {
           this.data[key] = JSON.parse(envValue) as NotifierSettings[]
+        } else if (key === 'DASHBOARD_SECTIONS') {
+          this.data[key] = JSON.parse(envValue) as DashboardSectionConfig
         } else if (key === 'INFLUX_INTERVAL' || key === 'NOTIFICATION_INTERVAL') {
           const parsed = Number(envValue)
           if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed
+        } else if (key === 'DISABLE_VERSION_CHECK') {
+          this.data[key] = envValue === 'true'
         } else {
           this.data[key] = envValue
         }
@@ -124,6 +141,12 @@ export class YamlSettings {
 
     // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
+    // Ensure DASHBOARD_SECTIONS has a default value
+    this.data.DASHBOARD_SECTIONS ??= [
+      { key: 'KPIS', enabled: true },
+      { key: 'CHARTS', enabled: true },
+      { key: 'VARIABLES', enabled: true },
+    ]
   }
 
   private save(): boolean {

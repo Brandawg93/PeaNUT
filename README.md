@@ -18,6 +18,7 @@ A Tiny Dashboard for Network UPS Tools
 
 - Monitor UPS devices connected to your network via [NUT](https://networkupstools.org)
 - View real-time statistics and status of UPS devices
+- Customizable dashboard layout
 - Supports multiple UPS devices
 - Execute commands on UPS devices
 - Configure settings through a user-friendly UI
@@ -79,6 +80,12 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 | WEB_PASSWORD        | undefined | Password of web app                               |
 | BASE_PATH           | undefined | Base path for reverse proxy                       |
 | DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
+
+## Reverse Proxies
+
+For detailed reverse proxy configuration instructions, see the [Reverse Proxy Setup Wiki](https://github.com/Brandawg93/PeaNUT/wiki/Reverse-Proxy-Setup-for-PeaNUT).
+
+**Note**: If you encounter issues with missing favicon or font loading errors, please check the troubleshooting section in the wiki for additional `sub_filter` rules.
 
 ## Configuration
 
@@ -169,6 +176,10 @@ widget:
 **Question:** Chokidar is using lots of resources on my machine.
 
 **Answer:** If you are using a Networked File Share, please see [#142](https://github.com/Brandawg93/PeaNUT/issues/142).
+
+**Question:** Why can't I see multiple NUT devices on the display?
+
+**Answer:** In order for PeaNUT to display multiple NUT devices, each UPS must have a unique identifier in the corresponding NUT configuration file. Make sure each UPS device has a distinct name/identifier in your NUT configuration to avoid conflicts and ensure proper display of all devices.
 
 ## Tested Devices
 

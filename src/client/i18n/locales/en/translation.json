@@ -6,6 +6,7 @@
   "model": "Model",
   "serial": "Serial",
   "currentLoad": "Current Load",
+  "currentWattage": "Current Wattage",
   "batteryCharge": "Battery Charge",
   "batteryRuntime": "Battery Runtime",
   "lastUpdated": "Last Updated",
@@ -50,6 +51,8 @@
     "selectDateFormat": "Select a date format",
     "timeFormat": "Time Format",
     "selectTimeFormat": "Select a time format",
+    "disableVersionCheck": "Disable Version Check",
+    "disableVersionCheckDescription": "Disable checking for updates in the footer",
     "manageServers": "Manage Servers",
     "influxDb": "InfluxDB",
     "manageNotifications": "Notifications",
@@ -66,7 +69,17 @@
     "serversNotice": "Username and password are required for commands",
     "terminal": "Terminal",
     "terminalNotice": "Type \"help\" for a list of commands.",
-    "selectServer": "Select a server"
+    "selectServer": "Select a server",
+    "dashboard": "Dashboard",
+    "dashboardNotice": "Reorder sections and toggle their visibility.",
+    "hide": "Hide",
+    "show": "Show",
+    "section": {
+      "kpis": "KPIs",
+      "charts": "Charts",
+      "variables": "Variables"
+    },
+    "remove": "Remove"
   },
   "connect": {
     "server": "Server Address",

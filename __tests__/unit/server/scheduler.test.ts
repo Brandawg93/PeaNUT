@@ -40,7 +40,16 @@ jest.mock('chokidar', () => ({
   watch: mockChokidarWatch,
 }))
 
-jest.mock('fs')
+jest.mock('fs', () => ({
+  existsSync: jest.fn(),
+  readFileSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  mkdirSync: jest.fn(),
+  accessSync: jest.fn(),
+  constants: {
+    W_OK: 2,
+  },
+}))
 jest.mock('js-yaml')
 
 // Mock InfluxDB client
