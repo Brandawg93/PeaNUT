@@ -1,29 +1,12 @@
 import React from 'react'
-import { render } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 import WattsChart from '@/client/components/line-charts/watts-chart'
 import { DEVICE } from '@/common/types'
-import { LanguageContext } from '@/client/context/language'
-import { TimeRangeProvider } from '@/client/context/time-range'
-import { SettingsProvider } from '@/client/context/settings'
-import { ThemeProvider } from '@/client/context/theme-provider'
+import { renderWithProviders, waitForSettings } from '../../../../utils/test-utils'
 import { device } from '../../../../__mocks__/chartData'
 
-// Helper function to create a test wrapper component
-const createTestWrapper = (children: React.ReactNode, queryClient: QueryClient) => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-      <SettingsProvider>
-        <TimeRangeProvider>
-          <LanguageContext.Provider value='en'>{children}</LanguageContext.Provider>
-        </TimeRangeProvider>
-      </SettingsProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-)
-
 // Helper function to render WattsChart with common props
-const renderWattsChart = (queryClient: QueryClient, vars: DEVICE['vars']) => {
+const renderWattsChart = async (queryClient: QueryClient, vars: DEVICE['vars']) => {
   const chart = (
     <WattsChart
       id={device.name}
@@ -33,7 +16,9 @@ const renderWattsChart = (queryClient: QueryClient, vars: DEVICE['vars']) => {
     />
   )
 
-  return render(createTestWrapper(chart, queryClient))
+  const result = renderWithProviders(chart, { queryClient })
+  await waitForSettings()
+  return result
 }
 
 describe('Watts', () => {
@@ -49,8 +34,8 @@ describe('Watts', () => {
     })
   })
 
-  it('renders', () => {
-    const { getByTestId } = renderWattsChart(queryClient, device.vars)
+  it('renders', async () => {
+    const { getByTestId } = await renderWattsChart(queryClient, device.vars)
     expect(getByTestId('watts-chart')).toBeInTheDocument()
   })
 })

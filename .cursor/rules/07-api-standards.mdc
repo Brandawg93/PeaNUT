@@ -1,6 +1,8 @@
 ---
 globs: src/app/api/**/*.ts
+description: API Development Standards
 ---
+
 # API Development Standards
 
 ## API Structure

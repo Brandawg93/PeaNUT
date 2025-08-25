@@ -7,7 +7,7 @@ import { LanguageContext } from '@/client/context/language'
 import { HiOutlineExclamationCircle } from 'react-icons/hi2'
 import { FaDonate, FaGithub } from 'react-icons/fa'
 import pJson from '../../../package.json'
-import { useSettings } from '../context/settings'
+import { useVersionCheck, useFormatDateTime, useFormatDate } from '../context/settings'
 import { useBasePath } from '@/hooks/useBasePath'
 
 type Props = Readonly<{
@@ -23,46 +23,15 @@ export default function Footer({ updated }: Props) {
   })
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const { settings } = useSettings()
-  const { DATE_FORMAT: dateFormat, TIME_FORMAT: timeFormat } = settings
+  const disableVersionCheck = useVersionCheck()
+  const formatDateTime = useFormatDateTime()
+  const formatDate = useFormatDate()
   const basePath = useBasePath()
 
-  const formatDateTime = (date: Date) => {
-    const formattedDate = formatDate(date)
-    const time = date.toLocaleTimeString(lng, {
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      hour12: timeFormat === '12-hour',
-    })
-    return `${formattedDate} ${time}`
-  }
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-
-    if (!dateFormat) {
-      return date.toLocaleDateString(lng)
-    }
-
-    return dateFormat
-      .replace('YYYY', year.toString())
-      .replace('MM', month)
-      .replace('DD', day)
-      .replace('Month', date.toLocaleString(lng, { month: 'long' }))
-      .replace('D', date.getDate().toString())
-  }
-
   useEffect(() => {
-    // Skip version checking if disabled in localStorage
-    try {
-      if (typeof window !== 'undefined' && localStorage.getItem('disableVersionCheck') === 'true') {
-        return
-      }
-    } catch {
-      // Silently fail if localStorage is not available
+    // Skip version checking if disabled in settings
+    if (disableVersionCheck) {
+      return
     }
 
     const checkVersions = async () => {
@@ -78,7 +47,7 @@ export default function Footer({ updated }: Props) {
       }
     }
     checkVersions()
-  }, [])
+  }, [disableVersionCheck])
 
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link

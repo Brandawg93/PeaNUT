@@ -51,6 +51,8 @@
     "selectDateFormat": "Select a date format",
     "timeFormat": "Time Format",
     "selectTimeFormat": "Select a time format",
+    "disableVersionCheck": "Disable Version Check",
+    "disableVersionCheckDescription": "Disable checking for updates in the footer",
     "manageServers": "Manage Servers",
     "influxDb": "InfluxDB",
     "influxNotice": "This will only work with Influxdb 2.x",

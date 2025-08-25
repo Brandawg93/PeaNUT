@@ -1,6 +1,8 @@
 ---
 globs: src/server/**/*.ts
+description: Patterns for server-side application development.
 ---
+
 # Server-Side Patterns
 
 ## NUT Integration

@@ -1,6 +1,8 @@
 ---
 globs: src/client/**/*.tsx
+description: Guidelines for organizing and structuring React components, including UI components, state management, styling, props, hooks, performance, and accessibility.
 ---
+
 # React Component Patterns
 
 ## Component Organization
