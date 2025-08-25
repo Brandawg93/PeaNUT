@@ -1,6 +1,6 @@
 ---
 globs: src/client/components/ui/**/*.tsx
-description: "This rule defines the shadcn/ui components that should not be modified. It explains why and provides guidelines for using them correctly."
+description: This rule defines the shadcn/ui components that should not be modified. It explains why and provides guidelines for using them correctly.
 ---
 
 # shadcn/ui Components - DO NOT MODIFY
