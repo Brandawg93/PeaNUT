@@ -8,8 +8,11 @@ import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
 import { upsStatus } from '@/common/constants'
+import { createDebugLogger } from '@/server/debug'
 
 const settingsFile = './config/settings.yml'
+const debug = createDebugLogger('ACTIONS')
+
 // Cache settings instance
 let settingsInstance: YamlSettings | null = null
 
@@ -21,23 +24,33 @@ const watcher = chokidar.watch(settingsFile, {
 
 // Reset settings instance when file changes
 watcher.on('change', () => {
+  debug.info('Settings file changed, resetting cache')
   settingsInstance = null
 })
 
 function getCachedSettings(): YamlSettings {
-  settingsInstance ??= new YamlSettings(settingsFile)
+  if (!settingsInstance) {
+    debug.info('Creating new settings instance')
+    settingsInstance = new YamlSettings(settingsFile)
+  } else {
+    debug.debug('Using cached settings instance')
+  }
   return settingsInstance
 }
 
 function connect(): Array<Nut> {
   try {
+    debug.info('Connecting to NUT servers')
     const settings = getCachedSettings()
     const servers = settings.get('NUT_SERVERS')
     if (!Array.isArray(servers) || servers.length === 0) {
+      debug.warn('No NUT servers configured')
       return []
     }
+    debug.info('Creating NUT connections', { serverCount: servers.length })
     return servers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
   } catch (e: any) {
+    debug.error('Failed to connect to NUT servers', { error: e.message })
     throw new Error(`Failed to connect to NUT servers: ${e.message}`)
   }
 }
@@ -84,18 +97,26 @@ export async function testInfluxConnection(host: string, token: string, org: str
 }
 
 export async function getDevices(): Promise<DevicesData> {
+  debug.info('Starting getDevices operation')
   const nuts = connect()
   const deviceMap = new Map<string, DEVICE>()
   const deviceOrder: string[] = []
   const failedServers: string[] = []
 
+  debug.info('Processing NUT servers', { serverCount: nuts.length })
+
   await Promise.all(
     nuts.map(async (nut) => {
+      const serverInfo = `${nut.getHost()}:${nut.getPort()}`
       try {
+        debug.info('Testing connection to server', { server: serverInfo })
         // Test connection first
         await nut.testConnection()
 
+        debug.info('Getting devices from server', { server: serverInfo })
         const devices = await nut.getDevices()
+        debug.info('Retrieved devices from server', { server: serverInfo, deviceCount: devices.length })
+
         devices.forEach((device) => {
           if (!deviceOrder.includes(device.name)) {
             deviceOrder.push(device.name)
@@ -105,10 +126,16 @@ export async function getDevices(): Promise<DevicesData> {
         await Promise.all(
           devices.map(async (device) => {
             // Skip if we already have this device
-            if (deviceMap.has(device.name)) return
+            if (deviceMap.has(device.name)) {
+              debug.debug('Skipping duplicate device', { device: device.name, server: serverInfo })
+              return
+            }
 
+            debug.info('Processing device', { device: device.name, server: serverInfo })
             const data = await nut.getData(device.name)
             const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
+
+            debug.debug('Device reachability check', { device: device.name, isReachable })
 
             const [rwVars, commands] = await Promise.all([
               isReachable ? nut.getRWVars(device.name) : Promise.resolve([]),
@@ -123,20 +150,33 @@ export async function getDevices(): Promise<DevicesData> {
               commands: nut.hasCredentials() ? commands : [],
               name: device.name,
             })
+
+            debug.info('Device processed successfully', { device: device.name, server: serverInfo })
           })
         )
-      } catch {
+      } catch (error) {
+        debug.error('Failed to process server', {
+          server: serverInfo,
+          error: error instanceof Error ? error.message : String(error),
+        })
         // Add failed server to list
-        failedServers.push(`${nut.getHost()}:${nut.getPort()}`)
+        failedServers.push(serverInfo)
       }
     })
   )
 
-  return {
+  const result = {
     devices: deviceOrder.map((name) => deviceMap.get(name)!),
     updated: new Date(),
     failedServers: failedServers.length > 0 ? failedServers : undefined,
   }
+
+  debug.info('getDevices operation completed', {
+    totalDevices: result.devices.length,
+    failedServers: failedServers.length,
+  })
+
+  return result
 }
 
 export async function getDevice(device: string): Promise<DeviceData> {

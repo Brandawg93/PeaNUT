@@ -1,6 +1,7 @@
 import { upsStatus } from '@/common/constants'
 import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
+import { createDebugLogger } from '@/server/debug'
 
 export class Nut {
   private readonly host: string
@@ -10,12 +11,14 @@ export class Nut {
   private readonly username: string
 
   private readonly password: string
+  private readonly debug: ReturnType<typeof createDebugLogger>
 
   constructor(host: string, port: number, username?: string, password?: string) {
     this.host = host
     this.port = port
     this.username = username ?? ''
     this.password = password ?? ''
+    this.debug = createDebugLogger('NUT')
   }
 
   public getHost(): string {
@@ -43,14 +46,18 @@ export class Nut {
   }
 
   private async getConnection(checkCredentials = false): Promise<PromiseSocket> {
+    this.debug.info('Attempting to establish connection', { host: this.host, port: this.port, checkCredentials })
     const socket = new PromiseSocket()
     try {
       await socket.connect(this.port, this.host)
+      this.debug.info('Connection established successfully')
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
+      this.debug.error('Connection failed', { host: this.host, port: this.port, error: message })
       return Promise.reject(new Error(`Connection failed: ${message}`))
     }
     if (checkCredentials) {
+      this.debug.info('Checking credentials for connection')
       await this.checkCredentials(socket)
     }
     return socket
@@ -67,17 +74,21 @@ export class Nut {
     checkCredentials = false,
     socket?: PromiseSocket
   ): Promise<string> {
+    this.debug.info('Executing command', { command, until, checkCredentials, hasSocket: !!socket })
     // use existing socket if it exists, otherwise establish a new connection
     const connection = socket ?? (await this.getConnection(checkCredentials))
     await connection.write(command)
     const data = await connection.readAll(command, until).catch((error) => {
+      this.debug.warn('Command failed, handling fallback', { command, error: error.message })
       if (command.startsWith('LIST VAR')) {
         return upsStatus.DEVICE_UNREACHABLE
       }
       throw error
     })
+    this.debug.debug('Command response received', { command, dataLength: data.length })
     // if we opened a new connection, close it
     if (!socket) {
+      this.debug.debug('Closing temporary connection')
       await connection.write('LOGOUT')
       await connection.close()
     }
