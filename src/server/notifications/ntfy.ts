@@ -29,9 +29,22 @@ export class Ntfy extends Notifier {
     ) {
       this.authMethod = 'password'
     }
+    this.validateNtfyConfig()
   }
 
-  async send(notification: Notification) {
+  private validateNtfyConfig(): void {
+    if (!this.config.server_url || this.config.server_url.trim() === '') {
+      throw new Error('Ntfy server URL is required')
+    }
+    if (!this.config.topic || this.config.topic.trim() === '') {
+      throw new Error('Ntfy topic is required')
+    }
+    if (!this.config.priority) {
+      throw new Error('Ntfy priority is required')
+    }
+  }
+
+  async sendInternal(notification: Notification): Promise<void> {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }

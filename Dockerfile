@@ -79,6 +79,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 ENV BASE_PATH=""
+ENV NOTIFICATION_RATE_LIMIT=60000
 
 # Switch to non-root user (node user is built into the image)
 # USER 1000

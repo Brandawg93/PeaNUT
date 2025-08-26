@@ -15,7 +15,7 @@ export class Stdout extends Notifier {
     this.config = { ...config }
   }
 
-  async send(notification: Notification) {
+  async sendInternal(notification: Notification): Promise<void> {
     console.log(
       notification.title,
       notification.message,

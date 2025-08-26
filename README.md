@@ -72,14 +72,15 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 
 ## Environment Variables
 
-| Variable            | Default   | Description                                       |
-| ------------------- | --------- | ------------------------------------------------- |
-| WEB_HOST            | localhost | Hostname of web server                            |
-| WEB_PORT            | 8080      | Port of web server                                |
-| WEB_USERNAME        | undefined | Username of web app                               |
-| WEB_PASSWORD        | undefined | Password of web app                               |
-| BASE_PATH           | undefined | Base path for reverse proxy                       |
-| DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
+| Variable                    | Default   | Description                                       |
+| --------------------------- | --------- | ------------------------------------------------- |
+| WEB_HOST                    | localhost | Hostname of web server                            |
+| WEB_PORT                    | 8080      | Port of web server                                |
+| WEB_USERNAME                | undefined | Username of web app                               |
+| WEB_PASSWORD                | undefined | Password of web app                               |
+| BASE_PATH                   | undefined | Base path for reverse proxy                       |
+| DISABLE_CONFIG_FILE         | undefined | If set to 'true', disables all config file saving |
+| NOTIFICATION_RATE_LIMIT     | 60000     | Rate limit for notifications in milliseconds (1 minute) |
 
 ## Reverse Proxies
 

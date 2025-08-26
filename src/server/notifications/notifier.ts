@@ -1,16 +1,74 @@
 import { DEVICE, Notification, NotificationProviders, NotificationTrigger } from '@/common/types'
+import { YamlSettings } from '@/server/settings'
+import { DEFAULT_NOTIFICATION_RATE_LIMIT } from '@/common/constants'
+
+const settingsFile = './config/settings.yml'
 
 export abstract class Notifier {
   name: (typeof NotificationProviders)[number]
   triggers: Array<NotificationTrigger>
   config?: { [x: string]: any }
+  private lastNotificationTime: { [key: string]: number } = {}
+  private readonly RATE_LIMIT_MS: number
 
   constructor(name: (typeof NotificationProviders)[number], triggers: Array<NotificationTrigger>) {
     this.name = name
     this.triggers = triggers
+    this.validateConfig()
+
+    // Get rate limit from settings
+    const settings = new YamlSettings(settingsFile)
+    this.RATE_LIMIT_MS = settings.get('NOTIFICATION_RATE_LIMIT') || DEFAULT_NOTIFICATION_RATE_LIMIT
   }
 
-  abstract send(notification: Notification): Promise<void>
+  abstract sendInternal(notification: Notification): Promise<void>
+
+  async send(notification: Notification): Promise<void> {
+    try {
+      await this.sendInternal(notification)
+      this.logNotification(notification, true)
+    } catch (error) {
+      this.logNotification(notification, false)
+      throw error
+    }
+  }
+
+  private shouldSendNotification(triggerKey: string): boolean {
+    const now = Date.now()
+    const lastTime = this.lastNotificationTime[triggerKey] || 0
+
+    if (now - lastTime < this.RATE_LIMIT_MS) {
+      return false
+    }
+
+    this.lastNotificationTime[triggerKey] = now
+    return true
+  }
+
+  private validateConfig(): void {
+    // Basic validation - can be overridden by specific providers
+    if (!this.triggers || this.triggers.length === 0) {
+      throw new Error('At least one trigger must be configured')
+    }
+
+    for (const trigger of this.triggers) {
+      if (!trigger.variable || trigger.variable.trim() === '') {
+        throw new Error('Trigger variable cannot be empty')
+      }
+
+      if (
+        (trigger.operation === 'is_above' || trigger.operation === 'is_below') &&
+        (trigger.targetValue === undefined || trigger.targetValue === null)
+      ) {
+        throw new Error(`Target value is required for ${trigger.operation} operation`)
+      }
+    }
+  }
+
+  private logNotification(notification: Notification, success: boolean): void {
+    const status = success ? 'SUCCESS' : 'FAILED'
+    console.log(`[${status}] ${this.name} notification: ${notification.title}`)
+  }
 
   async sendTestNotification(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -100,7 +158,8 @@ export abstract class Notifier {
         notification = this.handleThresholdTrigger(dev1, dev2, trigger, timestamp, false)
       }
 
-      if (notification) {
+      // Add rate limiting check
+      if (notification && this.shouldSendNotification(`${dev1.name}-${trigger.variable}-${trigger.operation}`)) {
         notifications.push(notification)
       }
     }

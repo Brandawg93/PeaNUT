@@ -2,9 +2,13 @@ import fs from 'fs'
 import path from 'path'
 import { load, dump } from 'js-yaml'
 import { server, NotifierSettings } from '../common/types'
-import { DEFAULT_INFLUX_INTERVAL, DEFAULT_NOTIFICATION_INTERVAL } from '@/common/constants'
+import {
+  DEFAULT_INFLUX_INTERVAL,
+  DEFAULT_NOTIFICATION_INTERVAL,
+  DEFAULT_NOTIFICATION_RATE_LIMIT,
+} from '@/common/constants'
 
-export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
+type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
 
 export type DashboardSectionConfig = Array<{
   key: DashboardSectionKey
@@ -19,6 +23,7 @@ const ISettings = {
   INFLUX_BUCKET: '',
   INFLUX_INTERVAL: DEFAULT_INFLUX_INTERVAL,
   NOTIFICATION_INTERVAL: DEFAULT_NOTIFICATION_INTERVAL,
+  NOTIFICATION_RATE_LIMIT: DEFAULT_NOTIFICATION_RATE_LIMIT,
   NOTIFICATION_PROVIDERS: [] as Array<NotifierSettings>,
   DATE_FORMAT: 'MM/DD/YYYY',
   TIME_FORMAT: '12-hour',
@@ -64,7 +69,7 @@ export class YamlSettings {
           this.data[key] = JSON.parse(envValue) as NotifierSettings[]
         } else if (key === 'DASHBOARD_SECTIONS') {
           this.data[key] = JSON.parse(envValue) as DashboardSectionConfig
-        } else if (key === 'INFLUX_INTERVAL' || key === 'NOTIFICATION_INTERVAL') {
+        } else if (key === 'INFLUX_INTERVAL' || key === 'NOTIFICATION_INTERVAL' || key === 'NOTIFICATION_RATE_LIMIT') {
           const parsed = Number(envValue)
           if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed

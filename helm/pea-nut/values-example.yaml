@@ -149,6 +149,9 @@ env:
   INFLUX_BUCKET: 'ups'
   INFLUX_INTERVAL: 10
 
+  # Notification configuration
+  NOTIFICATION_RATE_LIMIT: 60000
+
   # Application configuration
   DISABLE_CONFIG_FILE: 'false'
 

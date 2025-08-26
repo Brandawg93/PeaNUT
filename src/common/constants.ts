@@ -78,3 +78,4 @@ export const SUPPORTED_COMMANDS = {
 
 export const DEFAULT_INFLUX_INTERVAL = 10
 export const DEFAULT_NOTIFICATION_INTERVAL = 10
+export const DEFAULT_NOTIFICATION_RATE_LIMIT = 60000 // 1 minute in milliseconds
