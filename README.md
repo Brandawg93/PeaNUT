@@ -126,6 +126,16 @@ For API calls, you'll need to include an Authorization header with the Base64 en
 | `GET /api/v1/metrics`                                     | Metrics endpoint for prometheus                                           |
 | `GET /api/ws`                                             | WebSocket endpoint for direct NUT server communication                    |
 
+### PeaNUT Metadata (opt-in)
+
+By default, API responses contain only values returned by the NUT server. You can opt-in to include PeaNUT-specific metadata by adding `?meta=true` to requests.
+
+- When enabled for `GET /api/v1/devices`, each device object will include:
+  - `peanut.device_id`: The NUT device identifier (UPS name)
+  - `peanut.server`: The NUT server host:port that provided the data
+
+- When enabled for `GET /api/v1/devices/[ups]`, the response will include the same fields.
+
 ## Homepage Support
 
 For information about how to set up Homepage, check the [Homepage docs](https://gethomepage.dev/widgets/services/peanut/).
