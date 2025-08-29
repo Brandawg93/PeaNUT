@@ -7,7 +7,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   output: 'standalone',
-  typedRoutes: true,
+  // Disable typedRoutes so custom next-ws exports like UPGRADE are allowed
+  typedRoutes: false,
   images: {
     unoptimized: true,
   },
