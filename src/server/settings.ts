@@ -3,6 +3,7 @@ import path from 'path'
 import { load, dump } from 'js-yaml'
 import { server } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
+import { createDebugLogger } from '@/server/debug'
 
 export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
 
@@ -35,27 +36,32 @@ export class YamlSettings {
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
   private disableFileSaving: boolean
+  private readonly debug: ReturnType<typeof createDebugLogger>
 
   constructor(filePath: string) {
     this.filePath = filePath
     this.data = { ...ISettings }
     // Cache environment variables
     this.envVars = { ...process.env }
+    this.debug = createDebugLogger('SETTINGS')
 
     // Check if file saving should be disabled
     this.disableFileSaving = this.envVars.DISABLE_CONFIG_FILE === 'true'
 
+    this.debug.info('Initializing YamlSettings', { filePath, disableFileSaving: this.disableFileSaving })
     this.loadFromEnvVars()
     this.load()
   }
 
   private loadFromEnvVars(): void {
+    this.debug.info('Loading settings from environment variables')
     let key: keyof SettingsType
     for (key in ISettings) {
       const envValue = this.envVars[key]
       if (envValue === undefined || this.data[key] !== ISettings[key]) continue
 
       try {
+        this.debug.debug('Processing environment variable', { key, hasValue: !!envValue })
         if (key === 'NUT_SERVERS') {
           this.data[key] = JSON.parse(envValue) as server[]
         } else if (key === 'DASHBOARD_SECTIONS') {
@@ -70,6 +76,10 @@ export class YamlSettings {
           this.data[key] = envValue
         }
       } catch (error) {
+        this.debug.error('Error parsing environment variable', {
+          key,
+          error: error instanceof Error ? error.message : String(error),
+        })
         console.error(`Error parsing environment variable ${key}:`, error)
       }
     }
@@ -98,20 +108,26 @@ export class YamlSettings {
   }
 
   private load(): void {
+    this.debug.info('Loading settings from file', { filePath: this.filePath })
     // Create directory if it doesn't exist (only if file saving is enabled)
     if (!this.disableFileSaving) {
       try {
         const absolutePath = path.resolve(this.filePath)
         const dirPath = path.dirname(absolutePath)
 
+        this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
         if (!fs.existsSync(dirPath)) {
+          this.debug.info('Creating config directory', { dirPath })
           fs.mkdirSync(dirPath, { recursive: true })
         } else {
           // Test if the directory is writable only if it already exists
           fs.accessSync(dirPath, fs.constants.W_OK)
         }
       } catch (error) {
+        this.debug.error('Config directory is not writable, disabling file saving', {
+          error: error instanceof Error ? error.message : String(error),
+        })
         console.error(
           'Config directory is not writable, disabling file saving:',
           error instanceof Error ? error.message : error
@@ -122,15 +138,19 @@ export class YamlSettings {
 
     try {
       if (fs.existsSync(this.filePath)) {
+        this.debug.info('Loading settings from existing file')
         const fileContents = fs.readFileSync(this.filePath, 'utf8')
         const fileData = load(fileContents) as SettingsType
         // Merge settings, giving priority to file data
         this.data = { ...this.data, ...fileData }
+        this.debug.info('Settings loaded successfully from file')
       } else if (!this.disableFileSaving) {
+        this.debug.info('Settings file does not exist, creating new file')
         // Only try to save if file saving is enabled and the file doesn't exist
         this.save()
       }
     } catch (error) {
+      this.debug.error('Error loading settings file', { error: error instanceof Error ? error.message : String(error) })
       console.error('Error loading settings file:', error instanceof Error ? error.message : error)
     }
 
@@ -146,14 +166,18 @@ export class YamlSettings {
 
   private save(): boolean {
     if (this.disableFileSaving) {
+      this.debug.debug('File saving is disabled, skipping save operation')
       return false
     }
 
     try {
+      this.debug.info('Saving settings to file', { filePath: this.filePath })
       const yamlStr = dump(this.data)
       fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+      this.debug.info('Settings saved successfully')
       return true
     } catch (error) {
+      this.debug.error('Error saving settings file', { error: error instanceof Error ? error.message : String(error) })
       console.error('Error saving settings file:', error instanceof Error ? error.message : error)
       // Don't throw - allow the application to continue with environment variables
       return false
