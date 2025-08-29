@@ -9,9 +9,9 @@ interface DebugOptions {
 }
 
 class DebugLogger {
-  private enabled: boolean
-  private prefix: string
-  private timestamp: boolean
+  private readonly enabled: boolean
+  private readonly prefix: string
+  private readonly timestamp: boolean
 
   constructor(options: DebugOptions = {}) {
     this.enabled = process.env.DEBUG === 'true' || process.env.DEBUG === '1'
