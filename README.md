@@ -80,6 +80,7 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 | WEB_PASSWORD        | undefined | Password of web app                               |
 | BASE_PATH           | undefined | Base path for reverse proxy                       |
 | DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
+| DEBUG               | false     | Enable debug logging for server components        |
 
 ## Reverse Proxies
 

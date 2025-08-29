@@ -13,10 +13,14 @@ export function GET() {
   return new Response('Upgrade Required', { status: 426, headers })
 }
 
-export async function SOCKET(client: import('ws').WebSocket, request: import('http').IncomingMessage) {
+export async function UPGRADE(
+  client: import('ws').WebSocket,
+  _server: import('ws').WebSocketServer,
+  request: import('next/server').NextRequest
+) {
   if (process.env.WEB_USERNAME && process.env.WEB_PASSWORD) {
     const token = await getToken({
-      req: { headers: request.headers as Record<string, string> },
+      req: request,
       secret: process.env.AUTH_SECRET,
     })
 
@@ -29,7 +33,7 @@ export async function SOCKET(client: import('ws').WebSocket, request: import('ht
   }
 
   // Parse the URL to get NUT server details
-  const url = new URL(request.url ?? '', `http://${request.headers.host}`)
+  const url = request.nextUrl ?? new URL(request.url)
   const nutHost = url.searchParams.get('nutHost')
   const nutPort = url.searchParams.get('nutPort')
 
