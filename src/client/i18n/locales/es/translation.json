@@ -15,8 +15,8 @@
     "inputVoltage": "Voltaje de Entrada",
     "outputVoltage": "Voltaje de Salida",
     "nominalInputVoltage": "Voltaje de Entrada Nominal",
-    "nominalOutputVoltage": "Voltaje de salida nominal",
-    "nominalVoltage": "Voltaje nominal",
+    "nominalOutputVoltage": "Voltaje de Salida Nominal",
+    "nominalVoltage": "Voltaje Nominal",
     "title": "Voltios"
   },
   "wattsChart": {
@@ -52,7 +52,7 @@
     "selectTimeFormat": "Seleccione un formato de hora",
     "disableVersionCheck": "Desactivar verificación de versión",
     "disableVersionCheckDescription": "Desactivar la verificación de actualizaciones en el pie de página",
-    "manageServers": "Administraridores",
+    "manageServers": "Administrar servidores",
     "influxDb": "InfluxDB",
     "influxNotice": "Esto solo funcionará con InfluxDB 2.x",
     "influxInterval": "Influx Interval (s)",
@@ -61,12 +61,12 @@
     "saved": "Cambios guardados",
     "configExport": "Importar/Exportar configuración",
     "configExportNotice": "Edite manualmente el archivo de configuración YAML.",
-    "save": "Ahorrar",
+    "save": "Guardar",
     "download": "Descargar",
-    "viewConfig": "Haga clic para ver la configuración.",
+    "viewConfig": "Haz clic para ver la configuración.",
     "serversNotice": "Se requieren nombre de usuario y contraseña para los comandos",
     "terminal": "Terminal",
-    "terminalNotice": "Escriba \"Ayuda\" para una lista de comandos.",
+    "terminalNotice": "Escriba \"Help\" para una lista de comandos.",
     "selectServer": "Seleccione un servidor",
     "dashboard": "Panel de control",
     "dashboardNotice": "Reordenar secciones y alternar su visibilidad.",
@@ -88,7 +88,7 @@
     "org": "Organización",
     "bucket": "Bucket",
     "connect": "Conectar",
-    "clear": "Claro",
+    "clear": "Limpiar",
     "test": "Probar",
     "success": "Conexión exitosa",
     "error": "Conexión fallida. Verifique los registros para más información.",
@@ -121,56 +121,56 @@
       "successMessage": "Se inició una prueba de batería profunda"
     },
     "restart": {
-      "title": "Reanudar",
+      "title": "Reiniciar",
       "description": "¿Le gustaría reiniciar el UPS?",
-      "actionText": "Reanudar",
+      "actionText": "Reiniciar",
       "successMessage": "Reinicio"
     },
     "shutdown": {
-      "title": "Cerrar",
-      "description": "¿Le gustaría cerrar el UPS?",
-      "actionText": "Cerrar",
+      "title": "Apagar",
+      "description": "¿Le gustaría apagar el UPS?",
+      "actionText": "Apagar",
       "successMessage": "Apagado"
     },
     "beeperDisable": {
       "title": "Desactivar el pitido",
-      "description": "¿Le gustaría deshabilitar el Beeper?",
+      "description": "¿Le gustaría deshabilitar el pitido?",
       "actionText": "Desactivar el pitido",
-      "successMessage": "Bitero discapacitado"
+      "successMessage": "Beeper deshabilitado"
     },
     "beeperEnable": {
-      "title": "Habilitar Beeper",
-      "description": "¿Le gustaría habilitar el Beeper?",
-      "actionText": "Habilitar Beeper",
+      "title": "Habilitar el pitido",
+      "description": "¿Le gustaría habilitar el pitido?",
+      "actionText": "Habilitar el pitido",
       "successMessage": "Beeper habilitado"
     },
     "beeperMute": {
-      "title": "Mute beeper",
-      "description": "¿Te gustaría silenciar el Beeper?",
-      "actionText": "Mute beeper",
+      "title": "Silenciar el pitido",
+      "description": "¿Te gustaría silenciar el pitido?",
+      "actionText": "Silenciar el pitido",
       "successMessage": "Beeper silenciado"
     }
   },
   "voltAmpsChart": {
     "nominalPower": "Potencia nominal",
-    "power": "Fuerza"
+    "power": "Potencia"
   },
-  "volt-amps-chart": "Poder aparente",
+  "volt-amps-chart": "Potencia aparente",
   "volts-chart": "Voltaje",
-  "watts-chart": "Poder real",
+  "watts-chart": "Potencia real",
   "accordion-grid": "Datos de UPS",
   "login": {
-    "title": "Inicie sesión para continuar.",
+    "title": "Inicia sesión para continuar.",
     "username": "Nombre de usuario",
     "usernamePlaceholder": "Ingrese su nombre de usuario",
     "password": "Contraseña",
     "passwordPlaceholder": "Ingrese su contraseña",
     "submit": "Acceso"
   },
-  "logout": "Cierre de sesión",
+  "logout": "Cerrar sesión",
   "description": "Descripción",
   "status": "Estado",
   "view": "Vista",
   "details": "Detalles",
-  "toggleTime": "Haga clic para cambiar el formato de 12/24 horas"
+  "toggleTime": "Haz clic para cambiar el formato de hora 12/24"
 }
