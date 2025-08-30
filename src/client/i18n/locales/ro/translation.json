@@ -67,7 +67,7 @@
     "viewConfig": "Faceți clic pentru a vizualiza configurația.",
     "serversNotice": "Numele de utilizator și parola sunt necesare pentru comenzi",
     "terminal": "Terminal",
-    "terminalNotice": "Tastați „ajutor” pentru o listă de comenzi.",
+    "terminalNotice": "Tastați „help” pentru o listă de comenzi.",
     "selectServer": "Selectați un server",
     "dashboard": "Dashboard",
     "dashboardNotice": "Reordonați secțiunile și comutați vizibilitatea lor.",

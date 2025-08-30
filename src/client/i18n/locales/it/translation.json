@@ -67,7 +67,7 @@
     "viewConfig": "Fare clic per visualizzare la configurazione.",
     "serversNotice": "Nome utente e password sono richiesti per i comandi",
     "terminal": "terminale",
-    "terminalNotice": "Digita \"aiuto\" per un elenco di comandi.",
+    "terminalNotice": "Digita \"help\" per un elenco di comandi.",
     "selectServer": "Seleziona un server",
     "dashboard": "Dashboard",
     "dashboardNotice": "Riordina le sezioni e attiva/disattiva la loro visibilità.",
