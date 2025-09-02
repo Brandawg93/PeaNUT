@@ -37,6 +37,7 @@ export const useDashboardSections = () => {
       { key: 'KPIS', enabled: true },
       { key: 'CHARTS', enabled: true },
       { key: 'VARIABLES', enabled: true },
+      { key: 'OUTLETS', enabled: true },
     ]
   )
 }
