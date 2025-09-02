@@ -24,7 +24,7 @@ import Loader from '@/client/components/loader'
 import ChartsContainer from '@/client/components/line-charts/charts-container'
 import Actions from '@/client/components/actions'
 import { LanguageContext } from '@/client/context/language'
-import { upsStatus } from '@/common/constants'
+import { upsStatus, parseUpsStatus } from '@/common/constants'
 import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
@@ -38,7 +38,7 @@ const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
     return <></>
   }
-  if (status === 'OL CHRG') {
+  if (status.startsWith('OL CHRG')) {
     return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
   } else if (status.startsWith('OL')) {
     return <HiOutlineCheck data-testid='check-icon' className='mb-1 inline-block size-6 stroke-[3px] text-green-400' />
@@ -316,7 +316,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
                 &nbsp;
                 {(vars['ups.status']?.value &&
                   typeof vars['ups.status'].value === 'string' &&
-                  upsStatus[vars['ups.status'].value as keyof typeof upsStatus]) ||
+                  parseUpsStatus(vars['ups.status'].value)) ||
                   (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
