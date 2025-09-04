@@ -1,6 +1,5 @@
 export const upsStatus = {
   OL: 'Online',
-  'OL CHRG': 'Online Charging',
   OB: 'On Battery',
   LB: 'Low Battery',
   HB: 'High Battery',
@@ -15,7 +14,45 @@ export const upsStatus = {
   BOOST: 'Boosting Voltage',
   FSD: 'Forced Shutdown',
   ALARM: 'Alarm',
+  HE: 'ECO Mode',
+  TEST: 'Battery Testing',
   DEVICE_UNREACHABLE: 'Device Unreachable',
+}
+
+/**
+ * Parse a combined UPS status string into a human-readable description
+ * @param status - The raw status string from the UPS (e.g., "OL CHRG LB")
+ * @returns A human-readable status description
+ */
+export const parseUpsStatus = (status: string): string => {
+  if (!status) return ''
+
+  // Parse combined statuses by splitting on spaces and mapping each part
+  const statusParts = status.split(' ').filter((part) => part.trim() !== '')
+  const parsedParts = statusParts.map((part) => {
+    // Check if this part has a direct mapping in upsStatus
+    if (upsStatus[part as keyof typeof upsStatus]) {
+      return upsStatus[part as keyof typeof upsStatus]
+    }
+
+    // Return the original part if no mapping found
+    return part
+  })
+
+  // Join all parsed parts with commas
+  return parsedParts.join(', ')
+}
+
+// Battery charger status constants for future use
+// These come from the battery.charger.status variable, not ups.status
+export const batteryChargerStatus = {
+  charging: 'Charging',
+  discharging: 'Discharging',
+  floating: 'Floating',
+  resting: 'Resting',
+  unknown: 'Unknown',
+  disabled: 'Disabled',
+  off: 'Off',
 }
 
 const COMMAND_BEEPER_DISABLE = 'beeper.disable'
