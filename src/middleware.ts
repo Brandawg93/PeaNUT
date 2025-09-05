@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from 'next-runtime-env'
+import { auth } from '@/auth'
 
 // Normalize basePath to ensure consistent format (starts with /, no trailing slash)
 function normalizeBasePath(path: string): string {
@@ -10,7 +11,7 @@ function normalizeBasePath(path: string): string {
 }
 
 // Create a wrapper middleware that handles dynamic basePath
-export async function middleware(request: NextRequest) {
+export const middleware = auth(async function middleware(request: NextRequest) {
   // Get the dynamic basePath from runtime environment or request headers and normalize it
   const dynamicBasePath = normalizeBasePath(env('NEXT_PUBLIC_BASE_PATH') || request.headers.get('x-base-path') || '')
 
@@ -34,7 +35,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher

@@ -1,6 +1,6 @@
 {
   "name": "peanut",
-  "version": "5.14.0",
+  "version": "5.14.2",
   "private": true,
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
@@ -23,8 +23,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test; docker compose down",
-    "test:all": "concurrently \"npm run test:coverage\" \"npm run test:e2e\"",
+    "test:e2e": "playwright test && WEB_USERNAME=admin WEB_PASSWORD=test123 playwright test && docker compose down",
+    "test:all": "concurrently \"npm run test\" \"npm run test:e2e\"",
     "deploy": "./scripts/deploy.sh",
     "deploy:test": "./scripts/deploy-test.sh",
     "telemetry": "next telemetry disable",

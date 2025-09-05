@@ -15,7 +15,7 @@ import {
   HiXCircle,
   HiOutlineInformationCircle,
 } from 'react-icons/hi2'
-import { upsStatus } from '@/common/constants'
+import { upsStatus, parseUpsStatus } from '@/common/constants'
 import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@/hooks/useNavigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
@@ -34,7 +34,7 @@ export default function DeviceGrid({ data }: Props) {
 
   const getStatus = (status: string) => {
     if (!status) return <></>
-    if (status === 'OL CHRG') {
+    if (status.startsWith('OL CHRG')) {
       return <HiBolt data-testid='bolt-icon' className='mb-1 inline-block size-6 text-yellow-400' />
     } else if (status.startsWith('OL')) {
       return (
@@ -84,9 +84,7 @@ export default function DeviceGrid({ data }: Props) {
             return (
               <div className='flex items-center gap-2'>
                 {getStatus(status)}
-                <span className='text-primary mb-0 font-normal'>
-                  {upsStatus[status as keyof typeof upsStatus] || status}
-                </span>
+                <span className='text-primary mb-0 font-normal'>{parseUpsStatus(status) || status}</span>
               </div>
             )
           },
