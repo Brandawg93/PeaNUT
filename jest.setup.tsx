@@ -100,3 +100,18 @@ jest.mock('next/navigation', () => ({
     }
   }),
 }))
+
+// Mock Next.js server modules for Jest
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn((body, init) => ({
+      body,
+      status: init?.status || 200,
+      headers: new Map(),
+    })),
+    redirect: jest.fn((url) => ({
+      status: 302,
+      headers: new Map([['location', url]]),
+    })),
+  },
+}))
