@@ -3,6 +3,10 @@ import { authConfig } from '@/auth.config'
 describe('auth.config authorized callback', () => {
   const originalEnv = { ...process.env }
 
+  // Test credentials - not real secrets
+  const TEST_USERNAME = 'admin'
+  const TEST_PASSWORD = 'test-password-123'
+
   afterEach(() => {
     process.env = { ...originalEnv }
   })
@@ -11,7 +15,7 @@ describe('auth.config authorized callback', () => {
     delete process.env.WEB_USERNAME
     delete process.env.WEB_PASSWORD
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
       auth: null,
       request: { nextUrl: new URL('http://localhost/'), headers: new Headers() },
@@ -21,10 +25,10 @@ describe('auth.config authorized callback', () => {
   })
 
   it('redirects to /login when not logged in and auth enabled', () => {
-    process.env.WEB_USERNAME = 'admin'
-    process.env.WEB_PASSWORD = 'secret123'
+    process.env.WEB_USERNAME = TEST_USERNAME
+    process.env.WEB_PASSWORD = TEST_PASSWORD
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
       auth: null,
       request: { nextUrl: new URL('http://localhost/'), headers: new Headers() },
@@ -35,10 +39,10 @@ describe('auth.config authorized callback', () => {
   })
 
   it('allows /login when auth enabled', () => {
-    process.env.WEB_USERNAME = 'admin'
-    process.env.WEB_PASSWORD = 'secret123'
+    process.env.WEB_USERNAME = TEST_USERNAME
+    process.env.WEB_PASSWORD = TEST_PASSWORD
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
       auth: null,
       request: { nextUrl: new URL('http://localhost/login'), headers: new Headers() },
@@ -48,12 +52,12 @@ describe('auth.config authorized callback', () => {
   })
 
   it('allows when already logged in', () => {
-    process.env.WEB_USERNAME = 'admin'
-    process.env.WEB_PASSWORD = 'secret123'
+    process.env.WEB_USERNAME = TEST_USERNAME
+    process.env.WEB_PASSWORD = TEST_PASSWORD
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
-      auth: { user: { name: 'admin' }, expires: new Date(Date.now() + 60_000).toISOString() },
+      auth: { user: { name: TEST_USERNAME }, expires: new Date(Date.now() + 60_000).toISOString() },
       request: { nextUrl: new URL('http://localhost/'), headers: new Headers() },
     })
 
@@ -61,10 +65,10 @@ describe('auth.config authorized callback', () => {
   })
 
   it('allows non-v1 API routes without session', () => {
-    process.env.WEB_USERNAME = 'admin'
-    process.env.WEB_PASSWORD = 'secret123'
+    process.env.WEB_USERNAME = TEST_USERNAME
+    process.env.WEB_PASSWORD = TEST_PASSWORD
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
       auth: null,
       request: { nextUrl: new URL('http://localhost/api/ping'), headers: new Headers() },
@@ -74,10 +78,10 @@ describe('auth.config authorized callback', () => {
   })
 
   it('requires Basic auth for /api/v1 routes', () => {
-    process.env.WEB_USERNAME = 'admin'
-    process.env.WEB_PASSWORD = 'secret123'
+    process.env.WEB_USERNAME = TEST_USERNAME
+    process.env.WEB_PASSWORD = TEST_PASSWORD
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
       auth: null,
       request: { nextUrl: new URL('http://localhost/api/v1/devices'), headers: new Headers() },
@@ -88,12 +92,12 @@ describe('auth.config authorized callback', () => {
   })
 
   it('accepts valid Basic auth for /api/v1 routes', () => {
-    process.env.WEB_USERNAME = 'admin'
-    process.env.WEB_PASSWORD = 'secret123'
-    const creds = Buffer.from('admin:secret123').toString('base64')
+    process.env.WEB_USERNAME = TEST_USERNAME
+    process.env.WEB_PASSWORD = TEST_PASSWORD
+    const creds = Buffer.from(`${TEST_USERNAME}:${TEST_PASSWORD}`).toString('base64')
     const headers = new Headers({ authorization: `Basic ${creds}` })
 
-    const authorized = authConfig.callbacks!.authorized as any
+    const authorized = authConfig.callbacks.authorized as any
     const result = authorized({
       auth: null,
       request: { nextUrl: new URL('http://localhost/api/v1/devices'), headers },
