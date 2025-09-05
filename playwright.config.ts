@@ -45,34 +45,52 @@ export default defineConfig({
   },
 
   projects: [
-    {
-      name: 'Desktop Chrome',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-    },
-    {
-      name: 'Desktop Firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
-    {
-      name: 'Desktop Safari',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
-    // Test against mobile viewports.
-    {
-      name: 'Mobile Chrome',
-      use: {
-        ...devices['Pixel 5'],
-      },
-    },
-    {
-      name: 'Mobile Safari',
-      use: devices['iPhone 12'],
-    },
+    // Only include Auth Enabled project when auth environment variables are set
+    ...(process.env.WEB_USERNAME?.trim() && process.env.WEB_PASSWORD?.trim()
+      ? [
+          {
+            name: 'Auth Enabled',
+            testMatch: '**/auth-enabled.test.tsx',
+            use: {
+              ...devices['Desktop Chrome'],
+            },
+          },
+        ]
+      : [
+          {
+            name: 'Desktop Chrome',
+            use: {
+              ...devices['Desktop Chrome'],
+            },
+            testIgnore: '**/auth-enabled.test.tsx',
+          },
+          {
+            name: 'Desktop Firefox',
+            use: {
+              ...devices['Desktop Firefox'],
+            },
+            testIgnore: '**/auth-enabled.test.tsx',
+          },
+          {
+            name: 'Desktop Safari',
+            use: {
+              ...devices['Desktop Safari'],
+            },
+            testIgnore: '**/auth-enabled.test.tsx',
+          },
+          // Test against mobile viewports.
+          {
+            name: 'Mobile Chrome',
+            use: {
+              ...devices['Pixel 5'],
+            },
+            testIgnore: '**/auth-enabled.test.tsx',
+          },
+          {
+            name: 'Mobile Safari',
+            use: devices['iPhone 12'],
+            testIgnore: '**/auth-enabled.test.tsx',
+          },
+        ]),
   ],
 })

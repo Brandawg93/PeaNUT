@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from 'next-auth'
+import { NextResponse } from 'next/server'
 import { ensureAuthSecret } from './server/auth-config'
 
 export const authConfig = {
@@ -29,7 +30,7 @@ export const authConfig = {
         const authHeader = headers.get('authorization')
 
         if (!authHeader?.startsWith('Basic ')) {
-          return new Response('Unauthorized', { status: 401 })
+          return NextResponse.json('Unauthorized', { status: 401 })
         }
 
         // Extract credentials from Basic auth header
@@ -40,14 +41,19 @@ export const authConfig = {
         // Verify credentials against environment variables
         const isAuthorized = username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD
         if (!isAuthorized) {
-          return new Response('Unauthorized', { status: 401 })
+          return NextResponse.json('Unauthorized', { status: 401 })
         }
         return true
       }
 
       if (isLoggedIn) return true
-      if (nextUrl.pathname === '/login') return true
-      return Response.redirect(new URL(`/login?callbackUrl=${nextUrl.pathname}`, nextUrl.origin))
+      // Determine external base path for reverse proxies
+      const rawBasePath = (process.env.BASE_PATH || headers.get('x-base-path') || '').trim()
+      const basePath =
+        rawBasePath && rawBasePath !== '/' ? (rawBasePath.startsWith('/') ? rawBasePath : `/${rawBasePath}`) : ''
+      const loginPath = `${basePath}/login`
+      if (nextUrl.pathname === loginPath) return true
+      return NextResponse.redirect(new URL(`${loginPath}?callbackUrl=${nextUrl.pathname}`, nextUrl.origin))
     },
   },
   providers: [], // Add providers with an empty array for now
