@@ -49,8 +49,10 @@ export const authConfig = {
       if (isLoggedIn) return true
       // Determine external base path for reverse proxies
       const rawBasePath = (process.env.BASE_PATH || headers.get('x-base-path') || '').trim()
-      const basePath =
-        rawBasePath && rawBasePath !== '/' ? (rawBasePath.startsWith('/') ? rawBasePath : `/${rawBasePath}`) : ''
+      let basePath = ''
+      if (rawBasePath && rawBasePath !== '/') {
+        basePath = rawBasePath.startsWith('/') ? rawBasePath : `/${rawBasePath}`
+      }
       const loginPath = `${basePath}/login`
       if (nextUrl.pathname === loginPath) return true
       return NextResponse.redirect(new URL(`${loginPath}?callbackUrl=${nextUrl.pathname}`, nextUrl.origin))
