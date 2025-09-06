@@ -26,7 +26,12 @@
   },
   "grid": {
     "key": "Chiave",
-    "value": "Valore"
+    "value": "Valore",
+    "filter": {
+      "placeholder": "Filtra chiavi",
+      "apply": "Applica filtro",
+      "clear": "Cancella filtro"
+    }
   },
   "sidebar": {
     "settings": "Impostazioni",
