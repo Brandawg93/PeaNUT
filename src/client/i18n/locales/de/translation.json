@@ -26,7 +26,12 @@
   },
   "grid": {
     "key": "Schlüssel",
-    "value": "Wert"
+    "value": "Wert",
+    "filter": {
+      "placeholder": "Schlüssel filtern",
+      "apply": "Filter anwenden",
+      "clear": "Filter löschen"
+    }
   },
   "sidebar": {
     "settings": "Einstellungen",
