@@ -5,43 +5,6 @@ import NutGrid from '@/client/components/grid'
 import { DEVICE } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 
-// Mock i18next
-jest.mock('i18next', () => ({
-  use: jest.fn(() => ({
-    use: jest.fn(() => ({
-      use: jest.fn(() => ({
-        init: jest.fn(),
-      })),
-    })),
-  })),
-  language: 'en',
-  on: jest.fn(),
-  off: jest.fn(),
-}))
-
-// Mock i18next-browser-languagedetector
-jest.mock('i18next-browser-languagedetector', () => ({
-  default: jest.fn(),
-}))
-
-// Mock react-i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-  initReactI18next: {
-    type: '3rdParty',
-    init: () => {},
-  },
-}))
-
-// Mock next-themes
-jest.mock('next-themes', () => ({
-  useTheme: () => ({
-    theme: 'light',
-  }),
-}))
-
 const queryClient = new QueryClient()
 
 const device: DEVICE = {
