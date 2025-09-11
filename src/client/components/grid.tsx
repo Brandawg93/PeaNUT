@@ -229,7 +229,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className='border-border-card bg-muted flex w-64 flex-col gap-2 border p-3' align='end'>
-                <div className='relative flex'>
+                <div className='relative flex gap-2'>
                   <Input
                     defaultValue={keyFilter}
                     ref={filterInputRef}
@@ -252,7 +252,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                       type='button'
                       variant='ghost'
                       size='icon'
-                      className='h-7 w-7 cursor-pointer p-0'
+                      className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
                       aria-label={t('grid.filter.apply')}
                       onClick={(e) => {
                         e.preventDefault()
@@ -268,7 +268,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                       type='button'
                       variant='ghost'
                       size='icon'
-                      className='h-7 w-7 cursor-pointer p-0'
+                      className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
                       aria-label={t('grid.filter.clear')}
                       onClick={(e) => {
                         e.preventDefault()
