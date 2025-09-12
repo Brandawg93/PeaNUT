@@ -26,7 +26,12 @@
   },
   "grid": {
     "key": "Cheie",
-    "value": "Valoare"
+    "value": "Valoare",
+    "filter": {
+      "placeholder": "",
+      "apply": "Aplică filtru",
+      "clear": "Șterge filtru"
+    }
   },
   "sidebar": {
     "settings": "Setări",

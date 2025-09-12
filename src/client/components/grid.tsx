@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useContext, memo } from 'react'
+import React, { useState, useMemo, useContext, memo, useRef } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { Input } from '@/client/components/ui/input'
@@ -16,7 +16,7 @@ import {
   HiOutlineChevronRight,
   HiOutlineChevronDown,
 } from 'react-icons/hi2'
-import { TbList, TbListTree } from 'react-icons/tb'
+import { TbList, TbListTree, TbFilter, TbFilterFilled } from 'react-icons/tb'
 import { Toaster, toast } from 'sonner'
 import {
   createColumnHelper,
@@ -89,6 +89,9 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
   const [edit, setEdit] = useState<string>('')
   const [useTreeData, setUseTreeData] = useState<boolean>(false)
   const [expanded, setExpanded] = useState<ExpandedState>(true)
+  const [keyFilter, setKeyFilter] = useState<string>('') // applied filter
+  const [filterOpen, setFilterOpen] = useState<boolean>(false)
+  const filterInputRef = useRef<HTMLInputElement | null>(null)
   const anyRW = data.rwVars?.length > 0
 
   const hierarchicalData = useMemo<HierarchicalTableProps[]>(
@@ -104,6 +107,35 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
       Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A', description: v?.description })),
     [data.vars]
   )
+
+  const filteredFlatData = useMemo<TableProps[]>(() => {
+    const query = keyFilter.trim().toLowerCase()
+    if (!query) return flatData
+    return flatData.filter((row) => row.key.toLowerCase().includes(query))
+  }, [flatData, keyFilter])
+
+  const filterTree = (nodes: HierarchicalTableProps[], query: string): HierarchicalTableProps[] => {
+    if (!query) return nodes
+    const lowered = query.toLowerCase()
+    const filterRec = (list: HierarchicalTableProps[]): HierarchicalTableProps[] => {
+      const results: HierarchicalTableProps[] = []
+      for (const node of list) {
+        const children = node.children ? filterRec(node.children) : []
+        const selfMatches = (node.originalKey ?? node.key).toLowerCase().includes(lowered)
+        if (selfMatches || children.length > 0) {
+          results.push({ ...node, children })
+        }
+      }
+      return results
+    }
+    return filterRec(nodes)
+  }
+
+  const filteredHierarchicalData = useMemo<HierarchicalTableProps[]>(() => {
+    const query = keyFilter.trim()
+    if (!query) return hierarchicalData
+    return filterTree(hierarchicalData, query)
+  }, [hierarchicalData, keyFilter])
 
   const columnHelper = createColumnHelper<HierarchicalTableProps>()
   const columns = [
@@ -155,8 +187,13 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
         )
       },
       header: ({ table }) => (
-        <div className='flex items-center justify-between'>
-          <button disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
+        <div className='flex items-center justify-between gap-2'>
+          <button
+            type='button'
+            disabled={!useTreeData}
+            onClick={table.getToggleAllRowsExpandedHandler()}
+            className='flex'
+          >
             {useTreeData && (
               <div className='flex h-[28px] flex-col justify-center'>
                 {table.getIsAllRowsExpanded() ? (
@@ -168,9 +205,96 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
             )}
             <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
           </button>
-          <Button onClick={() => setUseTreeData(!useTreeData)} variant='ghost' className='cursor-pointer shadow-none'>
-            {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
-          </Button>
+          <div className='flex items-center gap-2'>
+            <Popover
+              open={filterOpen}
+              onOpenChange={(open) => {
+                setFilterOpen(open)
+                if (open && filterInputRef.current) {
+                  // Set the input value to current filter when opening
+                  filterInputRef.current.value = keyFilter
+                }
+              }}
+            >
+              <PopoverTrigger asChild>
+                <Button
+                  variant={keyFilter ? 'secondary' : 'ghost'}
+                  size='icon'
+                  aria-label={t('grid.filter.placeholder')}
+                  type='button'
+                  className='relative cursor-pointer shadow-none'
+                >
+                  {keyFilter ? <TbFilterFilled className='size-5! text-blue-600' /> : <TbFilter className='size-5!' />}
+                  {keyFilter && <span className='absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-500'></span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className='border-border-card bg-muted flex w-64 flex-col gap-2 border p-3' align='end'>
+                <div className='relative flex gap-2'>
+                  <Input
+                    defaultValue={keyFilter}
+                    ref={filterInputRef}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        e.stopPropagation()
+                        setFilterOpen(false)
+                      } else if (e.key === 'Enter') {
+                        e.preventDefault()
+                        const value = filterInputRef.current?.value || ''
+                        setKeyFilter(value)
+                        setFilterOpen(false)
+                      }
+                    }}
+                    placeholder={t('grid.filter.placeholder')}
+                    className='border-border-card bg-background!'
+                  />
+                  <div className='flex justify-end gap-2 pt-1'>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
+                      aria-label={t('grid.filter.apply')}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        const value = filterInputRef.current?.value || ''
+                        setKeyFilter(value)
+                        setFilterOpen(false)
+                      }}
+                    >
+                      <HiOutlineCheckCircle className='size-6 text-green-500' />
+                    </Button>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
+                      aria-label={t('grid.filter.clear')}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        if (filterInputRef.current) {
+                          filterInputRef.current.value = ''
+                        }
+                        setKeyFilter('')
+                        setFilterOpen(false)
+                      }}
+                    >
+                      <HiOutlineXCircle className='size-6 text-red-500' />
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            <Button
+              type='button'
+              onClick={() => setUseTreeData(!useTreeData)}
+              variant='ghost'
+              className='cursor-pointer shadow-none'
+            >
+              {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
+            </Button>
+          </div>
         </div>
       ),
     }),
@@ -206,14 +330,14 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
   ].filter((column) => column.id !== 'actions' || anyRW) // Hide actions column if there are no RW vars
 
   const tableConfig = {
-    data: flatData,
+    data: filteredFlatData,
     columns,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
   }
 
   const treeTableConfig = {
-    data: hierarchicalData,
+    data: filteredHierarchicalData,
     columns,
     state: {
       expanded,
