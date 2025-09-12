@@ -262,7 +262,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                         setFilterOpen(false)
                       }}
                     >
-                      <HiOutlineCheckCircle className='size-5 text-green-500' />
+                      <HiOutlineCheckCircle className='size-6 text-green-500' />
                     </Button>
                     <Button
                       type='button'
@@ -280,7 +280,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                         setFilterOpen(false)
                       }}
                     >
-                      <HiOutlineXCircle className='size-5 text-red-500' />
+                      <HiOutlineXCircle className='size-6 text-red-500' />
                     </Button>
                   </div>
                 </div>
