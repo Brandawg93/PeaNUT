@@ -1,5 +1,5 @@
 import { Nut } from '@/server/nut'
-import { TEST_USERNAME, TEST_PASSWORD, TEST_PORT } from '../../../utils/test-constants'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../../utils/test-constants'
 import { getSettings } from '@/app/actions'
 import {
   getNutInstances,
@@ -82,7 +82,7 @@ describe('API Utils', () => {
     it('should return array of Nut instances from settings', async () => {
       const mockServers = [
         createMockServer('localhost'),
-        createMockServer('192.168.1.100', TEST_PORT, TEST_USERNAME, TEST_PASSWORD),
+        createMockServer(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD),
       ]
       setupServerSettings(mockServers)
 
