@@ -1,4 +1,5 @@
 import { Nut } from '@/server/nut'
+import { TEST_USERNAME, TEST_PASSWORD } from '../../../utils/test-constants'
 import { getSettings } from '@/app/actions'
 import {
   getNutInstances,
@@ -36,7 +37,7 @@ const mockGetSettings = getSettings as jest.MockedFunction<typeof getSettings>
 const createMockServer = (
   host: string = 'server1',
   port: number = 3493,
-  username: string = 'user',
+  username: string = TEST_USERNAME,
   password?: string
 ) => ({
   HOST: host,
@@ -79,7 +80,10 @@ describe('API Utils', () => {
 
   describe('getNutInstances', () => {
     it('should return array of Nut instances from settings', async () => {
-      const mockServers = [createMockServer('localhost'), createMockServer('192.168.1.100', 3493, 'admin', 'secret')]
+      const mockServers = [
+        createMockServer('localhost'),
+        createMockServer('192.168.1.100', 3493, TEST_USERNAME, TEST_PASSWORD),
+      ]
       setupServerSettings(mockServers)
 
       const result = await getNutInstances()

@@ -2,6 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import AddServer from '@/client/components/add-server'
 import { LanguageContext } from '@/client/context/language'
+import { TEST_USERNAME, TEST_PASSWORD } from '../../../utils/test-constants'
 
 describe('AddServer', () => {
   const renderComponent = (props?: Partial<React.ComponentProps<typeof AddServer>>) =>
@@ -42,8 +43,8 @@ describe('AddServer Component', () => {
         <AddServer
           initialServer='localhost'
           initialPort={8080}
-          initialUsername='admin'
-          initialPassword='nut_test'
+          initialUsername={TEST_USERNAME}
+          initialPassword={TEST_PASSWORD}
           handleChange={mockHandleChange}
           handleRemove={mockHandleRemove}
           testConnectionAction={mockTestConnectionAction}
@@ -62,14 +63,14 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const serverInput = getByTestId('server')
     fireEvent.change(serverInput, { target: { value: 'new-server' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('new-server', 8080, 'admin', 'nut_test', false)
+    expect(mockHandleChange).toHaveBeenCalledWith('new-server', 8080, TEST_USERNAME, TEST_PASSWORD, false)
   })
 
   test('calls setPort on port input change', () => {
     const { getByTestId } = renderComponent()
     const portInput = getByTestId('port')
     fireEvent.change(portInput, { target: { value: '9090' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 9090, 'admin', 'nut_test', false)
+    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 9090, TEST_USERNAME, TEST_PASSWORD, false)
   })
 
   test('calls handleRemove on remove button click', () => {
@@ -83,7 +84,7 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const usernameInput = getByTestId('username')
     fireEvent.change(usernameInput, { target: { value: 'new-user' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 8080, 'new-user', 'nut_test', false)
+    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 8080, 'new-user', TEST_PASSWORD, false)
   })
 
   test('calls setPassword on password input change', () => {
@@ -116,6 +117,6 @@ describe('AddServer Component', () => {
     fireEvent.click(getByLabelText('options'))
     const testItem = await findByTestId('menu-test')
     fireEvent.click(testItem)
-    expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080, 'admin', 'nut_test')
+    expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080, TEST_USERNAME, TEST_PASSWORD)
   })
 })

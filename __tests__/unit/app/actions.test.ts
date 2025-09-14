@@ -24,6 +24,7 @@ import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
 import { signIn } from '@/auth'
+import { TEST_USERNAME, TEST_PASSWORD } from '../../utils/test-constants'
 import { AuthError } from 'next-auth'
 
 global.TextDecoder = TextDecoder as any
@@ -217,15 +218,15 @@ describe('actions', () => {
 
     it('successfully authenticates', async () => {
       const formData = new FormData()
-      formData.append('username', 'test')
-      formData.append('password', 'test')
+      formData.append('username', TEST_USERNAME)
+      formData.append('password', TEST_PASSWORD)
       await authenticate(undefined, formData)
       expect(signIn).toHaveBeenCalledWith('credentials', formData)
     })
 
     it('handles invalid credentials error', async () => {
       const formData = new FormData()
-      formData.append('username', 'test')
+      formData.append('username', TEST_USERNAME)
       formData.append('password', 'wrong')
 
       const authError = new AuthError('CredentialsSignin')
@@ -237,8 +238,8 @@ describe('actions', () => {
 
     it('handles generic auth error', async () => {
       const formData = new FormData()
-      formData.append('username', 'test')
-      formData.append('password', 'test')
+      formData.append('username', TEST_USERNAME)
+      formData.append('password', TEST_PASSWORD)
 
       const authError = new AuthError('Some other error')
       ;(signIn as jest.Mock).mockRejectedValueOnce(authError)

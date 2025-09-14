@@ -1,4 +1,5 @@
 import { Nut } from '@/server/nut'
+import { TEST_USERNAME, TEST_PASSWORD } from '../../utils/test-constants'
 import PromiseSocket from '@/server/promise-socket'
 import { upsStatus } from '@/common/constants'
 
@@ -99,7 +100,7 @@ describe('Nut', () => {
   })
 
   it('should work with multiple ups devices on the same server', async () => {
-    const nut = new Nut('localhost', 3493, 'test', 'test')
+    const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(listVarUps)
     jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
     jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
@@ -137,7 +138,7 @@ describe('Nut', () => {
   })
 
   it('should get read-write variables for a device', async () => {
-    const nut = new Nut('localhost', 3493, 'test', 'test')
+    const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST RW ups\nRW ups battery.charge.low "10"\nEND LIST RW ups')
@@ -199,7 +200,7 @@ describe('Nut', () => {
 
   describe('checkCredentials', () => {
     it('should successfully check credentials with username and password', async () => {
-      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -209,8 +210,8 @@ describe('Nut', () => {
         .spyOn(Nut.prototype, 'getDevices')
         .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
       await nut.checkCredentials()
-      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('USERNAME testuser')
-      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('PASSWORD testpass')
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith(`USERNAME ${TEST_USERNAME}`)
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith(`PASSWORD ${TEST_PASSWORD}`)
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGIN ups')
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGOUT')
       expect(PromiseSocket.prototype.close).toHaveBeenCalled()
@@ -231,13 +232,13 @@ describe('Nut', () => {
     })
 
     it('should throw error for invalid username', async () => {
-      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('ERR\n') // USERNAME response
       await expect(nut.checkCredentials()).rejects.toThrow('Invalid username')
     })
 
     it('should throw error for invalid password', async () => {
-      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -246,7 +247,7 @@ describe('Nut', () => {
     })
 
     it('should throw error when no devices found', async () => {
-      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -269,7 +270,7 @@ describe('Nut', () => {
     })
 
     it('should not close connection when socket is provided', async () => {
-      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
       const mockSocket = {
         write: jest.fn().mockResolvedValue(undefined),
         readAll: jest
@@ -283,8 +284,8 @@ describe('Nut', () => {
         .spyOn(Nut.prototype, 'getDevices')
         .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
       await nut.checkCredentials(mockSocket as any)
-      expect(mockSocket.write).toHaveBeenCalledWith('USERNAME testuser')
-      expect(mockSocket.write).toHaveBeenCalledWith('PASSWORD testpass')
+      expect(mockSocket.write).toHaveBeenCalledWith(`USERNAME ${TEST_USERNAME}`)
+      expect(mockSocket.write).toHaveBeenCalledWith(`PASSWORD ${TEST_PASSWORD}`)
       expect(mockSocket.write).toHaveBeenCalledWith('LOGIN ups')
       expect(mockSocket.write).not.toHaveBeenCalledWith('LOGOUT')
       expect(mockSocket.close).not.toHaveBeenCalled()

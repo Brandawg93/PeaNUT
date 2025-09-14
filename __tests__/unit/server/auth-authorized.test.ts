@@ -1,11 +1,8 @@
 import { authConfig } from '@/auth.config'
+import { TEST_USERNAME, TEST_PASSWORD } from '../../utils/test-constants'
 
 describe('auth.config authorized callback', () => {
   const originalEnv = { ...process.env }
-
-  // Test credentials - not real secrets
-  const TEST_USERNAME = 'admin'
-  const TEST_PASSWORD = 'test-password-123'
 
   afterEach(() => {
     process.env = { ...originalEnv }

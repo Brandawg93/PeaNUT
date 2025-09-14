@@ -2,6 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SettingsWrapper from '@/client/components/settings-wrapper'
 import { LanguageContext } from '@/client/context/language'
+import { TEST_USERNAME, TEST_PASSWORD } from '../../../utils/test-constants'
 // import { useRouter } from 'next/navigation'
 
 global.fetch = jest.fn(() =>
@@ -66,7 +67,9 @@ describe('SettingsWrapper', () => {
 
   it('handles server change correctly', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    const servers = [{ HOST: 'localhost', PORT: 8080, USERNAME: 'u', PASSWORD: 'p', DISABLED: false }]
+    const servers = [
+      { HOST: 'localhost', PORT: 8080, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: false },
+    ]
     mockGetSettingsAction.mockResolvedValueOnce(servers)
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
     mockGetSettingsAction.mockResolvedValueOnce('influxToken')
@@ -89,7 +92,9 @@ describe('SettingsWrapper', () => {
 
   it('persists DISABLED flag when saving servers', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    const servers = [{ HOST: 'localhost', PORT: 8080, USERNAME: 'u', PASSWORD: 'p', DISABLED: true }]
+    const servers = [
+      { HOST: 'localhost', PORT: 8080, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: true },
+    ]
     mockGetSettingsAction.mockResolvedValueOnce(servers)
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
     mockGetSettingsAction.mockResolvedValueOnce('influxToken')
@@ -118,7 +123,7 @@ describe('SettingsWrapper', () => {
 
     await waitFor(() => {
       expect(mockUpdateServersAction).toHaveBeenCalledWith([
-        { HOST: 'localhost', PORT: 8080, USERNAME: 'u', PASSWORD: 'p', DISABLED: true },
+        { HOST: 'localhost', PORT: 8080, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: true },
       ])
     })
   })
