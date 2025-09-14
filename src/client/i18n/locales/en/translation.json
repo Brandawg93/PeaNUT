@@ -111,9 +111,33 @@
   "selectDevice": "Select a device",
   "loading": "Loading...",
   "cancel": "Cancel",
+  "close": "Close",
+  "confirm": "Confirm",
   "continue": "Continue",
   "actions": {
     "title": "Actions",
+    "groups": {
+      "testing": "Testing",
+      "power": "Power Controls",
+      "beeper": "Beeper"
+    },
+    "testing": {
+      "title": "Testing",
+      "description": "Choose a battery test to run.",
+      "selectPlaceholder": "Select test type",
+      "run": "Run test"
+    },
+    "power": {
+      "title": "Power Controls",
+      "description": "Choose a power action, then confirm."
+    },
+    "beeper": {
+      "title": "Beeper",
+      "description": "Enable or disable the beeper, or mute temporarily.",
+      "switchLabel": "Enable beeper",
+      "muteLabel": "Mute beeper",
+      "muteButton": "Mute"
+    },
     "batteryTestQuick": {
       "title": "Perform Quick Battery Test",
       "description": "Would you like to perform a quick battery test on the UPS?",

@@ -111,9 +111,33 @@
   "selectDevice": "Seleziona un dispositivo",
   "loading": "Caricamento...",
   "cancel": "Cancellare",
+  "close": "Chiudi",
+  "confirm": "Conferma",
   "continue": "Continuare",
   "actions": {
     "title": "Azioni",
+    "groups": {
+      "testing": "Test",
+      "power": "Controlli di alimentazione",
+      "beeper": "Cicalino"
+    },
+    "testing": {
+      "title": "Test",
+      "description": "Scegli un test della batteria da eseguire.",
+      "selectPlaceholder": "Seleziona il tipo di test",
+      "run": "Esegui test"
+    },
+    "power": {
+      "title": "Controlli di alimentazione",
+      "description": "Scegli un'azione di alimentazione, quindi conferma."
+    },
+    "beeper": {
+      "title": "Cicalino",
+      "description": "Abilita/Disabilita il cicalino o silenzialo temporaneamente.",
+      "switchLabel": "Abilita cicalino",
+      "muteLabel": "Silenzia cicalino",
+      "muteButton": "Silenzia"
+    },
     "batteryTestQuick": {
       "title": "Eseguire il test della batteria rapida",
       "description": "Vorresti eseguire un rapido test della batteria sull'UPS?",
