@@ -74,7 +74,9 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: false }],
+      NUT_SERVERS: [
+        { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+      ],
     }
     return settings[key as keyof typeof settings]
   })
@@ -167,8 +169,8 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
-      { HOST: 'remote', PORT: TEST_PORT, USERNAME: 'admin', PASSWORD: 'secret', DISABLED: true },
+      { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+      { HOST: 'remote', PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: true },
     ]
     await updateServers(servers)
     expect(YamlSettings.prototype.set).toHaveBeenCalledWith('NUT_SERVERS', servers)
@@ -178,8 +180,8 @@ describe('actions', () => {
     ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
       const settings = {
         NUT_SERVERS: [
-          { HOST: 'enabled', PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
-          { HOST: 'disabled', PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: true },
+          { HOST: 'enabled', PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+          { HOST: 'disabled', PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: true },
         ],
       }
       return settings[key as keyof typeof settings]
