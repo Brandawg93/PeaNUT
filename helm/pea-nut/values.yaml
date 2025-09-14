@@ -133,6 +133,7 @@ nutServers: []
 #   PORT: 3493
 #   USERNAME: observer
 #   PASSWORD: secret-observer-pass
+#   DISABLED: false # Optional: when true, this server will be ignored by PeaNUT
 
 # Environment variables configuration
 env:
