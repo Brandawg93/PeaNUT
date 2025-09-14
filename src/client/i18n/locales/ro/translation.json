@@ -83,7 +83,9 @@
       "charts": "Grafice",
       "variables": "Variabile"
     },
-    "remove": "Elimină"
+    "remove": "Elimină",
+    "enable": "Permite",
+    "disable": "Dezactiva"
   },
   "connect": {
     "server": "Adresa serverului",

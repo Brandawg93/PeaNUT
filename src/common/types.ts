@@ -35,6 +35,7 @@ export type server = {
   PORT: number
   USERNAME?: string
   PASSWORD?: string
+  DISABLED?: boolean
 }
 
 export type VarDescription = {

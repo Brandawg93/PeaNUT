@@ -82,7 +82,9 @@
       "charts": "Gráficos",
       "variables": "Variables"
     },
-    "remove": "Eliminar"
+    "remove": "Eliminar",
+    "enable": "Permitir",
+    "disable": "Desactivar"
   },
   "connect": {
     "server": "Servidor",

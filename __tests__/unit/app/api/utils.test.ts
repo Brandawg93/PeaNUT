@@ -97,6 +97,24 @@ describe('API Utils', () => {
 
       expect(result).toHaveLength(0)
     })
+
+    it('should filter out disabled servers', async () => {
+      const mockServers = [
+        { ...createMockServer('enabled-1'), DISABLED: false },
+        { ...createMockServer('disabled-1'), DISABLED: true },
+        { ...createMockServer('enabled-2'), DISABLED: false },
+      ]
+      setupServerSettings(mockServers)
+
+      const result = await getNutInstances()
+
+      expect(result).toHaveLength(2)
+      // Ensure Nut constructor was called only for enabled hosts in order
+      const NutMock = Nut as jest.MockedClass<typeof Nut>
+      expect(NutMock).toHaveBeenCalledTimes(2)
+      expect(NutMock.mock.calls[0][0]).toBe('enabled-1')
+      expect(NutMock.mock.calls[1][0]).toBe('enabled-2')
+    })
   })
 
   describe('getSingleNutInstance', () => {

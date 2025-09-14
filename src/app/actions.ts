@@ -47,8 +47,9 @@ function connect(): Array<Nut> {
       debug.warn('No NUT servers configured')
       return []
     }
-    debug.info('Creating NUT connections', { serverCount: servers.length })
-    return servers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+    const enabledServers = servers.filter((server: server) => !server.DISABLED)
+    debug.info('Creating NUT connections', { serverCount: enabledServers.length })
+    return enabledServers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
   } catch (e: any) {
     debug.error('Failed to connect to NUT servers', { error: e.message })
     throw new Error(`Failed to connect to NUT servers: ${e.message}`)

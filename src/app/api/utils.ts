@@ -5,7 +5,8 @@ import { NextResponse } from 'next/server'
 
 export const getNutInstances = async (): Promise<Array<Nut>> => {
   const NUT_SERVERS = await getSettings('NUT_SERVERS')
-  return NUT_SERVERS.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+  const enabled = NUT_SERVERS.filter((s: server) => !s.DISABLED)
+  return enabled.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
 }
 
 export const getSingleNutInstance = async (device: string): Promise<Nut | undefined> => {

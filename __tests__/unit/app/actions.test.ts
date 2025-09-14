@@ -73,7 +73,7 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }],
+      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: false }],
     }
     return settings[key as keyof typeof settings]
   })
@@ -166,11 +166,31 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
-      { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
+      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
+      { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret', DISABLED: true },
     ]
     await updateServers(servers)
     expect(YamlSettings.prototype.set).toHaveBeenCalledWith('NUT_SERVERS', servers)
+  })
+
+  it('skips disabled servers when getting devices', async () => {
+    ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { HOST: 'enabled', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
+          { HOST: 'disabled', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: true },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+
+    // Clear previous call counts
+    ;(Nut.prototype.testConnection as jest.Mock).mockClear()
+
+    await getDevices()
+
+    // testConnection should be called only for enabled servers (1 call)
+    expect((Nut.prototype.testConnection as jest.Mock).mock.calls.length).toBe(1)
   })
 
   it('gets a single device', async () => {
