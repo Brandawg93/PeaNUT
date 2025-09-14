@@ -24,7 +24,7 @@ import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
 import { signIn } from '@/auth'
-import { TEST_USERNAME, TEST_PASSWORD } from '../../utils/test-constants'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import { AuthError } from 'next-auth'
 
 global.TextDecoder = TextDecoder as any
@@ -74,7 +74,7 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: false }],
+      NUT_SERVERS: [{ HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: false }],
     }
     return settings[key as keyof typeof settings]
   })
@@ -98,7 +98,7 @@ describe('actions', () => {
   })
 
   it('tests connection', async () => {
-    await expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
+    await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
@@ -113,7 +113,7 @@ describe('actions', () => {
 
   it('gets settings', async () => {
     const data = await getSettings('NUT_SERVERS')
-    expect(data[0].HOST).toBe('localhost')
+    expect(data[0].HOST).toBe(TEST_HOSTNAME)
   })
 
   it('sets settings', async () => {
@@ -167,8 +167,8 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
-      { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret', DISABLED: true },
+      { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
+      { HOST: 'remote', PORT: TEST_PORT, USERNAME: 'admin', PASSWORD: 'secret', DISABLED: true },
     ]
     await updateServers(servers)
     expect(YamlSettings.prototype.set).toHaveBeenCalledWith('NUT_SERVERS', servers)
@@ -178,8 +178,8 @@ describe('actions', () => {
     ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
       const settings = {
         NUT_SERVERS: [
-          { HOST: 'enabled', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
-          { HOST: 'disabled', PORT: 3493, USERNAME: 'user', PASSWORD: undefined, DISABLED: true },
+          { HOST: 'enabled', PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: false },
+          { HOST: 'disabled', PORT: TEST_PORT, USERNAME: 'user', PASSWORD: undefined, DISABLED: true },
         ],
       }
       return settings[key as keyof typeof settings]

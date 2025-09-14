@@ -1,5 +1,5 @@
 import { Nut } from '@/server/nut'
-import { TEST_USERNAME, TEST_PASSWORD } from '../../utils/test-constants'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import PromiseSocket from '@/server/promise-socket'
 import { upsStatus } from '@/common/constants'
 
@@ -63,7 +63,7 @@ describe('Nut', () => {
   })
 
   it('should get devices', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
@@ -72,7 +72,7 @@ describe('Nut', () => {
   })
 
   it('should get variable description', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('DESC ups battery.charge "Battery charge level"')
 
     const description = await nut.getVarDescription('ups', 'battery.charge')
@@ -80,7 +80,7 @@ describe('Nut', () => {
   })
 
   it('should get devices', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
@@ -90,7 +90,7 @@ describe('Nut', () => {
   })
 
   it('should detect when a device is unreachable', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(upsStatus.DEVICE_UNREACHABLE)
     jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
     jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
@@ -100,7 +100,7 @@ describe('Nut', () => {
   })
 
   it('should work with multiple ups devices on the same server', async () => {
-    const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(listVarUps)
     jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
     jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('test')
@@ -110,7 +110,7 @@ describe('Nut', () => {
   })
 
   it('should get device description', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('UPS ups "cyberpower"')
 
     const description = await nut.getDescription('ups')
@@ -118,7 +118,7 @@ describe('Nut', () => {
   })
 
   it('should get commands for a device', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST CMD ups\nCMD ups test\nEND LIST CMD ups')
@@ -128,7 +128,7 @@ describe('Nut', () => {
   })
 
   it('should get clients for a device', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST CLIENT ups\nCLIENT ups client1\nEND LIST CLIENT ups')
@@ -138,7 +138,7 @@ describe('Nut', () => {
   })
 
   it('should get read-write variables for a device', async () => {
-    const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue('BEGIN LIST RW ups\nRW ups battery.charge.low "10"\nEND LIST RW ups')
@@ -148,7 +148,7 @@ describe('Nut', () => {
   })
 
   it('should get command description', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('CMDDESC ups "test command"')
 
     const description = await nut.getCommandDescription('test', 'ups')
@@ -156,7 +156,7 @@ describe('Nut', () => {
   })
 
   it('should get variable value', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('VAR ups battery.charge "100"')
 
     const value = await nut.getVar('battery.charge', 'ups')
@@ -164,7 +164,7 @@ describe('Nut', () => {
   })
 
   it('should get enum values for a variable', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue(
@@ -176,7 +176,7 @@ describe('Nut', () => {
   })
 
   it('should get range values for a variable', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest
       .spyOn(PromiseSocket.prototype, 'readAll')
       .mockResolvedValue(
@@ -188,7 +188,7 @@ describe('Nut', () => {
   })
 
   it('should set variable value', async () => {
-    const nut = new Nut('localhost', 3493)
+    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('OK\n')
     jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
     jest
@@ -200,7 +200,7 @@ describe('Nut', () => {
 
   describe('checkCredentials', () => {
     it('should successfully check credentials with username and password', async () => {
-      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -218,7 +218,7 @@ describe('Nut', () => {
     })
 
     it('should successfully check credentials without username and password', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('OK\n') // LOGIN response
       jest
         .spyOn(Nut.prototype, 'getDevices')
@@ -232,13 +232,13 @@ describe('Nut', () => {
     })
 
     it('should throw error for invalid username', async () => {
-      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('ERR\n') // USERNAME response
       await expect(nut.checkCredentials()).rejects.toThrow('Invalid username')
     })
 
     it('should throw error for invalid password', async () => {
-      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -247,7 +247,7 @@ describe('Nut', () => {
     })
 
     it('should throw error when no devices found', async () => {
-      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -257,7 +257,7 @@ describe('Nut', () => {
     })
 
     it('should throw error for invalid login credentials', async () => {
-      const nut = new Nut('localhost', 3493, 'testuser', 'testpass')
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       jest
         .spyOn(PromiseSocket.prototype, 'readAll')
         .mockResolvedValueOnce('OK\n') // USERNAME response
@@ -270,7 +270,7 @@ describe('Nut', () => {
     })
 
     it('should not close connection when socket is provided', async () => {
-      const nut = new Nut('localhost', 3493, TEST_USERNAME, TEST_PASSWORD)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       const mockSocket = {
         write: jest.fn().mockResolvedValue(undefined),
         readAll: jest
@@ -294,20 +294,20 @@ describe('Nut', () => {
 
   describe('getVersion', () => {
     it('should get version successfully', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('2.8.1\n')
       const version = await nut.getVersion()
       expect(version).toEqual('2.8.1')
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('VER')
     })
     it('should handle version with extra whitespace', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('  2.8.1  \n')
       const version = await nut.getVersion()
       expect(version).toEqual('  2.8.1  ')
     })
     it('should throw error for invalid version response', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR Invalid command\n'))
       await expect(nut.getVersion()).rejects.toThrow('ERR Invalid command\n')
     })
@@ -315,20 +315,20 @@ describe('Nut', () => {
 
   describe('getNetVersion', () => {
     it('should get network version successfully', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('1.0\n')
       const netVersion = await nut.getNetVersion()
       expect(netVersion).toEqual('1.0')
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('NETVER')
     })
     it('should handle network version with extra whitespace', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('  1.0  \n')
       const netVersion = await nut.getNetVersion()
       expect(netVersion).toEqual('  1.0  ')
     })
     it('should throw error for invalid network version response', async () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR Invalid command\n'))
       await expect(nut.getNetVersion()).rejects.toThrow('ERR Invalid command\n')
     })
@@ -346,27 +346,27 @@ describe('Nut', () => {
     })
 
     it('should return true when credentials are provided', () => {
-      const nut = new Nut('localhost', 3493, 'username', 'password')
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
       expect(nut.hasCredentials()).toBe(true)
     })
 
     it('should return false when no credentials are provided', () => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       expect(nut.hasCredentials()).toBe(false)
     })
 
     it('should return false when only username is provided', () => {
-      const nut = new Nut('localhost', 3493, 'username')
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME)
       expect(nut.hasCredentials()).toBe(false)
     })
 
     it('should return false when only password is provided', () => {
-      const nut = new Nut('localhost', 3493, undefined, 'password')
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, undefined, TEST_PASSWORD)
       expect(nut.hasCredentials()).toBe(false)
     })
 
     it('should return false when empty strings are provided', () => {
-      const nut = new Nut('localhost', 3493, '', '')
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, '', '')
       expect(nut.hasCredentials()).toBe(false)
     })
   })
@@ -382,7 +382,7 @@ describe('Nut', () => {
         vars: Record<string, any>
       }>
     ) => {
-      const nut = new Nut('localhost', 3493)
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(Nut.prototype, 'getDevices').mockResolvedValue(devices)
       return nut
     }

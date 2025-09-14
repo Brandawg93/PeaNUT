@@ -2,15 +2,15 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import AddServer from '@/client/components/add-server'
 import { LanguageContext } from '@/client/context/language'
-import { TEST_USERNAME, TEST_PASSWORD } from '../../../utils/test-constants'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../../utils/test-constants'
 
 describe('AddServer', () => {
   const renderComponent = (props?: Partial<React.ComponentProps<typeof AddServer>>) =>
     render(
       <LanguageContext.Provider value='en'>
         <AddServer
-          initialServer={props?.initialServer ?? 'localhost'}
-          initialPort={props?.initialPort ?? 3493}
+          initialServer={props?.initialServer ?? TEST_HOSTNAME}
+          initialPort={props?.initialPort ?? TEST_PORT}
           initialUsername={props?.initialUsername}
           initialPassword={props?.initialPassword}
           initialDisabled={props?.initialDisabled}
@@ -41,7 +41,7 @@ describe('AddServer Component', () => {
     return render(
       <LanguageContext.Provider value='en'>
         <AddServer
-          initialServer='localhost'
+          initialServer={TEST_HOSTNAME}
           initialPort={8080}
           initialUsername={TEST_USERNAME}
           initialPassword={TEST_PASSWORD}
@@ -70,7 +70,7 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const portInput = getByTestId('port')
     fireEvent.change(portInput, { target: { value: '9090' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 9090, TEST_USERNAME, TEST_PASSWORD, false)
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 9090, TEST_USERNAME, TEST_PASSWORD, false)
   })
 
   test('calls handleRemove on remove button click', () => {
@@ -84,14 +84,14 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const usernameInput = getByTestId('username')
     fireEvent.change(usernameInput, { target: { value: 'new-user' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 8080, 'new-user', TEST_PASSWORD, false)
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, 'new-user', TEST_PASSWORD, false)
   })
 
   test('calls setPassword on password input change', () => {
     const { getByTestId } = renderComponent()
     const passwordInput = getByTestId('password')
     fireEvent.change(passwordInput, { target: { value: 'new-password' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('localhost', 8080, 'admin', 'new-password', false)
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, TEST_USERNAME, 'new-password', false)
   })
 
   test('toggles password visibility', () => {
@@ -117,6 +117,6 @@ describe('AddServer Component', () => {
     fireEvent.click(getByLabelText('options'))
     const testItem = await findByTestId('menu-test')
     fireEvent.click(testItem)
-    expect(mockTestConnectionAction).toHaveBeenCalledWith('localhost', 8080, TEST_USERNAME, TEST_PASSWORD)
+    expect(mockTestConnectionAction).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, TEST_USERNAME, TEST_PASSWORD)
   })
 })
