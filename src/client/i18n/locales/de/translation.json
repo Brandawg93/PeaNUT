@@ -113,9 +113,33 @@
   "selectDevice": "Wählen Sie ein Gerät aus",
   "loading": "Laden...",
   "cancel": "Stornieren",
+  "close": "Schließen",
+  "confirm": "Bestätigen",
   "continue": "Weitermachen",
   "actions": {
     "title": "Aktionen",
+    "groups": {
+      "testing": "Testen",
+      "power": "Stromsteuerung",
+      "beeper": "Summer"
+    },
+    "testing": {
+      "title": "Testen",
+      "description": "Wählen Sie einen Batterietest aus.",
+      "selectPlaceholder": "Testtyp auswählen",
+      "run": "Test ausführen"
+    },
+    "power": {
+      "title": "Stromsteuerung",
+      "description": "Wählen Sie eine Stromaktion und bestätigen Sie."
+    },
+    "beeper": {
+      "title": "Summer",
+      "description": "Aktivieren/Deaktivieren Sie den Summer oder schalten Sie ihn vorübergehend stumm.",
+      "switchLabel": "Summer aktivieren",
+      "muteLabel": "Summer stummschalten",
+      "muteButton": "Stumm"
+    },
     "batteryTestQuick": {
       "title": "Schnellen Batterie -Test durchführen",
       "description": "Möchten Sie einen schnellen Batterie -Test auf den UPS durchführen?",

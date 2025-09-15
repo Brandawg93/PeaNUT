@@ -112,9 +112,33 @@
   "selectDevice": "Seleccione un dispositivo",
   "loading": "Cargando...",
   "cancel": "Cancelar",
+  "close": "Cerrar",
+  "confirm": "Confirmar",
   "continue": "Continuar",
   "actions": {
-    "title": "Comportamiento",
+    "title": "Acciones",
+    "groups": {
+      "testing": "Pruebas",
+      "power": "Controles de energía",
+      "beeper": "Zumbador"
+    },
+    "testing": {
+      "title": "Pruebas",
+      "description": "Elija una prueba de batería.",
+      "selectPlaceholder": "Seleccione el tipo de prueba",
+      "run": "Ejecutar prueba"
+    },
+    "power": {
+      "title": "Controles de energía",
+      "description": "Elija una acción de energía y confirme."
+    },
+    "beeper": {
+      "title": "Zumbador",
+      "description": "Habilite/Deshabilite el zumbador o silencie temporalmente.",
+      "switchLabel": "Habilitar zumbador",
+      "muteLabel": "Silenciar zumbador",
+      "muteButton": "Silenciar"
+    },
     "batteryTestQuick": {
       "title": "Realizar una prueba de batería rápida",
       "description": "¿Le gustaría realizar una prueba de batería rápida en el UPS?",

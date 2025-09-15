@@ -320,7 +320,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
                   (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
-                <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} />
+                <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} vars={vars} />
               </div>
             </div>
           </div>
