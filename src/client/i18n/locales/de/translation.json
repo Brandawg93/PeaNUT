@@ -83,7 +83,9 @@
       "charts": "Diagramme",
       "variables": "Variablen"
     },
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "enable": "Aktivieren",
+    "disable": "Deaktivieren"
   },
   "connect": {
     "server": "Serveradresse",

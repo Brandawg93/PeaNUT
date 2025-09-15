@@ -123,10 +123,12 @@ nutServers:
     PORT: 3493
     USERNAME: 'observer'
     PASSWORD: 'password1'
+    DISABLED: false # optional
   - HOST: 'nut-server2.local'
     PORT: 3493
     USERNAME: 'observer'
     PASSWORD: 'password2'
+    DISABLED: true # this server will be present in config but ignored by PeaNUT
 
 # Environment Variables Configuration
 env:

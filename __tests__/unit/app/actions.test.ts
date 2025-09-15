@@ -24,6 +24,7 @@ import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
 import { signIn } from '@/auth'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import { AuthError } from 'next-auth'
 
 global.TextDecoder = TextDecoder as any
@@ -73,7 +74,9 @@ beforeAll(() => {
   jest.spyOn(InfluxWriter.prototype, 'testConnection').mockResolvedValue(void 0)
   jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
     const settings = {
-      NUT_SERVERS: [{ HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined }],
+      NUT_SERVERS: [
+        { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+      ],
     }
     return settings[key as keyof typeof settings]
   })
@@ -97,7 +100,7 @@ describe('actions', () => {
   })
 
   it('tests connection', async () => {
-    await expect(testConnection('localhost', 3493)).resolves.toBe('Connection successful')
+    await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
@@ -112,7 +115,7 @@ describe('actions', () => {
 
   it('gets settings', async () => {
     const data = await getSettings('NUT_SERVERS')
-    expect(data[0].HOST).toBe('localhost')
+    expect(data[0].HOST).toBe(TEST_HOSTNAME)
   })
 
   it('sets settings', async () => {
@@ -166,11 +169,31 @@ describe('actions', () => {
 
   it('updates servers', async () => {
     const servers = [
-      { HOST: 'localhost', PORT: 3493, USERNAME: 'user', PASSWORD: undefined },
-      { HOST: 'remote', PORT: 3493, USERNAME: 'admin', PASSWORD: 'secret' },
+      { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+      { HOST: 'remote', PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: true },
     ]
     await updateServers(servers)
     expect(YamlSettings.prototype.set).toHaveBeenCalledWith('NUT_SERVERS', servers)
+  })
+
+  it('skips disabled servers when getting devices', async () => {
+    ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { HOST: 'enabled', PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+          { HOST: 'disabled', PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: true },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+
+    // Clear previous call counts
+    ;(Nut.prototype.testConnection as jest.Mock).mockClear()
+
+    await getDevices()
+
+    // testConnection should be called only for enabled servers (1 call)
+    expect((Nut.prototype.testConnection as jest.Mock).mock.calls.length).toBe(1)
   })
 
   it('gets a single device', async () => {
@@ -197,15 +220,15 @@ describe('actions', () => {
 
     it('successfully authenticates', async () => {
       const formData = new FormData()
-      formData.append('username', 'test')
-      formData.append('password', 'test')
+      formData.append('username', TEST_USERNAME)
+      formData.append('password', TEST_PASSWORD)
       await authenticate(undefined, formData)
       expect(signIn).toHaveBeenCalledWith('credentials', formData)
     })
 
     it('handles invalid credentials error', async () => {
       const formData = new FormData()
-      formData.append('username', 'test')
+      formData.append('username', TEST_USERNAME)
       formData.append('password', 'wrong')
 
       const authError = new AuthError('CredentialsSignin')
@@ -217,8 +240,8 @@ describe('actions', () => {
 
     it('handles generic auth error', async () => {
       const formData = new FormData()
-      formData.append('username', 'test')
-      formData.append('password', 'test')
+      formData.append('username', TEST_USERNAME)
+      formData.append('password', TEST_PASSWORD)
 
       const authError = new AuthError('Some other error')
       ;(signIn as jest.Mock).mockRejectedValueOnce(authError)

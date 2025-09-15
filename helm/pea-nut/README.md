@@ -93,10 +93,12 @@ nutServers:
     PORT: 3493
     USERNAME: 'observer'
     PASSWORD: 'password1'
+    DISABLED: false # optional; when true, PeaNUT will skip this server
   - HOST: 'nut-server2.local'
     PORT: 3493
     USERNAME: 'observer'
     PASSWORD: 'password2'
+    DISABLED: true # example of disabled server
 ```
 
 ### InfluxDB Configuration
