@@ -26,7 +26,12 @@
   },
   "grid": {
     "key": "Clé",
-    "value": "Valeur"
+    "value": "Valeur",
+    "filter": {
+      "placeholder": "Filtrer les clés",
+      "apply": "Appliquer le filtre",
+      "clear": "Effacer le filtre"
+    }
   },
   "sidebar": {
     "settings": "Paramètres",
@@ -78,7 +83,9 @@
       "charts": "Graphiques",
       "variables": "Variables"
     },
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "enable": "Activer",
+    "disable": "Désactiver"
   },
   "connect": {
     "server": "Serveur",
@@ -106,9 +113,33 @@
   "selectDevice": "Sélectionnez un appareil",
   "loading": "Chargement...",
   "cancel": "Annuler",
+  "close": "Fermer",
+  "confirm": "Confirmer",
   "continue": "Continuer",
   "actions": {
-    "title": "Actes",
+    "title": "Actions",
+    "groups": {
+      "testing": "Tests",
+      "power": "Contrôles d'alimentation",
+      "beeper": "Bip"
+    },
+    "testing": {
+      "title": "Tests",
+      "description": "Choisissez un test de batterie à exécuter.",
+      "selectPlaceholder": "Sélectionnez le type de test",
+      "run": "Lancer le test"
+    },
+    "power": {
+      "title": "Contrôles d'alimentation",
+      "description": "Choisissez une action d'alimentation, puis confirmez."
+    },
+    "beeper": {
+      "title": "Bip",
+      "description": "Activer/Désactiver le bip ou le couper temporairement.",
+      "switchLabel": "Activer le bip",
+      "muteLabel": "Couper le bip",
+      "muteButton": "Couper"
+    },
     "batteryTestQuick": {
       "title": "Effectuer un test de batterie rapide",
       "description": "Souhaitez-vous effectuer un test de batterie rapide sur les onduleurs ?",

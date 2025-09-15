@@ -26,7 +26,12 @@
   },
   "grid": {
     "key": "Cheie",
-    "value": "Valoare"
+    "value": "Valoare",
+    "filter": {
+      "placeholder": "",
+      "apply": "Aplică filtru",
+      "clear": "Șterge filtru"
+    }
   },
   "sidebar": {
     "settings": "Setări",
@@ -78,7 +83,9 @@
       "charts": "Grafice",
       "variables": "Variabile"
     },
-    "remove": "Elimină"
+    "remove": "Elimină",
+    "enable": "Permite",
+    "disable": "Dezactiva"
   },
   "connect": {
     "server": "Adresa serverului",
@@ -106,9 +113,33 @@
   "selectDevice": "Selectați un dispozitiv",
   "loading": "Încărcare...",
   "cancel": "Anula",
+  "close": "Închide",
+  "confirm": "Confirmă",
   "continue": "Continua",
   "actions": {
     "title": "Acțiuni",
+    "groups": {
+      "testing": "Testare",
+      "power": "Control alimentare",
+      "beeper": "Beeper"
+    },
+    "testing": {
+      "title": "Testare",
+      "description": "Alegeți un test de baterie de rulat.",
+      "selectPlaceholder": "Selectați tipul de test",
+      "run": "Rulați testul"
+    },
+    "power": {
+      "title": "Control alimentare",
+      "description": "Alegeți o acțiune de alimentare, apoi confirmați."
+    },
+    "beeper": {
+      "title": "Beeper",
+      "description": "Activați/Dezactivați beep -ul sau mutați temporar.",
+      "switchLabel": "Activați beeper",
+      "muteLabel": "Mut beeper",
+      "muteButton": "Mut"
+    },
     "batteryTestQuick": {
       "title": "Efectuați testul rapid al bateriei",
       "description": "Doriți să efectuați un test rapid al bateriei pe UPS?",

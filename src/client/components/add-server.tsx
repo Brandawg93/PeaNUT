@@ -1,13 +1,19 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
-import { HiOutlineXMark } from 'react-icons/hi2'
+import { HiOutlineXMark, HiOutlineEllipsisVertical } from 'react-icons/hi2'
 import { useTheme } from 'next-themes'
 import { LanguageContext } from '@/client/context/language'
 import { Button } from '@/client/components/ui/button'
 import { Input } from '@/client/components/ui/input'
 import { Label } from '@/client/components/ui/label'
 import { Card } from '@/client/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/client/components/ui/dropdown-menu'
 import PasswordInput from '@/client/components/ui/password-input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/client/components/ui/tooltip'
 
@@ -18,7 +24,8 @@ type AddServerProps = Readonly<{
   initialPort: number
   initialUsername: string | undefined
   initialPassword: string | undefined
-  handleChange: (server: string, port: number, username?: string, password?: string) => void
+  initialDisabled?: boolean
+  handleChange: (server: string, port: number, username?: string, password?: string, disabled?: boolean) => void
   handleRemove: () => void
   testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   saved?: boolean
@@ -29,6 +36,7 @@ export default function AddServer({
   initialPort,
   initialUsername,
   initialPassword,
+  initialDisabled,
   handleChange,
   handleRemove,
   testConnectionAction,
@@ -41,6 +49,7 @@ export default function AddServer({
   const [port, setPort] = useState<number>(initialPort ?? 3493)
   const [username, setUsername] = useState<string | undefined>(initialUsername ?? '')
   const [password, setPassword] = useState<string | undefined>(initialPassword ?? '')
+  const [disabled, setDisabled] = useState<boolean>(initialDisabled ?? false)
   const [connectionStatus, setConnectionStatus] = useState<'success' | 'error' | 'untested'>('untested')
 
   const handleTestConnection = useCallback(
@@ -70,6 +79,13 @@ export default function AddServer({
   )
 
   const pingIcon = () => {
+    if (disabled) {
+      return (
+        <span className='relative flex h-3 w-3'>
+          <span className='bg-muted-foreground relative inline-flex h-3 w-3 rounded-full'></span>
+        </span>
+      )
+    }
     switch (connectionStatus) {
       case 'success':
         return (
@@ -107,7 +123,7 @@ export default function AddServer({
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
-    if (saved) {
+    if (saved && !disabled) {
       handleTestConnection(true)
       interval = setInterval(() => {
         handleTestConnection(true)
@@ -115,7 +131,7 @@ export default function AddServer({
 
       return () => clearInterval(interval)
     }
-  }, [saved, handleTestConnection])
+  }, [saved, disabled, handleTestConnection])
 
   return (
     <TooltipProvider>
@@ -141,9 +157,10 @@ export default function AddServer({
                 type='text'
                 id='serverHost'
                 value={server}
+                disabled={disabled}
                 onChange={(e) => {
                   setServer(e.target.value)
-                  handleChange(e.target.value, port, username, password)
+                  handleChange(e.target.value, port, username, password, disabled)
                 }}
                 className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='server'
@@ -156,9 +173,10 @@ export default function AddServer({
                 type='number'
                 id='serverPort'
                 value={port}
+                disabled={disabled}
                 onChange={(e) => {
                   setPort(+e.target.value)
-                  handleChange(server, +e.target.value, username, password)
+                  handleChange(server, +e.target.value, username, password, disabled)
                 }}
                 className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='port'
@@ -172,9 +190,10 @@ export default function AddServer({
                 type='text'
                 id='username'
                 value={username}
+                disabled={disabled}
                 onChange={(e) => {
                   setUsername(e.target.value)
-                  handleChange(server, port, e.target.value, password)
+                  handleChange(server, port, e.target.value, password, disabled)
                 }}
                 className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='username'
@@ -185,23 +204,39 @@ export default function AddServer({
               <PasswordInput
                 id='password'
                 value={password}
+                disabled={disabled}
                 onChange={(e) => {
                   setPassword(e.target.value)
-                  handleChange(server, port, username, e.target.value)
+                  handleChange(server, port, username, e.target.value, disabled)
                 }}
                 data-testid='password'
               />
             </div>
             <div className='flex flex-row justify-between'>
               <div />
-              <Button
-                variant='destructive'
-                onClick={() => handleTestConnection()}
-                className='cursor-pointer font-bold shadow-none'
-                type='button'
-              >
-                {t('connect.test')}
-              </Button>
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost' className='cursor-pointer shadow-none' title='options' aria-label='options'>
+                    <HiOutlineEllipsisVertical className='size-5' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                  <DropdownMenuItem disabled={disabled} onClick={() => handleTestConnection()} data-testid='menu-test'>
+                    {t('connect.test')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      const next = !disabled
+                      setDisabled(next)
+                      setConnectionStatus('untested')
+                      handleChange(server, port, username, password, next)
+                    }}
+                    data-testid='menu-toggle'
+                  >
+                    {disabled ? t('settings.enable') : t('settings.disable')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </form>
         </div>

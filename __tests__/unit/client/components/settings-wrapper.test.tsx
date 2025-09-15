@@ -2,6 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SettingsWrapper from '@/client/components/settings-wrapper'
 import { LanguageContext } from '@/client/context/language'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME } from '../../../utils/test-constants'
 // import { useRouter } from 'next/navigation'
 
 global.fetch = jest.fn(() =>
@@ -44,7 +45,7 @@ describe('SettingsWrapper', () => {
 
   it('renders the settings wrapper component', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
+    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: TEST_HOSTNAME, PORT: 8080 }, saved: true }])
 
     renderComponent()
 
@@ -55,7 +56,7 @@ describe('SettingsWrapper', () => {
 
   it('loads server settings if settings check passes', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
-    mockGetSettingsAction.mockResolvedValueOnce([{ server: { HOST: 'localhost', PORT: 8080 }, saved: true }])
+    mockGetSettingsAction.mockResolvedValueOnce([{ HOST: TEST_HOSTNAME, PORT: 8080, DISABLED: false }])
 
     renderComponent()
 
@@ -67,7 +68,7 @@ describe('SettingsWrapper', () => {
   it('handles server change correctly', async () => {
     mockCheckSettingsAction.mockResolvedValue(true)
     const servers = [
-      { server: { HOST: 'localhost', PORT: 8080, USERNAME: jest.fn(), PASSWORD: jest.fn() }, saved: true },
+      { HOST: TEST_HOSTNAME, PORT: 8080, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: false },
     ]
     mockGetSettingsAction.mockResolvedValueOnce(servers)
     mockGetSettingsAction.mockResolvedValueOnce('influxHost')
@@ -86,6 +87,44 @@ describe('SettingsWrapper', () => {
 
     await waitFor(() => {
       expect(screen.getByDisplayValue('newhost')).toBeInTheDocument()
+    })
+  })
+
+  it('persists DISABLED flag when saving servers', async () => {
+    mockCheckSettingsAction.mockResolvedValue(true)
+    const servers = [
+      { HOST: TEST_HOSTNAME, PORT: 8080, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: true },
+    ]
+    mockGetSettingsAction.mockResolvedValueOnce(servers)
+    mockGetSettingsAction.mockResolvedValueOnce('influxHost')
+    mockGetSettingsAction.mockResolvedValueOnce('influxToken')
+    mockGetSettingsAction.mockResolvedValueOnce('influxOrg')
+    mockGetSettingsAction.mockResolvedValueOnce('influxBucket')
+    mockGetSettingsAction.mockResolvedValueOnce(10)
+    mockGetSettingsAction.mockResolvedValueOnce('MM/DD/YYYY')
+    mockGetSettingsAction.mockResolvedValueOnce('12-hour')
+    mockGetSettingsAction.mockResolvedValueOnce([
+      { key: 'KPIS', enabled: true },
+      { key: 'CHARTS', enabled: true },
+      { key: 'VARIABLES', enabled: true },
+    ])
+    mockGetSettingsAction.mockResolvedValueOnce(false)
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('settings-wrapper')).toBeInTheDocument()
+    })
+
+    // Click apply in servers tab
+    const applyButtons = await screen.findAllByText('settings.apply')
+    const serversApply = applyButtons[0]
+    serversApply.click()
+
+    await waitFor(() => {
+      expect(mockUpdateServersAction).toHaveBeenCalledWith([
+        { HOST: TEST_HOSTNAME, PORT: 8080, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD, DISABLED: true },
+      ])
     })
   })
 })

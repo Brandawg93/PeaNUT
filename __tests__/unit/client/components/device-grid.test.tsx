@@ -5,36 +5,6 @@ import DeviceGrid from '@/client/components/device-grid'
 import { DevicesData, DEVICE } from '@/common/types'
 import { LanguageContext } from '@/client/context/language'
 
-// Mock i18next
-jest.mock('i18next', () => ({
-  use: jest.fn(() => ({
-    use: jest.fn(() => ({
-      use: jest.fn(() => ({
-        init: jest.fn(),
-      })),
-    })),
-  })),
-  language: 'en',
-  on: jest.fn(),
-  off: jest.fn(),
-}))
-
-// Mock i18next-browser-languagedetector
-jest.mock('i18next-browser-languagedetector', () => ({
-  default: jest.fn(),
-}))
-
-// Mock react-i18next
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-  initReactI18next: {
-    type: '3rdParty',
-    init: () => {},
-  },
-}))
-
 // Mock next/navigation
 const mockPush = jest.fn()
 jest.mock('next/navigation', () => ({

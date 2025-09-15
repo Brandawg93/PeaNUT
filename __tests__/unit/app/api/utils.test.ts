@@ -1,4 +1,5 @@
 import { Nut } from '@/server/nut'
+import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../../utils/test-constants'
 import { getSettings } from '@/app/actions'
 import {
   getNutInstances,
@@ -35,8 +36,8 @@ const mockGetSettings = getSettings as jest.MockedFunction<typeof getSettings>
 // Test utilities and common mocks
 const createMockServer = (
   host: string = 'server1',
-  port: number = 3493,
-  username: string = 'user',
+  port: number = TEST_PORT,
+  username: string = TEST_USERNAME,
   password?: string
 ) => ({
   HOST: host,
@@ -79,7 +80,10 @@ describe('API Utils', () => {
 
   describe('getNutInstances', () => {
     it('should return array of Nut instances from settings', async () => {
-      const mockServers = [createMockServer('localhost'), createMockServer('192.168.1.100', 3493, 'admin', 'secret')]
+      const mockServers = [
+        createMockServer('localhost'),
+        createMockServer(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD),
+      ]
       setupServerSettings(mockServers)
 
       const result = await getNutInstances()
@@ -96,6 +100,24 @@ describe('API Utils', () => {
       const result = await getNutInstances()
 
       expect(result).toHaveLength(0)
+    })
+
+    it('should filter out disabled servers', async () => {
+      const mockServers = [
+        { ...createMockServer('enabled-1'), DISABLED: false },
+        { ...createMockServer('disabled-1'), DISABLED: true },
+        { ...createMockServer('enabled-2'), DISABLED: false },
+      ]
+      setupServerSettings(mockServers)
+
+      const result = await getNutInstances()
+
+      expect(result).toHaveLength(2)
+      // Ensure Nut constructor was called only for enabled hosts in order
+      const NutMock = Nut as jest.MockedClass<typeof Nut>
+      expect(NutMock).toHaveBeenCalledTimes(2)
+      expect(NutMock.mock.calls[0][0]).toBe('enabled-1')
+      expect(NutMock.mock.calls[1][0]).toBe('enabled-2')
     })
   })
 

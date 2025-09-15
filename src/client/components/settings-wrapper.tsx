@@ -166,7 +166,14 @@ export default function SettingsWrapper({
   }, [checkSettingsAction, loadSettings])
 
   const handleServerChange = useCallback(
-    (server: string, port: number, username: string | undefined, password: string | undefined, index: number) => {
+    (
+      server: string,
+      port: number,
+      username: string | undefined,
+      password: string | undefined,
+      disabled: boolean | undefined,
+      index: number
+    ) => {
       setServerList((prevList) => {
         const updatedList = [...prevList]
         updatedList[index] = {
@@ -177,6 +184,7 @@ export default function SettingsWrapper({
             PORT: port,
             USERNAME: username,
             PASSWORD: password,
+            DISABLED: disabled ?? updatedList[index].server.DISABLED ?? false,
           },
         }
         return updatedList
@@ -190,7 +198,7 @@ export default function SettingsWrapper({
   }, [])
 
   const handleSaveServers = useCallback(async () => {
-    await updateServersAction(serverList.map(({ server }) => server))
+    await updateServersAction(serverList.map(({ server }) => ({ ...server, DISABLED: server.DISABLED ?? false })))
     setServerList((prevList) => prevList.map((item) => ({ ...item, saved: true })))
     toast.success(t('settings.saved'))
   }, [updateServersAction, serverList, t])
@@ -337,8 +345,9 @@ export default function SettingsWrapper({
                         initialPort={server.server.PORT}
                         initialUsername={server.server.USERNAME}
                         initialPassword={server.server.PASSWORD}
-                        handleChange={(server, port, username, password) =>
-                          handleServerChange(server, port, username, password, index)
+                        initialDisabled={server.server.DISABLED}
+                        handleChange={(server, port, username, password, disabled) =>
+                          handleServerChange(server, port, username, password, disabled, index)
                         }
                         handleRemove={() => handleServerRemove(index)}
                         testConnectionAction={testConnectionAction}
@@ -355,7 +364,7 @@ export default function SettingsWrapper({
                               ...prevList,
                               {
                                 id: `new-server-${Date.now()}`,
-                                server: { HOST: '', PORT: 0, USERNAME: '', PASSWORD: '' },
+                                server: { HOST: '', PORT: 0, USERNAME: '', PASSWORD: '', DISABLED: false },
                                 saved: false,
                               },
                             ]
