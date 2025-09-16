@@ -88,18 +88,20 @@ jest.mock('next-auth/react', () => {
   }
 })
 
-jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      replace: jest.fn(),
-    }
-  },
-  useSearchParams: jest.fn(() => {
-    return {
-      get: jest.fn(),
-    }
-  }),
-}))
+jest.mock('next/navigation', () => {
+  const routerMock = {
+    push: jest.fn(),
+    replace: jest.fn(),
+  }
+  return {
+    useRouter: jest.fn(() => routerMock),
+    useSearchParams: jest.fn(() => {
+      return {
+        get: jest.fn(),
+      }
+    }),
+  }
+})
 
 // Mock Next.js server modules for Jest
 jest.mock('next/server', () => ({
