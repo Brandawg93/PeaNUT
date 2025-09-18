@@ -198,7 +198,6 @@ Example:
           template: |
             {{ if .JSON.Exists "ups\\.status" }}
               {{ $jsonStatus := .JSON.String "ups\\.status" }}
-              {{ $jsonStatus }}
               <div class="flex justify-between text-center">
                 <div>
                   <div class="color-highlight size-h3">{{ .JSON.Int "battery\\.charge" | formatNumber }}%</div>
