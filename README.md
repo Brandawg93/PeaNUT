@@ -218,6 +218,8 @@ Example:
                   On Battery
             {{ else if eq $jsonStatus "LB" }}
                   Low Battery
+            {{ else }}
+                  Unknown
             {{ end }}
                 </div>
                 <div class="size-h6">UPS STATUS</div>
