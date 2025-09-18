@@ -157,7 +157,7 @@ Ex:
 ```yaml
 widget:
   type: customapi
-  url: http://{HOSTNAME}:{PORT}/api/v1/devices/ups
+  url: http://{HOSTNAME}:{PORT}/api/v1/devices/{UPS_NAME}
   mappings:
     - field: battery.charge
       label: Battery Charge
@@ -180,6 +180,49 @@ widget:
           to: Low Battery
         - any: true
           to: Unknown
+```
+
+## Glance Support
+
+For information about how to set up Glance, check the [Glance docs](https://github.com/glanceapp/glance).
+
+Example:
+
+<img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/glance.png" width="600px" />
+
+```yaml
+        - type: custom-api
+          title: UPS
+          cache: 5m
+          url: http://{HOSTNAME}:{PORT}/api/v1/devices/{UPS_NAME}
+          template: |
+            {{ $jsonStatus := .JSON.String "ups\\.status" }}
+            <div class="flex justify-between text-center">
+              <div>
+                <div class="color-highlight size-h3">{{ .JSON.Int "battery\\.charge" | formatNumber }}%</div>
+                <div class="size-h6">BATTERY CHARGE</div>
+              </div>
+              <div>
+                <div class="color-highlight size-h3">{{ concat (.JSON.String "battery\\.runtime") "s" | duration }} ({{ div (.JSON.Int "battery\\.runtime") 60 | formatNumber }} Wh)</div>
+                <div class="size-h6">BATTERY RUNTIME</div>
+              </div>
+              <div>
+                <div class="color-highlight size-h3">{{ .JSON.Int "ups\\.load" | formatNumber }}% ({{ .JSON.Int "ups\\.realpower" | formatNumber }} W / {{ .JSON.Int "ups\\.power" | formatNumber }} VA)</div>
+                <div class="size-h6">UPS LOAD</div>
+              </div>
+              <div>
+                <div class="color-highlight size-h3">
+            {{ if eq $jsonStatus "OL" }}
+                  Online
+            {{ else if eq $jsonStatus "OB" }}
+                  On Battery
+            {{ else if eq $jsonStatus "LB" }}
+                  Low Battery
+            {{ end }}
+                </div>
+                <div class="size-h6">UPS STATUS</div>
+              </div>
+            </div>
 ```
 
 ## FAQ
