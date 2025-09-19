@@ -5,7 +5,7 @@ import { server } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
 
-export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
+export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES' | 'OUTLETS'
 
 export type DashboardSectionConfig = Array<{
   key: DashboardSectionKey
@@ -25,6 +25,7 @@ const ISettings = {
     { key: 'KPIS', enabled: true },
     { key: 'CHARTS', enabled: true },
     { key: 'VARIABLES', enabled: true },
+    { key: 'OUTLETS', enabled: true },
   ] as DashboardSectionConfig,
   DISABLE_VERSION_CHECK: false,
 }
@@ -154,6 +155,23 @@ export class YamlSettings {
       console.error('Error loading settings file:', error instanceof Error ? error.message : error)
     }
 
+    // Ensure dashboard sections include any new defaults (e.g., OUTLETS)
+    try {
+      const defaultSectionKeys: DashboardSectionKey[] = ['KPIS', 'CHARTS', 'VARIABLES', 'OUTLETS']
+      const currentSections = Array.isArray(this.data.DASHBOARD_SECTIONS) ? this.data.DASHBOARD_SECTIONS : []
+      const existingKeys = new Set(currentSections.map((s) => s.key))
+      defaultSectionKeys.forEach((key) => {
+        if (!existingKeys.has(key)) {
+          currentSections.push({ key, enabled: true })
+        }
+      })
+      this.data.DASHBOARD_SECTIONS = currentSections
+    } catch (error) {
+      this.debug.warn?.('Failed to normalize DASHBOARD_SECTIONS; using defaults', {
+        error: error instanceof Error ? error.message : String(error),
+      })
+    }
+
     // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
     // Ensure DASHBOARD_SECTIONS has a default value
@@ -161,6 +179,7 @@ export class YamlSettings {
       { key: 'KPIS', enabled: true },
       { key: 'CHARTS', enabled: true },
       { key: 'VARIABLES', enabled: true },
+      { key: 'OUTLETS', enabled: true },
     ]
   }
 

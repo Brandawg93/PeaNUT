@@ -81,7 +81,8 @@
     "section": {
       "kpis": "KPIs",
       "charts": "Charts",
-      "variables": "Variables"
+      "variables": "Variables",
+      "outlets": "Outlets"
     },
     "remove": "Remove",
     "enable": "Enable",
@@ -203,5 +204,12 @@
   "description": "Description",
   "status": "Status",
   "view": "View",
-  "details": "Details"
+  "details": "Details",
+  "outlets": {
+    "title": "Outlets",
+    "power": "Power",
+    "cycle": "Cycle",
+    "on": "On",
+    "off": "Off"
+  }
 }

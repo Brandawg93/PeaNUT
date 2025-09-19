@@ -87,6 +87,7 @@ export default function SettingsWrapper({
     { key: 'KPIS', enabled: true },
     { key: 'CHARTS', enabled: true },
     { key: 'VARIABLES', enabled: true },
+    { key: 'OUTLETS', enabled: true },
   ])
   const [connected, setConnected] = useState(false)
   const lng = useContext<string>(LanguageContext)
