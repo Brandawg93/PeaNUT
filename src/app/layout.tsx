@@ -5,6 +5,8 @@ import '@/app/globals.css'
 import { ThemeProvider } from '@/client/context/theme-provider'
 import LanguageProvider from '@/client/context/language'
 import { SettingsProvider } from '@/client/context/settings'
+import { AuthProvider } from '@/client/context/auth'
+import { isAuthEnabled } from '@/server/auth-config'
 import { PublicEnvScript } from 'next-runtime-env'
 import i18next from 'i18next'
 
@@ -22,11 +24,13 @@ export default function RootLayout({ children }: { readonly children: React.Reac
         <PublicEnvScript />
       </head>
       <body className={`${inter.className} bg-background`}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <SettingsProvider>
-            <LanguageProvider>{children}</LanguageProvider>
-          </SettingsProvider>
-        </ThemeProvider>
+        <AuthProvider authEnabled={isAuthEnabled()}>
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+            <SettingsProvider>
+              <LanguageProvider>{children}</LanguageProvider>
+            </SettingsProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   )

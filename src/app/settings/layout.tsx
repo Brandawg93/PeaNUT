@@ -11,6 +11,7 @@ import { TbSettings } from 'react-icons/tb'
 import { logout } from '@/app/actions'
 import { LuLogOut } from 'react-icons/lu'
 import { useNavigation } from '@/hooks/useNavigation'
+import { useAuth } from '@/client/context/auth'
 
 export default function SettingsLayout({
   children, // will be a page or nested layout
@@ -20,6 +21,7 @@ export default function SettingsLayout({
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { push } = useNavigation()
+  const { authEnabled } = useAuth()
 
   return (
     <div className='bg-background flex h-full min-h-screen flex-col' data-testid='wrapper'>
@@ -27,16 +29,18 @@ export default function SettingsLayout({
         <div className='flex justify-end space-x-2'>
           <DayNightSwitch />
           <LanguageSwitcher />
-          <Button
-            variant='ghost'
-            size='icon'
-            title={t('logout')}
-            aria-label={t('logout')}
-            onClick={logout}
-            className='cursor-pointer'
-          >
-            <LuLogOut className='size-6! stroke-[1.5px]' />
-          </Button>
+          {authEnabled ? (
+            <Button
+              variant='ghost'
+              size='icon'
+              title={t('logout')}
+              aria-label={t('logout')}
+              onClick={logout}
+              className='cursor-pointer'
+            >
+              <LuLogOut className='size-6! stroke-[1.5px]' />
+            </Button>
+          ) : null}
 
           <Button
             variant='ghost'
