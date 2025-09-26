@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
 
 type AuthContextValue = {
   readonly authEnabled: boolean
@@ -14,7 +14,9 @@ type AuthProviderProps = Readonly<{
 }>
 
 export function AuthProvider({ authEnabled, children }: AuthProviderProps) {
-  return <AuthContext.Provider value={{ authEnabled }}>{children}</AuthContext.Provider>
+  const value = useMemo(() => ({ authEnabled }), [authEnabled])
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
