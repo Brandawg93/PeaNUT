@@ -191,54 +191,54 @@ Example:
 <img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/glance.png" width="600px" />
 
 ```yaml
-        - type: custom-api
-          title: UPS
-          cache: 5m
-          url: http://{HOSTNAME}:{PORT}/api/v1/devices/{UPS_NAME}
-          template: |
-            {{ if .JSON.Exists "ups\\.status" }}
-              {{ $jsonStatus := .JSON.String "ups\\.status" }}
-              <div class="flex justify-between text-center">
-                <div>
-                  <div class="color-highlight size-h3">{{ .JSON.Int "battery\\.charge" | formatNumber }}%</div>
-                  <div class="size-h6">BATTERY CHARGE</div>
-                </div>
-                <div>
-                  <div class="color-highlight size-h3">{{ concat (.JSON.String "battery\\.runtime") "s" | duration }} ({{ div (.JSON.Int "battery\\.runtime") 60 | formatNumber }} Wh)</div>
-                  <div class="size-h6">BATTERY RUNTIME</div>
-                </div>
-                <div>
-                  <div class="color-highlight size-h3">{{ .JSON.Int "ups\\.load" | formatNumber }}% ({{ .JSON.Int "ups\\.realpower" | formatNumber }} W / {{ .JSON.Int "ups\\.power" | formatNumber }} VA)</div>
-                  <div class="size-h6">UPS LOAD</div>
-                </div>
-                <div>
-                  <div class="color-highlight size-h3">
-              {{ if eq $jsonStatus "OL" }}
-                  Online
-              {{ else if eq $jsonStatus "OL CHRG" }}
-                    Online Charging
-              {{ else if eq $jsonStatus "OB" }}
-                    On Battery
-              {{ else if eq $jsonStatus "OB DISCHRG" }}
-                    On Battery Discharging
-              {{ else if eq $jsonStatus "LB" }}
-                    Low Battery
-              {{ else }}
-                    Unknown
-              {{ end }}
-                  </div>
-                  <div class="size-h6">UPS STATUS</div>
-                </div>
-              </div>
-            {{ else }}
-              <div class="widget-error-header">
-                <div class="color-negative size-h3">ERROR</div>
-                <svg class="widget-error-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"></path>
-                </svg>
-              </div>
-              <p class="break-all">UPS is unavailable</p>
-            {{ end }}
+- type: custom-api
+  title: UPS
+  cache: 5m
+  url: http://{HOSTNAME}:{PORT}/api/v1/devices/{UPS_NAME}
+  template: |
+    {{ if .JSON.Exists "ups\\.status" }}
+      {{ $jsonStatus := .JSON.String "ups\\.status" }}
+      <div class="flex justify-between text-center">
+        <div>
+          <div class="color-highlight size-h3">{{ .JSON.Int "battery\\.charge" | formatNumber }}%</div>
+          <div class="size-h6">BATTERY CHARGE</div>
+        </div>
+        <div>
+          <div class="color-highlight size-h3">{{ concat (.JSON.String "battery\\.runtime") "s" | duration }} ({{ div (.JSON.Int "battery\\.runtime") 60 | formatNumber }} Wh)</div>
+          <div class="size-h6">BATTERY RUNTIME</div>
+        </div>
+        <div>
+          <div class="color-highlight size-h3">{{ .JSON.Int "ups\\.load" | formatNumber }}% ({{ .JSON.Int "ups\\.realpower" | formatNumber }} W / {{ .JSON.Int "ups\\.power" | formatNumber }} VA)</div>
+          <div class="size-h6">UPS LOAD</div>
+        </div>
+        <div>
+          <div class="color-highlight size-h3">
+      {{ if eq $jsonStatus "OL" }}
+          Online
+      {{ else if eq $jsonStatus "OL CHRG" }}
+            Online Charging
+      {{ else if eq $jsonStatus "OB" }}
+            On Battery
+      {{ else if eq $jsonStatus "OB DISCHRG" }}
+            On Battery Discharging
+      {{ else if eq $jsonStatus "LB" }}
+            Low Battery
+      {{ else }}
+            Unknown
+      {{ end }}
+          </div>
+          <div class="size-h6">UPS STATUS</div>
+        </div>
+      </div>
+    {{ else }}
+      <div class="widget-error-header">
+        <div class="color-negative size-h3">ERROR</div>
+        <svg class="widget-error-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"></path>
+        </svg>
+      </div>
+      <p class="break-all">UPS is unavailable</p>
+    {{ end }}
 ```
 
 ## FAQ
