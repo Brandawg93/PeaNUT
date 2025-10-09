@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { handleDeviceOperation } from '@/app/api/utils'
+import { getCachedRWVars } from '@/server/nut-cache'
 
 /**
  * Retrieves writable vars for specific device.
@@ -27,6 +28,6 @@ import { handleDeviceOperation } from '@/app/api/utils'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
   return handleDeviceOperation(device, async (nut) => {
-    return await nut.getRWVars(device)
+    return await getCachedRWVars(nut.getHost(), nut.getPort(), device)
   })
 }

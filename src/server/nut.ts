@@ -2,6 +2,7 @@ import { upsStatus } from '@/common/constants'
 import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 import { createDebugLogger } from '@/server/debug'
+import { getCachedVarDescription, getCachedVarType } from '@/server/nut-cache'
 
 export class Nut {
   private readonly host: string
@@ -196,8 +197,8 @@ export class Nut {
     for (const line of lines) {
       const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
       const value = line.split('"')[1].trim()
-      const description = await this.getVarDescription(key, device, socket)
-      const type = await this.getType(key, device, socket)
+      const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
+      const type = await getCachedVarType(this.host, this.port, key, device, socket)
       if (type.includes('NUMBER') && !isNaN(+value)) {
         const num = +value
         vars[key] = { value: num, description }

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { handleDeviceOperation } from '@/app/api/utils'
+import { getCachedCommands } from '@/server/nut-cache'
 
 /**
  * Retrieves commands for a specific device.
@@ -27,6 +28,6 @@ import { handleDeviceOperation } from '@/app/api/utils'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
   return handleDeviceOperation(device, async (nut) => {
-    return await nut.getCommands(device)
+    return await getCachedCommands(nut.getHost(), nut.getPort(), device)
   })
 }
