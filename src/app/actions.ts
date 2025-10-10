@@ -9,6 +9,12 @@ import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
 import { upsStatus } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
+import {
+  getCachedCommands,
+  getCachedRWVars,
+  getCachedDeviceDescription,
+  getCachedVarDescription,
+} from '@/server/nut-cache'
 
 const settingsFile = './config/settings.yml'
 const debug = createDebugLogger('ACTIONS')
@@ -29,11 +35,11 @@ watcher.on('change', () => {
 })
 
 function getCachedSettings(): YamlSettings {
-  if (!settingsInstance) {
+  if (settingsInstance) {
+    debug.debug('Using cached settings instance')
+  } else {
     debug.info('Creating new settings instance')
     settingsInstance = new YamlSettings(settingsFile)
-  } else {
-    debug.debug('Using cached settings instance')
   }
   return settingsInstance
 }
@@ -70,7 +76,7 @@ export async function testConnection(
     }
     return connection
   } catch (error: any) {
-    return Promise.reject(new Error(error.message))
+    throw new Error(error.message)
   }
 }
 
@@ -118,11 +124,11 @@ export async function getDevices(): Promise<DevicesData> {
         const devices = await nut.getDevices()
         debug.info('Retrieved devices from server', { server: serverInfo, deviceCount: devices.length })
 
-        devices.forEach((device) => {
+        for (const device of devices) {
           if (!deviceOrder.includes(device.name)) {
             deviceOrder.push(device.name)
           }
-        })
+        }
 
         await Promise.all(
           devices.map(async (device) => {
@@ -139,8 +145,8 @@ export async function getDevices(): Promise<DevicesData> {
             debug.debug('Device reachability check', { device: device.name, isReachable })
 
             const [rwVars, commands] = await Promise.all([
-              isReachable ? nut.getRWVars(device.name) : Promise.resolve([]),
-              isReachable ? nut.getCommands(device.name) : Promise.resolve([]),
+              isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), device.name) : Promise.resolve([]),
+              isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), device.name) : Promise.resolve([]),
             ])
 
             deviceMap.set(device.name, {
@@ -195,9 +201,9 @@ export async function getDevice(device: string): Promise<DeviceData> {
   const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
   const [rwVars, commands, description] = await Promise.all([
-    isReachable ? nut.getRWVars(device) : Promise.resolve([]),
-    isReachable ? nut.getCommands(device) : Promise.resolve([]),
-    isReachable ? nut.getDescription(device) : Promise.resolve(''),
+    isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), device) : Promise.resolve([]),
+    isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), device) : Promise.resolve([]),
+    isReachable ? getCachedDeviceDescription(nut.getHost(), nut.getPort(), device) : Promise.resolve(''),
   ])
   return {
     device: {
@@ -227,7 +233,9 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
       })
     )
 
-    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(param, device)))
+    const descriptions = await Promise.all(
+      params.map((param) => getCachedVarDescription(nut.getHost(), nut.getPort(), param, device))
+    )
     params.forEach((param, index) => {
       data[param] = descriptions[index]
     })
@@ -264,7 +272,9 @@ export async function getAllCommands(device: string): Promise<string[]> {
         const deviceExists = await nut.deviceExists(device)
         if (deviceExists) {
           const deviceCommands = await nut.getCommands(device)
-          deviceCommands.forEach((command) => commands.add(command))
+          for (const command of deviceCommands) {
+            commands.add(command)
+          }
         }
       })
     )
@@ -343,7 +353,9 @@ export async function disconnect() {
       'INFLUX_BUCKET',
     ]
 
-    keysToDelete.forEach((key) => settings.delete(key))
+    for (const key of keysToDelete) {
+      settings.delete(key)
+    }
     settingsInstance = null // Reset cached instance
     await watcher.close() // Clean up the watcher
   } catch (e: any) {

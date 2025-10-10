@@ -2,6 +2,7 @@ import { upsStatus } from '@/common/constants'
 import { DEVICE, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 import { createDebugLogger } from '@/server/debug'
+import { getCachedVarDescription, getCachedVarType } from '@/server/nut-cache'
 
 export class Nut {
   private readonly host: string
@@ -54,7 +55,7 @@ export class Nut {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
       this.debug.error('Connection failed', { host: this.host, port: this.port, error: message })
-      return Promise.reject(new Error(`Connection failed: ${message}`))
+      throw new Error(`Connection failed: ${message}`)
     }
     if (checkCredentials) {
       this.debug.info('Checking credentials for connection')
@@ -196,9 +197,9 @@ export class Nut {
     for (const line of lines) {
       const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
       const value = line.split('"')[1].trim()
-      const description = await this.getVarDescription(key, device, socket)
-      const type = await this.getType(key, device, socket)
-      if (type.includes('NUMBER') && !isNaN(+value)) {
+      const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
+      const type = await getCachedVarType(this.host, this.port, key, device, socket)
+      if (type.includes('NUMBER') && !Number.isNaN(+value)) {
         const num = +value
         vars[key] = { value: num, description }
       } else {

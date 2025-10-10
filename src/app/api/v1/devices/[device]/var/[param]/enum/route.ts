@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { handleVariableOperation } from '@/app/api/utils'
+import { getCachedEnum } from '@/server/nut-cache'
 
 type Params = {
   device: string
@@ -37,6 +38,6 @@ type Params = {
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
   return handleVariableOperation(device, param, async (nut) => {
-    return await nut.getEnum(param, device)
+    return await getCachedEnum(nut.getHost(), nut.getPort(), param, device)
   })
 }
