@@ -55,7 +55,7 @@ export class Nut {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
       this.debug.error('Connection failed', { host: this.host, port: this.port, error: message })
-      return Promise.reject(new Error(`Connection failed: ${message}`))
+      throw new Error(`Connection failed: ${message}`)
     }
     if (checkCredentials) {
       this.debug.info('Checking credentials for connection')
@@ -199,7 +199,7 @@ export class Nut {
       const value = line.split('"')[1].trim()
       const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
       const type = await getCachedVarType(this.host, this.port, key, device, socket)
-      if (type.includes('NUMBER') && !isNaN(+value)) {
+      if (type.includes('NUMBER') && !Number.isNaN(+value)) {
         const num = +value
         vars[key] = { value: num, description }
       } else {
