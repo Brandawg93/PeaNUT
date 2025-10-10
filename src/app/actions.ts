@@ -35,11 +35,11 @@ watcher.on('change', () => {
 })
 
 function getCachedSettings(): YamlSettings {
-  if (!settingsInstance) {
+  if (settingsInstance) {
+    debug.debug('Using cached settings instance')
+  } else {
     debug.info('Creating new settings instance')
     settingsInstance = new YamlSettings(settingsFile)
-  } else {
-    debug.debug('Using cached settings instance')
   }
   return settingsInstance
 }
@@ -76,7 +76,7 @@ export async function testConnection(
     }
     return connection
   } catch (error: any) {
-    return Promise.reject(new Error(error.message))
+    throw new Error(error.message)
   }
 }
 
@@ -124,11 +124,11 @@ export async function getDevices(): Promise<DevicesData> {
         const devices = await nut.getDevices()
         debug.info('Retrieved devices from server', { server: serverInfo, deviceCount: devices.length })
 
-        devices.forEach((device) => {
+        for (const device of devices) {
           if (!deviceOrder.includes(device.name)) {
             deviceOrder.push(device.name)
           }
-        })
+        }
 
         await Promise.all(
           devices.map(async (device) => {
@@ -272,7 +272,9 @@ export async function getAllCommands(device: string): Promise<string[]> {
         const deviceExists = await nut.deviceExists(device)
         if (deviceExists) {
           const deviceCommands = await nut.getCommands(device)
-          deviceCommands.forEach((command) => commands.add(command))
+          for (const command of deviceCommands) {
+            commands.add(command)
+          }
         }
       })
     )
@@ -351,7 +353,9 @@ export async function disconnect() {
       'INFLUX_BUCKET',
     ]
 
-    keysToDelete.forEach((key) => settings.delete(key))
+    for (const key of keysToDelete) {
+      settings.delete(key)
+    }
     settingsInstance = null // Reset cached instance
     await watcher.close() // Clean up the watcher
   } catch (e: any) {
