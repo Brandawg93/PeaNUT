@@ -33,6 +33,7 @@ import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 import { useSettings } from '@/client/context/settings'
 import { DashboardSectionConfig } from '@/server/settings'
 import { useNavigation } from '@/hooks/useNavigation'
+import Outlets from '@/client/components/outlets'
 
 const getStatus = (status: string | number | undefined) => {
   if (!status || typeof status !== 'string') {
@@ -95,6 +96,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       { key: 'KPIS', enabled: true },
       { key: 'CHARTS', enabled: true },
       { key: 'VARIABLES', enabled: true },
+      { key: 'OUTLETS', enabled: true },
     ]
     const configured = settings.DASHBOARD_SECTIONS
     return configured?.length ? configured : defaultSections
@@ -221,11 +223,21 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               <MemoizedGrid data={ups} onRefetchAction={refetch} />
             </div>
           )
+        case 'OUTLETS':
+          return (
+            <Outlets
+              device={ups.name}
+              vars={vars}
+              commands={ups.commands}
+              runCommandAction={runCommandAction}
+              onRefetch={refetch}
+            />
+          )
         default:
           return null
       }
     },
-    [currentLoad, currentWh, data, refetch]
+    [currentLoad, currentWh, data, refetch, runCommandAction]
   )
 
   if (isLoading) {
