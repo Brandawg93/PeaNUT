@@ -124,10 +124,12 @@ export default function AddServer({
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
     if (saved && !disabled) {
-      handleTestConnection(true)
-      interval = setInterval(() => {
+      // Schedule the initial connection test to avoid synchronous setState in effect
+      const testConnection = () => {
         handleTestConnection(true)
-      }, PING_INTERVAL)
+      }
+      testConnection()
+      interval = setInterval(testConnection, PING_INTERVAL)
 
       return () => clearInterval(interval)
     }

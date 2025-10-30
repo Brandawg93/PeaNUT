@@ -1,4 +1,5 @@
-FROM node:lts-slim AS pnpm
+ARG NODE_VERSION=lts-slim
+FROM node:${NODE_VERSION} AS pnpm
 
 WORKDIR /app
 
@@ -33,6 +34,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # Build stage with optimized caching
 FROM pnpm AS build
 
+ARG BUILD_COMMAND=build
+
 # Set environment variables for build stage
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -42,13 +45,7 @@ COPY --link --from=deps /app/node_modules ./node_modules/
 COPY --link . /app
 
 RUN pnpm run next-ws && \
-    if [ "$(uname -m)" = "armv7l" ]; then \
-        echo "Building for ARMv7 architecture" && \
-        pnpm run build; \
-    else \
-        echo "Building for default architecture with turbo" && \
-        pnpm run build:turbo; \
-    fi && \
+    pnpm run ${BUILD_COMMAND} && \
     # Clean up cache to reduce image size
     rm -rf .next/standalone/.next/cache
 

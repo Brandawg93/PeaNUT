@@ -151,7 +151,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       )
     }
     return <Kpi text='N/A' description={t('currentLoad')} />
-  }, [data?.device?.vars, wattsOrPercent, toggleWattsOrPercent, t])
+  }, [data, wattsOrPercent, toggleWattsOrPercent, t])
 
   const currentWh = useMemo(() => {
     if (!data?.device?.vars) return <Kpi text='N/A' description={t('batteryCharge')} />
@@ -186,7 +186,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     } else {
       return <Kpi text='N/A' description={t('batteryCharge')} />
     }
-  }, [data?.device?.vars, wattHours, toggleWattHours, t])
+  }, [data, wattHours, toggleWattHours, t])
 
   const renderSection = useCallback(
     (key: string) => {
