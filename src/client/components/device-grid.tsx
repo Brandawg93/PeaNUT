@@ -192,6 +192,7 @@ export default function DeviceGrid({ data }: Props) {
     [data?.devices]
   )
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
     columns,
