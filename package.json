@@ -24,8 +24,9 @@
     "test:watch": "jest --watch",
     "test:e2e": "playwright test && WEB_USERNAME=admin WEB_PASSWORD=test123 playwright test && docker compose down",
     "test:all": "concurrently \"npm run test\" \"npm run test:e2e\"",
-    "deploy": "./scripts/deploy.sh",
-    "deploy:test": "./scripts/deploy-test.sh",
+    "deploy:local": "./deploy.sh local",
+    "deploy:test": "./deploy.sh test",
+    "deploy:production": "./deploy.sh production",
     "telemetry": "next telemetry disable",
     "next-ws": "next-ws patch --yes",
     "prepare": "husky && npm run next-ws"

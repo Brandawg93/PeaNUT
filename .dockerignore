@@ -21,6 +21,7 @@ images
 test_results
 coverage
 scripts
+deploy.sh
 README.md
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
