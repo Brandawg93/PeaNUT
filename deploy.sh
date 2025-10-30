@@ -16,7 +16,7 @@ case $DEPLOY_TYPE in
       echo "Successfully built local image!"
     else
       docker buildx stop
-      echo "Error: Failed to build local image!"
+      echo "Error: Failed to build local image!" >&2
       exit 1
     fi
     ;;
@@ -29,7 +29,7 @@ case $DEPLOY_TYPE in
       echo "Successfully deployed test image!"
     else
       docker buildx stop
-      echo "Error: Failed to deploy test image!"
+      echo "Error: Failed to deploy test image!" >&2
       exit 1
     fi
     ;;
@@ -42,14 +42,14 @@ case $DEPLOY_TYPE in
       echo "Successfully deployed all platforms!"
     else
       docker buildx stop
-      echo "Error: Failed to deploy production images!"
+      echo "Error: Failed to deploy production images!" >&2
       exit 1
     fi
     ;;
   
   *)
-    echo "Error: Invalid deploy type '$DEPLOY_TYPE'"
-    echo "Usage: $0 [local|test|production]"
+    echo "Error: Invalid deploy type '$DEPLOY_TYPE'" >&2
+    echo "Usage: $0 [local|test|production]" >&2
     exit 1
     ;;
 esac
