@@ -39,5 +39,5 @@ export default auth(async function proxy(request: NextRequest) {
 
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: [String.raw`/((?!_next/static|_next/image|.*\.png$).*)`],
+  matcher: ['/((?!_next/static|_next/image|.*\\.png$).*)'],
 }
