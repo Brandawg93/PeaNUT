@@ -1,7 +1,16 @@
 'use client'
 
 import { getSettings } from '@/app/actions'
-import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  startTransition,
+} from 'react'
 import { SettingsType } from '@/server/settings'
 import { LanguageContext } from './language'
 
@@ -124,6 +133,7 @@ export const useFormatDate = () => {
 
 export const SettingsProvider = ({ children }: { readonly children: React.ReactNode }) => {
   const [settings, setSettings] = useState<Partial<SettingsType>>({})
+  const isInitializedRef = useRef(false)
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -181,7 +191,14 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
   }, [])
 
   useEffect(() => {
-    fetchSettings()
+    // Only fetch settings once on mount using ref to avoid setState in effect
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true
+      // Use startTransition to defer the state update and avoid synchronous setState warning
+      startTransition(() => {
+        fetchSettings()
+      })
+    }
   }, [fetchSettings])
 
   const value = useMemo(() => ({ settings, refreshSettings: fetchSettings }), [settings, fetchSettings])

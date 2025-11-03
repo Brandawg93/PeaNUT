@@ -348,6 +348,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
     getExpandedRowModel: getExpandedRowModel(),
   }
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
 
   if (!data) {

@@ -67,7 +67,7 @@ jobs:
           export AUTH_SECRET=$(npx --yes auth secret)
           npm run fullcheck
           npm run test:all
-          npm run build:turbo
+          npm run build
         env:
           USERNAME: admin
           PASSWORD: nut_test

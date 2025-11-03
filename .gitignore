@@ -37,4 +37,5 @@ settings.yml
 
 .next
 .swc
+next-env.d.ts
 test-results

@@ -10,8 +10,8 @@ function normalizeBasePath(path: string): string {
   return withoutTrailingSlash.startsWith('/') ? withoutTrailingSlash : `/${withoutTrailingSlash}`
 }
 
-// Create a wrapper middleware that handles dynamic basePath
-export const middleware = auth(async function middleware(request: NextRequest) {
+// Create a wrapper proxy that handles dynamic basePath
+export default auth(async function proxy(request: NextRequest) {
   // Get the dynamic basePath from runtime environment or request headers and normalize it
   const dynamicBasePath = normalizeBasePath(env('NEXT_PUBLIC_BASE_PATH') || request.headers.get('x-base-path') || '')
 

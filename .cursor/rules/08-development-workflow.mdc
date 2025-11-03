@@ -11,7 +11,7 @@ From [package.json](mdc:package.json):
 
 - `pnpm dev` - Start development server with Docker
 - `pnpm build` - Build for production
-- `pnpm build:turbo` - Build for production using turbopack
+- `pnpm build` - Build for production using turbopack
 - `pnpm start` - Start production server
 
 ### Testing

@@ -126,10 +126,10 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     })
   }, [])
 
-  const currentLoad = useMemo(() => {
-    if (!data?.device?.vars) return <Kpi text='N/A' description={t('currentLoad')} />
+  const vars = data?.device?.vars
 
-    const vars = data.device.vars
+  const currentLoad = useMemo(() => {
+    if (!vars) return <Kpi text='N/A' description={t('currentLoad')} />
     if (vars['ups.load']) {
       if (vars['ups.realpower.nominal'] && wattsOrPercent) {
         const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
@@ -151,12 +151,10 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       )
     }
     return <Kpi text='N/A' description={t('currentLoad')} />
-  }, [data?.device?.vars, wattsOrPercent, toggleWattsOrPercent, t])
+  }, [vars, wattsOrPercent, toggleWattsOrPercent, t])
 
   const currentWh = useMemo(() => {
-    if (!data?.device?.vars) return <Kpi text='N/A' description={t('batteryCharge')} />
-
-    const vars = data.device.vars
+    if (!vars) return <Kpi text='N/A' description={t('batteryCharge')} />
     if (vars['battery.charge']) {
       if (
         vars['ups.load'] &&
@@ -186,13 +184,12 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     } else {
       return <Kpi text='N/A' description={t('batteryCharge')} />
     }
-  }, [data?.device?.vars, wattHours, toggleWattHours, t])
+  }, [vars, wattHours, toggleWattHours, t])
 
   const renderSection = useCallback(
     (key: string) => {
-      if (!data?.device?.vars) return null
+      if (!vars || !data?.device) return null
 
-      const vars = data.device.vars
       const ups = data.device
 
       switch (key) {
@@ -225,7 +222,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
           return null
       }
     },
-    [currentLoad, currentWh, data, refetch]
+    [currentLoad, currentWh, data, vars, refetch]
   )
 
   if (isLoading) {
@@ -273,7 +270,6 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   }
 
   const ups = data.device
-  const vars = ups.vars
   if (!vars) {
     return loadingWrapper
   }
