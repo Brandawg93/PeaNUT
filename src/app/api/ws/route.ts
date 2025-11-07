@@ -44,6 +44,7 @@ export async function UPGRADE(
 
   // Add message buffer
   let messageBuffer = ''
+  let isClosing = false
 
   // Create connection to NUT server
   const nutClient = new net.Socket()
@@ -51,13 +52,30 @@ export async function UPGRADE(
   nutClient.connect(nutConfig.port, nutConfig.host)
 
   nutClient.on('data', (data) => {
-    // Forward NUT server responses to WebSocket client
-    client.send(data.toString().replace(/\n/g, '\r\n'))
+    try {
+      // Forward NUT server responses to WebSocket client
+      if (!isClosing && client.readyState === 1) {
+        client.send(data.toString().replace(/\n/g, '\r\n'))
+      }
+    } catch (error) {
+      // Silently handle errors when connection is closing
+      if (!isClosing) {
+        console.error('Error forwarding data to client:', error)
+      }
+    }
   })
 
   nutClient.on('error', (error) => {
-    console.error('NUT server error:', error)
-    client.send(JSON.stringify({ type: 'error', message: 'NUT server error' }))
+    if (!isClosing) {
+      console.error('NUT server error:', error)
+      try {
+        if (client.readyState === 1) {
+          client.send(JSON.stringify({ type: 'error', message: 'NUT server error' }))
+        }
+      } catch {
+        // Ignore errors when sending to closed connection
+      }
+    }
   })
 
   client.on('message', (message) => {
@@ -76,26 +94,57 @@ export async function UPGRADE(
       // Check if the message contains a newline
       if (messageBuffer.includes('\r')) {
         if (messageBuffer === 'clear\r') {
-          client.send('\x1b[2J\x1b[H')
+          if (client.readyState === 1) {
+            client.send('\x1b[2J\x1b[H')
+          }
           messageBuffer = ''
           return
         }
-        nutClient.write(messageBuffer.replace(/\r/g, '\n'))
-        client.send('\r\n')
+        if (!nutClient.destroyed) {
+          nutClient.write(messageBuffer.replace(/\r/g, '\n'))
+        }
+        if (client.readyState === 1) {
+          client.send('\r\n')
+        }
         messageBuffer = ''
       }
     } catch (error) {
-      console.error('Error sending message to NUT server:', error)
-      client.send(JSON.stringify({ type: 'error', message: 'Failed to send message to NUT server' }))
+      if (!isClosing) {
+        console.error('Error sending message to NUT server:', error)
+        try {
+          if (client.readyState === 1) {
+            client.send(JSON.stringify({ type: 'error', message: 'Failed to send message to NUT server' }))
+          }
+        } catch {
+          // Ignore errors when sending to closed connection
+        }
+      }
     }
   })
 
   client.on('close', () => {
     // Clean up NUT connection when WebSocket closes
-    nutClient.end()
+    isClosing = true
+    if (!nutClient.destroyed) {
+      nutClient.destroy()
+    }
+  })
+
+  client.on('error', (error) => {
+    // Handle WebSocket errors gracefully
+    if (!isClosing) {
+      console.error('WebSocket client error:', error)
+    }
   })
 
   nutClient.on('close', () => {
-    client.close()
+    isClosing = true
+    try {
+      if (client.readyState === 1) {
+        client.close()
+      }
+    } catch {
+      // Ignore errors when closing already-closed connection
+    }
   })
 }
