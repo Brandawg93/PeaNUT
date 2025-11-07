@@ -25,7 +25,7 @@ jobs:
           version: 9
           run_install: false
 
-      - uses: actions/setup-node@v5.0.0
+      - uses: actions/setup-node@v6.0.0
         with:
           node-version: 22
           cache: 'pnpm'
