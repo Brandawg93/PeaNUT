@@ -52,7 +52,7 @@ export default function Footer({ updated }: Props) {
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link
       className='no-underline-text text-muted-foreground m-0 text-sm'
-      href={{ href: updateAvailable.url }}
+      href={updateAvailable.url}
       target='_blank'
       rel='noreferrer'
     >
@@ -78,7 +78,7 @@ export default function Footer({ updated }: Props) {
           <div className='flex items-center'>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href={{ href: 'https://www.github.com/brandawg93/peanut' }}
+              href='https://www.github.com/brandawg93/peanut'
               target='_blank'
               rel='noreferrer'
               aria-label='GitHub'
@@ -87,7 +87,7 @@ export default function Footer({ updated }: Props) {
             </Link>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href={{ href: 'https://www.github.com/sponsors/brandawg93' }}
+              href='https://www.github.com/sponsors/brandawg93'
               target='_blank'
               rel='noreferrer'
               aria-label='Sponsor'
@@ -105,7 +105,7 @@ export default function Footer({ updated }: Props) {
           </Link>
           <p className='m-0 text-sm'>
             <Link
-              href={{ href: currentVersion.url }}
+              href={currentVersion.url}
               target='_blank'
               rel='noreferrer'
               className='no-underline-text text-muted-foreground text-xs'
