@@ -17,7 +17,7 @@ const mockVersionData = [
   },
 ]
 
-global.fetch = jest.fn(() =>
+globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve(mockVersionData),
   })
@@ -74,7 +74,7 @@ describe('Footer', () => {
         const allLinks = container.querySelectorAll('a[target="_blank"]')
         const updateLinks = Array.from(allLinks).filter((link) => {
           const href = link.getAttribute('href')
-          return href && href.includes('github.com/brandawg93/peanut/releases') && href.includes('v5.17.0')
+          return href?.includes('github.com/brandawg93/peanut/releases') && href?.includes('v5.17.0')
         })
 
         // If update is available, verify the link
@@ -115,7 +115,7 @@ describe('Footer', () => {
 
     await waitFor(
       () => {
-        expect(global.fetch).toHaveBeenCalledWith('https://api.github.com/repos/brandawg93/peanut/releases')
+        expect(globalThis.fetch).toHaveBeenCalledWith('https://api.github.com/repos/brandawg93/peanut/releases')
       },
       { timeout: 2000 }
     )
