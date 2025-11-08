@@ -1,9 +1,23 @@
 import * as net from 'net'
 import { getToken } from 'next-auth/jwt'
+import { getSettings } from '@/app/actions'
+import { server } from '@/common/types'
 
 interface NutConfig {
   host: string
   port: number
+}
+
+// Validate that the host and port are present in the configured allow-list
+async function isAllowedNutServer(host: string, port: number): Promise<boolean> {
+  const servers = await getSettings('NUT_SERVERS')
+  if (!servers || !Array.isArray(servers)) return false
+  return servers.some(
+    (s: server) =>
+      String(s.HOST).trim().toLowerCase() === String(host).trim().toLowerCase() &&
+      Number(s.PORT) === Number(port) &&
+      !s.DISABLED
+  )
 }
 
 export function GET() {
@@ -40,6 +54,15 @@ export async function UPGRADE(
   const nutConfig: NutConfig = {
     host: nutHost ?? process.env.NUT_HOST ?? 'localhost',
     port: parseInt(nutPort ?? process.env.NUT_PORT ?? '3493'),
+  }
+
+  // Validate that the connection is to an allowed server (SSRF protection)
+  const isAllowed = await isAllowedNutServer(nutConfig.host, nutConfig.port)
+  if (!isAllowed) {
+    console.error('Attempted connection to non-allowed server:', nutConfig)
+    client.send(JSON.stringify({ type: 'error', message: 'Connection to this server is not allowed' }))
+    client.close()
+    return
   }
 
   // Add message buffer
