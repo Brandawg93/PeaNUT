@@ -62,6 +62,9 @@ LABEL org.opencontainers.image.licenses='Apache-2.0'
 # Copy built application and set permissions to default node user
 COPY --link --chown=1000:1000 --from=build /app/.next/standalone ./
 COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
+# Copy only API source files needed for Swagger documentation generation
+COPY --link --chown=1000:1000 --from=build /app/src/app/api ./src/app/api
+COPY --link --chown=1000:1000 --from=build /app/package.json ./package.json
 
 # Copy and set up entrypoint script
 COPY --link --chown=1000:1000 entrypoint.sh /entrypoint.sh
