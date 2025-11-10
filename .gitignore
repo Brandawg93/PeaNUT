@@ -39,3 +39,4 @@ settings.yml
 .swc
 next-env.d.ts
 test-results
+.eslintcache

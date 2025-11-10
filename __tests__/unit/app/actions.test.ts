@@ -103,6 +103,27 @@ describe('actions', () => {
     await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).resolves.toBe('Connection successful')
   })
 
+  it('rejects connection to non-allowed server', async () => {
+    await expect(testConnection('malicious.host.com', 3493)).rejects.toThrow('Connection to this server is not allowed')
+  })
+
+  it('rejects connection to disabled server', async () => {
+    ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: true },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+
+    await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).rejects.toThrow('Connection to this server is not allowed')
+  })
+
+  it('allows connection with different casing in hostname', async () => {
+    await expect(testConnection(TEST_HOSTNAME.toUpperCase(), TEST_PORT)).resolves.toBe('Connection successful')
+  })
+
   it('saves variable', async () => {
     const data = await saveVar('ups', 'battery.charge', '100')
     expect(data.error).toBeUndefined()

@@ -10,6 +10,7 @@ jest.mock('net', () => {
     off: jest.fn(),
     end: jest.fn(),
     once: jest.fn(),
+    setMaxListeners: jest.fn(),
   }
   return { Socket: jest.fn(() => mSocket) }
 })

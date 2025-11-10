@@ -62,12 +62,27 @@ function connect(): Array<Nut> {
   }
 }
 
+// Validate that the host and port are present in the configured allow-list
+function isAllowedNutServer(host: string, port: number): boolean {
+  const settings = getCachedSettings()
+  const servers = settings.get('NUT_SERVERS') || []
+  return servers.some(
+    (s: server) =>
+      String(s.HOST).trim().toLowerCase() === String(host).trim().toLowerCase() &&
+      Number(s.PORT) === Number(port) &&
+      !s.DISABLED
+  )
+}
+
 export async function testConnection(
   server: string,
   port: number,
   username?: string,
   password?: string
 ): Promise<string> {
+  if (!isAllowedNutServer(server, port)) {
+    throw new Error('Connection to this server is not allowed')
+  }
   try {
     const nut = new Nut(server, port, username, password)
     const connection = await nut.testConnection()
