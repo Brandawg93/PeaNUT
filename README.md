@@ -30,6 +30,15 @@ A Tiny Dashboard for Network UPS Tools
 - Customizable widgets for [Homepage](https://gethomepage.dev) integration
 - Detailed [documentation](https://github.com/Brandawg93/PeaNUT/wiki) and examples available
 
+## Platform Support
+
+PeaNUT supports the following platforms:
+
+- `linux/amd64` (x86-64)
+- `linux/arm64` (ARM 64-bit, including Raspberry Pi 4+)
+
+**Note:** Raspberry Pi 3 and older models (arm/v7) are no longer supported as of version 5.17.0. Please use arm64-capable hardware (Raspberry Pi 4 or newer).
+
 ## Installation
 
 Install using Docker
