@@ -77,15 +77,27 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
 
-      - name: Build and test
+      - name: Lint and type check
+        timeout-minutes: 5
+        run: npm run fullcheck
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Run tests
+        timeout-minutes: 10
         run: |
           export AUTH_SECRET=$(npx --yes auth secret)
-          npm run fullcheck
           npm run test:all
-          npm run build
         env:
           USERNAME: admin
           PASSWORD: nut_test
           NUT_HOST: localhost
           NUT_PORT: 3493
           WEB_PORT: 8080
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Build production
+        timeout-minutes: 5
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
