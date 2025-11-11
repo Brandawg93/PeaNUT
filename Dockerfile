@@ -34,7 +34,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # Build stage with optimized caching
 FROM pnpm AS build
 
-ARG BUILD_COMMAND=build
+ARG BUILD_ARGS=""
 
 # Set environment variables for build stage
 ENV NODE_ENV=production
@@ -45,7 +45,7 @@ COPY --link --from=deps /app/node_modules ./node_modules/
 COPY --link . /app
 
 RUN pnpm run next-ws && \
-    pnpm run ${BUILD_COMMAND} && \
+    pnpm run build ${BUILD_ARGS} && \
     # Clean up cache to reduce image size
     rm -rf .next/standalone/.next/cache
 

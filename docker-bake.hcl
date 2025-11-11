@@ -13,7 +13,7 @@ target "local" {
   output = ["type=docker"]
   args = {
     NODE_VERSION = "lts-slim"
-    BUILD_COMMAND = "build"
+    BUILD_ARGS = ""
   }
   tags = [
     "brandawg93/peanut:local",
@@ -27,7 +27,7 @@ target "test" {
   platforms = ["linux/arm64", "linux/amd64"]
   args = {
     NODE_VERSION = "lts-slim"
-    BUILD_COMMAND = "build"
+    BUILD_ARGS = ""
   }
   tags = [
     "brandawg93/peanut:test"
@@ -44,7 +44,7 @@ target "production" {
   platforms = [platform]
   args = {
     NODE_VERSION = platform == "linux/arm/v7" ? "22-slim" : "lts-slim"
-    BUILD_COMMAND = platform == "linux/arm/v7" ? "next build --webpack" : "build"
+    BUILD_ARGS = platform == "linux/arm/v7" ? "--webpack" : ""
   }
   tags = [
     "brandawg93/peanut:${VERSION}",
