@@ -1,5 +1,4 @@
-ARG NODE_VERSION=lts-slim
-FROM node:${NODE_VERSION} AS pnpm
+FROM node:lts-slim AS pnpm
 
 WORKDIR /app
 
@@ -34,8 +33,6 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # Build stage with optimized caching
 FROM pnpm AS build
 
-ARG BUILD_ARGS=""
-
 # Set environment variables for build stage
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -45,7 +42,7 @@ COPY --link --from=deps /app/node_modules ./node_modules/
 COPY --link . /app
 
 RUN pnpm run next-ws && \
-    pnpm run build ${BUILD_ARGS} && \
+    pnpm run build && \
     # Clean up cache to reduce image size
     rm -rf .next/standalone/.next/cache
 

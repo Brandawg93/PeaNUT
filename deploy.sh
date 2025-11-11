@@ -11,7 +11,12 @@ case $DEPLOY_TYPE in
   local)
     echo "Creating a local image with version $PACKAGE_VERSION"
     npm run fullcheck
-    if docker buildx bake local --load --set *.args.VERSION=$PACKAGE_VERSION; then
+    if docker buildx build \
+      --platform linux/amd64 \
+      --tag brandawg93/peanut:local \
+      --tag brandawg93/peanut:${PACKAGE_VERSION} \
+      --load \
+      .; then
       docker buildx stop
       echo "Successfully built local image!"
     else
@@ -24,7 +29,11 @@ case $DEPLOY_TYPE in
   test)
     echo "Creating a test image for arm64 and amd64 with version $PACKAGE_VERSION"
     npm run fullcheck
-    if docker buildx bake test --push --set *.args.VERSION=$PACKAGE_VERSION; then
+    if docker buildx build \
+      --push \
+      --platform linux/arm64,linux/amd64 \
+      --tag brandawg93/peanut:test \
+      .; then
       docker buildx stop
       echo "Successfully deployed test image!"
     else
@@ -37,7 +46,13 @@ case $DEPLOY_TYPE in
   production)
     echo "Creating multi-platform images with version $PACKAGE_VERSION"
     npm run fullcheck
-    if docker buildx bake production --push --set *.args.VERSION=$PACKAGE_VERSION; then
+    if docker buildx build \
+      --push \
+      --platform linux/arm64,linux/amd64 \
+      --tag brandawg93/peanut:latest \
+      --tag brandawg93/peanut:${PACKAGE_VERSION} \
+      --tag brandawg93/peanut:test
+      .; then
       docker buildx stop
       echo "Successfully deployed all platforms!"
     else
