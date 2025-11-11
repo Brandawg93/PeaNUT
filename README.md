@@ -33,6 +33,7 @@ A Tiny Dashboard for Network UPS Tools
 ## Platform Support
 
 PeaNUT supports the following platforms:
+
 - `linux/amd64` (x86-64)
 - `linux/arm64` (ARM 64-bit, including Raspberry Pi 4+)
 
