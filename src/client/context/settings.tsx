@@ -11,7 +11,7 @@ import React, {
   useRef,
   startTransition,
 } from 'react'
-import { SettingsType } from '@/server/settings'
+import type { SettingsType, TemperatureUnit } from '@/server/settings'
 import { LanguageContext } from './language'
 
 type SettingsContextType = {
@@ -70,6 +70,11 @@ export const useNutServers = () => {
 export const useVersionCheck = () => {
   const { settings } = useSettings()
   return settings.DISABLE_VERSION_CHECK || false
+}
+
+export const useTemperatureUnit = (): TemperatureUnit => {
+  const { settings } = useSettings()
+  return settings.TEMPERATURE_UNIT === 'fahrenheit' ? 'fahrenheit' : 'celsius'
 }
 
 // Shared utility function for date formatting
@@ -141,6 +146,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       const [
         dateFormat,
         timeFormat,
+        temperatureUnit,
         sections,
         disableVersionCheck,
         influxHost,
@@ -152,6 +158,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       ] = await Promise.all([
         getSettings('DATE_FORMAT'),
         getSettings('TIME_FORMAT'),
+        getSettings('TEMPERATURE_UNIT'),
         getSettings('DASHBOARD_SECTIONS'),
         getSettings('DISABLE_VERSION_CHECK'),
         getSettings('INFLUX_HOST'),
@@ -165,6 +172,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       setSettings({
         DATE_FORMAT: dateFormat || '',
         TIME_FORMAT: timeFormat || '',
+        TEMPERATURE_UNIT: temperatureUnit === 'fahrenheit' ? 'fahrenheit' : 'celsius',
         DASHBOARD_SECTIONS: sections,
         DISABLE_VERSION_CHECK: disableVersionCheck || false,
         INFLUX_HOST: influxHost || '',
@@ -179,6 +187,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       setSettings({
         DATE_FORMAT: '',
         TIME_FORMAT: '',
+        TEMPERATURE_UNIT: 'celsius',
         DISABLE_VERSION_CHECK: false,
         INFLUX_HOST: '',
         INFLUX_TOKEN: '',

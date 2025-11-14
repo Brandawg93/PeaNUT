@@ -24,6 +24,10 @@
     "realpower": "Putere reală",
     "nominalRealpower": "Putere nominală"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Temperatura ambientală",
+    "batteryTemperature": "Temperatura bateriei"
+  },
   "grid": {
     "key": "Cheie",
     "value": "Valoare",
@@ -56,6 +60,10 @@
     "selectDateFormat": "Selectați un format de dată",
     "timeFormat": "Formatul orei",
     "selectTimeFormat": "Selectați un format de oră",
+    "temperatureUnit": "Unitate de temperatură",
+    "selectTemperatureUnit": "Selectați o unitate de temperatură",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Dezactivați verificarea versiunii",
     "disableVersionCheckDescription": "Dezactivați verificarea actualizărilor în subsol",
     "manageServers": "Gestionați serverele",
@@ -188,6 +196,7 @@
     "power": "Putere"
   },
   "volt-amps-chart": "Putere aparentă",
+  "temperature-chart": "Temperatură",
   "volts-chart": "Voltaj",
   "watts-chart": "Putere reală",
   "accordion-grid": "Date UPS",

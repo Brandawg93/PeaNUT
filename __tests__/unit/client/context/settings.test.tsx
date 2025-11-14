@@ -17,6 +17,7 @@ const TestComponent = () => {
     <div>
       <div data-testid='date-format'>{settings.DATE_FORMAT}</div>
       <div data-testid='time-format'>{settings.TIME_FORMAT}</div>
+      <div data-testid='temperature-unit'>{settings.TEMPERATURE_UNIT}</div>
       <button onClick={refreshSettings}>Refresh</button>
     </div>
   )
@@ -38,6 +39,7 @@ describe('Settings Context', () => {
     await waitFor(() => {
       expect(screen.getByTestId('date-format')).toHaveTextContent('')
       expect(screen.getByTestId('time-format')).toHaveTextContent('')
+      expect(screen.getByTestId('temperature-unit')).toHaveTextContent('celsius')
     })
   })
 
@@ -48,6 +50,7 @@ describe('Settings Context', () => {
     jest.mocked(getSettings).mockImplementation((key: keyof SettingsType) => {
       if (key === 'DATE_FORMAT') return Promise.resolve(mockDateFormat)
       if (key === 'TIME_FORMAT') return Promise.resolve(mockTimeFormat)
+      if (key === 'TEMPERATURE_UNIT') return Promise.resolve('fahrenheit')
       return Promise.resolve('')
     })
 
@@ -61,6 +64,7 @@ describe('Settings Context', () => {
     await waitFor(() => {
       expect(screen.getByTestId('date-format')).toHaveTextContent(mockDateFormat)
       expect(screen.getByTestId('time-format')).toHaveTextContent(mockTimeFormat)
+      expect(screen.getByTestId('temperature-unit')).toHaveTextContent('fahrenheit')
     })
   })
 
@@ -74,6 +78,7 @@ describe('Settings Context', () => {
     jest.mocked(getSettings).mockImplementation((key: keyof SettingsType) => {
       if (key === 'DATE_FORMAT') return Promise.resolve(initialDateFormat)
       if (key === 'TIME_FORMAT') return Promise.resolve(initialTimeFormat)
+      if (key === 'TEMPERATURE_UNIT') return Promise.resolve('celsius')
       return Promise.resolve('')
     })
 
@@ -93,6 +98,7 @@ describe('Settings Context', () => {
     jest.mocked(getSettings).mockImplementation((key: keyof SettingsType) => {
       if (key === 'DATE_FORMAT') return Promise.resolve(newDateFormat)
       if (key === 'TIME_FORMAT') return Promise.resolve(newTimeFormat)
+      if (key === 'TEMPERATURE_UNIT') return Promise.resolve('fahrenheit')
       return Promise.resolve('')
     })
 
@@ -105,6 +111,7 @@ describe('Settings Context', () => {
     await waitFor(() => {
       expect(screen.getByTestId('date-format')).toHaveTextContent(newDateFormat)
       expect(screen.getByTestId('time-format')).toHaveTextContent(newTimeFormat)
+      expect(screen.getByTestId('temperature-unit')).toHaveTextContent('fahrenheit')
     })
   })
 })
