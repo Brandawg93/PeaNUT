@@ -24,6 +24,10 @@
     "realpower": "Wirkleistung",
     "nominalRealpower": "Nominale Wirkleistung"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Umgebungstemperatur",
+    "batteryTemperature": "Batterietemperatur"
+  },
   "grid": {
     "key": "Schlüssel",
     "value": "Wert",
@@ -56,6 +60,10 @@
     "selectDateFormat": "Wählen Sie ein Datumsformat",
     "timeFormat": "Zeitformat",
     "selectTimeFormat": "Wählen Sie ein Zeitformat",
+    "temperatureUnit": "Temperatureinheit",
+    "selectTemperatureUnit": "Wählen Sie eine Temperatureinheit",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Versionsprüfung deaktivieren",
     "disableVersionCheckDescription": "Deaktivieren Sie die Überprüfung auf Updates in der Fußzeile",
     "manageServers": "Server verwalten",
@@ -188,6 +196,7 @@
     "power": "Leistung"
   },
   "volt-amps-chart": "Scheinbare Kraft",
+  "temperature-chart": "Temperatur",
   "volts-chart": "Stromspannung",
   "watts-chart": "Echte Kraft",
   "accordion-grid": "UPS -Daten",

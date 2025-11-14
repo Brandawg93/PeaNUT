@@ -24,6 +24,10 @@
     "realpower": "Realpower",
     "nominalRealpower": "Nominal Realpower"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Ambient Temperature",
+    "batteryTemperature": "Battery Temperature"
+  },
   "grid": {
     "key": "Key",
     "value": "Value",
@@ -56,6 +60,10 @@
     "selectDateFormat": "Select a date format",
     "timeFormat": "Time Format",
     "selectTimeFormat": "Select a time format",
+    "temperatureUnit": "Temperature Unit",
+    "selectTemperatureUnit": "Select a temperature unit",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Disable Version Check",
     "disableVersionCheckDescription": "Disable checking for updates in the footer",
     "manageServers": "Manage Servers",
@@ -190,6 +198,7 @@
   "volts-chart": "Voltage",
   "watts-chart": "Real Power",
   "volt-amps-chart": "Apparent Power",
+  "temperature-chart": "Temperature",
   "accordion-grid": "UPS Data",
   "login": {
     "title": "Please log in to continue.",

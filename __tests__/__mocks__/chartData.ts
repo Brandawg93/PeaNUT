@@ -5,6 +5,12 @@ export const device: DEVICE = {
     'input.voltage': {
       value: '1',
     },
+    'ambient.temperature': {
+      value: '22',
+    },
+    'battery.temperature': {
+      value: '24',
+    },
     'device.serial': {
       value: 'test',
     },

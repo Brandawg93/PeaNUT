@@ -28,7 +28,7 @@ import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
-import { SettingsType, DashboardSectionConfig } from '@/server/settings'
+import type { SettingsType, DashboardSectionConfig, TemperatureUnit } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import dynamic from 'next/dynamic'
@@ -81,6 +81,7 @@ export default function SettingsWrapper({
   const [influxInterval, setInfluxInterval] = useState<number>(10)
   const [dateFormat, setDateFormat] = useState<string>('MM/DD/YYYY')
   const [timeFormat, setTimeFormat] = useState<string>('12-hour')
+  const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>('celsius')
   const [disableVersionCheck, setDisableVersionCheck] = useState<boolean>(false)
   const [selectedServer, setSelectedServer] = useState<string>('')
   const [sections, setSections] = useState<DashboardSectionConfig>([
@@ -104,6 +105,7 @@ export default function SettingsWrapper({
       influxInterval,
       format,
       timeFormat,
+      temperatureUnitSetting,
       dashboardSections,
       disableVersionCheck,
     ] = await Promise.all([
@@ -115,6 +117,7 @@ export default function SettingsWrapper({
       getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
       getSettingsAction('DATE_FORMAT') as Promise<string>,
       getSettingsAction('TIME_FORMAT') as Promise<string>,
+      getSettingsAction('TEMPERATURE_UNIT') as Promise<TemperatureUnit>,
       getSettingsAction('DASHBOARD_SECTIONS') as Promise<DashboardSectionConfig>,
       getSettingsAction('DISABLE_VERSION_CHECK') as Promise<boolean>,
     ])
@@ -144,6 +147,9 @@ export default function SettingsWrapper({
     }
     if (timeFormat) {
       setTimeFormat(timeFormat)
+    }
+    if (temperatureUnitSetting) {
+      setTemperatureUnit(temperatureUnitSetting === 'fahrenheit' ? 'fahrenheit' : 'celsius')
     }
     if (dashboardSections && Array.isArray(dashboardSections) && dashboardSections.length > 0) {
       setSections(dashboardSections)
@@ -206,11 +212,12 @@ export default function SettingsWrapper({
     await Promise.all([
       setSettingsAction('DATE_FORMAT', dateFormat),
       setSettingsAction('TIME_FORMAT', timeFormat),
+      setSettingsAction('TEMPERATURE_UNIT', temperatureUnit),
       setSettingsAction('DISABLE_VERSION_CHECK', disableVersionCheck),
     ])
     toast.success(t('settings.saved'))
     refreshSettings()
-  }, [setSettingsAction, dateFormat, timeFormat, disableVersionCheck, t, refreshSettings])
+  }, [setSettingsAction, dateFormat, timeFormat, temperatureUnit, disableVersionCheck, t, refreshSettings])
 
   const handleSaveInflux = useCallback(async () => {
     await Promise.all([
@@ -583,6 +590,21 @@ export default function SettingsWrapper({
                           <SelectContent>
                             <SelectItem value='12-hour'>12-hour</SelectItem>
                             <SelectItem value='24-hour'>24-hour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className='flex items-center gap-4'>
+                        <span className='w-1/4'>{t('settings.temperatureUnit')}</span>
+                        <Select
+                          value={temperatureUnit}
+                          onValueChange={(value) => setTemperatureUnit(value as TemperatureUnit)}
+                        >
+                          <SelectTrigger className='w-3/4'>
+                            <SelectValue placeholder={t('settings.selectTemperatureUnit')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='celsius'>{t('settings.celsius')}</SelectItem>
+                            <SelectItem value='fahrenheit'>{t('settings.fahrenheit')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

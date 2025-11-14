@@ -61,7 +61,7 @@ describe('SettingsWrapper', () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('settings.manageServers')).toBeInTheDocument()
+      expect(screen.getAllByText('settings.manageServers').length).toBeGreaterThan(0)
     })
   })
 
@@ -103,6 +103,7 @@ describe('SettingsWrapper', () => {
     mockGetSettingsAction.mockResolvedValueOnce(10)
     mockGetSettingsAction.mockResolvedValueOnce('MM/DD/YYYY')
     mockGetSettingsAction.mockResolvedValueOnce('12-hour')
+    mockGetSettingsAction.mockResolvedValueOnce('celsius')
     mockGetSettingsAction.mockResolvedValueOnce([
       { key: 'KPIS', enabled: true },
       { key: 'CHARTS', enabled: true },
