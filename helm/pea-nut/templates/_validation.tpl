@@ -3,6 +3,11 @@ Validation template for PeaNUT Helm chart
 This template provides validation rules for required configuration
 */}}
 
+{{/* Helper to check if a value is a number (int or float64) */}}
+{{- define "pea-nut.isNumber" -}}
+{{- or (kindIs "int" .) (kindIs "int64" .) (kindIs "float64" .) -}}
+{{- end -}}
+
 {{- define "pea-nut.validate" -}}
 {{- $errors := list -}}
 
@@ -21,8 +26,8 @@ This template provides validation rules for required configuration
   {{- $port := 0 -}}
   {{- if kindIs "string" .Values.env.NUT_PORT -}}
     {{- $port = atoi .Values.env.NUT_PORT -}}
-  {{- else if kindIs "int" .Values.env.NUT_PORT -}}
-    {{- $port = .Values.env.NUT_PORT -}}
+  {{- else if or (kindIs "int" .Values.env.NUT_PORT) (kindIs "int64" .Values.env.NUT_PORT) (kindIs "float64" .Values.env.NUT_PORT) -}}
+    {{- $port = .Values.env.NUT_PORT | int -}}
   {{- else -}}
     {{- $errors = append $errors "NUT_PORT must be a string or number" -}}
   {{- end -}}
@@ -45,13 +50,16 @@ This template provides validation rules for required configuration
     {{- $errors = append $errors "INFLUX_HOST is set but INFLUX_TOKEN is not provided in env or secrets" -}}
   {{- end -}}
   {{- if .Values.env.INFLUX_INTERVAL -}}
-    {{- if not (kindIs "string" .Values.env.INFLUX_INTERVAL) -}}
-      {{- $errors = append $errors "INFLUX_INTERVAL must be a string" -}}
+    {{- $interval := 0 -}}
+    {{- if kindIs "string" .Values.env.INFLUX_INTERVAL -}}
+      {{- $interval = atoi .Values.env.INFLUX_INTERVAL -}}
+    {{- else if or (kindIs "int" .Values.env.INFLUX_INTERVAL) (kindIs "int64" .Values.env.INFLUX_INTERVAL) (kindIs "float64" .Values.env.INFLUX_INTERVAL) -}}
+      {{- $interval = .Values.env.INFLUX_INTERVAL | int -}}
     {{- else -}}
-      {{- $interval := atoi .Values.env.INFLUX_INTERVAL -}}
-      {{- if or (eq $interval 0) (lt $interval 1) -}}
-        {{- $errors = append $errors "INFLUX_INTERVAL must be a valid positive number" -}}
-      {{- end -}}
+      {{- $errors = append $errors "INFLUX_INTERVAL must be a string or number" -}}
+    {{- end -}}
+    {{- if lt $interval 1 -}}
+      {{- $errors = append $errors "INFLUX_INTERVAL must be a valid positive number" -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
@@ -70,9 +78,9 @@ This template provides validation rules for required configuration
         {{- end -}}
         {{- if not $server.PORT -}}
           {{- $errors = append $errors (printf "nutServers[%d].PORT is required" $index) -}}
-        {{- else if not (kindIs "int" $server.PORT) -}}
+        {{- else if not (or (kindIs "int" $server.PORT) (kindIs "int64" $server.PORT) (kindIs "float64" $server.PORT)) -}}
           {{- $errors = append $errors (printf "nutServers[%d].PORT must be a number" $index) -}}
-        {{- else if or (eq $server.PORT 0) (lt $server.PORT 1) (gt $server.PORT 65535) -}}
+        {{- else if or (lt ($server.PORT | int) 1) (gt ($server.PORT | int) 65535) -}}
           {{- $errors = append $errors (printf "nutServers[%d].PORT must be between 1 and 65535" $index) -}}
         {{- end -}}
       {{- end -}}
@@ -81,39 +89,42 @@ This template provides validation rules for required configuration
 {{- end -}}
 
 {{/* Validate service port */}}
-{{- if not (kindIs "int" .Values.service.port) -}}
+{{- if not (or (kindIs "int" .Values.service.port) (kindIs "int64" .Values.service.port) (kindIs "float64" .Values.service.port)) -}}
   {{- $errors = append $errors "service.port must be a number" -}}
-{{- else if or (eq .Values.service.port 0) (lt .Values.service.port 1) (gt .Values.service.port 65535) -}}
+{{- else if or (lt (.Values.service.port | int) 1) (gt (.Values.service.port | int) 65535) -}}
   {{- $errors = append $errors "service.port must be between 1 and 65535" -}}
 {{- end -}}
 
 {{/* Validate replica count */}}
-{{- if not (kindIs "int" .Values.replicaCount) -}}
+{{- if not (or (kindIs "int" .Values.replicaCount) (kindIs "int64" .Values.replicaCount) (kindIs "float64" .Values.replicaCount)) -}}
   {{- $errors = append $errors "replicaCount must be a number" -}}
-{{- else if lt .Values.replicaCount 1 -}}
+{{- else if lt (.Values.replicaCount | int) 1 -}}
   {{- $errors = append $errors "replicaCount must be at least 1" -}}
 {{- end -}}
 
 {{/* Validate autoscaling configuration */}}
 {{- if .Values.autoscaling.enabled -}}
-  {{- if not (kindIs "int" .Values.autoscaling.minReplicas) -}}
+  {{- $minReplicasIsNumber := or (kindIs "int" .Values.autoscaling.minReplicas) (kindIs "int64" .Values.autoscaling.minReplicas) (kindIs "float64" .Values.autoscaling.minReplicas) -}}
+  {{- $maxReplicasIsNumber := or (kindIs "int" .Values.autoscaling.maxReplicas) (kindIs "int64" .Values.autoscaling.maxReplicas) (kindIs "float64" .Values.autoscaling.maxReplicas) -}}
+  {{- $cpuIsNumber := or (kindIs "int" .Values.autoscaling.targetCPUUtilizationPercentage) (kindIs "int64" .Values.autoscaling.targetCPUUtilizationPercentage) (kindIs "float64" .Values.autoscaling.targetCPUUtilizationPercentage) -}}
+  {{- if not $minReplicasIsNumber -}}
     {{- $errors = append $errors "autoscaling.minReplicas must be a number" -}}
-  {{- else if lt .Values.autoscaling.minReplicas 1 -}}
+  {{- else if lt (.Values.autoscaling.minReplicas | int) 1 -}}
     {{- $errors = append $errors "autoscaling.minReplicas must be at least 1" -}}
   {{- end -}}
-  {{- if not (kindIs "int" .Values.autoscaling.maxReplicas) -}}
+  {{- if not $maxReplicasIsNumber -}}
     {{- $errors = append $errors "autoscaling.maxReplicas must be a number" -}}
-  {{- else if lt .Values.autoscaling.maxReplicas 1 -}}
+  {{- else if lt (.Values.autoscaling.maxReplicas | int) 1 -}}
     {{- $errors = append $errors "autoscaling.maxReplicas must be at least 1" -}}
   {{- end -}}
-  {{- if and (kindIs "int" .Values.autoscaling.minReplicas) (kindIs "int" .Values.autoscaling.maxReplicas) -}}
-    {{- if gt .Values.autoscaling.minReplicas .Values.autoscaling.maxReplicas -}}
+  {{- if and $minReplicasIsNumber $maxReplicasIsNumber -}}
+    {{- if gt (.Values.autoscaling.minReplicas | int) (.Values.autoscaling.maxReplicas | int) -}}
       {{- $errors = append $errors "autoscaling.minReplicas cannot be greater than autoscaling.maxReplicas" -}}
     {{- end -}}
   {{- end -}}
-  {{- if not (kindIs "int" .Values.autoscaling.targetCPUUtilizationPercentage) -}}
+  {{- if not $cpuIsNumber -}}
     {{- $errors = append $errors "autoscaling.targetCPUUtilizationPercentage must be a number" -}}
-  {{- else if or (lt .Values.autoscaling.targetCPUUtilizationPercentage 1) (gt .Values.autoscaling.targetCPUUtilizationPercentage 100) -}}
+  {{- else if or (lt (.Values.autoscaling.targetCPUUtilizationPercentage | int) 1) (gt (.Values.autoscaling.targetCPUUtilizationPercentage | int) 100) -}}
     {{- $errors = append $errors "autoscaling.targetCPUUtilizationPercentage must be between 1 and 100" -}}
   {{- end -}}
 {{- end -}}
