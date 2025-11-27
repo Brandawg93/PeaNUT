@@ -51,7 +51,7 @@ case $DEPLOY_TYPE in
       --platform linux/arm64,linux/amd64 \
       --tag brandawg93/peanut:latest \
       --tag brandawg93/peanut:${PACKAGE_VERSION} \
-      --tag brandawg93/peanut:test
+      --tag brandawg93/peanut:test \
       .; then
       docker buildx stop
       echo "Successfully deployed all platforms!"
