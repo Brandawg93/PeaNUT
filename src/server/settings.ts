@@ -12,6 +12,8 @@ export type DashboardSectionConfig = Array<{
   enabled: boolean
 }>
 
+export type TemperatureUnit = 'celsius' | 'fahrenheit'
+
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
   INFLUX_HOST: '',
@@ -27,6 +29,7 @@ const ISettings = {
     { key: 'VARIABLES', enabled: true },
   ] as DashboardSectionConfig,
   DISABLE_VERSION_CHECK: false,
+  TEMPERATURE_UNIT: 'celsius' as TemperatureUnit,
 }
 
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
@@ -72,6 +75,8 @@ export class YamlSettings {
           this.data[key] = parsed
         } else if (key === 'DISABLE_VERSION_CHECK') {
           this.data[key] = envValue === 'true'
+        } else if (key === 'TEMPERATURE_UNIT') {
+          this.data[key] = envValue === 'fahrenheit' ? 'fahrenheit' : 'celsius'
         } else {
           this.data[key] = envValue
         }

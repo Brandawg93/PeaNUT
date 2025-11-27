@@ -11,6 +11,9 @@ battery.runtime: 932
 battery.type: PbAc
 battery.voltage: 13.1
 battery.voltage.nominal: 12
+ambient.temperature: 22.5
+ambient.humidity: 44
+battery.temperature: 28.2
 device.mfr: EATON
 device.model: 5P 650
 device.serial: 123

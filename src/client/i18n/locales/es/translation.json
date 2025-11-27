@@ -23,6 +23,10 @@
     "realpower": "Potencia Real",
     "nominalRealpower": "Potencia Real Nominal"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Temperatura ambiente",
+    "batteryTemperature": "Temperatura de la batería"
+  },
   "grid": {
     "key": "Clave",
     "value": "Valor",
@@ -55,6 +59,10 @@
     "selectDateFormat": "Seleccione un formato de fecha",
     "timeFormat": "Formato de hora",
     "selectTimeFormat": "Seleccione un formato de hora",
+    "temperatureUnit": "Unidad de temperatura",
+    "selectTemperatureUnit": "Seleccione una unidad de temperatura",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Desactivar verificación de versión",
     "disableVersionCheckDescription": "Desactivar la verificación de actualizaciones en el pie de página",
     "manageServers": "Administrar servidores",
@@ -187,6 +195,7 @@
     "power": "Potencia"
   },
   "volt-amps-chart": "Potencia aparente",
+  "temperature-chart": "Temperatura",
   "volts-chart": "Voltaje",
   "watts-chart": "Potencia real",
   "accordion-grid": "Datos de UPS",
