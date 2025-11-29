@@ -59,7 +59,7 @@ export function parseDeviceId(deviceId: string): { host?: string; port?: number;
   if (deviceId.includes('/')) {
     const [serverPart, name] = deviceId.split('/')
     const [host, portStr] = serverPart.split(':')
-    return { host, port: parseInt(portStr, 10), name }
+    return { host, port: Number.parseInt(portStr, 10), name }
   }
   return { name: deviceId } // Legacy format
 }
