@@ -9,6 +9,7 @@ import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
 import { upsStatus } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
+import { parseDeviceId } from '@/lib/utils'
 import {
   getCachedCommands,
   getCachedRWVars,
@@ -60,17 +61,6 @@ function connect(): Array<Nut> {
     debug.error('Failed to connect to NUT servers', { error: e.message })
     throw new Error(`Failed to connect to NUT servers: ${e.message}`)
   }
-}
-
-// Parse device ID to extract server info and device name
-// Supports both composite format "host:port/name" and legacy format "name"
-export function parseDeviceId(deviceId: string): { host?: string; port?: number; name: string } {
-  if (deviceId.includes('/')) {
-    const [serverPart, name] = deviceId.split('/')
-    const [host, portStr] = serverPart.split(':')
-    return { host, port: parseInt(portStr, 10), name }
-  }
-  return { name: deviceId } // Legacy format
 }
 
 // Validate that the host and port are present in the configured allow-list

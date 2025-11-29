@@ -27,6 +27,10 @@ jest.mock('next/server', () => ({
 // Mock dependencies
 jest.mock('@/app/actions', () => ({
   getSettings: jest.fn(),
+}))
+
+jest.mock('@/lib/utils', () => ({
+  ...jest.requireActual('@/lib/utils'),
   parseDeviceId: jest.fn().mockImplementation((deviceId: string) => {
     if (deviceId.includes('/')) {
       const [serverPart, name] = deviceId.split('/')

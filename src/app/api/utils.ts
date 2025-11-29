@@ -1,5 +1,6 @@
 import { Nut } from '@/server/nut'
-import { getSettings, parseDeviceId } from '@/app/actions'
+import { getSettings } from '@/app/actions'
+import { parseDeviceId } from '@/lib/utils'
 import { server } from '@/common/types'
 import { NextResponse } from 'next/server'
 

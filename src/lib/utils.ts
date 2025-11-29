@@ -52,3 +52,14 @@ export function setLocalStorageItem(key: string, value: string): void {
     }
   }
 }
+
+// Parse device ID to extract server info and device name
+// Supports both composite format "host:port/name" and legacy format "name"
+export function parseDeviceId(deviceId: string): { host?: string; port?: number; name: string } {
+  if (deviceId.includes('/')) {
+    const [serverPart, name] = deviceId.split('/')
+    const [host, portStr] = serverPart.split(':')
+    return { host, port: parseInt(portStr, 10), name }
+  }
+  return { name: deviceId } // Legacy format
+}
