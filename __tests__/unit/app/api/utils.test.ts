@@ -27,6 +27,14 @@ jest.mock('next/server', () => ({
 // Mock dependencies
 jest.mock('@/app/actions', () => ({
   getSettings: jest.fn(),
+  parseDeviceId: jest.fn().mockImplementation((deviceId: string) => {
+    if (deviceId.includes('/')) {
+      const [serverPart, name] = deviceId.split('/')
+      const [host, portStr] = serverPart.split(':')
+      return { host, port: parseInt(portStr, 10), name }
+    }
+    return { name: deviceId }
+  }),
 }))
 
 jest.mock('@/server/nut')
@@ -136,7 +144,9 @@ describe('API Utils', () => {
 
       const result = await getSingleNutInstance('test-device')
 
-      expect(result).toBe(mockNut2)
+      expect(result).toBeDefined()
+      expect(result?.nut).toBe(mockNut2)
+      expect(result?.deviceName).toBe('test-device')
       expect(mockNut1.deviceExists).toHaveBeenCalledWith('test-device')
       expect(mockNut2.deviceExists).toHaveBeenCalledWith('test-device')
     })
@@ -220,7 +230,7 @@ describe('API Utils', () => {
 
       expect(result).toBeDefined()
       expect(result.json()).resolves.toEqual({ success: true })
-      expect(operation).toHaveBeenCalledWith(mockNut)
+      expect(operation).toHaveBeenCalledWith(mockNut, 'test-device')
     })
 
     it('should return device not found error when device does not exist', async () => {
@@ -268,7 +278,7 @@ describe('API Utils', () => {
 
       expect(result).toBeDefined()
       expect(result.json()).resolves.toEqual({ value: '100' })
-      expect(operation).toHaveBeenCalledWith(mockNut)
+      expect(operation).toHaveBeenCalledWith(mockNut, 'test-device')
     })
 
     it('should return device not found error when device does not exist', async () => {

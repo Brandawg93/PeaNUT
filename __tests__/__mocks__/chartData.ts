@@ -1,6 +1,9 @@
 import { DEVICE } from '@/common/types'
 
 export const device: DEVICE = {
+  id: 'localhost:3493/test',
+  name: 'test',
+  server: 'localhost:3493',
   vars: {
     'input.voltage': {
       value: '1',
@@ -37,5 +40,4 @@ export const device: DEVICE = {
   commands: [],
   description: 'test',
   clients: [],
-  name: 'test',
 }

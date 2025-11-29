@@ -1,5 +1,5 @@
 import { upsStatus } from '@/common/constants'
-import { DEVICE, VARS } from '@/common/types'
+import { NutDevice, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 import { createDebugLogger } from '@/server/debug'
 import { getCachedVarDescription, getCachedVarType } from '@/server/nut-cache'
@@ -160,9 +160,9 @@ export class Nut {
     })
   }
 
-  public async getDevices(): Promise<Array<DEVICE>> {
+  public async getDevices(): Promise<Array<NutDevice>> {
     const command = 'LIST UPS'
-    const devices: Array<DEVICE> = []
+    const devices: Array<NutDevice> = []
     const data = await this.getCommand(command)
     devices.push(
       ...data

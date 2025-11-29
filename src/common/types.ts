@@ -10,13 +10,20 @@ export type VARS = {
   [x: string]: VAR
 }
 
-export type DEVICE = {
+// Raw device info returned directly from NUT protocol (before adding id/server)
+export type NutDevice = {
   name: string
   description: string
   vars: VARS
   rwVars: Array<keyof VARS>
   commands: Array<string>
   clients: Array<string>
+}
+
+// Full device with composite ID and server info for multi-server support
+export type DEVICE = NutDevice & {
+  id: string // Composite identifier "host:port/name" for unique identification
+  server: string // "host:port" for disambiguation
 }
 
 export type DevicesData = {

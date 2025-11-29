@@ -1,5 +1,5 @@
 import { Nut } from '@/server/nut'
-import { getSettings } from '@/app/actions'
+import { getSettings, parseDeviceId } from '@/app/actions'
 import { server } from '@/common/types'
 import { NextResponse } from 'next/server'
 
@@ -9,12 +9,31 @@ export const getNutInstances = async (): Promise<Array<Nut>> => {
   return enabled.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
 }
 
-export const getSingleNutInstance = async (device: string): Promise<Nut | undefined> => {
+// Result type for getSingleNutInstance that includes device name
+export type NutInstanceResult = {
+  nut: Nut
+  deviceName: string
+}
+
+export const getSingleNutInstance = async (deviceId: string): Promise<NutInstanceResult | undefined> => {
   const nuts = await getNutInstances()
+  const parsed = parseDeviceId(deviceId)
+
   try {
-    return await Promise.any(
-      nuts.map(async (nut) => ((await nut.deviceExists(device)) ? nut : Promise.reject(new Error('Device not found'))))
+    if (parsed.host && parsed.port) {
+      // Composite ID format: find the specific server
+      const matchingNut = nuts.find((n) => n.getHost() === parsed.host && n.getPort() === parsed.port)
+      if (matchingNut && (await matchingNut.deviceExists(parsed.name))) {
+        return { nut: matchingNut, deviceName: parsed.name }
+      }
+      return undefined
+    }
+
+    // Legacy format: find any server that has the device
+    const nut = await Promise.any(
+      nuts.map(async (n) => ((await n.deviceExists(parsed.name)) ? n : Promise.reject(new Error('Device not found'))))
     )
+    return { nut, deviceName: parsed.name }
   } catch (error) {
     if (error instanceof AggregateError) {
       return undefined
@@ -51,55 +70,55 @@ export const successfulOperationMessage = (operation: string, param: string, dev
 
 // Utility function to handle device operations with automatic cleanup
 export const handleDeviceOperation = async <T>(
-  device: string,
-  operation: (nut: Nut) => Promise<T>
+  deviceId: string,
+  operation: (nut: Nut, deviceName: string) => Promise<T>
 ): Promise<NextResponse> => {
-  const nut = await getSingleNutInstance(device)
+  const result = await getSingleNutInstance(deviceId)
 
-  if (!nut) {
+  if (!result) {
     return deviceNotFoundError()
   }
 
   try {
-    const result = await operation(nut)
-    return NextResponse.json(result)
+    const opResult = await operation(result.nut, result.deviceName)
+    return NextResponse.json(opResult)
   } catch (error) {
     console.error(error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    return failedOperationError(errorMessage, 'unknown', device)
+    return failedOperationError(errorMessage, 'unknown', deviceId)
   }
 }
 
 // Utility function to handle variable operations with automatic cleanup
 export const handleVariableOperation = async <T>(
-  device: string,
+  deviceId: string,
   param: string,
-  operation: (nut: Nut) => Promise<T>
+  operation: (nut: Nut, deviceName: string) => Promise<T>
 ): Promise<NextResponse> => {
-  const nut = await getSingleNutInstance(device)
+  const result = await getSingleNutInstance(deviceId)
 
-  if (!nut) {
+  if (!result) {
     return deviceNotFoundError()
   }
 
   try {
-    const result = await operation(nut)
-    return NextResponse.json(result)
+    const opResult = await operation(result.nut, result.deviceName)
+    return NextResponse.json(opResult)
   } catch (e) {
     console.error(e)
-    return parameterNotFoundError(param, device)
+    return parameterNotFoundError(param, deviceId)
   }
 }
 
 // Utility function to get device variables data
-export const getDeviceVariablesData = async (device: string): Promise<Record<string, string | number>> => {
-  const nut = await getSingleNutInstance(device)
+export const getDeviceVariablesData = async (deviceId: string): Promise<Record<string, string | number>> => {
+  const result = await getSingleNutInstance(deviceId)
 
-  if (!nut) {
+  if (!result) {
     throw new Error('Device not found')
   }
 
-  const varsData = await nut.getData(device)
+  const varsData = await result.nut.getData(result.deviceName)
   // Return just the values instead of the full VAR objects
   const varsValues: Record<string, string | number> = {}
   for (const [key, varData] of Object.entries(varsData)) {

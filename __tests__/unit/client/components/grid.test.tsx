@@ -8,6 +8,9 @@ import PromiseSocket from '@/server/promise-socket'
 const queryClient = new QueryClient()
 
 const device: DEVICE = {
+  id: 'localhost:3493/test',
+  name: 'test',
+  server: 'localhost:3493',
   vars: {
     'input.voltage': {
       value: '120',
@@ -32,7 +35,6 @@ const device: DEVICE = {
   commands: [],
   description: 'test',
   clients: [],
-  name: 'test',
 }
 
 describe('Grid', () => {
