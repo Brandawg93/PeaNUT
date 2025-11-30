@@ -67,22 +67,16 @@ export default function DeviceGrid({ data }: Props) {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('device')}</span>,
         cell: (info) => {
           const device = info.row.original
-          const serial = device.vars['device.serial']?.value
           return (
             <Tooltip delayDuration={500}>
               <TooltipTrigger asChild>
-                <span className='text-primary mb-0 cursor-help font-normal'>{info.getValue()}</span>
+                <span className='text-primary mb-0 font-normal'>{info.getValue()}</span>
               </TooltipTrigger>
               <TooltipContent>
                 <div className='text-sm'>
                   <p>
                     <span className='font-medium'>{t('server')}:</span> {device.server}
                   </p>
-                  {serial && (
-                    <p>
-                      <span className='font-medium'>{t('serial')}:</span> {serial}
-                    </p>
-                  )}
                 </div>
               </TooltipContent>
             </Tooltip>
