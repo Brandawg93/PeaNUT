@@ -33,7 +33,7 @@ import { getCachedCommandDescription } from '@/server/nut-cache'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string; param: string }> }) {
   const { device, param } = await params
-  return handleDeviceOperation(device, async (nut) => {
-    return await getCachedCommandDescription(nut.getHost(), nut.getPort(), param, device)
+  return handleDeviceOperation(device, async (nut, deviceName) => {
+    return await getCachedCommandDescription(nut.getHost(), nut.getPort(), param, deviceName)
   })
 }

@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
 
   for (const nut of nutInstances) {
     const devices = await nut.getDevices()
+    const serverInfo = `${nut.getHost()}:${nut.getPort()}`
 
     for (const device of devices) {
       const data = await nut.getData(device.name)
@@ -48,8 +49,8 @@ export async function GET(request: NextRequest) {
           const metricValue = Number(value.value)
           const metricDescription = value.description ?? 'N/A'
 
-          // Add labels for the device
-          const labels = `ups="${device.name}"`
+          // Add labels for the device including server for multi-server disambiguation
+          const labels = `ups="${device.name}",server="${serverInfo}"`
           prometheusMetrics.push(`# HELP ${metricName} ${metricDescription}`)
           prometheusMetrics.push(`# TYPE ${metricName} gauge`)
           prometheusMetrics.push(`${metricName}{${labels}} ${metricValue}`)

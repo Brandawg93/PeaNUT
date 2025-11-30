@@ -305,6 +305,9 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               <p>
                 {t('serial')}: {vars['device.serial']?.value}
               </p>
+              <p className='text-muted-foreground text-sm'>
+                {t('server')}: {ups.server}
+              </p>
             </div>
             <div>
               <p className='text-2xl font-semibold'>
@@ -316,7 +319,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
                   (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
-                <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} vars={vars} />
+                <Actions commands={ups.commands} device={ups.id} runCommandAction={runCommandAction} vars={vars} />
               </div>
             </div>
           </div>

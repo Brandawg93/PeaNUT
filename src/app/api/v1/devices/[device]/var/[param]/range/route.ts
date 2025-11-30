@@ -37,7 +37,7 @@ type Params = {
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
-  return handleVariableOperation(device, param, async (nut) => {
-    return await getCachedRange(nut.getHost(), nut.getPort(), param, device)
+  return handleVariableOperation(device, param, async (nut, deviceName) => {
+    return await getCachedRange(nut.getHost(), nut.getPort(), param, deviceName)
   })
 }

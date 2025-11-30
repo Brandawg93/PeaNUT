@@ -50,6 +50,7 @@ export default class InfluxWriter {
     for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'number')) {
       const point = new Point(device.name)
         .tag('description', device.description)
+        .tag('server', device.server) // Server tag for multi-server disambiguation
         .floatField(key, device.vars[key].value)
       if (timestamp) {
         point.timestamp(timestamp)
@@ -72,6 +73,7 @@ export default class InfluxWriter {
     for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'string')) {
       const point = new Point(device.name)
         .tag('description', device.description)
+        .tag('server', device.server) // Server tag for multi-server disambiguation
         .stringField(key, device.vars[key].value)
       if (timestamp) {
         point.timestamp(timestamp)

@@ -74,7 +74,9 @@ describe('InfluxWriter', () => {
 
   describe('writePoint', () => {
     const baseDevice: DEVICE = {
+      id: 'localhost:3493/test-device',
       name: 'test-device',
+      server: 'localhost:3493',
       description: 'test description',
       vars: {},
       rwVars: [],
@@ -82,7 +84,7 @@ describe('InfluxWriter', () => {
       clients: [],
     }
 
-    it('should write numeric fields correctly', () => {
+    it('should write numeric fields correctly with server tag', () => {
       const device: DEVICE = {
         ...baseDevice,
         vars: {
@@ -99,6 +101,7 @@ describe('InfluxWriter', () => {
       expect(writePointMock).toHaveBeenCalledTimes(3)
       expect(Point).toHaveBeenCalledWith('test-device')
       expect(mockPoint.tag).toHaveBeenCalledWith('description', 'test description')
+      expect(mockPoint.tag).toHaveBeenCalledWith('server', 'localhost:3493')
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.floatField).toHaveBeenCalledWith('humidity', 60)
       expect(mockPoint.floatField).toHaveBeenCalledWith('voltage', 120.0)

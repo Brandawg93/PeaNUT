@@ -45,10 +45,12 @@ const vars: VARS = {}
 
 const result: Array<DEVICE> = [
   {
+    id: `${TEST_HOSTNAME}:${TEST_PORT}/foo`,
+    name: 'foo',
+    server: `${TEST_HOSTNAME}:${TEST_PORT}`,
     clients: [],
     commands: [],
     description: 'bar',
-    name: 'foo',
     rwVars: ['battery.charge'],
     vars: {},
   },
@@ -220,12 +222,14 @@ describe('actions', () => {
   it('gets a single device', async () => {
     const deviceData = await getDevice('foo')
     expect(deviceData.device).toEqual({
+      id: `${TEST_HOSTNAME}:${TEST_PORT}/foo`,
+      name: 'foo',
+      server: `${TEST_HOSTNAME}:${TEST_PORT}`,
       vars: {},
       rwVars: ['battery.charge'],
       description: 'bar',
       clients: [],
       commands: [],
-      name: 'foo',
     })
     expect(deviceData.updated).toBeInstanceOf(Date)
     expect(Nut.prototype.getData).toHaveBeenCalledWith('foo')
