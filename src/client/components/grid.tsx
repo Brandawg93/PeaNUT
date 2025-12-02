@@ -365,7 +365,7 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
 
   const handleSave = async (key: string, value: string) => {
     try {
-      const res = await saveVar(data.name, key, value)
+      const res = await saveVar(data.id, key, value)
       if (res?.error) {
         toast.error(String(res.error))
         return

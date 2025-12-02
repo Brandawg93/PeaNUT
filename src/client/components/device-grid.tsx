@@ -65,7 +65,23 @@ export default function DeviceGrid({ data }: Props) {
     () => [
       columnHelper.accessor('name', {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('device')}</span>,
-        cell: (info) => <span className='text-primary mb-0 font-normal'>{info.getValue()}</span>,
+        cell: (info) => {
+          const device = info.row.original
+          return (
+            <Tooltip delayDuration={500}>
+              <TooltipTrigger asChild>
+                <span className='text-primary mb-0 font-normal'>{info.getValue()}</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className='text-sm'>
+                  <p>
+                    <span className='font-medium'>{t('server')}:</span> {device.server}
+                  </p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          )
+        },
       }),
       columnHelper.accessor('description', {
         header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('description')}</span>,
@@ -162,7 +178,7 @@ export default function DeviceGrid({ data }: Props) {
           return cellContent
         },
       }),
-      columnHelper.accessor('name', {
+      columnHelper.accessor('id', {
         id: 'actions',
         header: () => <></>,
         cell: (info) => (
@@ -172,7 +188,7 @@ export default function DeviceGrid({ data }: Props) {
             className='flex cursor-pointer items-center gap-2'
             onClick={(e) => {
               e.stopPropagation()
-              push(`/device/${info.getValue()}`)
+              push(`/device/${encodeURIComponent(info.getValue())}`)
             }}
           >
             <HiOutlineInformationCircle className='size-4' />
@@ -240,13 +256,18 @@ export const MemoizedDeviceGrid = memo(DeviceGrid, (prev, next) => {
     const prevDevice = prevDevices[i]
     const nextDevice = nextDevices[i]
 
-    // Check if device name or description changed
-    if (prevDevice.name !== nextDevice.name || prevDevice.description !== nextDevice.description) {
+    // Check if device id, name, server, or description changed
+    if (
+      prevDevice.id !== nextDevice.id ||
+      prevDevice.name !== nextDevice.name ||
+      prevDevice.server !== nextDevice.server ||
+      prevDevice.description !== nextDevice.description
+    ) {
       return false // Re-render needed
     }
 
     // Check if relevant vars changed (only the ones used in the grid)
-    const relevantVars = ['ups.status', 'battery.charge', 'ups.load']
+    const relevantVars = ['ups.status', 'battery.charge', 'ups.load', 'device.serial']
     for (const varKey of relevantVars) {
       const prevValue = prevDevice.vars[varKey]?.value
       const nextValue = nextDevice.vars[varKey]?.value

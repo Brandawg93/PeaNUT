@@ -16,7 +16,9 @@ jest.mock('next/navigation', () => ({
 const queryClient = new QueryClient()
 
 const mockDevice: DEVICE = {
+  id: 'localhost:3493/test-device',
   name: 'test-device',
+  server: 'localhost:3493',
   description: 'Test Device Description',
   vars: {
     'ups.status': {
@@ -233,7 +235,7 @@ describe('DeviceGrid', () => {
     const detailsButton = screen.getByText('details')
     fireEvent.click(detailsButton)
 
-    expect(mockPush).toHaveBeenCalledWith('/device/test-device')
+    expect(mockPush).toHaveBeenCalledWith(`/device/${encodeURIComponent('localhost:3493/test-device')}`)
   })
 
   it('displays progress bars for battery charge and ups load', () => {
