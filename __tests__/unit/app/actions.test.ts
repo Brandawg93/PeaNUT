@@ -45,7 +45,7 @@ const vars: VARS = {}
 
 const result: Array<DEVICE> = [
   {
-    id: `${TEST_HOSTNAME}:${TEST_PORT}/foo`,
+    id: `${TEST_HOSTNAME}_${TEST_PORT}_foo`,
     name: 'foo',
     server: `${TEST_HOSTNAME}:${TEST_PORT}`,
     clients: [],
@@ -222,7 +222,7 @@ describe('actions', () => {
   it('gets a single device', async () => {
     const deviceData = await getDevice('foo')
     expect(deviceData.device).toEqual({
-      id: `${TEST_HOSTNAME}:${TEST_PORT}/foo`,
+      id: `${TEST_HOSTNAME}_${TEST_PORT}_foo`,
       name: 'foo',
       server: `${TEST_HOSTNAME}:${TEST_PORT}`,
       vars: {},

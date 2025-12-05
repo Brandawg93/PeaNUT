@@ -16,7 +16,7 @@ jest.mock('next/navigation', () => ({
 const queryClient = new QueryClient()
 
 const mockDevice: DEVICE = {
-  id: 'localhost:3493/test-device',
+  id: 'localhost_3493_test-device',
   name: 'test-device',
   server: 'localhost:3493',
   description: 'Test Device Description',
@@ -235,7 +235,8 @@ describe('DeviceGrid', () => {
     const detailsButton = screen.getByText('details')
     fireEvent.click(detailsButton)
 
-    expect(mockPush).toHaveBeenCalledWith(`/device/${encodeURIComponent('localhost:3493/test-device')}`)
+    // Device ID uses URL-safe underscore format: host_port_name
+    expect(mockPush).toHaveBeenCalledWith('/device/localhost_3493_test-device')
   })
 
   it('displays progress bars for battery charge and ups load', () => {
