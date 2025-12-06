@@ -142,8 +142,9 @@ export async function getDevices(): Promise<DevicesData> {
 
         await Promise.all(
           devices.map(async (device) => {
-            // Create composite device ID for unique identification across servers
-            const deviceId = `${serverInfo}/${device.name}`
+            // Create URL-safe device ID for unique identification across servers
+            // Format: host_port_name (replaces : and / with _ for URL safety)
+            const deviceId = `${nut.getHost()}_${nut.getPort()}_${device.name}`
 
             // Skip if we already have this exact device (same server + name)
             if (deviceMap.has(deviceId)) {
@@ -234,7 +235,8 @@ export async function getDevice(deviceId: string): Promise<DeviceData> {
   }
 
   const serverInfo = `${nut.getHost()}:${nut.getPort()}`
-  const compositeId = `${serverInfo}/${parsed.name}`
+  // URL-safe device ID: host_port_name
+  const compositeId = `${nut.getHost()}_${nut.getPort()}_${parsed.name}`
 
   const data = await nut.getData(parsed.name)
   const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE

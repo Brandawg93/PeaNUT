@@ -54,12 +54,21 @@ export function setLocalStorageItem(key: string, value: string): void {
 }
 
 // Parse device ID to extract server info and device name
-// Supports both composite format "host:port/name" and legacy format "name"
+// Supports URL-safe format "host_port_name" and legacy format "name"
 export function parseDeviceId(deviceId: string): { host?: string; port?: number; name: string } {
-  if (deviceId.includes('/')) {
-    const [serverPart, name] = deviceId.split('/')
-    const [host, portStr] = serverPart.split(':')
-    return { host, port: Number.parseInt(portStr, 10), name }
+  // URL-safe format: host_port_name (e.g., "192.168.1.10_3493_ups")
+  // Split from the right: last part is name, second-to-last is port, rest is host
+  const parts = deviceId.split('_')
+  if (parts.length >= 3) {
+    const name = parts.pop()!
+    const portStr = parts.pop()!
+    const port = Number.parseInt(portStr, 10)
+    // Check if it's actually a port number (numeric)
+    if (!Number.isNaN(port)) {
+      const host = parts.join('_') // Rejoin remaining parts as host (handles underscores in hostname)
+      return { host, port, name }
+    }
   }
-  return { name: deviceId } // Legacy format
+  // Legacy format: just the device name
+  return { name: deviceId }
 }

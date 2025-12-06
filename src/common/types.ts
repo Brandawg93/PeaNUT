@@ -22,8 +22,8 @@ export type NutDevice = {
 
 // Full device with composite ID and server info for multi-server support
 export type DEVICE = NutDevice & {
-  id: string // Composite identifier "host:port/name" for unique identification
-  server: string // "host:port" for disambiguation
+  id: string // URL-safe identifier "host_port_name" for unique identification
+  server: string // "host:port" for display/disambiguation
 }
 
 export type DevicesData = {
