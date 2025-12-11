@@ -42,6 +42,17 @@ describe('auth-config', () => {
   })
 
   describe('ensureAuthSecret', () => {
+    it('should return existing AUTH_SECRET if it exists', () => {
+      const existingSecret = 'existing-secret'
+      process.env.AUTH_SECRET = existingSecret
+
+      const result = ensureAuthSecret()
+
+      expect(mockGetRandomValues).not.toHaveBeenCalled()
+      expect(result).toBe(existingSecret)
+      expect(process.env.AUTH_SECRET).toBe(existingSecret)
+    })
+
     it('should generate a new AUTH_SECRET if it does not exist', () => {
       const mockRandomBytes = new Uint8Array(32)
       for (let i = 0; i < 32; i++) {
@@ -52,21 +63,32 @@ describe('auth-config', () => {
         return array
       })
 
-      ensureAuthSecret()
+      const result = ensureAuthSecret()
 
       expect(mockGetRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array))
       expect(mockGetRandomValues.mock.calls[0][0].length).toBe(32)
+      expect(result).toBe(Buffer.from(mockRandomBytes).toString('base64'))
       expect(process.env.AUTH_SECRET).toBe(Buffer.from(mockRandomBytes).toString('base64'))
     })
 
-    it('should not generate a new AUTH_SECRET if it already exists', () => {
-      const existingSecret = 'existing-secret'
-      process.env.AUTH_SECRET = existingSecret
+    it('should return the same cached secret on subsequent calls', () => {
+      const mockRandomBytes = new Uint8Array(32)
+      for (let i = 0; i < 32; i++) {
+        mockRandomBytes[i] = i
+      }
+      mockGetRandomValues.mockImplementation((array: Uint8Array) => {
+        array.set(mockRandomBytes)
+        return array
+      })
 
-      ensureAuthSecret()
+      const result1 = ensureAuthSecret()
+      const result2 = ensureAuthSecret()
+      const result3 = ensureAuthSecret()
 
-      expect(mockGetRandomValues).not.toHaveBeenCalled()
-      expect(process.env.AUTH_SECRET).toBe(existingSecret)
+      expect(mockGetRandomValues).toHaveBeenCalledTimes(1)
+      expect(result1).toBe(result2)
+      expect(result2).toBe(result3)
+      expect(result1).toBe(Buffer.from(mockRandomBytes).toString('base64'))
     })
   })
 })
