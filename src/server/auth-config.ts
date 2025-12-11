@@ -28,18 +28,16 @@ export function ensureAuthSecret(): string {
     process.env.AUTH_SECRET = authSecret
 
     if (isAuthEnabled()) {
-      console.log(`Generated new AUTH_SECRET: ${authSecret}`)
+      console.log('Generated new AUTH_SECRET.')
     }
 
     return authSecret
   }
 
   // Fallback: generate without setting env var (for edge runtime, build time, etc.)
-  if (!cachedAuthSecret) {
-    const randomBytes = new Uint8Array(32)
-    globalThis.crypto.getRandomValues(randomBytes)
-    cachedAuthSecret = Buffer.from(randomBytes).toString('base64')
-  }
+  const randomBytes = new Uint8Array(32)
+  globalThis.crypto.getRandomValues(randomBytes)
+  cachedAuthSecret = Buffer.from(randomBytes).toString('base64')
 
   return cachedAuthSecret
 }
