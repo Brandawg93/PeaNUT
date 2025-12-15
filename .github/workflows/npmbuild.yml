@@ -29,7 +29,7 @@ jobs:
           node-version: 24
           cache: 'pnpm'
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Setup nextjs cache
         with:
           path: ${{ github.workspace }}/.next/cache
@@ -37,7 +37,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Setup eslint cache
         with:
           path: .eslintcache
@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-eslint-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Setup prettier cache
         with:
           path: node_modules/.cache/prettier
@@ -61,7 +61,7 @@ jobs:
         run: echo "version=$(pnpm why --json @playwright/test | jq --raw-output '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: '~/.cache/ms-playwright'
