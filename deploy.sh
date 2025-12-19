@@ -12,7 +12,6 @@ case $DEPLOY_TYPE in
     echo "Creating a local image with version $PACKAGE_VERSION"
     npm run fullcheck
     if docker buildx build \
-      --platform linux/amd64 \
       --tag brandawg93/peanut:local \
       --tag brandawg93/peanut:${PACKAGE_VERSION} \
       --load \
