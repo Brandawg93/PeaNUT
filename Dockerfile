@@ -83,4 +83,4 @@ EXPOSE $WEB_PORT
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
-ENTRYPOINT ["node", "/entrypoint.mjs"]
+ENTRYPOINT ["node", "entrypoint.mjs"]
