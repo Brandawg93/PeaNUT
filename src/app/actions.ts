@@ -223,15 +223,21 @@ export async function getDevice(deviceId: string): Promise<DeviceData> {
     }
     nut = matchingNut
   } else {
-    // Legacy format: find any server that has the device (backward compatibility)
-    nut = await Promise.any(
-      nuts.map(async (n) => {
-        if (await n.deviceExists(parsed.name)) {
-          return n
-        }
-        throw new Error('Device not found on this server')
-      })
-    )
+    try {
+      nut = await Promise.any(
+        nuts.map(async (n) => {
+          if (await n.deviceExists(parsed.name)) {
+            return n
+          }
+          throw new Error('Device not found on this server')
+        })
+      )
+    } catch (e) {
+      if (e instanceof AggregateError) {
+        throw new Error(`Device '${parsed.name}' not found on any configured NUT server`)
+      }
+      throw e
+    }
   }
 
   const serverInfo = `${nut.getHost()}:${nut.getPort()}`
@@ -276,15 +282,21 @@ export async function getAllVarDescriptions(deviceId: string, params: string[]):
       }
       nut = matchingNut
     } else {
-      // Legacy format: find any server that has the device
-      nut = await Promise.any(
-        nuts.map(async (n) => {
-          if (await n.deviceExists(parsed.name)) {
-            return n
-          }
-          throw new Error('Device not found on this server')
-        })
-      )
+      try {
+        nut = await Promise.any(
+          nuts.map(async (n) => {
+            if (await n.deviceExists(parsed.name)) {
+              return n
+            }
+            throw new Error('Device not found on this server')
+          })
+        )
+      } catch (e) {
+        if (e instanceof AggregateError) {
+          throw new Error(`Device '${parsed.name}' not found on any configured NUT server`)
+        }
+        throw e
+      }
     }
 
     const descriptions = await Promise.all(
