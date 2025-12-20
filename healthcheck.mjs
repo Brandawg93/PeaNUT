@@ -1,9 +1,9 @@
-import http from 'http'
+import http from 'node:http'
 
 // Use 127.0.0.1 for local healthcheck as it's more reliable than 0.0.0.0 inside containers
 const options = {
   host: '127.0.0.1',
-  port: parseInt(process.env.WEB_PORT || '8080', 10),
+  port: Number.parseInt(process.env.WEB_PORT || '8080', 10),
   path: (process.env.BASE_PATH || '') + '/api/ping',
   timeout: 5000,
 }
