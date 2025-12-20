@@ -47,7 +47,9 @@ RUN pnpm run next-ws && \
     rm -rf .next/standalone/.next/cache
 
 # Production stage with minimal footprint
-FROM alpine:3 AS runner
+FROM dhi.io/node:24 AS runner
+
+WORKDIR /app
 
 # Add labels for better image metadata
 LABEL org.opencontainers.image.title="PeaNUT"
@@ -57,17 +59,15 @@ LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
 # Copy built application and set permissions to default node user
-COPY --link --chown=1000:1000 --from=build /app/.next/standalone ./
-COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
+COPY --link --from=build --chown=1000:1000 /app/.next/standalone ./
+COPY --link --from=build --chown=1000:1000 /app/.next/static ./.next/static
 # Copy only API source files needed for Swagger documentation generation
-COPY --link --chown=1000:1000 --from=build /app/src/app/api ./src/app/api
-COPY --link --chown=1000:1000 --from=build /app/package.json ./package.json
+COPY --link --from=build --chown=1000:1000 /app/src/app/api ./src/app/api
+COPY --link --from=build --chown=1000:1000 /app/package.json ./package.json
 
 # Copy and set up entrypoint script
-COPY --link --chown=1000:1000 entrypoint.sh /entrypoint.sh
-
-# Install nodejs and tini
-RUN apk add --no-cache libstdc++ nodejs tini && chmod +x /entrypoint.sh
+COPY --link --chmod=755 --chown=1000:1000 entrypoint.mjs ./entrypoint.mjs
+COPY --link --chmod=755 --chown=1000:1000 healthcheck.mjs ./healthcheck.mjs
 
 # Set environment variables
 ENV CI=true
@@ -78,13 +78,10 @@ ENV WEB_PORT=8080
 ENV BASE_PATH=""
 ENV DEBUG=false
 
-# Switch to non-root user (node user is built into the image)
-# USER 1000
-
 EXPOSE $WEB_PORT
 
 # Optimized healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
+    CMD ["node", "healthcheck.mjs"]
 
-ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
+ENTRYPOINT ["node", "entrypoint.mjs"]
