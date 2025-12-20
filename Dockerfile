@@ -66,7 +66,7 @@ COPY --link --from=build /app/src/app/api ./src/app/api
 COPY --link --from=build /app/package.json ./package.json
 
 # Copy and set up entrypoint script
-COPY --link --chmod=755 entrypoint.js /entrypoint.js
+COPY --link --chmod=755 entrypoint.mjs /entrypoint.mjs
 
 # Set environment variables
 ENV CI=true
@@ -86,4 +86,4 @@ EXPOSE $WEB_PORT
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
-ENTRYPOINT ["node", "/entrypoint.js"]
+ENTRYPOINT ["node", "/entrypoint.mjs"]

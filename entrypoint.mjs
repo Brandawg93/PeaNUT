@@ -6,6 +6,4 @@ process.env.PORT = process.env.WEB_PORT || '8080'
 process.env.NEXT_PUBLIC_BASE_PATH = process.env.BASE_PATH || ''
 
 // Execute the Node.js server
-;(async () => {
-  await import('./server.js')
-})()
+await import('./server.js')
