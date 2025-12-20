@@ -67,6 +67,7 @@ COPY --link --from=build --chown=1000:1000 /app/package.json ./package.json
 
 # Copy and set up entrypoint script
 COPY --link --chmod=755 --chown=1000:1000 entrypoint.mjs ./entrypoint.mjs
+COPY --link --chmod=755 --chown=1000:1000 healthcheck.mjs ./healthcheck.mjs
 
 # Set environment variables
 ENV CI=true
@@ -81,6 +82,6 @@ EXPOSE $WEB_PORT
 
 # Optimized healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
+    CMD ["node", "healthcheck.mjs"]
 
 ENTRYPOINT ["node", "entrypoint.mjs"]
