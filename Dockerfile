@@ -49,7 +49,7 @@ RUN pnpm run next-ws && \
 # Production stage with minimal footprint
 FROM dhi.io/node:24 AS runner
 
-WORKDIR /
+WORKDIR /app
 
 # Add labels for better image metadata
 LABEL org.opencontainers.image.title="PeaNUT"
@@ -59,14 +59,14 @@ LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
 # Copy built application and set permissions to default node user
-COPY --link --from=build /app/.next/standalone ./
-COPY --link --from=build /app/.next/static ./.next/static
+COPY --link --from=build --chown=1000:1000 /app/.next/standalone ./
+COPY --link --from=build --chown=1000:1000 /app/.next/static ./.next/static
 # Copy only API source files needed for Swagger documentation generation
-COPY --link --from=build /app/src/app/api ./src/app/api
-COPY --link --from=build /app/package.json ./package.json
+COPY --link --from=build --chown=1000:1000 /app/src/app/api ./src/app/api
+COPY --link --from=build --chown=1000:1000 /app/package.json ./package.json
 
 # Copy and set up entrypoint script
-COPY --link --chmod=755 entrypoint.mjs /entrypoint.mjs
+COPY --link --chmod=755 --chown=1000:1000 entrypoint.mjs ./entrypoint.mjs
 
 # Set environment variables
 ENV CI=true
@@ -77,13 +77,10 @@ ENV WEB_PORT=8080
 ENV BASE_PATH=""
 ENV DEBUG=false
 
-# Switch to root user
-USER 0
-
 EXPOSE $WEB_PORT
 
 # Optimized healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
+    CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
 
 ENTRYPOINT ["node", "/entrypoint.mjs"]
