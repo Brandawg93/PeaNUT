@@ -371,7 +371,11 @@ export async function getAllCommands(deviceId: string): Promise<string[]> {
     }
 
     return Array.from(commands)
-  } catch {
+  } catch (error) {
+    debug.error('Failed to get all commands', {
+      deviceId,
+      error: error instanceof Error ? error.message : String(error),
+    })
     return []
   }
 }
@@ -409,7 +413,8 @@ export async function checkSettings(): Promise<boolean> {
     const settings = getCachedSettings()
     const servers = settings.get('NUT_SERVERS')
     return Array.isArray(servers) && servers.length > 0
-  } catch {
+  } catch (error) {
+    debug.error('Failed to check settings', { error: error instanceof Error ? error.message : String(error) })
     return false
   }
 }
