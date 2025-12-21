@@ -279,7 +279,12 @@ export class Nut {
         return 'Description unavailable'
       }
       return data.split('"')[1].trim()
-    } catch {
+    } catch (error) {
+      this.debug.warn('Failed to get description', {
+        variable,
+        device,
+        error: error instanceof Error ? error.message : String(error),
+      })
       return 'Description unavailable'
     }
   }

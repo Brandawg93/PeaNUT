@@ -93,7 +93,8 @@ export async function UPGRADE(
       console.error('NUT server error:', error)
       try {
         if (client.readyState === 1) {
-          client.send(JSON.stringify({ type: 'error', message: 'NUT server error' }))
+          const errorMessage = error instanceof Error ? error.message : String(error)
+          client.send(JSON.stringify({ type: 'error', message: `NUT server error: ${errorMessage}` }))
         }
       } catch {
         // Ignore errors when sending to closed connection
