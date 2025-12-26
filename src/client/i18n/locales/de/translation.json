@@ -96,6 +96,8 @@
     "disable": "Deaktivieren"
   },
   "connect": {
+    "name": "Name",
+    "namePlaceholder": "Servername eingeben (Alias)",
     "server": "Serveradresse",
     "port": "Port",
     "username": "Benutzername",

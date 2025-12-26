@@ -22,14 +22,26 @@ describe('utils', () => {
   describe('parseDeviceId', () => {
     it.each([
       // [input, expected, description]
-      ['192.168.1.10_3493_ups', { host: '192.168.1.10', port: 3493, name: 'ups' }, 'URL-safe format'],
-      ['localhost_3493_test-device', { host: 'localhost', port: 3493, name: 'test-device' }, 'localhost'],
+      ['192.168.1.10~3493~ups', { host: '192.168.1.10', port: 3493, name: 'ups' }, 'Tilde format'],
+      ['Home~3493~ups', { host: 'Home', port: 3493, name: 'ups' }, 'Tilde format with alias'],
+      ['Home~3493~cps_ups', { host: 'Home', port: 3493, name: 'cps_ups' }, 'Tilde format with underscores'],
+      [
+        '192.168.1.10_3493_ups',
+        { host: '192.168.1.10', port: 3493, name: 'ups' },
+        'Backward compatibility underscore format',
+      ],
+      ['localhost_3493_test-device', { host: 'localhost', port: 3493, name: 'test-device' }, 'localhost underscore'],
       [
         '192.168.1.10_3493_my-ups-device',
         { host: '192.168.1.10', port: 3493, name: 'my-ups-device' },
-        'hyphenated name',
+        'hyphenated name underscore',
       ],
-      ['my_server_3493_ups', { host: 'my_server', port: 3493, name: 'ups' }, 'hostname with underscores'],
+      ['my_server_3493_ups', { host: 'my_server', port: 3493, name: 'ups' }, 'hostname with underscores underscore'],
+      [
+        '192.168.2.10_3493_cps_ups',
+        { host: '192.168.2.10', port: 3493, name: 'cps_ups' },
+        'device name with underscores underscore',
+      ],
     ])('parses "%s" correctly (%s)', (input, expected) => {
       expect(parseDeviceId(input)).toEqual(expected)
     })

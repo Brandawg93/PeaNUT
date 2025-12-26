@@ -22,10 +22,18 @@ const PING_INTERVAL = 10000
 type AddServerProps = Readonly<{
   initialServer: string
   initialPort: number
+  initialName: string | undefined
   initialUsername: string | undefined
   initialPassword: string | undefined
   initialDisabled?: boolean
-  handleChange: (server: string, port: number, username?: string, password?: string, disabled?: boolean) => void
+  handleChange: (
+    server: string,
+    port: number,
+    name?: string,
+    username?: string,
+    password?: string,
+    disabled?: boolean
+  ) => void
   handleRemove: () => void
   testConnectionAction: (server: string, port: number, username?: string, password?: string) => Promise<string>
   saved?: boolean
@@ -34,6 +42,7 @@ type AddServerProps = Readonly<{
 export default function AddServer({
   initialServer,
   initialPort,
+  initialName,
   initialUsername,
   initialPassword,
   initialDisabled,
@@ -47,6 +56,7 @@ export default function AddServer({
   const { theme } = useTheme()
   const [server, setServer] = useState<string>(initialServer ?? '')
   const [port, setPort] = useState<number>(initialPort ?? 3493)
+  const [name, setName] = useState<string | undefined>(initialName ?? '')
   const [username, setUsername] = useState<string | undefined>(initialUsername ?? '')
   const [password, setPassword] = useState<string | undefined>(initialPassword ?? '')
   const [disabled, setDisabled] = useState<boolean>(initialDisabled ?? false)
@@ -153,6 +163,22 @@ export default function AddServer({
         <div className='px-6'>
           <form className='w-full'>
             <div className='mb-6'>
+              <Label htmlFor='serverName'>{t('connect.name')}</Label>
+              <Input
+                type='text'
+                id='serverName'
+                value={name}
+                disabled={disabled}
+                placeholder={t('connect.namePlaceholder')}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  handleChange(server, port, e.target.value, username, password, disabled)
+                }}
+                className='border-border-card bg-background! mt-1 w-full px-3 py-2'
+                data-testid='name'
+              />
+            </div>
+            <div className='mb-6'>
               <Label htmlFor='serverHost'>{t('connect.server')}</Label>
               <Input
                 required
@@ -162,7 +188,7 @@ export default function AddServer({
                 disabled={disabled}
                 onChange={(e) => {
                   setServer(e.target.value)
-                  handleChange(e.target.value, port, username, password, disabled)
+                  handleChange(e.target.value, port, name, username, password, disabled)
                 }}
                 className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='server'
@@ -178,7 +204,7 @@ export default function AddServer({
                 disabled={disabled}
                 onChange={(e) => {
                   setPort(+e.target.value)
-                  handleChange(server, +e.target.value, username, password, disabled)
+                  handleChange(server, +e.target.value, name, username, password, disabled)
                 }}
                 className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='port'
@@ -195,7 +221,7 @@ export default function AddServer({
                 disabled={disabled}
                 onChange={(e) => {
                   setUsername(e.target.value)
-                  handleChange(server, port, e.target.value, password, disabled)
+                  handleChange(server, port, name, e.target.value, password, disabled)
                 }}
                 className='border-border-card bg-background! mt-1 w-full px-3 py-2'
                 data-testid='username'
@@ -209,7 +235,7 @@ export default function AddServer({
                 disabled={disabled}
                 onChange={(e) => {
                   setPassword(e.target.value)
-                  handleChange(server, port, username, e.target.value, disabled)
+                  handleChange(server, port, name, username, e.target.value, disabled)
                 }}
                 data-testid='password'
               />
@@ -231,7 +257,7 @@ export default function AddServer({
                       const next = !disabled
                       setDisabled(next)
                       setConnectionStatus('untested')
-                      handleChange(server, port, username, password, next)
+                      handleChange(server, port, name, username, password, next)
                     }}
                     data-testid='menu-toggle'
                   >

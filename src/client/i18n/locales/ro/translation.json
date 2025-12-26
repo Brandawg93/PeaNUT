@@ -96,6 +96,8 @@
     "disable": "Dezactiva"
   },
   "connect": {
+    "name": "Nume",
+    "namePlaceholder": "Introduceți numele serverului (alias)",
     "server": "Adresa serverului",
     "port": "Port",
     "username": "Nume de utilizator",
