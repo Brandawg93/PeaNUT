@@ -11,6 +11,7 @@ describe('AddServer', () => {
         <AddServer
           initialServer={props?.initialServer ?? TEST_HOSTNAME}
           initialPort={props?.initialPort ?? TEST_PORT}
+          initialName={props?.initialName}
           initialUsername={props?.initialUsername}
           initialPassword={props?.initialPassword}
           initialDisabled={props?.initialDisabled}
@@ -43,6 +44,7 @@ describe('AddServer Component', () => {
         <AddServer
           initialServer={TEST_HOSTNAME}
           initialPort={8080}
+          initialName={''}
           initialUsername={TEST_USERNAME}
           initialPassword={TEST_PASSWORD}
           handleChange={mockHandleChange}
@@ -63,14 +65,14 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const serverInput = getByTestId('server')
     fireEvent.change(serverInput, { target: { value: 'new-server' } })
-    expect(mockHandleChange).toHaveBeenCalledWith('new-server', 8080, TEST_USERNAME, TEST_PASSWORD, false)
+    expect(mockHandleChange).toHaveBeenCalledWith('new-server', 8080, '', TEST_USERNAME, TEST_PASSWORD, false)
   })
 
   test('calls setPort on port input change', () => {
     const { getByTestId } = renderComponent()
     const portInput = getByTestId('port')
     fireEvent.change(portInput, { target: { value: '9090' } })
-    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 9090, TEST_USERNAME, TEST_PASSWORD, false)
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 9090, '', TEST_USERNAME, TEST_PASSWORD, false)
   })
 
   test('calls handleRemove on remove button click', () => {
@@ -84,14 +86,21 @@ describe('AddServer Component', () => {
     const { getByTestId } = renderComponent()
     const usernameInput = getByTestId('username')
     fireEvent.change(usernameInput, { target: { value: 'new-user' } })
-    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, 'new-user', TEST_PASSWORD, false)
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, '', 'new-user', TEST_PASSWORD, false)
   })
 
   test('calls setPassword on password input change', () => {
     const { getByTestId } = renderComponent()
     const passwordInput = getByTestId('password')
     fireEvent.change(passwordInput, { target: { value: 'new-password' } })
-    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, TEST_USERNAME, 'new-password', false)
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, '', TEST_USERNAME, 'new-password', false)
+  })
+
+  test('calls setName on name input change', () => {
+    const { getByTestId } = renderComponent()
+    const nameInput = getByTestId('name')
+    fireEvent.change(nameInput, { target: { value: 'new-alias' } })
+    expect(mockHandleChange).toHaveBeenCalledWith(TEST_HOSTNAME, 8080, 'new-alias', TEST_USERNAME, TEST_PASSWORD, false)
   })
 
   test('toggles password visibility', () => {
