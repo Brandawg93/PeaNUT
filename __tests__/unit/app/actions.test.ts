@@ -45,7 +45,7 @@ const vars: VARS = {}
 
 const result: Array<DEVICE> = [
   {
-    id: `${TEST_HOSTNAME}_${TEST_PORT}_foo`,
+    id: 'foo',
     name: 'foo',
     server: `${TEST_HOSTNAME}:${TEST_PORT}`,
     clients: [],
@@ -222,7 +222,7 @@ describe('actions', () => {
   it('gets a single device', async () => {
     const deviceData = await getDevice('foo')
     expect(deviceData.device).toEqual({
-      id: `${TEST_HOSTNAME}_${TEST_PORT}_foo`,
+      id: 'foo',
       name: 'foo',
       server: `${TEST_HOSTNAME}:${TEST_PORT}`,
       vars: {},
@@ -236,6 +236,27 @@ describe('actions', () => {
     expect(Nut.prototype.getRWVars).toHaveBeenCalledWith('foo')
     expect(Nut.prototype.getCommands).toHaveBeenCalledWith('foo')
     expect(Nut.prototype.getDescription).toHaveBeenCalledWith('foo')
+  })
+
+  it('handles conflicting device names with smart IDs', async () => {
+    // Mock two servers with the same device name
+    jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { NAME: 'Server1', HOST: '192.168.1.10', PORT: 3493, DISABLED: false },
+          { NAME: 'Server2', HOST: '192.168.1.20', PORT: 3493, DISABLED: false },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+
+    const data = await getDevices()
+    expect(data.devices).toHaveLength(2)
+    // Both should use composite ID because name 'foo' is not unique
+    expect(data.devices![0].id).toBe('Server1~3493~foo')
+    expect(data.devices![1].id).toBe('Server2~3493~foo')
+    expect(data.devices![0].server).toBe('Server1')
+    expect(data.devices![1].server).toBe('Server2')
   })
 
   describe('authenticate', () => {

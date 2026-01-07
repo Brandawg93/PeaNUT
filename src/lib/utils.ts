@@ -54,21 +54,41 @@ export function setLocalStorageItem(key: string, value: string): void {
 }
 
 // Parse device ID to extract server info and device name
-// Supports URL-safe format "host_port_name" and legacy format "name"
+// Supports URL-safe format "host~port~name" (preferred) and legacy format "name"
+// Also supports backward compatible "host_port_name" format
 export function parseDeviceId(deviceId: string): { host?: string; port?: number; name: string } {
-  // URL-safe format: host_port_name (e.g., "192.168.1.10_3493_ups")
-  // Split from the right: last part is name, second-to-last is port, rest is host
-  const parts = deviceId.split('_')
-  if (parts.length >= 3) {
-    const name = parts.pop()!
-    const portStr = parts.pop()!
-    const port = Number.parseInt(portStr, 10)
-    // Check if it's actually a port number (numeric)
-    if (!Number.isNaN(port)) {
-      const host = parts.join('_') // Rejoin remaining parts as host (handles underscores in hostname)
-      return { host, port, name }
+  // 1. Try preferred tilde separator format: host~port~name
+  if (deviceId.includes('~')) {
+    const parts = deviceId.split('~')
+    // Find the last numeric part that could be a port
+    const portIdx = parts.findLastIndex((p, i) => i > 0 && /^\d+$/.test(p))
+
+    if (portIdx !== -1) {
+      return {
+        host: parts.slice(0, portIdx).join('~'),
+        port: Number.parseInt(parts[portIdx], 10),
+        name: parts.slice(portIdx + 1).join('~'),
+      }
     }
   }
-  // Legacy format: just the device name
+
+  // 2. Try backward compatible underscore format: host_port_name
+  // The port is numeric, everything after it is device name, everything before is host/alias
+  const parts = deviceId.split('_')
+  if (parts.length >= 3) {
+    // Search backwards to find the numeric port
+    // Port cannot be the first or last part in a composite ID
+    const portIdx = parts.findLastIndex((p, i) => i > 0 && i < parts.length - 1 && /^\d+$/.test(p))
+
+    if (portIdx !== -1) {
+      return {
+        host: parts.slice(0, portIdx).join('_'),
+        port: Number.parseInt(parts[portIdx], 10),
+        name: parts.slice(portIdx + 1).join('_'),
+      }
+    }
+  }
+
+  // 3. Legacy format: just the device name
   return { name: deviceId }
 }

@@ -38,6 +38,7 @@ export type DeviceData = {
 }
 
 export type server = {
+  NAME?: string
   HOST: string
   PORT: number
   USERNAME?: string

@@ -174,6 +174,7 @@ export default function SettingsWrapper({
     (
       server: string,
       port: number,
+      name: string | undefined,
       username: string | undefined,
       password: string | undefined,
       disabled: boolean | undefined,
@@ -187,6 +188,7 @@ export default function SettingsWrapper({
             ...updatedList[index].server,
             HOST: server,
             PORT: port,
+            NAME: name,
             USERNAME: username,
             PASSWORD: password,
             DISABLED: disabled ?? updatedList[index].server.DISABLED ?? false,
@@ -349,11 +351,12 @@ export default function SettingsWrapper({
                         key={server.id}
                         initialServer={server.server.HOST}
                         initialPort={server.server.PORT}
+                        initialName={server.server.NAME}
                         initialUsername={server.server.USERNAME}
                         initialPassword={server.server.PASSWORD}
                         initialDisabled={server.server.DISABLED}
-                        handleChange={(server, port, username, password, disabled) =>
-                          handleServerChange(server, port, username, password, disabled, index)
+                        handleChange={(server, port, name, username, password, disabled) =>
+                          handleServerChange(server, port, name, username, password, disabled, index)
                         }
                         handleRemove={() => handleServerRemove(index)}
                         testConnectionAction={testConnectionAction}
@@ -370,7 +373,7 @@ export default function SettingsWrapper({
                               ...prevList,
                               {
                                 id: `new-server-${Date.now()}`,
-                                server: { HOST: '', PORT: 0, USERNAME: '', PASSWORD: '', DISABLED: false },
+                                server: { NAME: '', HOST: '', PORT: 0, USERNAME: '', PASSWORD: '', DISABLED: false },
                                 saved: false,
                               },
                             ]
@@ -524,7 +527,7 @@ export default function SettingsWrapper({
                                   key={`${server.HOST}:${server.PORT}`}
                                   value={`${server.HOST}:${server.PORT}`}
                                 >
-                                  {server.HOST}:{server.PORT}
+                                  {server.NAME || `${server.HOST}:${server.PORT}`}
                                 </SelectItem>
                               ))}
                             </SelectContent>

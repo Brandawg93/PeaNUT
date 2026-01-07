@@ -12,13 +12,15 @@ export class Nut {
   private readonly username: string
 
   private readonly password: string
+  private readonly name: string
   private readonly debug: ReturnType<typeof createDebugLogger>
 
-  constructor(host: string, port: number, username?: string, password?: string) {
+  constructor(host: string, port: number, username?: string, password?: string, name?: string) {
     this.host = host
     this.port = port
     this.username = username ?? ''
     this.password = password ?? ''
+    this.name = name ?? ''
     this.debug = createDebugLogger('NUT')
   }
 
@@ -28,6 +30,10 @@ export class Nut {
 
   public getPort(): number {
     return this.port
+  }
+
+  public getName(): string {
+    return this.name
   }
 
   public hasCredentials(): boolean {

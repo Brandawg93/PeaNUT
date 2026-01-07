@@ -96,6 +96,8 @@
     "disable": "Disable"
   },
   "connect": {
+    "name": "Name",
+    "namePlaceholder": "Enter server name (alias)",
     "server": "Server Address",
     "port": "Port",
     "username": "Username",
