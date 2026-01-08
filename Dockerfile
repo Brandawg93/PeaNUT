@@ -58,6 +58,9 @@ LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
+# Create config directory and set permissions for non-root user
+RUN mkdir -p /config && chown 1000:1000 /config
+
 # Copy built application and set permissions to default node user
 COPY --link --from=build --chown=1000:1000 /app/.next/standalone ./
 COPY --link --from=build --chown=1000:1000 /app/.next/static ./.next/static
@@ -76,6 +79,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 ENV BASE_PATH=""
+ENV SETTINGS_FILE=/config/settings.yml
 ENV DEBUG=false
 
 EXPOSE $WEB_PORT
