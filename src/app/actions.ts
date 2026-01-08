@@ -17,7 +17,7 @@ import {
   getCachedVarDescription,
 } from '@/server/nut-cache'
 
-const settingsFile = './config/settings.yml'
+const settingsFile = process.env.SETTINGS_FILE || './config/settings.yml'
 const debug = createDebugLogger('ACTIONS')
 
 // Cache settings instance

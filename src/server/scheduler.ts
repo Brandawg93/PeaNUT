@@ -6,7 +6,7 @@ import InfluxWriter from '@/server/influxdb'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
 
-const settingsFile = './config/settings.yml'
+const settingsFile = process.env.SETTINGS_FILE || './config/settings.yml'
 const debug = createDebugLogger('SCHEDULER')
 
 // Initialize settings and scheduler
