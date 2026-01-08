@@ -44,7 +44,8 @@ COPY --link . /app
 RUN pnpm run next-ws && \
     pnpm run build && \
     # Clean up cache to reduce image size
-    rm -rf .next/standalone/.next/cache
+    rm -rf .next/standalone/.next/cache && \
+    mkdir -p /config
 
 # Production stage with minimal footprint
 FROM dhi.io/node:24 AS runner
@@ -58,12 +59,11 @@ LABEL org.opencontainers.image.url="https://github.com/Brandawg93/PeaNUT"
 LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
-# Create config directory and set permissions for non-root user
-RUN mkdir -p /config && chown 1000:1000 /config
-
 # Copy built application and set permissions to default node user
 COPY --link --from=build --chown=1000:1000 /app/.next/standalone ./
 COPY --link --from=build --chown=1000:1000 /app/.next/static ./.next/static
+# Create config directory and set permissions for non-root user
+COPY --link --from=build --chown=1000:1000 /config /config
 # Copy only API source files needed for Swagger documentation generation
 COPY --link --from=build --chown=1000:1000 /app/src/app/api ./src/app/api
 COPY --link --from=build --chown=1000:1000 /app/package.json ./package.json
