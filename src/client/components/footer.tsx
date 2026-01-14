@@ -35,15 +35,20 @@ export default function Footer({ updated }: Props) {
     }
 
     const checkVersions = async () => {
-      const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
-      const json = (await res.json()) as Array<{ name: string; published_at: string; html_url: string }>
-      const version = json.find((r) => r.name === `v${pJson.version}`)
-      if (!version) return
-      const latest = json[0]
-      const created = new Date(version.published_at)
-      setCurrentVersion({ created, version: version.name, url: version.html_url })
-      if (version.name !== latest.name) {
-        setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
+      try {
+        const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
+        const json = await res.json()
+        if (!Array.isArray(json)) return
+        const version = json.find((r) => r.name === `v${pJson.version}`)
+        if (!version) return
+        const latest = json[0]
+        const created = new Date(version.published_at)
+        setCurrentVersion({ created, version: version.name, url: version.html_url })
+        if (version.name !== latest.name) {
+          setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
+        }
+      } catch (error) {
+        console.error('Failed to check versions:', error)
       }
     }
     checkVersions()
@@ -55,6 +60,7 @@ export default function Footer({ updated }: Props) {
       href={updateAvailable.url}
       target='_blank'
       rel='noreferrer'
+      data-testid='update-available-link'
     >
       &nbsp;
       <HiOutlineExclamationCircle className='inline-block size-4' />
