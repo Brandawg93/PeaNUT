@@ -50,23 +50,16 @@ export default class InfluxWriter {
       const variable = device.vars[key]
       const value = variable.value
 
-      let isFloat = false
-      let isString = false
-
-      if (typeof value === 'number') {
-        isFloat = true
-      } else if (typeof value === 'string') {
-        isString = true
-      } else {
+      if (typeof value !== 'number' && typeof value !== 'string') {
         continue
       }
 
       const point = new Point(device.name).tag('description', device.description).tag('server', device.server) // Server tag for multi-server disambiguation
 
-      if (isFloat) {
-        point.floatField(key, value as number)
+      if (typeof value === 'number') {
+        point.floatField(key, value)
       } else {
-        point.stringField(key, value as string)
+        point.stringField(key, value)
       }
 
       if (timestamp) {
@@ -75,8 +68,11 @@ export default class InfluxWriter {
 
       try {
         this.writeApi.writePoint(point)
-        if (isFloat) floatFieldCount++
-        if (isString) stringFieldCount++
+        if (typeof value === 'number') {
+          floatFieldCount++
+        } else {
+          stringFieldCount++
+        }
       } catch (e) {
         this.debug.error('Failed to write field', {
           device: device.name,
