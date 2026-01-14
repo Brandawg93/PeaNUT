@@ -83,15 +83,14 @@ test.describe('Footer Links', () => {
     // This test checks if an update notification is shown and has correct link
     // It's conditional because it depends on whether an update is available
 
-    // Look for update notification text
-    const updateText = page.locator('text=/update.*available/i')
+    // Use data-testid to find the update link
+    const updateLink = page.locator('[data-testid="update-available-link"]')
 
-    // Check if update notification exists
-    const exists = await updateText.count()
+    // Check if update link exists
+    const exists = await updateLink.count()
 
     if (exists > 0) {
-      // If update notification exists, verify it has a link to releases
-      const updateLink = updateText.locator('xpath=ancestor::a[1]')
+      // If update link exists, verify it has correct attributes
       const href = await updateLink.getAttribute('href')
 
       expect(href).toContain('github.com/brandawg93/peanut/releases')

@@ -88,6 +88,8 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 | WEB_USERNAME        | undefined | Username of web app                               |
 | WEB_PASSWORD        | undefined | Password of web app                               |
 | BASE_PATH           | undefined | Base path for reverse proxy                       |
+| SSL_CERT_PATH       | undefined | Path to SSL certificate file                      |
+| SSL_KEY_PATH        | undefined | Path to SSL private key file                      |
 | DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
 | DEBUG               | false     | Enable debug logging for server components        |
 
