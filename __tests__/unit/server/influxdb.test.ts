@@ -241,7 +241,7 @@ describe('InfluxWriter', () => {
 
       expect(writePointMock).toHaveBeenCalled()
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to write float field temperature for device test-device:',
+        'Failed to write field temperature for device test-device:',
         expect.any(Error)
       )
       consoleErrorSpy.mockRestore()
