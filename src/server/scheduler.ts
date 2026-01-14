@@ -22,11 +22,10 @@ debug.info('Scheduler initialized', { influxInterval })
 const createTask = () =>
   new Task('influx writer', () => {
     debug.info('Starting InfluxDB write task')
-    const taskSettings = new YamlSettings(settingsFile)
-    const influxHost = taskSettings.get('INFLUX_HOST')
-    const influxToken = taskSettings.get('INFLUX_TOKEN')
-    const influxOrg = taskSettings.get('INFLUX_ORG')
-    const influxBucket = taskSettings.get('INFLUX_BUCKET')
+    const influxHost = settings.get('INFLUX_HOST')
+    const influxToken = settings.get('INFLUX_TOKEN')
+    const influxOrg = settings.get('INFLUX_ORG')
+    const influxBucket = settings.get('INFLUX_BUCKET')
 
     debug.debug('InfluxDB configuration', {
       hasHost: !!influxHost,
@@ -87,12 +86,12 @@ const watcher = chokidar.watch(settingsFile)
 
 watcher.on('change', () => {
   debug.info('Settings file changed, updating scheduler configuration')
-  const newSettings = new YamlSettings(settingsFile)
-  const newInfluxHost = newSettings.get('INFLUX_HOST')
-  const newInfluxToken = newSettings.get('INFLUX_TOKEN')
-  const newInfluxOrg = newSettings.get('INFLUX_ORG')
-  const newInfluxBucket = newSettings.get('INFLUX_BUCKET')
-  const newInterval = newSettings.get('INFLUX_INTERVAL') || DEFAULT_INFLUX_INTERVAL
+  settings.reload()
+  const newInfluxHost = settings.get('INFLUX_HOST')
+  const newInfluxToken = settings.get('INFLUX_TOKEN')
+  const newInfluxOrg = settings.get('INFLUX_ORG')
+  const newInfluxBucket = settings.get('INFLUX_BUCKET')
+  const newInterval = settings.get('INFLUX_INTERVAL') || DEFAULT_INFLUX_INTERVAL
 
   debug.debug('New InfluxDB configuration', {
     hasHost: !!newInfluxHost,

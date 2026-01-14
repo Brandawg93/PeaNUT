@@ -52,6 +52,19 @@ export class YamlSettings {
     this.disableFileSaving = this.envVars.DISABLE_CONFIG_FILE === 'true'
 
     this.debug.info('Initializing YamlSettings', { filePath, disableFileSaving: this.disableFileSaving })
+    this.reload()
+  }
+
+  public reload(): void {
+    // Reset data to defaults to ensure a clean load
+    this.data = { ...ISettings }
+    this.loadFromEnvVars()
+    this.load()
+  }
+
+  public reload(): void {
+    // Reset data to defaults to ensure a clean load
+    this.data = { ...ISettings }
     this.loadFromEnvVars()
     this.load()
   }
