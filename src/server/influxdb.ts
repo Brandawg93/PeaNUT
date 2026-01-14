@@ -61,9 +61,7 @@ export default class InfluxWriter {
         continue
       }
 
-      const point = new Point(device.name)
-        .tag('description', device.description)
-        .tag('server', device.server) // Server tag for multi-server disambiguation
+      const point = new Point(device.name).tag('description', device.description).tag('server', device.server) // Server tag for multi-server disambiguation
 
       if (isFloat) {
         point.floatField(key, value as number)
