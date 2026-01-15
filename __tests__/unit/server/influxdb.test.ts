@@ -158,7 +158,7 @@ describe('InfluxWriter', () => {
       const device: DEVICE = {
         ...baseDevice,
         vars: {
-          status: { value: upsStatus.DEVICE_UNREACHABLE },
+          'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
           temperature: { value: 25.5 },
         },
       }
