@@ -1,7 +1,7 @@
 import { Nut } from '@/server/nut'
 import { getDevices } from '@/app/actions'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { upsStatus } from '@/common/constants'
+import { upsStatus, parseUpsStatus } from '@/common/constants'
 
 // Mock Nut
 jest.mock('@/server/nut')
@@ -60,5 +60,17 @@ describe('getDevices unreachable handling', () => {
     expect(data.devices).toHaveLength(1)
     expect(data.devices![0].name).toBe('ups1')
     expect(data.devices![0].vars['ups.status'].value).toBe(upsStatus.DEVICE_UNREACHABLE)
+  })
+
+  describe('parseUpsStatus', () => {
+    it('does not add a comma to "Device Unreachable"', () => {
+      const result = parseUpsStatus(upsStatus.DEVICE_UNREACHABLE)
+      expect(result).toBe('Device Unreachable')
+    })
+
+    it('still parses combined status codes correctly', () => {
+      const result = parseUpsStatus('OL CHRG')
+      expect(result).toBe('Online, Battery Charging')
+    })
   })
 })
