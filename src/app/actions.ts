@@ -145,23 +145,6 @@ export async function getDevices(): Promise<DevicesData> {
           error: error instanceof Error ? error.message : String(error),
         })
         failedServers.push(serverInfo)
-        // Add a placeholder device so it still shows up in the list with an error status
-        serverDevices.push({
-          nut,
-          devices: [
-            {
-              name: nut.getName() || 'UPS',
-              description: 'Server Unreachable',
-              rwVars: [],
-              commands: [],
-              clients: [],
-              vars: {
-                'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
-              },
-            },
-          ],
-          serverInfo,
-        })
       }
     })
   )

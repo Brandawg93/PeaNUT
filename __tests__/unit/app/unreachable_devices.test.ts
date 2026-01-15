@@ -13,7 +13,7 @@ describe('getDevices unreachable handling', () => {
     jest.clearAllMocks()
   })
 
-  it('handles unreachable server by providing a placeholder device', async () => {
+  it('does not provide a placeholder device when a server is unreachable', async () => {
     // Mock settings to return one server
     ;(YamlSettings.prototype.get as jest.Mock).mockImplementation((key: keyof SettingsType) => {
       if (key === 'NUT_SERVERS') {
@@ -30,10 +30,7 @@ describe('getDevices unreachable handling', () => {
 
     const data = await getDevices()
 
-    expect(data.devices).toHaveLength(1)
-    expect(data.devices![0].name).toBe('FailedServer')
-    expect(data.devices![0].description).toBe('Server Unreachable')
-    expect(data.devices![0].vars['ups.status'].value).toBe(upsStatus.DEVICE_UNREACHABLE)
+    expect(data.devices).toHaveLength(0)
     expect(data.failedServers).toContain('1.2.3.4:3493')
   })
 
