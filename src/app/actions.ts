@@ -3,7 +3,7 @@
 import InfluxWriter from '@/server/influxdb'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { DEVICE, server, DeviceData, DevicesData, VarDescription, NutDevice } from '@/common/types'
+import { DEVICE, server, DeviceData, DevicesData, VarDescription, NutDevice, VARS } from '@/common/types'
 import chokidar from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
@@ -177,8 +177,24 @@ export async function getDevices(): Promise<DevicesData> {
             deviceOrder.push(deviceId)
           }
 
-          const data = await nut.getData(device.name)
-          const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
+          let data: VARS = device.vars || {}
+          const alreadyUnreachable = data['ups.status']?.value === upsStatus.DEVICE_UNREACHABLE
+
+          if (!alreadyUnreachable) {
+            try {
+              data = await nut.getData(device.name)
+            } catch (error) {
+              debug.warn('Failed to get data for device', {
+                device: device.name,
+                server: serverInfo,
+                error: error instanceof Error ? error.message : String(error),
+              })
+              data = {
+                'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+              }
+            }
+          }
+          const isReachable = data && data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
           const [rwVars, commands] = await Promise.all([
             isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), device.name) : Promise.resolve([]),

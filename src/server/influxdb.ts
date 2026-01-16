@@ -38,7 +38,7 @@ export default class InfluxWriter {
     this.debug.debug('Writing device data to InfluxDB', { device: device.name, timestamp })
 
     // Skip writing if device is unreachable
-    if (device.vars.status?.value === upsStatus.DEVICE_UNREACHABLE) {
+    if (device.vars['ups.status']?.value === upsStatus.DEVICE_UNREACHABLE) {
       this.debug.debug('Skipping unreachable device', { device: device.name })
       return
     }

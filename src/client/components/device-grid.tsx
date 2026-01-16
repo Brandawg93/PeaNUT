@@ -203,7 +203,7 @@ export default function DeviceGrid({ data }: Props) {
   const tableData = useMemo(
     () =>
       (data?.devices ?? []).filter((device) => {
-        return device?.vars && Object.keys(device.vars).length > 0 && device.vars['ups.status']?.value !== 'N/A'
+        return device?.vars && Object.keys(device.vars).length > 0
       }),
     [data?.devices]
   )

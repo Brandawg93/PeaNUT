@@ -133,10 +133,11 @@ describe('DeviceGrid', () => {
       </QueryClientProvider>
     )
 
-    // Only the valid device should be displayed
+    // Only valid devices or devices with status should be displayed
     expect(screen.getByText('test-device')).toBeInTheDocument()
+    expect(screen.getByText('na-status-device')).toBeInTheDocument()
+    // no-vars-device is still filtered because of Object.keys(device.vars).length > 0
     expect(screen.queryByText('no-vars-device')).not.toBeInTheDocument()
-    expect(screen.queryByText('na-status-device')).not.toBeInTheDocument()
   })
 
   it('displays correct status icons for different status values', () => {
