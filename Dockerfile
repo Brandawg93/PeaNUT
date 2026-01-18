@@ -86,6 +86,6 @@ EXPOSE $WEB_PORT
 
 # Optimized healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD ["node", "healthcheck.mjs"]
+    CMD ["node", "--no-deprecation", "healthcheck.mjs"]
 
 ENTRYPOINT ["node", "entrypoint.mjs"]
