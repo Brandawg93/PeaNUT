@@ -49,7 +49,7 @@ export class AuthStorage {
         fs.mkdirSync(dirPath, { recursive: true })
       }
       const yamlStr = dump(this.user)
-      fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+      fs.writeFileSync(this.filePath, yamlStr, { encoding: 'utf8', mode: 0o600, flag: 'w' })
       debug.info('Auth settings saved successfully')
       return true
     } catch (error) {
@@ -67,6 +67,14 @@ export class AuthStorage {
   }
 
   public async setAuthUser(username: string, passwordPlain: string): Promise<boolean> {
+    if (!username?.trim() || !passwordPlain || passwordPlain.length < 5) {
+      debug.error('Validation failed for setAuthUser', {
+        username: !!username?.trim(),
+        passwordLength: passwordPlain?.length ?? 0,
+      })
+      return false
+    }
+
     const salt = await bcrypt.genSalt(10)
     const passwordHash = await bcrypt.hash(passwordPlain, salt)
     this.user = { username, passwordHash }

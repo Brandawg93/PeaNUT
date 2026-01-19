@@ -47,7 +47,37 @@ describe('AuthStorage', () => {
     expect(user?.passwordHash).toBeDefined()
     expect(user?.passwordHash).not.toBe(password)
 
-    expect(fs.writeFileSync).toHaveBeenCalled()
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.objectContaining({ mode: 0o600 })
+    )
+  })
+
+  describe('setAuthUser validation', () => {
+    it('should fail if username is empty', async () => {
+      const success = await authStorage.setAuthUser('', 'password123')
+      expect(success).toBe(false)
+      expect(authStorage.hasUser()).toBe(false)
+    })
+
+    it('should fail if username is only whitespace', async () => {
+      const success = await authStorage.setAuthUser('   ', 'password123')
+      expect(success).toBe(false)
+      expect(authStorage.hasUser()).toBe(false)
+    })
+
+    it('should fail if password is too short', async () => {
+      const success = await authStorage.setAuthUser('admin', '1234')
+      expect(success).toBe(false)
+      expect(authStorage.hasUser()).toBe(false)
+    })
+
+    it('should fail if password is empty', async () => {
+      const success = await authStorage.setAuthUser('admin', '')
+      expect(success).toBe(false)
+      expect(authStorage.hasUser()).toBe(false)
+    })
   })
 
   it('should verify correct password', async () => {
