@@ -1,7 +1,7 @@
 import { AuthStorage } from '@/server/auth-storage'
-import fs from 'fs'
+import fs from 'node:fs'
 
-jest.mock('fs')
+jest.mock('node:fs')
 jest.mock('js-yaml', () => ({
   load: jest.fn(),
   dump: jest.fn((data) => JSON.stringify(data)),

@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import { load, dump } from 'js-yaml'
 import bcrypt from 'bcryptjs'
 import { createDebugLogger } from '@/server/debug'
@@ -15,7 +15,7 @@ const AUTH_FILE_PATH = process.env.AUTH_FILE_PATH || 'config/auth.yaml'
 
 export class AuthStorage {
   private static instance: AuthStorage
-  private filePath: string
+  private readonly filePath: string
   private user: AuthUserInfo | null = null
 
   private constructor() {
