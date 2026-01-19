@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { ensureAuthSecret } from './server/auth-config'
+// Remove authStorage import as it's not Edge-compatible
 
 export const authConfig = {
   pages: {
@@ -8,16 +9,13 @@ export const authConfig = {
   },
   callbacks: {
     authorized({ auth, request: { nextUrl, headers } }) {
-      // Check if authentication is enabled via env variables
-      // Also check for empty strings
-      const authEnabled = process.env.WEB_USERNAME?.trim() && process.env.WEB_PASSWORD?.trim()
+      const authDisabled = process.env.AUTH_DISABLED === 'true'
 
-      // If auth is not enabled, allow all access
-      if (!authEnabled) {
+      // If auth is disabled, allow all access
+      if (authDisabled) {
         return true
       }
 
-      const isLoggedIn = !!auth?.user
       const isApiRoute = nextUrl.pathname.startsWith('/api')
       const isApiV1Route = nextUrl.pathname.startsWith('/api/v1')
 
@@ -38,11 +36,23 @@ export const authConfig = {
         const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
         const [username, password] = credentials.split(':')
 
-        // Verify credentials against environment variables
+        // For API v1, we used to check process.env.WEB_PASSWORD.
+        // Since we can't easily check the hash here in Edge, let's allow it if it matches the env var
+        // OR handle API auth differently.
+        // Actually, if the user didn't set env vars, API Basic auth might stay disabled or we'd need a different way.
+        // For now, let's keep it simple: if WEB_PASSWORD is set, use it for API.
         const isAuthorized = username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD
         if (!isAuthorized) {
           return NextResponse.json('Unauthorized', { status: 401 })
         }
+        return true
+      }
+
+      const isLoggedIn = !!auth?.user
+      const isLoginPage = nextUrl.pathname === '/login'
+      const isSetupPage = nextUrl.pathname === '/setup'
+
+      if (isLoggedIn || isLoginPage || isSetupPage) {
         return true
       }
 
