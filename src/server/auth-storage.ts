@@ -63,7 +63,7 @@ export class AuthStorage {
   }
 
   public getAuthUser(): AuthUserInfo | null {
-    return this.user
+    return this.user ? { ...this.user } : null
   }
 
   public async setAuthUser(username: string, passwordPlain: string): Promise<boolean> {

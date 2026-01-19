@@ -7,7 +7,17 @@ import { authStorage } from '@/server/auth-storage'
 import { redirect } from 'next/navigation'
 
 export default function LoginPage() {
-  if (!authStorage.hasUser()) {
+  let shouldRedirectToSetup = false
+  try {
+    shouldRedirectToSetup = !authStorage.hasUser()
+  } catch (error) {
+    // If there is an error accessing auth storage (e.g., corrupted auth.yaml),
+    // avoid redirecting to prevent redirect loops and allow login page access.
+    console.error('PeaNUT: Error checking for initial user:', error)
+    shouldRedirectToSetup = false
+  }
+
+  if (shouldRedirectToSetup) {
     redirect('/setup')
   }
   return (

@@ -56,7 +56,6 @@ export const authConfig = {
         return true
       }
 
-      if (isLoggedIn) return true
       // Determine external base path for reverse proxies
       const rawBasePath = (process.env.BASE_PATH || headers.get('x-base-path') || '').trim()
       let basePath = ''

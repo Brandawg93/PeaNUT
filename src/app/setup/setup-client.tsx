@@ -62,6 +62,7 @@ export default function SetupClientPage() {
                 name='password'
                 type='password'
                 required
+                minLength={5}
                 className='border-border bg-background px-3 py-2'
               />
               <p className='text-muted-foreground text-xs'>{t('setup.passwordHint')}</p>
