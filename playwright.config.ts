@@ -27,6 +27,10 @@ export default defineConfig({
   webServer: {
     command: 'pnpm run dev:next',
     url: baseURL,
+    env: {
+      AUTH_DISABLED: process.env.WEB_USERNAME?.trim() ? 'false' : 'true',
+      AUTH_SECRET: 'test-secret-at-least-thirty-two-characters-long',
+    },
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
   },

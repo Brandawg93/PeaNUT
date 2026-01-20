@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from 'next-runtime-env'
-import { auth } from '@/auth'
+import NextAuth from 'next-auth'
+import { authConfig } from '@/auth.config'
+
+const { auth } = NextAuth(authConfig)
 
 // Normalize basePath to ensure consistent format (starts with /, no trailing slash)
 function normalizeBasePath(path: string): string {
