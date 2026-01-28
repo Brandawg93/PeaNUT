@@ -200,20 +200,31 @@ export class Nut {
     }
     const vars: VARS = {}
     const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
-    await Promise.all(
-      lines.map(async (line) => {
-        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-        const value = line.split('"')[1].trim()
-        const description = await getCachedVarDescription(this.host, this.port, key, device)
-        const type = await getCachedVarType(this.host, this.port, key, device)
-        if (type.includes('NUMBER') && !Number.isNaN(+value)) {
-          const num = +value
-          vars[key] = { value: num, description }
-        } else {
-          vars[key] = { value, description }
-        }
-      })
-    )
+
+    // Limit concurrency to avoid exhausting file descriptors
+    const CONCURRENCY_LIMIT = 10
+    const chunks = []
+    for (let i = 0; i < lines.length; i += CONCURRENCY_LIMIT) {
+      chunks.push(lines.slice(i, i + CONCURRENCY_LIMIT))
+    }
+
+    for (const chunk of chunks) {
+      await Promise.all(
+        chunk.map(async (line) => {
+          const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+          const value = line.split('"')[1].trim()
+          const description = await getCachedVarDescription(this.host, this.port, key, device)
+          const type = await getCachedVarType(this.host, this.port, key, device)
+          if (type.includes('NUMBER') && !Number.isNaN(+value)) {
+            const num = +value
+            vars[key] = { value: num, description }
+          } else {
+            vars[key] = { value, description }
+          }
+        })
+      )
+    }
+
     await this.closeConnection(socket)
     return Object.keys(vars)
       .sort((a, b) => a.localeCompare(b))
