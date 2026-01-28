@@ -186,52 +186,57 @@ export class Nut {
 
   public async getData(device = 'UPS'): Promise<VARS> {
     const socket = await this.getConnection()
-    const command = `LIST VAR ${device}`
-    const data = await this.getCommand(command, undefined, false, socket)
-    if (data == upsStatus.DEVICE_UNREACHABLE) {
-      return {
-        'ups.device_name': { value: device },
-        'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+    try {
+      const command = `LIST VAR ${device}`
+      const data = await this.getCommand(command, undefined, false, socket)
+      if (data == upsStatus.DEVICE_UNREACHABLE) {
+        return {
+          'ups.device_name': { value: device },
+          'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+        }
       }
-    }
-    if (!data.startsWith(`BEGIN ${command}\n`)) {
-      console.error('data: ', data)
-      throw new Error('Invalid response')
-    }
-    const vars: VARS = {}
-    const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
+      if (!data.startsWith(`BEGIN ${command}\n`)) {
+        console.error('data: ', data)
+        throw new Error('Invalid response')
+      }
+      const vars: VARS = {}
+      const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
 
-    // Limit concurrency to avoid exhausting file descriptors
-    const CONCURRENCY_LIMIT = 10
-    const chunks = []
-    for (let i = 0; i < lines.length; i += CONCURRENCY_LIMIT) {
-      chunks.push(lines.slice(i, i + CONCURRENCY_LIMIT))
-    }
+      // Limit concurrency to avoid exhausting file descriptors
+      const CONCURRENCY_LIMIT = 10
+      const chunks = []
+      for (let i = 0; i < lines.length; i += CONCURRENCY_LIMIT) {
+        chunks.push(lines.slice(i, i + CONCURRENCY_LIMIT))
+      }
 
-    for (const chunk of chunks) {
-      await Promise.all(
-        chunk.map(async (line) => {
-          const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-          const value = line.split('"')[1].trim()
-          const description = await getCachedVarDescription(this.host, this.port, key, device)
-          const type = await getCachedVarType(this.host, this.port, key, device)
-          if (type.includes('NUMBER') && !Number.isNaN(+value)) {
-            const num = +value
-            vars[key] = { value: num, description }
-          } else {
-            vars[key] = { value, description }
-          }
-        })
-      )
-    }
+      for (const chunk of chunks) {
+        await Promise.all(
+          chunk.map(async (line) => {
+            const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+            const value = line.split('"')[1].trim()
+            const [description, type] = await Promise.all([
+              getCachedVarDescription(this.host, this.port, key, device),
+              getCachedVarType(this.host, this.port, key, device),
+            ])
+            if (type.includes('NUMBER') && !Number.isNaN(+value)) {
+              const num = +value
+              vars[key] = { value: num, description }
+            } else {
+              vars[key] = { value, description }
+            }
+          })
+        )
+      }
 
-    await this.closeConnection(socket)
-    return Object.keys(vars)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((finalObject: VARS, key) => {
-        finalObject[key] = vars[key]
-        return finalObject
-      }, {})
+      return Object.keys(vars)
+        .sort((a, b) => a.localeCompare(b))
+        .reduce((finalObject: VARS, key) => {
+          finalObject[key] = vars[key]
+          return finalObject
+        }, {})
+    } finally {
+      await this.closeConnection(socket)
+    }
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {
