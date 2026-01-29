@@ -11,7 +11,8 @@ const VAR_COUNT = 20
 const MOCK_VARS = Array.from({ length: VAR_COUNT }, (_, i) => `VAR ups var.${i} "${i}"`).join('\n')
 const MOCK_LIST_VAR_RESPONSE = `BEGIN LIST VAR ups\n${MOCK_VARS}\nEND LIST VAR ups`
 
-describe('Nut Benchmark', () => {
+// Skipped by default to avoid slowing down CI/CD
+describe.skip('Nut Benchmark', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
 

@@ -204,7 +204,7 @@ export class Nut {
 
       // Limit concurrency to avoid exhausting file descriptors
       const CONCURRENCY_LIMIT = 10
-      const chunks = []
+      const chunks: string[][] = []
       for (let i = 0; i < lines.length; i += CONCURRENCY_LIMIT) {
         chunks.push(lines.slice(i, i + CONCURRENCY_LIMIT))
       }
@@ -214,15 +214,23 @@ export class Nut {
           chunk.map(async (line) => {
             const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
             const value = line.split('"')[1].trim()
-            const [description, type] = await Promise.all([
-              getCachedVarDescription(this.host, this.port, key, device),
-              getCachedVarType(this.host, this.port, key, device),
-            ])
-            if (type.includes('NUMBER') && !Number.isNaN(+value)) {
-              const num = +value
-              vars[key] = { value: num, description }
-            } else {
-              vars[key] = { value, description }
+
+            // Open a dedicated connection for this variable's lookups to reduce overhead
+            // from opening 2 separate connections (one for description, one for type)
+            const varSocket = await this.getConnection()
+            try {
+              const [description, type] = await Promise.all([
+                getCachedVarDescription(this.host, this.port, key, device, varSocket),
+                getCachedVarType(this.host, this.port, key, device, varSocket),
+              ])
+              if (type.includes('NUMBER') && !Number.isNaN(+value)) {
+                const num = +value
+                vars[key] = { value: num, description }
+              } else {
+                vars[key] = { value, description }
+              }
+            } finally {
+              await this.closeConnection(varSocket)
             }
           })
         )
