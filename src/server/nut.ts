@@ -186,39 +186,65 @@ export class Nut {
 
   public async getData(device = 'UPS'): Promise<VARS> {
     const socket = await this.getConnection()
-    const command = `LIST VAR ${device}`
-    const data = await this.getCommand(command, undefined, false, socket)
-    if (data == upsStatus.DEVICE_UNREACHABLE) {
-      return {
-        'ups.device_name': { value: device },
-        'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+    try {
+      const command = `LIST VAR ${device}`
+      const data = await this.getCommand(command, undefined, false, socket)
+      if (data == upsStatus.DEVICE_UNREACHABLE) {
+        return {
+          'ups.device_name': { value: device },
+          'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+        }
       }
-    }
-    if (!data.startsWith(`BEGIN ${command}\n`)) {
-      console.error('data: ', data)
-      throw new Error('Invalid response')
-    }
-    const vars: VARS = {}
-    const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
-    for (const line of lines) {
-      const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-      const value = line.split('"')[1].trim()
-      const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
-      const type = await getCachedVarType(this.host, this.port, key, device, socket)
-      if (type.includes('NUMBER') && !Number.isNaN(+value)) {
-        const num = +value
-        vars[key] = { value: num, description }
-      } else {
-        vars[key] = { value, description }
+      if (!data.startsWith(`BEGIN ${command}\n`)) {
+        console.error('data: ', data)
+        throw new Error('Invalid response')
       }
+      const vars: VARS = {}
+      const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
+
+      // Limit concurrency to avoid exhausting file descriptors
+      const CONCURRENCY_LIMIT = 10
+      const chunks: string[][] = []
+      for (let i = 0; i < lines.length; i += CONCURRENCY_LIMIT) {
+        chunks.push(lines.slice(i, i + CONCURRENCY_LIMIT))
+      }
+
+      for (const chunk of chunks) {
+        await Promise.all(
+          chunk.map(async (line) => {
+            const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+            const value = line.split('"')[1].trim()
+
+            // Open a dedicated connection for this variable's lookups to reduce overhead
+            // from opening 2 separate connections (one for description, one for type)
+            const varSocket = await this.getConnection()
+            try {
+              const [description, type] = await Promise.all([
+                getCachedVarDescription(this.host, this.port, key, device, varSocket),
+                getCachedVarType(this.host, this.port, key, device, varSocket),
+              ])
+              if (type.includes('NUMBER') && !Number.isNaN(+value)) {
+                const num = +value
+                vars[key] = { value: num, description }
+              } else {
+                vars[key] = { value, description }
+              }
+            } finally {
+              await this.closeConnection(varSocket)
+            }
+          })
+        )
+      }
+
+      return Object.keys(vars)
+        .sort((a, b) => a.localeCompare(b))
+        .reduce((finalObject: VARS, key) => {
+          finalObject[key] = vars[key]
+          return finalObject
+        }, {})
+    } finally {
+      await this.closeConnection(socket)
     }
-    await this.closeConnection(socket)
-    return Object.keys(vars)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((finalObject: VARS, key) => {
-        finalObject[key] = vars[key]
-        return finalObject
-      }, {})
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {
