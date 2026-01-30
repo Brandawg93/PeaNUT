@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
   }),
 }))
 
-global.fetch = jest.fn(() =>
+globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([{ name: '1.0.0' }]),
   })
@@ -31,12 +31,12 @@ const localStorageMock = (() => {
   }
 })()
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(globalThis.window, 'localStorage', {
   value: localStorageMock,
 })
 
 // Mock window.matchMedia for next-themes
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(globalThis.window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,

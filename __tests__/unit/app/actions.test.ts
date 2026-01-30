@@ -1,4 +1,4 @@
-import { TextDecoder } from 'util'
+import { TextDecoder } from 'node:util'
 import { DEVICE, VARS } from '@/common/types'
 import { Nut } from '@/server/nut'
 import {
@@ -27,8 +27,8 @@ import { signIn } from '@/auth'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import { AuthError } from 'next-auth'
 
-global.TextDecoder = TextDecoder as any
-global.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
+globalThis.TextDecoder = TextDecoder as any
+globalThis.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
 
 // Mock auth
 jest.mock('@/auth', () => ({

@@ -56,7 +56,7 @@ export default function NutTerminal({ host, port }: Props) {
     terminal.open(containerRef.current)
 
     const ws = new WebSocket(
-      `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}${basePath}/api/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
+      `${globalThis.window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${globalThis.window.location.host}${basePath}/api/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
     )
     wsRef.current = ws
 
@@ -76,7 +76,7 @@ export default function NutTerminal({ host, port }: Props) {
       })
 
       // Handle resize event
-      window.addEventListener('resize', handleResize)
+      globalThis.window.addEventListener('resize', handleResize)
       // Initial fit
       fitAddon.fit()
     }
@@ -90,7 +90,7 @@ export default function NutTerminal({ host, port }: Props) {
         terminalRef.current.dispose()
         terminalRef.current = null
       }
-      window.removeEventListener('resize', handleResize)
+      globalThis.window.removeEventListener('resize', handleResize)
     }
   }, [host, port, resolvedTheme, basePath])
 

@@ -1,4 +1,4 @@
-import * as net from 'net'
+import * as net from 'node:net'
 import { getToken } from 'next-auth/jwt'
 import { getSettings } from '@/app/actions'
 import { server } from '@/common/types'
@@ -53,7 +53,7 @@ export async function UPGRADE(
 
   const nutConfig: NutConfig = {
     host: nutHost ?? process.env.NUT_HOST ?? 'localhost',
-    port: parseInt(nutPort ?? process.env.NUT_PORT ?? '3493'),
+    port: Number.parseInt(nutPort ?? process.env.NUT_PORT ?? '3493'),
   }
 
   // Validate that the connection is to an allowed server (SSRF protection)
@@ -78,7 +78,7 @@ export async function UPGRADE(
     try {
       // Forward NUT server responses to WebSocket client
       if (!isClosing && client.readyState === 1) {
-        client.send(data.toString().replace(/\n/g, '\r\n'))
+        client.send(data.toString().replaceAll('\n', '\r\n'))
       }
     } catch (error) {
       // Silently handle errors when connection is closing
@@ -104,34 +104,8 @@ export async function UPGRADE(
 
   client.on('message', (message) => {
     try {
-      // Handle backspace character (0x7F)
-      if (Buffer.isBuffer(message) && message.length === 1 && message[0] === 0x7f) {
-        if (messageBuffer.length > 0) {
-          messageBuffer = messageBuffer.slice(0, -1)
-        }
-        return
-      }
-
-      // Append the new message to the buffer
-      messageBuffer += message
-
-      // Check if the message contains a newline
-      if (messageBuffer.includes('\r')) {
-        if (messageBuffer === 'clear\r') {
-          if (client.readyState === 1) {
-            client.send('\x1b[2J\x1b[H')
-          }
-          messageBuffer = ''
-          return
-        }
-        if (!nutClient.destroyed) {
-          nutClient.write(messageBuffer.replace(/\r/g, '\n'))
-        }
-        if (client.readyState === 1) {
-          client.send('\r\n')
-        }
-        messageBuffer = ''
-      }
+      const result = processMessage(message, messageBuffer, client, nutClient)
+      messageBuffer = result.buffer
     } catch (error) {
       if (!isClosing) {
         console.error('Error sending message to NUT server:', error)
@@ -171,4 +145,37 @@ export async function UPGRADE(
       // Ignore errors when closing already-closed connection
     }
   })
+}
+
+function processMessage(
+  message: any,
+  buffer: string,
+  client: import('ws').WebSocket,
+  nutClient: net.Socket
+): { buffer: string } {
+  // Handle backspace character (0x7F)
+  if (Buffer.isBuffer(message) && message.length === 1 && message[0] === 0x7f) {
+    return { buffer: buffer.length > 0 ? buffer.slice(0, -1) : buffer }
+  }
+
+  const newBuffer = buffer + message
+
+  // Check if the message contains a newline
+  if (newBuffer.includes('\r')) {
+    if (newBuffer === 'clear\r') {
+      if (client.readyState === 1) {
+        client.send('\x1b[2J\x1b[H')
+      }
+      return { buffer: '' }
+    }
+    if (!nutClient.destroyed) {
+      nutClient.write(newBuffer.replaceAll('\r', '\n'))
+    }
+    if (client.readyState === 1) {
+      client.send('\r\n')
+    }
+    return { buffer: '' }
+  }
+
+  return { buffer: newBuffer }
 }

@@ -5,7 +5,7 @@ import { LanguageContext } from '@/client/context/language'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME } from '../../../utils/test-constants'
 // import { useRouter } from 'next/navigation'
 
-global.fetch = jest.fn(() =>
+globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([{ name: '1.0.0' }]),
   })

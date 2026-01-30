@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import { load, dump } from 'js-yaml'
 import { server } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
@@ -71,7 +71,7 @@ export class YamlSettings {
           this.data[key] = JSON.parse(envValue) as DashboardSectionConfig
         } else if (key === 'INFLUX_INTERVAL') {
           const parsed = Number(envValue)
-          if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
+          if (Number.isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed
         } else if (key === 'DISABLE_VERSION_CHECK') {
           this.data[key] = envValue === 'true'
@@ -94,7 +94,7 @@ export class YamlSettings {
 
     if (nutHost && nutPort) {
       const port = Number(nutPort)
-      if (isNaN(port)) {
+      if (Number.isNaN(port)) {
         console.error('Invalid NUT_PORT value')
         return
       }
@@ -122,12 +122,12 @@ export class YamlSettings {
 
         this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
-        if (!fs.existsSync(dirPath)) {
-          this.debug.info('Creating config directory', { dirPath })
-          fs.mkdirSync(dirPath, { recursive: true })
-        } else {
+        if (fs.existsSync(dirPath)) {
           // Test if the directory is writable only if it already exists
           fs.accessSync(dirPath, fs.constants.W_OK)
+        } else {
+          this.debug.info('Creating config directory', { dirPath })
+          fs.mkdirSync(dirPath, { recursive: true })
         }
       } catch (error) {
         this.debug.error('Config directory is not writable, disabling file saving', {

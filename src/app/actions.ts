@@ -230,40 +230,35 @@ export async function getDevices(): Promise<DevicesData> {
   return result
 }
 
+async function findNut(nuts: Nut[], parsedId: ReturnType<typeof parseDeviceId>): Promise<Nut> {
+  const { host, port, name } = parsedId
+
+  if (host && port) {
+    const matchingNut = nuts.find((n) => (n.getName() === host || n.getHost() === host) && n.getPort() === port)
+    if (!matchingNut) throw new Error('Server not found')
+    if (!(await matchingNut.deviceExists(name))) throw new Error('Device not found on this server')
+    return matchingNut
+  }
+
+  try {
+    return await Promise.any(
+      nuts.map(async (n) => {
+        if (await n.deviceExists(name)) return n
+        throw new Error('Device not found on this server')
+      })
+    )
+  } catch (e) {
+    if (e instanceof AggregateError) {
+      throw new Error(`Device '${name}' not found on any configured NUT server`)
+    }
+    throw e
+  }
+}
+
 export async function getDevice(deviceId: string): Promise<DeviceData> {
   const nuts = connect()
   const parsed = parseDeviceId(deviceId)
-  let nut: Nut
-
-  if (parsed.host && parsed.port) {
-    // Composite ID format: find the specific server (by alias or host)
-    const matchingNut = nuts.find(
-      (n) => (n.getName() === parsed.host || n.getHost() === parsed.host) && n.getPort() === parsed.port
-    )
-    if (!matchingNut) {
-      throw new Error('Server not found')
-    }
-    if (!(await matchingNut.deviceExists(parsed.name))) {
-      throw new Error('Device not found on this server')
-    }
-    nut = matchingNut
-  } else {
-    try {
-      nut = await Promise.any(
-        nuts.map(async (n) => {
-          if (await n.deviceExists(parsed.name)) {
-            return n
-          }
-          throw new Error('Device not found on this server')
-        })
-      )
-    } catch (e) {
-      if (e instanceof AggregateError) {
-        throw new Error(`Device '${parsed.name}' not found on any configured NUT server`)
-      }
-      throw e
-    }
-  }
+  const nut = await findNut(nuts, parsed)
 
   const serverInfo = `${nut.getHost()}:${nut.getPort()}`
   const serverName = nut.getName() || serverInfo
