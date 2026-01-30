@@ -84,61 +84,76 @@ export class Nut {
     this.debug.info('Executing command', { command, until, checkCredentials, hasSocket: !!socket })
     // use existing socket if it exists, otherwise establish a new connection
     const connection = socket ?? (await this.getConnection(checkCredentials))
-    await connection.write(command)
-    const data = await connection.readAll(command, until).catch((error) => {
-      this.debug.warn('Command failed, handling fallback', { command, error: error.message })
-      if (command.startsWith('LIST VAR')) {
-        return upsStatus.DEVICE_UNREACHABLE
+    try {
+      await connection.write(command)
+      const data = await connection.readAll(command, until).catch((error) => {
+        this.debug.warn('Command failed, handling fallback', { command, error: error.message })
+        if (command.startsWith('LIST VAR')) {
+          return upsStatus.DEVICE_UNREACHABLE
+        }
+        throw error
+      })
+      this.debug.debug('Command response received', { command, dataLength: data.length })
+      return data
+    } finally {
+      // if we opened a new connection, close it
+      if (!socket) {
+        this.debug.debug('Closing temporary connection')
+        try {
+          await connection.write('LOGOUT')
+        } catch {
+          // ignore
+        } finally {
+          await connection.close()
+        }
       }
-      throw error
-    })
-    this.debug.debug('Command response received', { command, dataLength: data.length })
-    // if we opened a new connection, close it
-    if (!socket) {
-      this.debug.debug('Closing temporary connection')
-      await connection.write('LOGOUT')
-      await connection.close()
     }
-    return data
   }
 
   public async checkCredentials(socket?: PromiseSocket): Promise<void> {
     const connection = socket ?? (await this.getConnection())
-    if (this.username) {
-      const command = `USERNAME ${this.username}`
+    try {
+      if (this.username) {
+        const command = `USERNAME ${this.username}`
+        await connection.write(command)
+        const data = await connection.readAll(command, '\n')
+        if (data !== 'OK\n') {
+          throw new Error('Invalid username')
+        }
+      }
+
+      if (this.password) {
+        const command = `PASSWORD ${this.password}`
+        await connection.write(command)
+        const data = await connection.readAll(command, '\n')
+        if (data !== 'OK\n') {
+          throw new Error('Invalid password')
+        }
+      }
+
+      const devices = await this.getDevices()
+      if (devices.length === 0) {
+        throw new Error('No devices found')
+      }
+
+      const device = devices[0].name
+      const command = `LOGIN ${device}`
       await connection.write(command)
+
       const data = await connection.readAll(command, '\n')
       if (data !== 'OK\n') {
-        throw new Error('Invalid username')
+        throw new Error('Invalid credentials')
       }
-    }
-
-    if (this.password) {
-      const command = `PASSWORD ${this.password}`
-      await connection.write(command)
-      const data = await connection.readAll(command, '\n')
-      if (data !== 'OK\n') {
-        throw new Error('Invalid password')
+    } finally {
+      if (!socket) {
+        try {
+          await connection.write('LOGOUT')
+        } catch {
+          // ignore
+        } finally {
+          await connection.close()
+        }
       }
-    }
-
-    const devices = await this.getDevices()
-    if (devices.length === 0) {
-      throw new Error('No devices found')
-    }
-
-    const device = devices[0].name
-    const command = `LOGIN ${device}`
-    await connection.write(command)
-
-    const data = await connection.readAll(command, '\n')
-    if (data !== 'OK\n') {
-      throw new Error('Invalid credentials')
-    }
-
-    if (!socket) {
-      await connection.write('LOGOUT')
-      await connection.close()
     }
   }
 
@@ -186,39 +201,42 @@ export class Nut {
 
   public async getData(device = 'UPS'): Promise<VARS> {
     const socket = await this.getConnection()
-    const command = `LIST VAR ${device}`
-    const data = await this.getCommand(command, undefined, false, socket)
-    if (data == upsStatus.DEVICE_UNREACHABLE) {
-      return {
-        'ups.device_name': { value: device },
-        'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+    try {
+      const command = `LIST VAR ${device}`
+      const data = await this.getCommand(command, undefined, false, socket)
+      if (data == upsStatus.DEVICE_UNREACHABLE) {
+        return {
+          'ups.device_name': { value: device },
+          'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+        }
       }
-    }
-    if (!data.startsWith(`BEGIN ${command}\n`)) {
-      console.error('data: ', data)
-      throw new Error('Invalid response')
-    }
-    const vars: VARS = {}
-    const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
-    for (const line of lines) {
-      const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
-      const value = line.split('"')[1].trim()
-      const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
-      const type = await getCachedVarType(this.host, this.port, key, device, socket)
-      if (type.includes('NUMBER') && !Number.isNaN(+value)) {
-        const num = +value
-        vars[key] = { value: num, description }
-      } else {
-        vars[key] = { value, description }
+      if (!data.startsWith(`BEGIN ${command}\n`)) {
+        console.error('data: ', data)
+        throw new Error('Invalid response')
       }
+      const vars: VARS = {}
+      const lines = data.split('\n').filter((line) => line.startsWith('VAR'))
+      for (const line of lines) {
+        const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
+        const value = line.split('"')[1].trim()
+        const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
+        const type = await getCachedVarType(this.host, this.port, key, device, socket)
+        if (type.includes('NUMBER') && !Number.isNaN(+value)) {
+          const num = +value
+          vars[key] = { value: num, description }
+        } else {
+          vars[key] = { value, description }
+        }
+      }
+      return Object.keys(vars)
+        .sort((a, b) => a.localeCompare(b))
+        .reduce((finalObject: VARS, key) => {
+          finalObject[key] = vars[key]
+          return finalObject
+        }, {})
+    } finally {
+      await this.closeConnection(socket)
     }
-    await this.closeConnection(socket)
-    return Object.keys(vars)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((finalObject: VARS, key) => {
-        finalObject[key] = vars[key]
-        return finalObject
-      }, {})
   }
 
   public async getDescription(device = 'UPS'): Promise<string> {

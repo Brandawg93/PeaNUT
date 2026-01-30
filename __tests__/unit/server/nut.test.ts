@@ -442,4 +442,37 @@ describe('Nut', () => {
       expect(exists).toBe(true)
     })
   })
+
+  describe('Memory Leak Prevention', () => {
+    it('should close connection when a command fails in getCommand', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      await expect(nut.getVersion()).rejects.toThrow('Communication error')
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+
+    it('should close connection when getCommand fails in getData', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      const data = await nut.getData('ups')
+      expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+
+    it('should close connection when an error occurs in checkCredentials', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Auth error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      await expect(nut.checkCredentials()).rejects.toThrow('Auth error')
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+  })
 })
