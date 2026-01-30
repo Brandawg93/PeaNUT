@@ -235,7 +235,7 @@ describe('Grid', () => {
       // Switch to tree view - find the toggle button by looking for the list icon
       const treeToggleButtons = screen.getAllByRole('button')
       const treeToggleButton = treeToggleButtons.find(
-        (button) => button.querySelector('svg') && (button as any).dataset.slot === 'button'
+        (button) => button.querySelector('svg') && button.dataset.slot === 'button'
       )
       expect(treeToggleButton).toBeDefined()
       fireEvent.click(treeToggleButton!)
