@@ -92,23 +92,39 @@ const EditInput = ({
   value: string
   onSave: (key: string, value: string) => void
   onClose: () => void
-}) => (
-  <div className='flex'>
-    <Input
-      type={Number.isNaN(+value) ? 'text' : 'number'}
-      className='w-full grow rounded border bg-transparent pl-2'
-      defaultValue={value}
-    />
+}) => {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleSave = () => {
+    const currentValue = inputRef.current?.value ?? value
+    onSave(varKey, currentValue)
+  }
+
+  return (
     <div className='flex'>
-      <Button className='cursor-pointer px-2' size='icon' onClick={() => onSave(varKey, value)} variant='ghost'>
-        <HiOutlineCheckCircle className='size-6! text-green-500' />
-      </Button>
-      <Button className='cursor-pointer px-2' size='icon' variant='ghost' onClick={onClose}>
-        <HiOutlineXCircle className='size-6! text-red-500' />
-      </Button>
+      <Input
+        ref={inputRef}
+        type={Number.isNaN(+value) ? 'text' : 'number'}
+        className='w-full grow rounded border bg-transparent pl-2'
+        defaultValue={value}
+      />
+      <div className='flex'>
+        <Button
+          className='cursor-pointer px-2'
+          size='icon'
+          onClick={handleSave}
+          variant='ghost'
+          aria-label='Save changes'
+        >
+          <HiOutlineCheckCircle className='size-6! text-green-500' />
+        </Button>
+        <Button className='cursor-pointer px-2' size='icon' variant='ghost' onClick={onClose} aria-label='Cancel edit'>
+          <HiOutlineXCircle className='size-6! text-red-500' />
+        </Button>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const KeyCell = ({ row, useTreeData, getValue }: { row: any; useTreeData: boolean; getValue: () => string }) => {
   const expandStyle = row.getCanExpand() ? undefined : { cursor: 'default' }
@@ -331,6 +347,7 @@ const ActionsCell = ({
         onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
         variant='secondary'
         className='cursor-pointer shadow-none'
+        aria-label='Edit variable'
       >
         <HiOutlinePencilSquare className='size-4!' />
       </Button>
