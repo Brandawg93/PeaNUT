@@ -8,7 +8,7 @@ jest.mock('../../../../src/app/actions', () => ({
   getSettings: jest.fn(),
 }))
 
-global.fetch = jest.fn(() =>
+globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([{ name: '1.0.0' }]),
   })

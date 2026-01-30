@@ -82,6 +82,262 @@ const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
   return root
 }
 
+const EditInput = ({
+  varKey,
+  value,
+  onSave,
+  onClose,
+}: {
+  varKey: string
+  value: string
+  onSave: (key: string, value: string) => void
+  onClose: () => void
+}) => (
+  <div className='flex'>
+    <Input
+      type={Number.isNaN(+value) ? 'text' : 'number'}
+      className='w-full grow rounded border bg-transparent pl-2'
+      defaultValue={value}
+    />
+    <div className='flex'>
+      <Button className='cursor-pointer px-2' size='icon' onClick={() => onSave(varKey, value)} variant='ghost'>
+        <HiOutlineCheckCircle className='size-6! text-green-500' />
+      </Button>
+      <Button className='cursor-pointer px-2' size='icon' variant='ghost' onClick={onClose}>
+        <HiOutlineXCircle className='size-6! text-red-500' />
+      </Button>
+    </div>
+  </div>
+)
+
+const KeyCell = ({ row, useTreeData, getValue }: { row: any; useTreeData: boolean; getValue: () => string }) => {
+  const expandStyle = row.getCanExpand() ? undefined : { cursor: 'default' }
+  return (
+    <div
+      className='flex justify-between'
+      style={{
+        paddingLeft: `${row.depth * 2}rem`,
+      }}
+    >
+      <button onClick={row.getToggleExpandedHandler()} className='flex' style={{ ...expandStyle }}>
+        {row.getCanExpand() && (
+          <div className='flex h-full flex-col justify-center'>
+            {row.getIsExpanded() ? (
+              <HiOutlineChevronDown className='size-5!' />
+            ) : (
+              <HiOutlineChevronRight className='size-5!' />
+            )}
+          </div>
+        )}
+        <div className='flex h-full flex-col justify-center'>
+          <span
+            className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} text-primary mb-0 inline font-normal`}
+          >
+            {getValue()}
+          </span>
+        </div>
+      </button>
+      {row.original.description && (
+        <Popover>
+          <PopoverTrigger asChild className='flex flex-col justify-center'>
+            <Button variant='ghost' size='icon' className='cursor-pointer hover:bg-transparent'>
+              <HiOutlineInformationCircle className='text-muted-foreground size-4' />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent side='right' className='border-border-card bg-muted text-muted-foreground border text-sm'>
+            <span>{row.original.description}</span>
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
+  )
+}
+
+const KeyHeader = ({
+  table,
+  useTreeData,
+  t,
+  filterOpen,
+  setFilterOpen,
+  keyFilter,
+  filterInputRef,
+  setKeyFilter,
+  setUseTreeData,
+}: {
+  table: any
+  useTreeData: boolean
+  t: (key: string) => string
+  filterOpen: boolean
+  setFilterOpen: (open: boolean) => void
+  keyFilter: string
+  filterInputRef: React.RefObject<HTMLInputElement | null>
+  setKeyFilter: (val: string) => void
+  setUseTreeData: (val: boolean) => void
+}) => (
+  <div className='flex items-center justify-between gap-2'>
+    <button type='button' disabled={!useTreeData} onClick={table.getToggleAllRowsExpandedHandler()} className='flex'>
+      {useTreeData && (
+        <div className='flex h-[28px] flex-col justify-center'>
+          {table.getIsAllRowsExpanded() ? (
+            <HiOutlineChevronDown className='size-5!' />
+          ) : (
+            <HiOutlineChevronRight className='size-5!' />
+          )}
+        </div>
+      )}
+      <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
+    </button>
+    <div className='flex items-center gap-2'>
+      <Popover
+        open={filterOpen}
+        onOpenChange={(open) => {
+          setFilterOpen(open)
+          if (open && filterInputRef.current) {
+            filterInputRef.current.value = keyFilter
+          }
+        }}
+      >
+        <PopoverTrigger asChild>
+          <Button
+            variant={keyFilter ? 'secondary' : 'ghost'}
+            size='icon'
+            aria-label={t('grid.filter.placeholder')}
+            type='button'
+            className='relative cursor-pointer shadow-none'
+          >
+            {keyFilter ? <TbFilterFilled className='size-5! text-blue-600' /> : <TbFilter className='size-5!' />}
+            {keyFilter && <span className='absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-500'></span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className='border-border-card bg-muted flex w-64 flex-col gap-2 border p-3' align='end'>
+          <div className='relative flex gap-2'>
+            <Input
+              defaultValue={keyFilter}
+              ref={filterInputRef}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  e.stopPropagation()
+                  setFilterOpen(false)
+                } else if (e.key === 'Enter') {
+                  e.preventDefault()
+                  const value = filterInputRef.current?.value || ''
+                  setKeyFilter(value)
+                  setFilterOpen(false)
+                }
+              }}
+              placeholder={t('grid.filter.placeholder')}
+              className='border-border-card bg-background!'
+            />
+            <div className='flex justify-end gap-2 pt-1'>
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
+                aria-label={t('grid.filter.apply')}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  const value = filterInputRef.current?.value || ''
+                  setKeyFilter(value)
+                  setFilterOpen(false)
+                }}
+              >
+                <HiOutlineCheckCircle className='size-6 text-green-500' />
+              </Button>
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
+                aria-label={t('grid.filter.clear')}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  if (filterInputRef.current) {
+                    filterInputRef.current.value = ''
+                  }
+                  setKeyFilter('')
+                  setFilterOpen(false)
+                }}
+              >
+                <HiOutlineXCircle className='size-6 text-red-500' />
+              </Button>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+      <Button
+        type='button'
+        onClick={() => setUseTreeData(!useTreeData)}
+        variant='ghost'
+        className='cursor-pointer shadow-none'
+      >
+        {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
+      </Button>
+    </div>
+  </div>
+)
+
+const ValueHeader = ({ t }: { t: (key: string) => string }) => (
+  <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.value')}</span>
+)
+
+const ValueCell = ({
+  row,
+  useTreeData,
+  getValue,
+  edit,
+  handleSave,
+  handleClose,
+}: {
+  row: any
+  useTreeData: boolean
+  getValue: () => any
+  edit: string
+  handleSave: (key: string, value: string) => void
+  handleClose: () => void
+}) => {
+  const key = useTreeData ? row.original.originalKey : row.original.key
+  if (edit === key) {
+    return (
+      <EditInput varKey={row.getValue('key')} value={getValue().toString()} onSave={handleSave} onClose={handleClose} />
+    )
+  }
+  return <span className='text-primary mb-0 font-normal'>{getValue() || ' '}</span>
+}
+
+const ActionsCell = ({
+  row,
+  useTreeData,
+  data,
+  edit,
+  handleEdit,
+}: {
+  row: any
+  useTreeData: boolean
+  data: DEVICE
+  edit: string
+  handleEdit: (key: string) => void
+}) => {
+  const key = useTreeData ? (row.original.originalKey ?? '') : row.original.key
+  const isRW = data.rwVars?.includes(key)
+  if (!isRW) return null
+
+  return (
+    <span className='text-primary mb-0 font-normal'>
+      <Button
+        disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
+        onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
+        variant='secondary'
+        className='cursor-pointer shadow-none'
+      >
+        <HiOutlinePencilSquare className='size-4!' />
+      </Button>
+    </span>
+  )
+}
+
 export default function NutGrid({ data, onRefetchAction }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { theme } = useTheme()
@@ -141,191 +397,33 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
   const columns = [
     columnHelper.accessor('key', {
       id: 'key',
-      cell: ({ row, getValue }) => {
-        const expandStyle = row.getCanExpand() ? undefined : { cursor: 'default' }
-        return (
-          <div
-            className='flex justify-between'
-            style={{
-              paddingLeft: `${row.depth * 2}rem`,
-            }}
-          >
-            <button onClick={row.getToggleExpandedHandler()} className='flex' style={{ ...expandStyle }}>
-              {row.getCanExpand() && (
-                <div className='flex h-full flex-col justify-center'>
-                  {row.getIsExpanded() ? (
-                    <HiOutlineChevronDown className='size-5!' />
-                  ) : (
-                    <HiOutlineChevronRight className='size-5!' />
-                  )}
-                </div>
-              )}
-              <div className='flex h-full flex-col justify-center'>
-                <span
-                  className={`${!useTreeData || row.getCanExpand() ? 'px-0' : 'px-5'} text-primary mb-0 inline font-normal`}
-                >
-                  {getValue()}
-                </span>
-              </div>
-            </button>
-            {row.original.description && (
-              <Popover>
-                <PopoverTrigger asChild className='flex flex-col justify-center'>
-                  <Button variant='ghost' size='icon' className='cursor-pointer hover:bg-transparent'>
-                    <HiOutlineInformationCircle className='text-muted-foreground size-4' />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  side='right'
-                  className='border-border-card bg-muted text-muted-foreground border text-sm'
-                >
-                  <span>{row.original.description}</span>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-        )
-      },
-      header: ({ table }) => (
-        <div className='flex items-center justify-between gap-2'>
-          <button
-            type='button'
-            disabled={!useTreeData}
-            onClick={table.getToggleAllRowsExpandedHandler()}
-            className='flex'
-          >
-            {useTreeData && (
-              <div className='flex h-[28px] flex-col justify-center'>
-                {table.getIsAllRowsExpanded() ? (
-                  <HiOutlineChevronDown className='size-5!' />
-                ) : (
-                  <HiOutlineChevronRight className='size-5!' />
-                )}
-              </div>
-            )}
-            <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.key')}</span>
-          </button>
-          <div className='flex items-center gap-2'>
-            <Popover
-              open={filterOpen}
-              onOpenChange={(open) => {
-                setFilterOpen(open)
-                if (open && filterInputRef.current) {
-                  // Set the input value to current filter when opening
-                  filterInputRef.current.value = keyFilter
-                }
-              }}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant={keyFilter ? 'secondary' : 'ghost'}
-                  size='icon'
-                  aria-label={t('grid.filter.placeholder')}
-                  type='button'
-                  className='relative cursor-pointer shadow-none'
-                >
-                  {keyFilter ? <TbFilterFilled className='size-5! text-blue-600' /> : <TbFilter className='size-5!' />}
-                  {keyFilter && <span className='absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-500'></span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className='border-border-card bg-muted flex w-64 flex-col gap-2 border p-3' align='end'>
-                <div className='relative flex gap-2'>
-                  <Input
-                    defaultValue={keyFilter}
-                    ref={filterInputRef}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') {
-                        e.stopPropagation()
-                        setFilterOpen(false)
-                      } else if (e.key === 'Enter') {
-                        e.preventDefault()
-                        const value = filterInputRef.current?.value || ''
-                        setKeyFilter(value)
-                        setFilterOpen(false)
-                      }
-                    }}
-                    placeholder={t('grid.filter.placeholder')}
-                    className='border-border-card bg-background!'
-                  />
-                  <div className='flex justify-end gap-2 pt-1'>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
-                      aria-label={t('grid.filter.apply')}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        const value = filterInputRef.current?.value || ''
-                        setKeyFilter(value)
-                        setFilterOpen(false)
-                      }}
-                    >
-                      <HiOutlineCheckCircle className='size-6 text-green-500' />
-                    </Button>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      className='hover:bg-primary-foreground! h-7 w-7 cursor-pointer p-0'
-                      aria-label={t('grid.filter.clear')}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        if (filterInputRef.current) {
-                          filterInputRef.current.value = ''
-                        }
-                        setKeyFilter('')
-                        setFilterOpen(false)
-                      }}
-                    >
-                      <HiOutlineXCircle className='size-6 text-red-500' />
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-            <Button
-              type='button'
-              onClick={() => setUseTreeData(!useTreeData)}
-              variant='ghost'
-              className='cursor-pointer shadow-none'
-            >
-              {useTreeData ? <TbListTree className='size-6!' /> : <TbList className='size-6!' />}
-            </Button>
-          </div>
-        </div>
+      cell: (props) => <KeyCell {...props} useTreeData={useTreeData} />,
+      header: (props) => (
+        <KeyHeader
+          {...props}
+          useTreeData={useTreeData}
+          t={t}
+          filterOpen={filterOpen}
+          setFilterOpen={setFilterOpen}
+          keyFilter={keyFilter}
+          filterInputRef={filterInputRef}
+          setKeyFilter={setKeyFilter}
+          setUseTreeData={setUseTreeData}
+        />
       ),
     }),
     columnHelper.accessor('value', {
       id: 'value',
-      cell: ({ row, getValue }) =>
-        edit === (useTreeData ? row.original.originalKey : row.original.key) ? (
-          editInput(row.getValue('key'), getValue().toString())
-        ) : (
-          <span className='text-primary mb-0 font-normal'>{getValue() || ' '}</span>
-        ),
-      header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('grid.value')}</span>,
+      cell: (props) => (
+        <ValueCell {...props} useTreeData={useTreeData} edit={edit} handleSave={handleSave} handleClose={handleClose} />
+      ),
+      header: () => <ValueHeader t={t} />,
     }),
     columnHelper.display({
       id: 'actions',
-      cell: ({ row }) => {
-        const key = useTreeData ? (row.original.originalKey ?? '') : row.original.key
-        const isRW = data.rwVars?.includes(key)
-        return isRW ? (
-          <span className='text-primary mb-0 font-normal'>
-            <Button
-              disabled={edit === (useTreeData ? row.original.originalKey : row.original.key)}
-              onClick={() => handleEdit(useTreeData ? (row.original.originalKey ?? '') : row.original.key)}
-              variant='secondary'
-              className='cursor-pointer shadow-none'
-            >
-              <HiOutlinePencilSquare className='size-4!' />
-            </Button>
-          </span>
-        ) : null
-      },
+      cell: (props) => (
+        <ActionsCell {...props} useTreeData={useTreeData} data={data} edit={edit} handleEdit={handleEdit} />
+      ),
     }),
   ].filter((column) => column.id !== 'actions' || anyRW) // Hide actions column if there are no RW vars
 
@@ -378,24 +476,6 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
       toast.error(message)
     }
   }
-
-  const editInput = (key: string, value: string) => (
-    <div className='flex'>
-      <Input
-        type={Number.isNaN(+value) ? 'text' : 'number'}
-        className='w-full grow rounded border bg-transparent pl-2'
-        defaultValue={value}
-      />
-      <div className='flex'>
-        <Button className='cursor-pointer px-2' size='icon' onClick={() => handleSave(key, value)} variant='ghost'>
-          <HiOutlineCheckCircle className='size-6! text-green-500' />
-        </Button>
-        <Button className='cursor-pointer px-2' size='icon' variant='ghost' onClick={handleClose}>
-          <HiOutlineXCircle className='size-6! text-red-500' />
-        </Button>
-      </div>
-    </div>
-  )
 
   return (
     <Card className='border-border-card bg-card w-full border py-0 shadow-none' data-testid='grid'>
