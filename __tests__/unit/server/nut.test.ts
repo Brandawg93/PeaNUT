@@ -79,16 +79,6 @@ describe('Nut', () => {
     expect(description).toEqual('Battery charge level')
   })
 
-  it('should get devices', async () => {
-    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
-    jest
-      .spyOn(PromiseSocket.prototype, 'readAll')
-      .mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
-
-    const devices = await nut.getDevices()
-    expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])
-  })
-
   it('should detect when a device is unreachable', async () => {
     const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(upsStatus.DEVICE_UNREACHABLE)

@@ -75,6 +75,16 @@ export class Nut {
     await socket.close()
   }
 
+  private async safeCloseConnection(socket: PromiseSocket) {
+    try {
+      await socket.write('LOGOUT')
+    } catch {
+      // ignore
+    } finally {
+      await socket.close()
+    }
+  }
+
   private async getCommand(
     command: string,
     until?: string,
@@ -99,13 +109,7 @@ export class Nut {
       // if we opened a new connection, close it
       if (!socket) {
         this.debug.debug('Closing temporary connection')
-        try {
-          await connection.write('LOGOUT')
-        } catch {
-          // ignore
-        } finally {
-          await connection.close()
-        }
+        await this.safeCloseConnection(connection)
       }
     }
   }
@@ -146,13 +150,7 @@ export class Nut {
       }
     } finally {
       if (!socket) {
-        try {
-          await connection.write('LOGOUT')
-        } catch {
-          // ignore
-        } finally {
-          await connection.close()
-        }
+        await this.safeCloseConnection(connection)
       }
     }
   }
@@ -235,7 +233,7 @@ export class Nut {
           return finalObject
         }, {})
     } finally {
-      await this.closeConnection(socket)
+      await this.safeCloseConnection(socket)
     }
   }
 
