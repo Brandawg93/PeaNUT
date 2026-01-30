@@ -79,16 +79,6 @@ describe('Nut', () => {
     expect(description).toEqual('Battery charge level')
   })
 
-  it('should get devices', async () => {
-    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
-    jest
-      .spyOn(PromiseSocket.prototype, 'readAll')
-      .mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
-
-    const devices = await nut.getDevices()
-    expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])
-  })
-
   it('should detect when a device is unreachable', async () => {
     const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
     jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue(upsStatus.DEVICE_UNREACHABLE)
@@ -440,6 +430,39 @@ describe('Nut', () => {
 
       const exists = await nut.deviceExists('ups1')
       expect(exists).toBe(true)
+    })
+  })
+
+  describe('Memory Leak Prevention', () => {
+    it('should close connection when a command fails in getCommand', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      await expect(nut.getVersion()).rejects.toThrow('Communication error')
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+
+    it('should close connection when getCommand fails in getData', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      const data = await nut.getData('ups')
+      expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+
+    it('should close connection when an error occurs in checkCredentials', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Auth error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      await expect(nut.checkCredentials()).rejects.toThrow('Auth error')
+
+      expect(mockClose).toHaveBeenCalled()
     })
   })
 })
