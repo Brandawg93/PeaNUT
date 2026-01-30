@@ -316,9 +316,7 @@ const ValueCell = ({
 }) => {
   const key = useTreeData ? row.original.originalKey : row.original.key
   if (edit === key) {
-    return (
-      <EditInput varKey={row.getValue('key')} value={getValue().toString()} onSave={handleSave} onClose={handleClose} />
-    )
+    return <EditInput varKey={key} value={getValue().toString()} onSave={handleSave} onClose={handleClose} />
   }
   return <span className='text-primary mb-0 font-normal'>{getValue() || ' '}</span>
 }

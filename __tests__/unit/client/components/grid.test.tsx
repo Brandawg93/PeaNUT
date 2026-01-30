@@ -277,6 +277,39 @@ describe('Grid', () => {
       })
     })
 
+    it('saves the full key path when editing in tree view', async () => {
+      ;(saveVar as jest.Mock).mockResolvedValue({ error: undefined })
+      const { getAllByRole } = renderGrid()
+
+      // Switch to tree view
+      const treeToggleButtons = getAllByRole('button')
+      const treeToggleButton = treeToggleButtons.find(
+        (button) => button.querySelector('svg') && button.dataset.slot === 'button'
+      )
+      expect(treeToggleButton).toBeDefined()
+      fireEvent.click(treeToggleButton!)
+
+      // In tree view, 'input.voltage' is RW.
+      // Since expanded=true by default, we should see it immediately.
+      // We look for the edit button. If there's only one RW var, it must be it.
+      const editButton = await screen.findByLabelText('Edit variable')
+      expect(editButton).toBeInTheDocument()
+      fireEvent.click(editButton)
+
+      // Change value
+      const input = screen.getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '240' } })
+
+      // Save
+      const saveButton = screen.getByLabelText('Save changes')
+      fireEvent.click(saveButton)
+
+      // Verify saveVar was called with the full 'input.voltage' key, not just 'voltage'
+      await waitFor(() => {
+        expect(saveVar).toHaveBeenCalledWith(device.id, 'input.voltage', '240')
+      })
+    })
+
     it('cancels editing when cancel button is clicked', async () => {
       const { getByLabelText, queryByLabelText, getByDisplayValue } = renderGrid()
 
