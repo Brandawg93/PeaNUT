@@ -31,12 +31,12 @@ const localStorageMock = (() => {
   }
 })()
 
-Object.defineProperty(globalThis.window, 'localStorage', {
+Object.defineProperty(globalThis, 'localStorage', {
   value: localStorageMock,
 })
 
 // Mock window.matchMedia for next-themes
-Object.defineProperty(globalThis.window, 'matchMedia', {
+Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
@@ -189,74 +189,75 @@ describe('DeviceWrapper', () => {
     initialValueTrue?: string
     initialValueFalse?: string
   }) {
-    describe(describeName, () => {
-      it(`should toggle localStorage preference when gauge is clicked`, async () => {
-        mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-        await renderComponent()
-        await waitFor(() => {
-          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-        })
-        const gauges = screen.getAllByTestId('gauge')
-        expect(gauges.length).toBeGreaterThan(gaugeIndex)
-        fireEvent.click(gauges[gaugeIndex])
-        await waitFor(() => {
-          expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
-        })
+    it(`${describeName}: should toggle localStorage preference when gauge is clicked`, async () => {
+      mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+      await renderComponent()
+      await waitFor(() => {
+        expect(screen.getByTestId('wrapper')).toBeInTheDocument()
       })
-      it(`should initialize with localStorage preference for true`, async () => {
-        localStorage.setItem(localStorageKey, initialValueTrue)
-        mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-        await renderComponent()
-        await waitFor(() => {
-          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-          expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
-        })
+      const gauges = screen.getAllByTestId('gauge')
+      expect(gauges.length).toBeGreaterThan(gaugeIndex)
+      fireEvent.click(gauges[gaugeIndex])
+      await waitFor(() => {
+        expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
       })
-      it(`should initialize with localStorage preference for false`, async () => {
-        localStorage.setItem(localStorageKey, initialValueFalse)
-        mockGetDeviceAction.mockResolvedValue(mockDeviceData)
-        await renderComponent()
-        await waitFor(() => {
-          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-          expect(localStorage.getItem(localStorageKey)).toBe(initialValueFalse)
-        })
-      })
-      for (const missingVar of missingVars) {
-        it(`should handle missing ${missingVar} gracefully`, async () => {
-          const dataWithoutVar = {
-            ...mockDeviceData,
-            device: {
-              ...mockDeviceData.device,
-              vars: {
-                ...mockDeviceData.device.vars,
-                [missingVar]: undefined,
-              },
-            },
-          }
-          mockGetDeviceAction.mockResolvedValue(dataWithoutVar)
-          await renderComponent()
-          await waitFor(() => {
-            expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-          })
-          // If missingVar affects display, check for N/A
-          if (['ups.load', 'battery.charge'].includes(missingVar)) {
-            const naElements = screen.getAllByText('N/A')
-            expect(naElements.length).toBeGreaterThan(0)
-            // Don't test toggle functionality for these critical variables
-            return
-          }
-          // Only click and assert if the gauge exists
-          const gauges = screen.queryAllByTestId('gauge')
-          if (gauges.length > gaugeIndex) {
-            fireEvent.click(gauges[gaugeIndex])
-            await waitFor(() => {
-              expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
-            })
-          }
-          // If gauge doesn't exist, don't assert localStorage value
-        })
-      }
     })
+
+    it(`${describeName}: should initialize with localStorage preference for true`, async () => {
+      localStorage.setItem(localStorageKey, initialValueTrue)
+      mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+      await renderComponent()
+      await waitFor(() => {
+        expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+        expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
+      })
+    })
+
+    it(`${describeName}: should initialize with localStorage preference for false`, async () => {
+      localStorage.setItem(localStorageKey, initialValueFalse)
+      mockGetDeviceAction.mockResolvedValue(mockDeviceData)
+      await renderComponent()
+      await waitFor(() => {
+        expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+        expect(localStorage.getItem(localStorageKey)).toBe(initialValueFalse)
+      })
+    })
+
+    for (const missingVar of missingVars) {
+      it(`${describeName}: should handle missing ${missingVar} gracefully`, async () => {
+        const dataWithoutVar = {
+          ...mockDeviceData,
+          device: {
+            ...mockDeviceData.device,
+            vars: {
+              ...mockDeviceData.device.vars,
+              [missingVar]: undefined,
+            },
+          },
+        }
+        mockGetDeviceAction.mockResolvedValue(dataWithoutVar)
+        await renderComponent()
+        await waitFor(() => {
+          expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+        })
+        // If missingVar affects display, check for N/A
+        if (['ups.load', 'battery.charge'].includes(missingVar)) {
+          const naElements = screen.getAllByText('N/A')
+          expect(naElements.length).toBeGreaterThan(0)
+          // Don't test toggle functionality for these critical variables
+          return
+        }
+        // Only click and assert if the gauge exists
+        const gauges = screen.queryAllByTestId('gauge')
+        if (gauges.length > gaugeIndex) {
+          fireEvent.click(gauges[gaugeIndex])
+          await waitFor(() => {
+            expect(localStorage.getItem(localStorageKey)).toBe(initialValueTrue)
+          })
+        }
+        // If gauge doesn't exist, don't assert localStorage value
+      })
+    }
   }
 
   testToggleGauge({

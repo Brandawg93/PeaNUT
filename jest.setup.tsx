@@ -56,10 +56,10 @@ jest.mock('next-runtime-env', () => ({
   useEnvContext: jest.fn(() => ({})),
 }))
 
-window.PointerEvent = MouseEvent as typeof PointerEvent
+globalThis.PointerEvent = MouseEvent as typeof PointerEvent
 
 // Mock window.matchMedia for next-themes
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,

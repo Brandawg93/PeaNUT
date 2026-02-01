@@ -18,7 +18,7 @@ globalThis.fetch = jest.fn(() =>
 ) as jest.Mock
 
 // Mock window.matchMedia for next-themes
-Object.defineProperty(globalThis.window, 'matchMedia', {
+Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
