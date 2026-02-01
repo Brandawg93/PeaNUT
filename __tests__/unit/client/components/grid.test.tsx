@@ -238,7 +238,9 @@ describe('Grid', () => {
         (button) => button.querySelector('svg') && button.dataset.slot === 'button'
       )
       expect(treeToggleButton).toBeDefined()
-      fireEvent.click(treeToggleButton!)
+      if (treeToggleButton) {
+        fireEvent.click(treeToggleButton)
+      }
 
       // Filter should still work in tree view
       await waitFor(() => {
@@ -287,7 +289,9 @@ describe('Grid', () => {
         (button) => button.querySelector('svg') && button.dataset.slot === 'button'
       )
       expect(treeToggleButton).toBeDefined()
-      fireEvent.click(treeToggleButton!)
+      if (treeToggleButton) {
+        fireEvent.click(treeToggleButton)
+      }
 
       // In tree view, 'input.voltage' is RW.
       // Since expanded=true by default, we should see it immediately.
