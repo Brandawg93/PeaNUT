@@ -24,7 +24,7 @@ export function useChartData(id: string, updated: Date, value?: number) {
       isFirstRender.current = false
       // Schedule state update to avoid synchronous setState in effect
       queueMicrotask(() => {
-        setData(value !== undefined ? [{ dataPoint: value, time: new Date() }] : [])
+        setData(value === undefined ? [] : [{ dataPoint: value, time: new Date() }])
       })
       return
     }
