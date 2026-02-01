@@ -3,7 +3,12 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NutGrid from '@/client/components/grid'
 import { DEVICE } from '@/common/types'
+import { saveVar } from '@/app/actions'
 import PromiseSocket from '@/server/promise-socket'
+
+jest.mock('@/app/actions', () => ({
+  saveVar: jest.fn(),
+}))
 
 const queryClient = new QueryClient()
 
@@ -208,13 +213,10 @@ describe('Grid', () => {
         const dataRows = rows.slice(1) // Skip header row
 
         // All visible rows should contain 'voltage' in their key
-        dataRows.forEach((row) => {
+        for (const row of dataRows) {
           const keyCell = row.querySelector('td:first-child')
-          if (keyCell) {
-            const keyText = keyCell.textContent || ''
-            expect(keyText.toLowerCase()).toContain('voltage')
-          }
-        })
+          expect((keyCell?.textContent || '').toLowerCase()).toContain('voltage')
+        }
       })
     })
 
@@ -233,7 +235,7 @@ describe('Grid', () => {
       // Switch to tree view - find the toggle button by looking for the list icon
       const treeToggleButtons = screen.getAllByRole('button')
       const treeToggleButton = treeToggleButtons.find(
-        (button) => button.querySelector('svg') && button.getAttribute('data-slot') === 'button'
+        (button) => button.querySelector('svg') && button.dataset.slot === 'button'
       )
       expect(treeToggleButton).toBeDefined()
       fireEvent.click(treeToggleButton!)
@@ -243,6 +245,91 @@ describe('Grid', () => {
         const rows = screen.getAllByRole('row')
         expect(rows.length).toBeLessThan(7) // Should still be filtered
       })
+    })
+  })
+
+  describe('Edit functionality', () => {
+    it('saves the correct value when edited', async () => {
+      ;(saveVar as jest.Mock).mockResolvedValue({ error: undefined })
+
+      const { getAllByRole, getByLabelText } = renderGrid()
+
+      // Find the row with 'input.voltage' (which is in rwVars)
+      const rows = getAllByRole('row')
+      const voltageRow = rows.find((row) => row.textContent?.includes('input.voltage'))
+      expect(voltageRow).toBeDefined()
+
+      // Click the edit button
+      const editButton = getByLabelText('Edit variable')
+      fireEvent.click(editButton)
+
+      // Find the input field (it should be in the document now)
+      const input = screen.getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '230' } })
+
+      // Click the save button
+      const saveButton = getByLabelText('Save changes')
+      fireEvent.click(saveButton)
+
+      // Verify saveVar was called with the new value
+      await waitFor(() => {
+        expect(saveVar).toHaveBeenCalledWith(device.id, 'input.voltage', '230')
+      })
+    })
+
+    it('saves the full key path when editing in tree view', async () => {
+      ;(saveVar as jest.Mock).mockResolvedValue({ error: undefined })
+      const { getAllByRole } = renderGrid()
+
+      // Switch to tree view
+      const treeToggleButtons = getAllByRole('button')
+      const treeToggleButton = treeToggleButtons.find(
+        (button) => button.querySelector('svg') && button.dataset.slot === 'button'
+      )
+      expect(treeToggleButton).toBeDefined()
+      fireEvent.click(treeToggleButton!)
+
+      // In tree view, 'input.voltage' is RW.
+      // Since expanded=true by default, we should see it immediately.
+      // We look for the edit button. If there's only one RW var, it must be it.
+      const editButton = await screen.findByLabelText('Edit variable')
+      expect(editButton).toBeInTheDocument()
+      fireEvent.click(editButton)
+
+      // Change value
+      const input = screen.getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '240' } })
+
+      // Save
+      const saveButton = screen.getByLabelText('Save changes')
+      fireEvent.click(saveButton)
+
+      // Verify saveVar was called with the full 'input.voltage' key, not just 'voltage'
+      await waitFor(() => {
+        expect(saveVar).toHaveBeenCalledWith(device.id, 'input.voltage', '240')
+      })
+    })
+
+    it('cancels editing when cancel button is clicked', async () => {
+      const { getByLabelText, queryByLabelText, getByDisplayValue } = renderGrid()
+
+      // Click the edit button
+      const editButton = getByLabelText('Edit variable')
+      fireEvent.click(editButton)
+
+      // Change input
+      const input = getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '230' } })
+
+      // Click cancel
+      const cancelButton = getByLabelText('Cancel edit')
+      fireEvent.click(cancelButton)
+
+      // Input should be gone, and saveVar should NOT have been called
+      await waitFor(() => {
+        expect(queryByLabelText('Save changes')).not.toBeInTheDocument()
+      })
+      expect(saveVar).not.toHaveBeenCalled()
     })
   })
 })

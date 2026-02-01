@@ -22,7 +22,7 @@ jest.mock('../../../src/app/actions', () => ({
   getAllCommands: jest.fn().mockResolvedValue([]),
 }))
 
-global.fetch = jest.fn(() =>
+globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([{ name: '1.0.0' }]),
   })

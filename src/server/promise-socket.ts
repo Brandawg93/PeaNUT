@@ -1,4 +1,4 @@
-import { Socket } from 'net'
+import { Socket } from 'node:net'
 
 const TIMEOUT = 10000
 
@@ -81,10 +81,10 @@ export default class PromiseSocket {
 
         const onEnd = () => {
           cleanup()
-          if (!buf.includes(until)) {
-            reject(new Error('Connection closed before receiving complete data'))
-          } else {
+          if (buf.includes(until)) {
             resolve(buf)
+          } else {
+            reject(new Error('Connection closed before receiving complete data'))
           }
         }
 
