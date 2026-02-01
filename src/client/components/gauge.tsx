@@ -153,7 +153,11 @@ export default function Gauge({ percentage, invert, title, onClick, warningAt, l
                 outerRadius={OUTER_R}
                 isAnimationActive={false}
               >
-                <Label content={<GaugeLabel percentage={percentage} warningAt={warningAt} lowAt={lowAt} />} />
+                <Label
+                  content={(props) => (
+                    <GaugeLabel {...props} percentage={percentage} warningAt={warningAt} lowAt={lowAt} />
+                  )}
+                />
               </Pie>
             </PieChart>
           </ChartContainer>
