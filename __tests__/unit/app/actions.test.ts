@@ -23,6 +23,7 @@ import {
 import { YamlSettings, SettingsType } from '@/server/settings'
 import PromiseSocket from '@/server/promise-socket'
 import InfluxWriter from '@/server/influxdb'
+import { resetCaches } from '@/server/nut-cache'
 import { signIn } from '@/auth'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import { AuthError } from 'next-auth'
@@ -91,6 +92,10 @@ beforeAll(() => {
 })
 
 describe('actions', () => {
+  beforeEach(() => {
+    resetCaches()
+  })
+
   it('gets devices', async () => {
     const data = await getDevices()
     expect(data.devices).toEqual(result)
