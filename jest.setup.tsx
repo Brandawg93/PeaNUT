@@ -115,3 +115,10 @@ jest.mock('next/server', () => ({
     })),
   },
 }))
+// Global mock for fetch to avoid warnings in components that fetch on mount
+globalThis.fetch = jest.fn().mockImplementation(() =>
+  Promise.resolve({
+    json: () => Promise.resolve([]),
+    ok: true,
+  })
+)
