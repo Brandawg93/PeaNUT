@@ -122,11 +122,3 @@ globalThis.fetch = jest.fn().mockImplementation(() =>
     ok: true,
   })
 )
-
-const originalConsoleLog = console.log
-console.log = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('AUTH_SECRET')) {
-    return
-  }
-  originalConsoleLog(...args)
-}
