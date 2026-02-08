@@ -139,6 +139,7 @@ export const useFormatDate = () => {
 export const SettingsProvider = ({ children }: { readonly children: React.ReactNode }) => {
   const [settings, setSettings] = useState<Partial<SettingsType>>({})
   const isInitializedRef = useRef(false)
+  const mountedRef = useRef(true)
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -168,6 +169,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
         getSettings('INFLUX_INTERVAL'),
         getSettings('NUT_SERVERS'),
       ])
+      if (!mountedRef.current) return
 
       setSettings({
         DATE_FORMAT: dateFormat || '',
@@ -183,6 +185,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
         NUT_SERVERS: nutServers || [],
       })
     } catch {
+      if (!mountedRef.current) return
       // Handle error silently in tests
       setSettings({
         DATE_FORMAT: '',
@@ -207,6 +210,9 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       startTransition(() => {
         fetchSettings()
       })
+    }
+    return () => {
+      mountedRef.current = false
     }
   }, [fetchSettings])
 
