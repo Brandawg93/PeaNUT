@@ -1,6 +1,6 @@
 import React from 'react'
 import { renderWithProviders } from '../../../utils/test-utils'
-import { waitFor } from '@testing-library/react'
+import { waitFor, act, screen } from '@testing-library/react'
 import Footer from '@/client/components/footer'
 import pJson from '../../../../package.json'
 
@@ -30,29 +30,42 @@ describe('Footer', () => {
     jest.clearAllMocks()
   })
 
-  it('renders', () => {
-    const { getByTestId } = renderWithProviders(<Footer updated={new Date()} />)
-    expect(getByTestId('footer')).toBeInTheDocument()
+  it('renders', async () => {
+    await act(async () => {
+      renderWithProviders(<Footer updated={new Date()} />, {
+        settings: { DISABLE_VERSION_CHECK: false },
+      })
+    })
+    expect(screen.getByTestId('footer')).toBeInTheDocument()
+    await screen.findByText(new RegExp(`v${pJson.version}`))
   })
 
-  it('renders GitHub link with correct href', () => {
-    const { container } = renderWithProviders(<Footer updated={new Date()} />)
+  it('renders GitHub link with correct href', async () => {
+    const { container } = renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
     const githubLink = container.querySelector('a[aria-label="GitHub"]')
     expect(githubLink).toBeInTheDocument()
     expect(githubLink).toHaveAttribute('href', 'https://www.github.com/brandawg93/peanut')
     expect(githubLink).toHaveAttribute('target', '_blank')
+    await screen.findByText(new RegExp(`v${pJson.version}`))
   })
 
-  it('renders Sponsor link with correct href', () => {
-    const { container } = renderWithProviders(<Footer updated={new Date()} />)
+  it('renders Sponsor link with correct href', async () => {
+    const { container } = renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
     const sponsorLink = container.querySelector('a[aria-label="Sponsor"]')
     expect(sponsorLink).toBeInTheDocument()
     expect(sponsorLink).toHaveAttribute('href', 'https://www.github.com/sponsors/brandawg93')
     expect(sponsorLink).toHaveAttribute('target', '_blank')
+    await screen.findByText(new RegExp(`v${pJson.version}`))
   })
 
   it('renders version link with GitHub release URL when version is found', async () => {
-    const { container } = renderWithProviders(<Footer updated={new Date()} />)
+    const { container } = renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
 
     await waitFor(
       () => {
@@ -87,16 +100,19 @@ describe('Footer', () => {
     )
   })
 
-  it('renders API docs link with correct pathname', () => {
-    const { container } = renderWithProviders(<Footer updated={new Date()} />)
+  it('renders API docs link with correct pathname', async () => {
+    const { container } = renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
     // Find the link that contains /api/docs in href
     const allLinks = container.querySelectorAll('a')
     const docsLink = Array.from(allLinks).find((link) => link.getAttribute('href')?.includes('/api/docs'))
     expect(docsLink).toBeInTheDocument()
     expect(docsLink?.getAttribute('href')).toContain('/api/docs')
+    await screen.findByText(new RegExp(`v${pJson.version}`))
   })
 
-  it('skips version check when disabled in settings', () => {
+  it('skips version check when disabled in settings', async () => {
     // Mock the useVersionCheck hook to return true
     jest.doMock('@/client/context/settings', () => ({
       ...jest.requireActual('@/client/context/settings'),
@@ -104,14 +120,14 @@ describe('Footer', () => {
     }))
 
     renderWithProviders(<Footer updated={new Date()} />)
-
-    // Note: This test may still call fetch due to how the hook works
-    // The actual functionality is tested in the e2e tests
+    // No wait needed because skipVersionCheck is true, so no fetch triggered
     expect(true).toBe(true)
   })
 
   it('fetches version data when enabled', async () => {
-    renderWithProviders(<Footer updated={new Date()} />)
+    renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
 
     await waitFor(
       () => {

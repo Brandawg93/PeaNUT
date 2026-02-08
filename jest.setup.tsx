@@ -115,3 +115,18 @@ jest.mock('next/server', () => ({
     })),
   },
 }))
+// Global mock for fetch to avoid warnings in components that fetch on mount
+globalThis.fetch = jest.fn().mockImplementation(() =>
+  Promise.resolve({
+    json: () => Promise.resolve([]),
+    ok: true,
+  })
+)
+
+const originalConsoleLog = console.log
+console.log = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('AUTH_SECRET')) {
+    return
+  }
+  originalConsoleLog(...args)
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, startTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
 import { LanguageContext } from '@/client/context/language'
@@ -29,6 +29,8 @@ export default function Footer({ updated }: Props) {
   const basePath = useBasePath()
 
   useEffect(() => {
+    let isMounted = true
+
     // Skip version checking if disabled in settings
     if (disableVersionCheck) {
       return
@@ -38,20 +40,28 @@ export default function Footer({ updated }: Props) {
       try {
         const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
         const json = await res.json()
-        if (!Array.isArray(json)) return
+        if (!isMounted || !Array.isArray(json)) return
         const version = json.find((r) => r.name === `v${pJson.version}`)
         if (!version) return
         const latest = json[0]
         const created = new Date(version.published_at)
-        setCurrentVersion({ created, version: version.name, url: version.html_url })
-        if (version.name !== latest.name) {
-          setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
-        }
+        startTransition(() => {
+          setCurrentVersion({ created, version: version.name, url: version.html_url })
+          if (version.name !== latest.name) {
+            setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
+          }
+        })
       } catch (error) {
-        console.error('Failed to check versions:', error)
+        if (isMounted) {
+          console.error('Failed to check versions:', error)
+        }
       }
     }
     checkVersions()
+
+    return () => {
+      isMounted = false
+    }
   }, [disableVersionCheck])
 
   const updateAvailableWrapper = updateAvailable.version ? (
