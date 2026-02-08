@@ -15,6 +15,7 @@ describe('auth.config authorized callback', () => {
   }
 
   const disableAuth = () => {
+    process.env.AUTH_DISABLED = 'true'
     delete process.env.WEB_USERNAME
     delete process.env.WEB_PASSWORD
   }

@@ -178,7 +178,7 @@ export class YamlSettings {
     try {
       this.debug.info('Saving settings to file', { filePath: this.filePath })
       const yamlStr = dump(this.data)
-      fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+      fs.writeFileSync(this.filePath, yamlStr, { encoding: 'utf8', mode: 0o600 })
       this.debug.info('Settings saved successfully')
       return true
     } catch (error) {

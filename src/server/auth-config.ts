@@ -1,5 +1,6 @@
 export function isAuthEnabled(): boolean {
-  return Boolean(process.env.WEB_USERNAME?.trim() && process.env.WEB_PASSWORD?.trim())
+  if (process.env.AUTH_DISABLED === 'true') return false
+  return true
 }
 
 export function ensureAuthSecret() {
