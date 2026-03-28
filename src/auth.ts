@@ -1,5 +1,14 @@
+import { timingSafeEqual } from 'crypto'
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+
+function safeEqual(a: string, b: string): boolean {
+  try {
+    return timingSafeEqual(Buffer.from(a), Buffer.from(b))
+  } catch {
+    return false
+  }
+}
 import { authConfig } from './auth.config'
 import { z } from 'zod'
 
@@ -12,7 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (parsedCredentials.success) {
           const { username, password } = parsedCredentials.data
-          if (username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD) {
+          if (username === process.env.WEB_USERNAME && process.env.WEB_PASSWORD && safeEqual(password, process.env.WEB_PASSWORD)) {
             return { name: username }
           }
         }
