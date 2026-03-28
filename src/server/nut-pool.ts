@@ -51,11 +51,16 @@ export class NutConnectionPool {
     while (bucket.available.length > 0) {
       const entry = bucket.available.pop()!
       if (entry.socket.isConnected()) {
+        // Remove empty bucket to keep the map tidy
+        if (bucket.available.length === 0) this.pools.delete(key)
         return entry.socket
       }
       // Stale connection: discard
       entry.socket.close().catch(() => {})
     }
+
+    // All entries were stale — remove the now-empty bucket
+    this.pools.delete(key)
     return null
   }
 
@@ -86,13 +91,8 @@ export class NutConnectionPool {
    * Close all idle connections, optionally scoped to one host/port.
    */
   async drain(host?: string, port?: number): Promise<void> {
-    if (this.idleTimer !== null) {
-      clearInterval(this.idleTimer)
-      this.idleTimer = null
-    }
-
-    const keysToDrain =
-      host !== undefined && port !== undefined ? [this.bucketKey(host, port)] : Array.from(this.pools.keys())
+    const scopedDrain = host !== undefined && port !== undefined
+    const keysToDrain = scopedDrain ? [this.bucketKey(host, port)] : Array.from(this.pools.keys())
 
     for (const key of keysToDrain) {
       const bucket = this.pools.get(key)
@@ -100,7 +100,15 @@ export class NutConnectionPool {
       for (const entry of bucket.available) {
         await entry.socket.close().catch(() => {})
       }
-      bucket.available = []
+      this.pools.delete(key)
+    }
+
+    // Only clear the sweep timer when all buckets have been drained
+    if (!scopedDrain || this.pools.size === 0) {
+      if (this.idleTimer !== null) {
+        clearInterval(this.idleTimer)
+        this.idleTimer = null
+      }
     }
   }
 
@@ -115,9 +123,8 @@ export class NutConnectionPool {
 
   private sweepIdle(): void {
     const now = Date.now()
-    let hasAny = false
 
-    this.pools.forEach((bucket) => {
+    this.pools.forEach((bucket, key) => {
       bucket.available = bucket.available.filter((entry: PooledConnection) => {
         if (now - entry.lastUsed > this.idleTimeoutMs) {
           entry.socket.close().catch(() => {})
@@ -125,10 +132,13 @@ export class NutConnectionPool {
         }
         return true
       })
-      if (bucket.available.length > 0) hasAny = true
+      // Remove empty buckets to keep the map tidy
+      if (bucket.available.length === 0) {
+        this.pools.delete(key)
+      }
     })
 
-    if (!hasAny && this.idleTimer !== null) {
+    if (this.pools.size === 0 && this.idleTimer !== null) {
       clearInterval(this.idleTimer)
       this.idleTimer = null
     }
@@ -137,6 +147,8 @@ export class NutConnectionPool {
 
 export const nutConnectionPool = new NutConnectionPool()
 
-process.on('exit', () => {
+// beforeExit fires when the event loop drains — async drain() can complete here.
+// process.on('exit') is synchronous and would not await the drain promise.
+process.on('beforeExit', () => {
   nutConnectionPool.drain().catch(() => {})
 })

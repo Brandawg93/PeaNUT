@@ -82,6 +82,16 @@ describe('NutConnectionPool', () => {
       expect(stale.close).toHaveBeenCalled()
     })
 
+    it('removes the bucket from the map when all sockets are drained by acquire', () => {
+      const pool = new NutConnectionPool()
+      const socket = makeMockSocket()
+      pool.release(HOST, PORT, socket)
+
+      pool.acquire(HOST, PORT)
+
+      expect((pool as any).pools.has(`${HOST}:${PORT}`)).toBe(false)
+    })
+
     it('uses separate buckets for different host:port pairs', () => {
       const pool = new NutConnectionPool()
       const socket1 = makeMockSocket()
@@ -159,7 +169,18 @@ describe('NutConnectionPool', () => {
       expect(s2.close).not.toHaveBeenCalled()
     })
 
-    it('clears the idle sweep timer', async () => {
+    it('does not clear the sweep timer on a scoped drain when other buckets remain', async () => {
+      const pool = new NutConnectionPool({ idleTimeoutMs: 5000 })
+      pool.release('host-a', 3493, makeMockSocket())
+      pool.release('host-b', 3493, makeMockSocket())
+
+      expect((pool as any).idleTimer).not.toBeNull()
+      await pool.drain('host-a', 3493)
+      // host-b still has connections — timer must keep running
+      expect((pool as any).idleTimer).not.toBeNull()
+    })
+
+    it('clears the idle sweep timer on a full drain', async () => {
       const pool = new NutConnectionPool({ idleTimeoutMs: 5000 })
       const socket = makeMockSocket()
       pool.release(HOST, PORT, socket) // starts timer
@@ -167,6 +188,15 @@ describe('NutConnectionPool', () => {
       expect((pool as any).idleTimer).not.toBeNull()
       await pool.drain()
       expect((pool as any).idleTimer).toBeNull()
+    })
+
+    it('removes drained buckets from the map', async () => {
+      const pool = new NutConnectionPool()
+      pool.release(HOST, PORT, makeMockSocket())
+
+      await pool.drain(HOST, PORT)
+
+      expect((pool as any).pools.has(`${HOST}:${PORT}`)).toBe(false)
     })
   })
 

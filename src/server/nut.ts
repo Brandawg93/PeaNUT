@@ -77,7 +77,12 @@ export class Nut {
         this.debug.error('Authenticated connection failed', { host: this.host, port: this.port, error: message })
         throw new Error(`Connection failed: ${message}`)
       }
-      await this.checkCredentials(socket)
+      try {
+        await this.checkCredentials(socket)
+      } catch (e) {
+        await this.safeCloseConnection(socket)
+        throw e
+      }
       return { socket, pooled: false, authenticated: true }
     }
 
@@ -105,8 +110,8 @@ export class Nut {
   /**
    * Release a connection back to the pool or destroy it.
    * Authenticated and errored connections are always destroyed (LOGOUT + close).
-   * Pooled connections that succeeded are returned to the idle pool.
-   * Non-pooled (overflow) connections that succeeded are closed cleanly.
+   * All other successful connections — whether pooled or overflow — are returned to
+   * the idle pool so they can be reused by future requests.
    */
   private async releaseConnection(conn: AcquiredConnection, hasError = false): Promise<void> {
     if (conn.authenticated || hasError) {
@@ -277,6 +282,7 @@ export class Nut {
 
   public async getData(device = 'UPS'): Promise<VARS> {
     const conn = await this.getAcquiredConnection()
+    let hasError = false
     try {
       const command = `LIST VAR ${device}`
       const data = await this.getCommand(command, undefined, false, conn.socket)
@@ -310,8 +316,11 @@ export class Nut {
           finalObject[key] = vars[key]
           return finalObject
         }, {})
+    } catch (e) {
+      hasError = true
+      throw e
     } finally {
-      await this.releaseConnection(conn)
+      await this.releaseConnection(conn, hasError)
     }
   }
 

@@ -445,10 +445,12 @@ describe('Nut', () => {
   })
 
   describe('Connection Pool', () => {
-    const makePoolSocket = (readAllValue = 'BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS') => ({
+    const makePoolSocket = (
+      readAllMock = jest.fn().mockResolvedValue('BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS')
+    ) => ({
       isConnected: jest.fn().mockReturnValue(true),
       write: jest.fn().mockResolvedValue(undefined),
-      readAll: jest.fn().mockResolvedValue(readAllValue),
+      readAll: readAllMock,
       close: jest.fn().mockResolvedValue(undefined),
     })
 
@@ -477,12 +479,7 @@ describe('Nut', () => {
     })
 
     it('destroys a pooled socket on error instead of returning it to the pool', async () => {
-      const mockPoolSocket = {
-        isConnected: jest.fn().mockReturnValue(true),
-        write: jest.fn().mockResolvedValue(undefined),
-        readAll: jest.fn().mockRejectedValue(new Error('Connection reset')),
-        close: jest.fn().mockResolvedValue(undefined),
-      }
+      const mockPoolSocket = makePoolSocket(jest.fn().mockRejectedValue(new Error('Connection reset')))
       jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
 
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
@@ -513,7 +510,9 @@ describe('Nut', () => {
     })
 
     it('passes the pool socket down to getData helpers', async () => {
-      const mockPoolSocket = makePoolSocket('BEGIN LIST VAR ups\nVAR ups battery.charge "100"\nEND LIST VAR ups')
+      const mockPoolSocket = makePoolSocket(
+        jest.fn().mockResolvedValue('BEGIN LIST VAR ups\nVAR ups battery.charge "100"\nEND LIST VAR ups')
+      )
       jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
 
       jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('Battery charge')
