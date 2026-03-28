@@ -445,13 +445,15 @@ describe('Nut', () => {
   })
 
   describe('Connection Pool', () => {
+    const makePoolSocket = (readAllValue = 'BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS') => ({
+      isConnected: jest.fn().mockReturnValue(true),
+      write: jest.fn().mockResolvedValue(undefined),
+      readAll: jest.fn().mockResolvedValue(readAllValue),
+      close: jest.fn().mockResolvedValue(undefined),
+    })
+
     it('reuses a pooled socket without calling connect()', async () => {
-      const mockPoolSocket = {
-        isConnected: jest.fn().mockReturnValue(true),
-        write: jest.fn().mockResolvedValue(undefined),
-        readAll: jest.fn().mockResolvedValue('BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS'),
-        close: jest.fn().mockResolvedValue(undefined),
-      }
+      const mockPoolSocket = makePoolSocket()
       jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
 
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
@@ -463,12 +465,7 @@ describe('Nut', () => {
     })
 
     it('returns a pooled socket to the pool on success', async () => {
-      const mockPoolSocket = {
-        isConnected: jest.fn().mockReturnValue(true),
-        write: jest.fn().mockResolvedValue(undefined),
-        readAll: jest.fn().mockResolvedValue('BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS'),
-        close: jest.fn().mockResolvedValue(undefined),
-      }
+      const mockPoolSocket = makePoolSocket()
       jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
 
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
@@ -516,12 +513,7 @@ describe('Nut', () => {
     })
 
     it('passes the pool socket down to getData helpers', async () => {
-      const mockPoolSocket = {
-        isConnected: jest.fn().mockReturnValue(true),
-        write: jest.fn().mockResolvedValue(undefined),
-        readAll: jest.fn().mockResolvedValue('BEGIN LIST VAR ups\nVAR ups battery.charge "100"\nEND LIST VAR ups'),
-        close: jest.fn().mockResolvedValue(undefined),
-      }
+      const mockPoolSocket = makePoolSocket('BEGIN LIST VAR ups\nVAR ups battery.charge "100"\nEND LIST VAR ups')
       jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
 
       jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('Battery charge')
