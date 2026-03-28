@@ -2,6 +2,17 @@ import { Nut } from '@/server/nut'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import PromiseSocket from '@/server/promise-socket'
 import { upsStatus } from '@/common/constants'
+import { nutConnectionPool } from '@/server/nut-pool'
+
+// Default: pool always returns null (overflow path), preserving existing test behaviour.
+// Individual tests can override acquire to simulate a pool hit.
+jest.mock('@/server/nut-pool', () => ({
+  nutConnectionPool: {
+    acquire: jest.fn().mockReturnValue(null),
+    release: jest.fn(),
+    drain: jest.fn(),
+  },
+}))
 
 const listVarUps = `BEGIN LIST VAR ups
 VAR ups battery.charge "100"
@@ -433,6 +444,99 @@ describe('Nut', () => {
     })
   })
 
+  describe('Connection Pool', () => {
+    it('reuses a pooled socket without calling connect()', async () => {
+      const mockPoolSocket = {
+        isConnected: jest.fn().mockReturnValue(true),
+        write: jest.fn().mockResolvedValue(undefined),
+        readAll: jest.fn().mockResolvedValue('BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS'),
+        close: jest.fn().mockResolvedValue(undefined),
+      }
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await nut.getDevices()
+
+      // Pool socket was used directly — connect() on a fresh PromiseSocket should not have been called
+      expect(PromiseSocket.prototype.connect).not.toHaveBeenCalled()
+      expect(mockPoolSocket.write).toHaveBeenCalledWith('LIST UPS')
+    })
+
+    it('returns a pooled socket to the pool on success', async () => {
+      const mockPoolSocket = {
+        isConnected: jest.fn().mockReturnValue(true),
+        write: jest.fn().mockResolvedValue(undefined),
+        readAll: jest.fn().mockResolvedValue('BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS'),
+        close: jest.fn().mockResolvedValue(undefined),
+      }
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await nut.getDevices()
+
+      expect(nutConnectionPool.release).toHaveBeenCalledWith(TEST_HOSTNAME, TEST_PORT, mockPoolSocket)
+      // LOGOUT should NOT be sent to a pooled socket on successful release
+      expect(mockPoolSocket.write).not.toHaveBeenCalledWith('LOGOUT')
+    })
+
+    it('destroys a pooled socket on error instead of returning it to the pool', async () => {
+      const mockPoolSocket = {
+        isConnected: jest.fn().mockReturnValue(true),
+        write: jest.fn().mockResolvedValue(undefined),
+        readAll: jest.fn().mockRejectedValue(new Error('Connection reset')),
+        close: jest.fn().mockResolvedValue(undefined),
+      }
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await expect(nut.getVersion()).rejects.toThrow('Connection reset')
+
+      expect(nutConnectionPool.release).not.toHaveBeenCalled()
+      expect(mockPoolSocket.close).toHaveBeenCalled()
+    })
+
+    it('bypasses the pool for authenticated commands (checkCredentials=true)', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // USERNAME
+        .mockResolvedValueOnce('OK\n') // PASSWORD
+        .mockResolvedValueOnce('OK\n') // LOGIN
+        .mockResolvedValueOnce('OK\n') // INSTCMD response
+      jest
+        .spyOn(Nut.prototype, 'getDevices')
+        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+
+      await nut.runCommand('test.command', 'ups')
+
+      // acquire() must not be called for authenticated commands
+      expect(nutConnectionPool.acquire).not.toHaveBeenCalled()
+      // The authenticated session must be destroyed (LOGOUT sent)
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGOUT')
+    })
+
+    it('passes the pool socket down to getData helpers', async () => {
+      const mockPoolSocket = {
+        isConnected: jest.fn().mockReturnValue(true),
+        write: jest.fn().mockResolvedValue(undefined),
+        readAll: jest.fn().mockResolvedValue('BEGIN LIST VAR ups\nVAR ups battery.charge "100"\nEND LIST VAR ups'),
+        close: jest.fn().mockResolvedValue(undefined),
+      }
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('Battery charge')
+      jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('NUMBER')
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await nut.getData('ups')
+
+      // The pool socket was passed into getVarDescription and getType (via getCommand with socket)
+      // Verify the pool socket's write was used for LIST VAR (not a separate connection)
+      expect(mockPoolSocket.write).toHaveBeenCalledWith('LIST VAR ups')
+      expect(PromiseSocket.prototype.connect).not.toHaveBeenCalled()
+    })
+  })
+
   describe('Memory Leak Prevention', () => {
     it('should close connection when a command fails in getCommand', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
@@ -444,15 +548,17 @@ describe('Nut', () => {
       expect(mockClose).toHaveBeenCalled()
     })
 
-    it('should close connection when getCommand fails in getData', async () => {
+    it('should release connection when getCommand fails in getData', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
-      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+      jest.spyOn(PromiseSocket.prototype, 'isConnected').mockReturnValue(true)
 
       const data = await nut.getData('ups')
       expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
 
-      expect(mockClose).toHaveBeenCalled()
+      // Socket is returned to the pool (not destroyed) — the NUT daemon connection is
+      // still healthy even when a UPS device is unreachable
+      expect(nutConnectionPool.release).toHaveBeenCalledWith(TEST_HOSTNAME, TEST_PORT, expect.any(Object))
     })
 
     it('should close connection when an error occurs in checkCredentials', async () => {
