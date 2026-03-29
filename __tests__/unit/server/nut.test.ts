@@ -59,6 +59,11 @@ VAR ups ups.timer.start "-60"
 VAR ups ups.vendorid "0764"
 END LIST VAR ups`
 
+const mockGetDevicesWithUps = () =>
+  jest
+    .spyOn(Nut.prototype, 'getDevices')
+    .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+
 describe('Nut', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
@@ -207,9 +212,7 @@ describe('Nut', () => {
         .mockResolvedValueOnce('OK\n') // USERNAME response
         .mockResolvedValueOnce('OK\n') // PASSWORD response
         .mockResolvedValueOnce('OK\n') // LOGIN response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await nut.checkCredentials()
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith(`USERNAME ${TEST_USERNAME}`)
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith(`PASSWORD ${TEST_PASSWORD}`)
@@ -221,9 +224,7 @@ describe('Nut', () => {
     it('should successfully check credentials without username and password', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('OK\n') // LOGIN response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await nut.checkCredentials()
       expect(PromiseSocket.prototype.write).not.toHaveBeenCalledWith('USERNAME testuser')
       expect(PromiseSocket.prototype.write).not.toHaveBeenCalledWith('PASSWORD testpass')
@@ -264,9 +265,7 @@ describe('Nut', () => {
         .mockResolvedValueOnce('OK\n') // USERNAME response
         .mockResolvedValueOnce('OK\n') // PASSWORD response
         .mockResolvedValueOnce('ERR\n') // LOGIN response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await expect(nut.checkCredentials()).rejects.toThrow('Invalid credentials')
     })
 
@@ -281,9 +280,7 @@ describe('Nut', () => {
           .mockResolvedValueOnce('OK\n'), // LOGIN response
         close: jest.fn().mockResolvedValue(undefined),
       }
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await nut.checkCredentials(mockSocket as any)
       expect(mockSocket.write).toHaveBeenCalledWith(`USERNAME ${TEST_USERNAME}`)
       expect(mockSocket.write).toHaveBeenCalledWith(`PASSWORD ${TEST_PASSWORD}`)
@@ -497,9 +494,7 @@ describe('Nut', () => {
         .mockResolvedValueOnce('OK\n') // PASSWORD
         .mockResolvedValueOnce('OK\n') // LOGIN
         .mockResolvedValueOnce('OK\n') // INSTCMD response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
 
       await nut.runCommand('test.command', 'ups')
 

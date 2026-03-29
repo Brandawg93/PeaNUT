@@ -68,15 +68,15 @@ export class Nut {
   private async getAcquiredConnection(checkCredentials = false): Promise<AcquiredConnection> {
     if (checkCredentials) {
       this.debug.info('Attempting to establish authenticated connection', { host: this.host, port: this.port })
-      const socket = new PromiseSocket()
+      let socket: PromiseSocket
       try {
-        await socket.connect(this.port, this.host)
-        this.debug.info('Authenticated connection established')
+        socket = await this.openSocket()
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e)
         this.debug.error('Authenticated connection failed', { host: this.host, port: this.port, error: message })
-        throw new Error(`Connection failed: ${message}`)
+        throw e
       }
+      this.debug.info('Authenticated connection established')
       try {
         await this.checkCredentials(socket)
       } catch (e) {
@@ -95,15 +95,15 @@ export class Nut {
 
     // No idle connection available — create a new one
     this.debug.info('Attempting to establish connection', { host: this.host, port: this.port })
-    const socket = new PromiseSocket()
+    let socket: PromiseSocket
     try {
-      await socket.connect(this.port, this.host)
-      this.debug.info('Connection established successfully')
+      socket = await this.openSocket()
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
       this.debug.error('Connection failed', { host: this.host, port: this.port, error: message })
-      throw new Error(`Connection failed: ${message}`)
+      throw e
     }
+    this.debug.info('Connection established successfully')
     return { socket, pooled: false, authenticated: false }
   }
 
@@ -139,6 +139,17 @@ export class Nut {
       // ignore
     } finally {
       await socket.close()
+    }
+  }
+
+  private async openSocket(): Promise<PromiseSocket> {
+    const socket = new PromiseSocket()
+    try {
+      await socket.connect(this.port, this.host)
+      return socket
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e)
+      throw new Error(`Connection failed: ${message}`)
     }
   }
 
@@ -189,13 +200,7 @@ export class Nut {
     // These sessions accumulate USERNAME/PASSWORD/LOGIN state and must not be pooled.
     let ownSocket: PromiseSocket | null = null
     if (!socket) {
-      ownSocket = new PromiseSocket()
-      try {
-        await ownSocket.connect(this.port, this.host)
-      } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : String(e)
-        throw new Error(`Connection failed: ${message}`)
-      }
+      ownSocket = await this.openSocket()
     }
     const connection = socket ?? ownSocket!
 
