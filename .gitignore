@@ -35,6 +35,7 @@ scripts
 dev
 
 settings.yml
+auth.yaml
 
 .next
 .swc

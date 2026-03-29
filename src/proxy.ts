@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from 'next-runtime-env'
-import { auth } from '@/auth'
+import NextAuth from 'next-auth'
+import { authConfig } from '@/auth.config'
+
+const { auth } = NextAuth(authConfig)
 
 // Normalize basePath to ensure consistent format (starts with /, no trailing slash)
 function normalizeBasePath(path: string): string {
@@ -39,5 +42,5 @@ export default auth(async function proxy(request: NextRequest) {
 
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: ['/((?!_next/static|_next/image|.*\\.png$).*)'],
+  matcher: ['/((?!api/auth/verify|_next/static|_next/image|.*\\.png$).*)'],
 }
