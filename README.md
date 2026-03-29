@@ -85,8 +85,9 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 | ------------------- | --------- | ------------------------------------------------- |
 | WEB_HOST            | localhost | Hostname of web server                            |
 | WEB_PORT            | 8080      | Port of web server                                |
-| WEB_USERNAME        | undefined | Username of web app                               |
-| WEB_PASSWORD        | undefined | Password of web app                               |
+| WEB_USERNAME        | undefined | Initial username (used for auto-creation)         |
+| WEB_PASSWORD        | undefined | Initial password (used for auto-creation)         |
+| AUTH_DISABLED       | false     | Set to 'true' to disable authentication           |
 | BASE_PATH           | undefined | Base path for reverse proxy                       |
 | SSL_CERT_PATH       | undefined | Path to SSL certificate file                      |
 | SSL_KEY_PATH        | undefined | Path to SSL private key file                      |
@@ -105,12 +106,24 @@ Configuration is primarily done via the UI, but manual configuration can be done
 
 ## Authentication
 
-Authentication can be enabled by setting both `WEB_USERNAME` and `WEB_PASSWORD` environment variables. When these are set:
+PeaNUT provides a single-user authentication system. Passwords are stored securely using bcrypt hashing.
 
-- Web UI access will require login using these credentials
-- API calls will require Basic Authentication
+### Initial Setup
 
-For API calls, you'll need to include an Authorization header with the Base64 encoded credentials in the format `username:password`. The header should be formatted as: `Authorization: Basic <encoded credentials>`
+On the first run, if no user is configured, you will be automatically redirected to a setup page to create your administrator account.
+
+### Automated Creation
+
+You can skip the manual setup by providing `WEB_USERNAME` and `WEB_PASSWORD` as environment variables. PeaNUT will automatically create the user account on startup if it doesn't already exist.
+
+### Disabling Authentication
+
+If you prefer to run PeaNUT without authentication, set the `AUTH_DISABLED` environment variable to `true`.
+
+### API Access
+
+API calls require Basic Authentication (unless disabled). Include an Authorization header with the Base64 encoded credentials:
+`Authorization: Basic <encoded username:password>`
 
 ## API
 

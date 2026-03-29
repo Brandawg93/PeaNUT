@@ -2,7 +2,10 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, accessSync } from '
 import { load, dump } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
-jest.mock('js-yaml')
+jest.mock('js-yaml', () => ({
+  load: jest.fn(),
+  dump: jest.fn((data) => JSON.stringify(data)),
+}))
 jest.mock('fs', () => ({
   existsSync: jest.fn(),
   readFileSync: jest.fn(),
@@ -36,7 +39,7 @@ describe('YamlSettings', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
     // Default mock implementations to prevent console errors
     ;(existsSync as jest.Mock).mockReturnValue(false)
     ;(accessSync as jest.Mock).mockImplementation(() => {})
@@ -124,6 +127,10 @@ describe('YamlSettings', () => {
 
       expect(yamlSettings.get('INFLUX_TOKEN')).toBe('testValue')
       expect(saveSpy).toHaveBeenCalled()
+      expect(writeFileSync).toHaveBeenLastCalledWith(expect.any(String), expect.any(String), {
+        encoding: 'utf8',
+        mode: 0o600,
+      })
     })
   })
 
@@ -160,7 +167,7 @@ describe('YamlSettings', () => {
       // Mock the dump function to return what it receives
       ;(dump as jest.Mock).mockImplementation((data) => JSON.stringify(data))
 
-      expect(typeof exported).toBe('undefined')
+      expect(typeof exported).toBe('string')
       expect(dump).toHaveBeenCalledWith(yamlSettings.getAll())
     })
   })

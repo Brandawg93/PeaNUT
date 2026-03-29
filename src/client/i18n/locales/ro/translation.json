@@ -210,6 +210,18 @@
     "passwordPlaceholder": "Introduceți parola",
     "submit": "Log in"
   },
+  "setup": {
+    "title": "Bine ați venit la PeaNUT",
+    "description": "Creați-vă contul inițial de administrator pentru a începe.",
+    "username": "Nume de utilizator",
+    "password": "Parolă",
+    "passwordHint": "Trebuie să aibă cel puțin 5 caractere.",
+    "submit": "Creează cont",
+    "submitting": "Se creează contul...",
+    "errorUserExists": "Un utilizator există deja.",
+    "errorSaveFailed": "Eroare la salvarea utilizatorului.",
+    "errorUsernameRequired": "Numele de utilizator este obligatoriu"
+  },
   "logout": "Deconectare",
   "description": "Descriere",
   "status": "Stare",

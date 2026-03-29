@@ -210,6 +210,18 @@
     "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
     "submit": "Einloggen"
   },
+  "setup": {
+    "title": "Willkommen bei PeaNUT",
+    "description": "Erstellen Sie Ihr erstes Administratorkonto, um loszulegen.",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "passwordHint": "Muss mindestens 5 Zeichen lang sein.",
+    "submit": "Konto erstellen",
+    "submitting": "Konto wird erstellt...",
+    "errorUserExists": "Ein Benutzer existiert bereits.",
+    "errorSaveFailed": "Fehler beim Speichern des Benutzers.",
+    "errorUsernameRequired": "Benutzername ist erforderlich"
+  },
   "logout": "Abmelden",
   "description": "Beschreibung",
   "status": "Status",

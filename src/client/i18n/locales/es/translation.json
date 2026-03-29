@@ -209,6 +209,18 @@
     "passwordPlaceholder": "Ingrese su contraseña",
     "submit": "Acceso"
   },
+  "setup": {
+    "title": "Bienvenido a PeaNUT",
+    "description": "Cree su cuenta de administrador inicial para comenzar.",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "passwordHint": "Debe tener al menos 5 caracteres.",
+    "submit": "Crear cuenta",
+    "submitting": "Creando cuenta...",
+    "errorUserExists": "Ya existe un usuario.",
+    "errorSaveFailed": "Error al guardar el usuario.",
+    "errorUsernameRequired": "Se requiere nombre de usuario"
+  },
   "logout": "Cerrar sesión",
   "description": "Descripción",
   "status": "Estado",
