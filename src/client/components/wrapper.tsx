@@ -27,7 +27,7 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   const { t } = useTranslation(lng)
   const { push } = useNavigation()
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ['devicesData'],
+    queryKey: ['devicesData', getDevicesAction],
     queryFn: async () => await getDevicesAction(),
   })
 

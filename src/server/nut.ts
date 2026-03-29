@@ -61,7 +61,7 @@ export class Nut {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
       this.debug.error('Connection failed', { host: this.host, port: this.port, error: message })
-      throw new Error(`Connection failed: ${message}`)
+      throw new Error(`Connection failed: ${message}`, { cause: e })
     }
     if (checkCredentials) {
       this.debug.info('Checking credentials for connection')

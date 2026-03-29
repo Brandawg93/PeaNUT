@@ -86,7 +86,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   const { push } = useNavigation()
   const { settings } = useSettings()
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ['deviceData', device],
+    queryKey: ['deviceData', device, getDeviceAction],
     queryFn: async () => await getDeviceAction(device),
   })
 
