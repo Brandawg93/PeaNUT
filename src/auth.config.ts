@@ -8,7 +8,7 @@ export const authConfig = {
     signIn: '/login',
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl, headers } }) {
+    async authorized({ auth, request: { nextUrl, headers } }) {
       const authDisabled = process.env.AUTH_DISABLED === 'true'
 
       // If auth is disabled, allow all access
@@ -36,16 +36,44 @@ export const authConfig = {
         const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
         const [username, password] = credentials.split(':')
 
-        // For API v1, we used to check process.env.WEB_PASSWORD.
-        // Since we can't easily check the hash here in Edge, let's allow it if it matches the env var
-        // OR handle API auth differently.
-        // Actually, if the user didn't set env vars, API Basic auth might stay disabled or we'd need a different way.
-        // For now, let's keep it simple: if WEB_PASSWORD is set, use it for API.
-        const isAuthorized = username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD
-        if (!isAuthorized) {
-          return NextResponse.json('Unauthorized', { status: 401 })
+        // For API v1, we check both environment variables and stored credentials.
+        // Since we can't easily check the hash here in Edge, we use an internal API call
+        // to verify against the stored credentials in the Node.js runtime.
+
+        // 1. Check environment variables first (legacy/override)
+        if (
+          process.env.WEB_USERNAME &&
+          process.env.WEB_PASSWORD &&
+          username === process.env.WEB_USERNAME &&
+          password === process.env.WEB_PASSWORD
+        ) {
+          return true
         }
-        return true
+
+        // 2. Check against stored credentials via internal API
+        try {
+          const baseUrl = nextUrl.origin
+          const verifyUrl = new URL('/api/auth/verify', baseUrl)
+          const response = await fetch(verifyUrl.toString(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-internal-verify-secret': process.env.AUTH_SECRET || '',
+            },
+            body: JSON.stringify({ username, password }),
+          })
+
+          if (response.ok) {
+            const result = await response.json()
+            if (result.valid) {
+              return true
+            }
+          }
+        } catch (error) {
+          console.error('API auth verification failed:', error)
+        }
+
+        return NextResponse.json('Unauthorized', { status: 401 })
       }
 
       const isLoggedIn = !!auth?.user

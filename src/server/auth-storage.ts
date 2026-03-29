@@ -24,7 +24,10 @@ export class AuthStorage {
   }
 
   public static getInstance(): AuthStorage {
-    return (AuthStorage.instance ??= new AuthStorage())
+    if (!AuthStorage.instance) {
+      AuthStorage.instance = new AuthStorage()
+    }
+    return AuthStorage.instance
   }
 
   private load(): void {
