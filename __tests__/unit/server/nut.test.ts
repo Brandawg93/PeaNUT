@@ -534,17 +534,18 @@ describe('Nut', () => {
       expect(mockClose).toHaveBeenCalled()
     })
 
-    it('should release connection when getCommand fails in getData', async () => {
+    it('should close connection when getData receives a transport-level error', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
-      jest.spyOn(PromiseSocket.prototype, 'isConnected').mockReturnValue(true)
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
 
       const data = await nut.getData('ups')
       expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
 
-      // Socket is returned to the pool (not destroyed) — the NUT daemon connection is
-      // still healthy even when a UPS device is unreachable
-      expect(nutConnectionPool.release).toHaveBeenCalledWith(TEST_HOSTNAME, TEST_PORT, expect.any(Object))
+      // A transport-level readAll failure may leave the socket broken, so it must be
+      // destroyed (LOGOUT + close) rather than returned to the pool.
+      expect(nutConnectionPool.release).not.toHaveBeenCalled()
+      expect(mockClose).toHaveBeenCalled()
     })
 
     it('should close connection when an error occurs in checkCredentials', async () => {

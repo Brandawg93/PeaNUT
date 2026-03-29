@@ -149,6 +149,6 @@ export const nutConnectionPool = new NutConnectionPool()
 
 // beforeExit fires when the event loop drains — async drain() can complete here.
 // process.on('exit') is synchronous and would not await the drain promise.
-process.on('beforeExit', () => {
+process.once('beforeExit', () => {
   nutConnectionPool.drain().catch(() => {})
 })

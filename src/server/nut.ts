@@ -292,6 +292,9 @@ export class Nut {
       const command = `LIST VAR ${device}`
       const data = await this.getCommand(command, undefined, false, conn.socket)
       if (data == upsStatus.DEVICE_UNREACHABLE) {
+        // The socket may be in a broken state after a transport-level error — destroy it
+        // rather than returning it to the pool where it could poison a future request.
+        hasError = true
         return {
           'ups.device_name': { value: device },
           'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
