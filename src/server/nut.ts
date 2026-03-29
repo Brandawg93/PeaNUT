@@ -3,6 +3,15 @@ import { NutDevice, VARS } from '@/common/types'
 import PromiseSocket from '@/server/promise-socket'
 import { createDebugLogger } from '@/server/debug'
 import { getCachedVarDescription, getCachedVarType } from '@/server/nut-cache'
+import { nutConnectionPool } from '@/server/nut-pool'
+
+interface AcquiredConnection {
+  socket: PromiseSocket
+  /** true = was taken from the pool and should be returned on release */
+  pooled: boolean
+  /** true = session has USERNAME/PASSWORD/LOGIN state and must be destroyed after use */
+  authenticated: boolean
+}
 
 export class Nut {
   private readonly host: string
@@ -52,22 +61,70 @@ export class Nut {
     return devices.some((d) => d.name === device)
   }
 
-  private async getConnection(checkCredentials = false): Promise<PromiseSocket> {
-    this.debug.info('Attempting to establish connection', { host: this.host, port: this.port, checkCredentials })
-    const socket = new PromiseSocket()
+  /**
+   * Acquire a connection, trying the pool first for unauthenticated sessions.
+   * Authenticated sessions always use a fresh socket (bypasses pool).
+   */
+  private async getAcquiredConnection(checkCredentials = false): Promise<AcquiredConnection> {
+    if (checkCredentials) {
+      this.debug.info('Attempting to establish authenticated connection', { host: this.host, port: this.port })
+      let socket: PromiseSocket
+      try {
+        socket = await this.openSocket()
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e)
+        this.debug.error('Authenticated connection failed', { host: this.host, port: this.port, error: message })
+        throw e
+      }
+      this.debug.info('Authenticated connection established')
+      try {
+        await this.checkCredentials(socket)
+      } catch (e) {
+        await this.safeCloseConnection(socket)
+        throw e
+      }
+      return { socket, pooled: false, authenticated: true }
+    }
+
+    // Try to reuse an idle connection from the pool
+    const pooled = nutConnectionPool.acquire(this.host, this.port)
+    if (pooled) {
+      this.debug.debug('Reusing pooled connection', { host: this.host, port: this.port })
+      return { socket: pooled, pooled: true, authenticated: false }
+    }
+
+    // No idle connection available — create a new one
+    this.debug.info('Attempting to establish connection', { host: this.host, port: this.port })
+    let socket: PromiseSocket
     try {
-      await socket.connect(this.port, this.host)
-      this.debug.info('Connection established successfully')
+      socket = await this.openSocket()
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
       this.debug.error('Connection failed', { host: this.host, port: this.port, error: message })
-      throw new Error(`Connection failed: ${message}`)
+      throw e
     }
-    if (checkCredentials) {
-      this.debug.info('Checking credentials for connection')
-      await this.checkCredentials(socket)
+    this.debug.info('Connection established successfully')
+    return { socket, pooled: false, authenticated: false }
+  }
+
+  /**
+   * Release a connection back to the pool or destroy it.
+   * Authenticated and errored connections are always destroyed (LOGOUT + close).
+   * All other successful connections — whether pooled or overflow — are returned to
+   * the idle pool so they can be reused by future requests.
+   */
+  private async releaseConnection(conn: AcquiredConnection, hasError = false): Promise<void> {
+    if (conn.authenticated || hasError) {
+      await this.safeCloseConnection(conn.socket)
+      return
     }
-    return socket
+    // Return to pool regardless of whether the socket originated from the pool.
+    // nutConnectionPool.release() handles the pool-full case by closing the socket.
+    if (conn.socket.isConnected()) {
+      nutConnectionPool.release(this.host, this.port, conn.socket)
+    } else {
+      await conn.socket.close().catch(() => {})
+    }
   }
 
   private async closeConnection(socket: PromiseSocket) {
@@ -85,6 +142,17 @@ export class Nut {
     }
   }
 
+  private async openSocket(): Promise<PromiseSocket> {
+    const socket = new PromiseSocket()
+    try {
+      await socket.connect(this.port, this.host)
+      return socket
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e)
+      throw new Error(`Connection failed: ${message}`)
+    }
+  }
+
   private async getCommand(
     command: string,
     until?: string,
@@ -92,11 +160,24 @@ export class Nut {
     socket?: PromiseSocket
   ): Promise<string> {
     this.debug.info('Executing command', { command, until, checkCredentials, hasSocket: !!socket })
-    // use existing socket if it exists, otherwise establish a new connection
-    const connection = socket ?? (await this.getConnection(checkCredentials))
+
+    // If a socket was passed in, the caller owns it — do not acquire or release here
+    if (socket) {
+      await socket.write(command)
+      return await socket.readAll(command, until).catch((error) => {
+        this.debug.warn('Command failed, handling fallback', { command, error: error.message })
+        if (command.startsWith('LIST VAR')) {
+          return upsStatus.DEVICE_UNREACHABLE
+        }
+        throw error
+      })
+    }
+
+    const conn = await this.getAcquiredConnection(checkCredentials)
+    let hasError = false
     try {
-      await connection.write(command)
-      const data = await connection.readAll(command, until).catch((error) => {
+      await conn.socket.write(command)
+      const data = await conn.socket.readAll(command, until).catch((error) => {
         this.debug.warn('Command failed, handling fallback', { command, error: error.message })
         if (command.startsWith('LIST VAR')) {
           return upsStatus.DEVICE_UNREACHABLE
@@ -105,17 +186,24 @@ export class Nut {
       })
       this.debug.debug('Command response received', { command, dataLength: data.length })
       return data
+    } catch (e) {
+      hasError = true
+      throw e
     } finally {
-      // if we opened a new connection, close it
-      if (!socket) {
-        this.debug.debug('Closing temporary connection')
-        await this.safeCloseConnection(connection)
-      }
+      this.debug.debug('Releasing connection', { pooled: conn.pooled, hasError })
+      await this.releaseConnection(conn, hasError)
     }
   }
 
   public async checkCredentials(socket?: PromiseSocket): Promise<void> {
-    const connection = socket ?? (await this.getConnection())
+    // When called without a socket, create a dedicated connection that is always destroyed after.
+    // These sessions accumulate USERNAME/PASSWORD/LOGIN state and must not be pooled.
+    let ownSocket: PromiseSocket | null = null
+    if (!socket) {
+      ownSocket = await this.openSocket()
+    }
+    const connection = socket ?? ownSocket!
+
     try {
       if (this.username) {
         const command = `USERNAME ${this.username}`
@@ -149,8 +237,8 @@ export class Nut {
         throw new Error('Invalid credentials')
       }
     } finally {
-      if (!socket) {
-        await this.safeCloseConnection(connection)
+      if (ownSocket) {
+        await this.safeCloseConnection(ownSocket)
       }
     }
   }
@@ -198,11 +286,15 @@ export class Nut {
   }
 
   public async getData(device = 'UPS'): Promise<VARS> {
-    const socket = await this.getConnection()
+    const conn = await this.getAcquiredConnection()
+    let hasError = false
     try {
       const command = `LIST VAR ${device}`
-      const data = await this.getCommand(command, undefined, false, socket)
+      const data = await this.getCommand(command, undefined, false, conn.socket)
       if (data == upsStatus.DEVICE_UNREACHABLE) {
+        // The socket may be in a broken state after a transport-level error — destroy it
+        // rather than returning it to the pool where it could poison a future request.
+        hasError = true
         return {
           'ups.device_name': { value: device },
           'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
@@ -217,8 +309,8 @@ export class Nut {
       for (const line of lines) {
         const key = line.split('"')[0].replace(`VAR ${device} `, '').trim()
         const value = line.split('"')[1].trim()
-        const description = await getCachedVarDescription(this.host, this.port, key, device, socket)
-        const type = await getCachedVarType(this.host, this.port, key, device, socket)
+        const description = await getCachedVarDescription(this.host, this.port, key, device, conn.socket)
+        const type = await getCachedVarType(this.host, this.port, key, device, conn.socket)
         if (type.includes('NUMBER') && !Number.isNaN(+value)) {
           const num = +value
           vars[key] = { value: num, description }
@@ -232,8 +324,11 @@ export class Nut {
           finalObject[key] = vars[key]
           return finalObject
         }, {})
+    } catch (e) {
+      hasError = true
+      throw e
     } finally {
-      await this.safeCloseConnection(socket)
+      await this.releaseConnection(conn, hasError)
     }
   }
 
