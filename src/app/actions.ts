@@ -61,7 +61,7 @@ function connect(): Array<Nut> {
     )
   } catch (e: any) {
     debug.error('Failed to connect to NUT servers', { error: e.message })
-    throw new Error(`Failed to connect to NUT servers: ${e.message}`)
+    throw new Error(`Failed to connect to NUT servers: ${e.message}`, { cause: e })
   }
 }
 
@@ -94,7 +94,7 @@ export async function testConnection(
     }
     return connection
   } catch (error: any) {
-    throw new Error(error.message)
+    throw new Error(error.message, { cause: error })
   }
 }
 
@@ -249,7 +249,7 @@ async function findNut(nuts: Nut[], parsedId: ReturnType<typeof parseDeviceId>):
     )
   } catch (e) {
     if (e instanceof AggregateError) {
-      throw new Error(`Device '${name}' not found on any configured NUT server`)
+      throw new Error(`Device '${name}' not found on any configured NUT server`, { cause: e })
     }
     throw e
   }
@@ -317,7 +317,7 @@ export async function getAllVarDescriptions(deviceId: string, params: string[]):
         )
       } catch (e) {
         if (e instanceof AggregateError) {
-          throw new Error(`Device '${parsed.name}' not found on any configured NUT server`)
+          throw new Error(`Device '${parsed.name}' not found on any configured NUT server`, { cause: e })
         }
         throw e
       }
@@ -497,6 +497,6 @@ export async function disconnect() {
     settingsInstance = null // Reset cached instance
     await watcher.close() // Clean up the watcher
   } catch (e: any) {
-    throw new Error(`Failed to disconnect: ${e.message}`)
+    throw new Error(`Failed to disconnect: ${e.message}`, { cause: e })
   }
 }

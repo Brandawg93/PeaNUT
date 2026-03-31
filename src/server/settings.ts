@@ -217,7 +217,9 @@ export class YamlSettings {
       this.data = { ...ISettings, ...fileData }
       return this.save()
     } catch (error) {
-      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`)
+      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`, {
+        cause: error,
+      })
     }
   }
 }

@@ -8,10 +8,11 @@ import pluginQuery from '@tanstack/eslint-plugin-query'
 import pluginJest from 'eslint-plugin-jest'
 import pluginReact from 'eslint-plugin-react'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
+import { fixupPluginRules } from '@eslint/compat'
 
 const config = [
   {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts', '.claude/**'],
   },
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
@@ -61,8 +62,8 @@ const config = [
   {
     plugins: {
       '@next/next': nextPlugin,
-      react: pluginReact,
-      'react-hooks': pluginReactHooks,
+      react: fixupPluginRules(pluginReact),
+      'react-hooks': fixupPluginRules(pluginReactHooks),
     },
     rules: {
       ...nextPlugin.configs.recommended.rules,

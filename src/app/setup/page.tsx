@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import SetupClientPage from './setup-client'
 
 export default function SetupPage() {
-  let shouldRedirectToLogin = false
+  let shouldRedirectToLogin: boolean
   try {
     shouldRedirectToLogin = authStorage.hasUser()
   } catch (error) {

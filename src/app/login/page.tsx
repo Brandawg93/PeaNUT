@@ -7,7 +7,7 @@ import { authStorage } from '@/server/auth-storage'
 import { redirect } from 'next/navigation'
 
 export default function LoginPage() {
-  let shouldRedirectToSetup = false
+  let shouldRedirectToSetup: boolean
   try {
     shouldRedirectToSetup = !authStorage.hasUser()
   } catch (error) {
