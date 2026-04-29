@@ -88,27 +88,57 @@ describe('YamlSettings', () => {
 
     it('logs an actionable diagnostic when the config directory is not writable', () => {
       ;(existsSync as jest.Mock).mockReturnValue(true)
-      const accessErr = Object.assign(new Error("EACCES: permission denied, access '/config'"), { code: 'EACCES' })
+      const accessErr = Object.assign(new Error("EACCES: permission denied, access '/uniq-full'"), { code: 'EACCES' })
       ;(accessSync as jest.Mock).mockImplementation(() => {
         throw accessErr
       })
       ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
-      new YamlSettings('/config/settings.yml')
+      const settings = new YamlSettings('/uniq-full/settings.yml')
+      expect(settings).toBeInstanceOf(YamlSettings)
 
       const output = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n')
       // Plain-language consequence
       expect(output).toContain('cannot write to the config directory')
       expect(output).toContain('lost')
       // Diagnostic facts
-      expect(output).toContain('/config')
-      expect(output).toContain("EACCES: permission denied, access '/config'")
+      expect(output).toContain('/uniq-full')
+      expect(output).toContain("EACCES: permission denied, access '/uniq-full'")
       expect(output).toContain('uid=0 gid=0 mode=755')
       // Remediation steps
       expect(output).toMatch(/chown.*1000:1000/)
       expect(output).toContain("services.peanut.user: '1000:1000'")
       expect(output).toContain('DISABLE_CONFIG_FILE=true')
+
+      consoleSpy.mockRestore()
+    })
+
+    it('rate-limits the diagnostic to one full block per dirPath', () => {
+      ;(existsSync as jest.Mock).mockReturnValue(true)
+      ;(accessSync as jest.Mock).mockImplementation(() => {
+        throw Object.assign(new Error("EACCES: permission denied, access '/uniq-rate'"), { code: 'EACCES' })
+      })
+      ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      // First instance for this dirPath: full diagnostic block.
+      const first = new YamlSettings('/uniq-rate/settings.yml')
+      expect(first).toBeInstanceOf(YamlSettings)
+      const firstCalls = consoleSpy.mock.calls.length
+      expect(consoleSpy.mock.calls.some((c) => c.join(' ').includes('cannot write to the config directory'))).toBe(true)
+
+      // Second instance for the same dirPath: should NOT re-emit the block,
+      // only a short single-line reminder. This is what protects users from
+      // log floods when the scheduler creates a new YamlSettings every tick.
+      const second = new YamlSettings('/uniq-rate/settings.yml')
+      expect(second).toBeInstanceOf(YamlSettings)
+      const newCalls = consoleSpy.mock.calls.slice(firstCalls)
+      const newOutput = newCalls.map((c) => c.join(' ')).join('\n')
+      expect(newOutput).not.toContain('cannot write to the config directory')
+      expect(newOutput).not.toContain('How to fix')
+      expect(newOutput).toContain('still not writable')
+      expect(newOutput).toContain('/uniq-rate')
 
       consoleSpy.mockRestore()
     })

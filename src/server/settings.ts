@@ -35,6 +35,12 @@ const ISettings = {
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
 
 export class YamlSettings {
+  // Shared across all instances in the process so the multi-line warning fires
+  // at most once per dirPath. YamlSettings is re-constructed on every scheduler
+  // tick (see src/server/scheduler.ts), and without this guard a non-writable
+  // /config would flood the logs every interval.
+  private static readonly warnedDirs = new Set<string>()
+
   private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
@@ -209,46 +215,52 @@ export class YamlSettings {
 
   private logConfigDirError(dirPath: string, error: unknown): void {
     const errMsg = error instanceof Error ? error.message : String(error)
-    const lines: Array<string> = []
-    lines.push('')
-    lines.push('=========================================================================')
-    lines.push('PeaNUT cannot write to the config directory.')
-    lines.push('Settings changed in the web UI will NOT be saved and will be lost')
-    lines.push('on restart. Servers added through the UI will disappear.')
-    lines.push('')
-    lines.push(`  Path:          ${dirPath}`)
-    lines.push(`  Error:         ${errMsg}`)
+
+    // Subsequent failures for the same dirPath get a single-line reminder so
+    // log volume stays bounded.
+    if (YamlSettings.warnedDirs.has(dirPath)) {
+      console.error(`PeaNUT: config directory ${dirPath} still not writable (${errMsg}). UI changes will not persist.`)
+      return
+    }
+    YamlSettings.warnedDirs.add(dirPath)
 
     // process.getuid/getgid are Unix-only (undefined on Windows). Most PeaNUT
     // users hit this in Docker on Linux, so we report when available.
-    const getuid = (process as NodeJS.Process & { getuid?: () => number }).getuid
-    const getgid = (process as NodeJS.Process & { getgid?: () => number }).getgid
-    if (typeof getuid === 'function' && typeof getgid === 'function') {
-      lines.push(`  Process user:  uid=${getuid.call(process)} gid=${getgid.call(process)}`)
-    }
+    const uid = process.getuid?.()
+    const gid = process.getgid?.()
+    const processLine = uid !== undefined && gid !== undefined ? `\n  Process user:  uid=${uid} gid=${gid}` : ''
 
+    let dirLine = ''
     try {
       const stat = fs.statSync(dirPath)
       const mode = (stat.mode & 0o777).toString(8).padStart(3, '0')
-      lines.push(`  Directory:     uid=${stat.uid} gid=${stat.gid} mode=${mode}`)
+      dirLine = `\n  Directory:     uid=${stat.uid} gid=${stat.gid} mode=${mode}`
     } catch {
       // Directory doesn't exist or can't be stat'd — likely the parent isn't
       // writable either. Skip the directory line; the error above already
       // tells the user what happened.
     }
 
-    lines.push('')
-    lines.push('How to fix (Docker):')
-    lines.push('  - Make the host directory owned by the container user, e.g.')
-    lines.push('      chown -R 1000:1000 /path/to/host/config')
-    lines.push('  - Or run the container as a user that owns the directory, e.g.')
-    lines.push("      services.peanut.user: '1000:1000'   in docker-compose.yml")
-    lines.push('  - Or set DISABLE_CONFIG_FILE=true to acknowledge env-only config')
-    lines.push('    and silence this warning. Note: UI settings still will not persist.')
-    lines.push('=========================================================================')
-    lines.push('')
+    console.error(
+      `
+=========================================================================
+PeaNUT cannot write to the config directory.
+Settings changed in the web UI will NOT be saved and will be lost
+on restart. Servers added through the UI will disappear.
 
-    console.error(lines.join('\n'))
+  Path:          ${dirPath}
+  Error:         ${errMsg}${processLine}${dirLine}
+
+How to fix (Docker):
+  - Make the host directory owned by the container user, e.g.
+      chown -R 1000:1000 /path/to/host/config
+  - Or run the container as a user that owns the directory, e.g.
+      services.peanut.user: '1000:1000'   in docker-compose.yml
+  - Or set DISABLE_CONFIG_FILE=true to acknowledge env-only config
+    and silence this warning. Note: UI settings still will not persist.
+=========================================================================
+`
+    )
   }
 
   public import(contents: string): boolean {
