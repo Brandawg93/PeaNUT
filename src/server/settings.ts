@@ -116,10 +116,9 @@ export class YamlSettings {
     this.debug.info('Loading settings from file', { filePath: this.filePath })
     // Create directory if it doesn't exist (only if file saving is enabled)
     if (!this.disableFileSaving) {
+      const absolutePath = path.resolve(this.filePath)
+      const dirPath = path.dirname(absolutePath)
       try {
-        const absolutePath = path.resolve(this.filePath)
-        const dirPath = path.dirname(absolutePath)
-
         this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
         if (fs.existsSync(dirPath)) {
@@ -133,10 +132,7 @@ export class YamlSettings {
         this.debug.error('Config directory is not writable, disabling file saving', {
           error: error instanceof Error ? error.message : String(error),
         })
-        console.error(
-          'Config directory is not writable, disabling file saving:',
-          error instanceof Error ? error.message : error
-        )
+        this.logConfigDirError(dirPath, error)
         this.disableFileSaving = true
       }
     }
@@ -209,6 +205,50 @@ export class YamlSettings {
 
   public export(): string {
     return dump(this.data)
+  }
+
+  private logConfigDirError(dirPath: string, error: unknown): void {
+    const errMsg = error instanceof Error ? error.message : String(error)
+    const lines: Array<string> = []
+    lines.push('')
+    lines.push('=========================================================================')
+    lines.push('PeaNUT cannot write to the config directory.')
+    lines.push('Settings changed in the web UI will NOT be saved and will be lost')
+    lines.push('on restart. Servers added through the UI will disappear.')
+    lines.push('')
+    lines.push(`  Path:          ${dirPath}`)
+    lines.push(`  Error:         ${errMsg}`)
+
+    // process.getuid/getgid are Unix-only (undefined on Windows). Most PeaNUT
+    // users hit this in Docker on Linux, so we report when available.
+    const getuid = (process as NodeJS.Process & { getuid?: () => number }).getuid
+    const getgid = (process as NodeJS.Process & { getgid?: () => number }).getgid
+    if (typeof getuid === 'function' && typeof getgid === 'function') {
+      lines.push(`  Process user:  uid=${getuid.call(process)} gid=${getgid.call(process)}`)
+    }
+
+    try {
+      const stat = fs.statSync(dirPath)
+      const mode = (stat.mode & 0o777).toString(8).padStart(3, '0')
+      lines.push(`  Directory:     uid=${stat.uid} gid=${stat.gid} mode=${mode}`)
+    } catch {
+      // Directory doesn't exist or can't be stat'd — likely the parent isn't
+      // writable either. Skip the directory line; the error above already
+      // tells the user what happened.
+    }
+
+    lines.push('')
+    lines.push('How to fix (Docker):')
+    lines.push('  - Make the host directory owned by the container user, e.g.')
+    lines.push('      chown -R 1000:1000 /path/to/host/config')
+    lines.push('  - Or run the container as a user that owns the directory, e.g.')
+    lines.push("      services.peanut.user: '1000:1000'   in docker-compose.yml")
+    lines.push('  - Or set DISABLE_CONFIG_FILE=true to acknowledge env-only config')
+    lines.push('    and silence this warning. Note: UI settings still will not persist.')
+    lines.push('=========================================================================')
+    lines.push('')
+
+    console.error(lines.join('\n'))
   }
 
   public import(contents: string): boolean {
