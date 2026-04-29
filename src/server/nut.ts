@@ -149,7 +149,7 @@ export class Nut {
       return socket
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
-      throw new Error(`Connection failed: ${message}`)
+      throw new Error(`Connection failed: ${message}`, { cause: e })
     }
   }
 
