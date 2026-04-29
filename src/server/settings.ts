@@ -35,6 +35,12 @@ const ISettings = {
 export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
 
 export class YamlSettings {
+  // Shared across all instances in the process so the multi-line warning fires
+  // at most once per dirPath. YamlSettings is re-constructed on every scheduler
+  // tick (see src/server/scheduler.ts), and without this guard a non-writable
+  // /config would flood the logs every interval.
+  private static readonly warnedDirs = new Set<string>()
+
   private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
@@ -116,10 +122,9 @@ export class YamlSettings {
     this.debug.info('Loading settings from file', { filePath: this.filePath })
     // Create directory if it doesn't exist (only if file saving is enabled)
     if (!this.disableFileSaving) {
+      const absolutePath = path.resolve(this.filePath)
+      const dirPath = path.dirname(absolutePath)
       try {
-        const absolutePath = path.resolve(this.filePath)
-        const dirPath = path.dirname(absolutePath)
-
         this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
         if (fs.existsSync(dirPath)) {
@@ -133,10 +138,7 @@ export class YamlSettings {
         this.debug.error('Config directory is not writable, disabling file saving', {
           error: error instanceof Error ? error.message : String(error),
         })
-        console.error(
-          'Config directory is not writable, disabling file saving:',
-          error instanceof Error ? error.message : error
-        )
+        this.logConfigDirError(dirPath, error)
         this.disableFileSaving = true
       }
     }
@@ -209,6 +211,56 @@ export class YamlSettings {
 
   public export(): string {
     return dump(this.data)
+  }
+
+  private logConfigDirError(dirPath: string, error: unknown): void {
+    const errMsg = error instanceof Error ? error.message : String(error)
+
+    // Subsequent failures for the same dirPath get a single-line reminder so
+    // log volume stays bounded.
+    if (YamlSettings.warnedDirs.has(dirPath)) {
+      console.error(`PeaNUT: config directory ${dirPath} still not writable (${errMsg}). UI changes will not persist.`)
+      return
+    }
+    YamlSettings.warnedDirs.add(dirPath)
+
+    // process.getuid/getgid are Unix-only (undefined on Windows). Most PeaNUT
+    // users hit this in Docker on Linux, so we report when available.
+    const uid = process.getuid?.()
+    const gid = process.getgid?.()
+    const processLine = uid !== undefined && gid !== undefined ? `\n  Process user:  uid=${uid} gid=${gid}` : ''
+
+    let dirLine = ''
+    try {
+      const stat = fs.statSync(dirPath)
+      const mode = (stat.mode & 0o777).toString(8).padStart(3, '0')
+      dirLine = `\n  Directory:     uid=${stat.uid} gid=${stat.gid} mode=${mode}`
+    } catch {
+      // Directory doesn't exist or can't be stat'd — likely the parent isn't
+      // writable either. Skip the directory line; the error above already
+      // tells the user what happened.
+    }
+
+    console.error(
+      `
+=========================================================================
+PeaNUT cannot write to the config directory.
+Settings changed in the web UI will NOT be saved and will be lost
+on restart. Servers added through the UI will disappear.
+
+  Path:          ${dirPath}
+  Error:         ${errMsg}${processLine}${dirLine}
+
+How to fix (Docker):
+  - Make the host directory owned by the container user, e.g.
+      chown -R 1000:1000 /path/to/host/config
+  - Or run the container as a user that owns the directory, e.g.
+      services.peanut.user: '1000:1000'   in docker-compose.yml
+  - Or set DISABLE_CONFIG_FILE=true to acknowledge env-only config
+    and silence this warning. Note: UI settings still will not persist.
+=========================================================================
+`
+    )
   }
 
   public import(contents: string): boolean {

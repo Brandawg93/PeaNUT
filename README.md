@@ -58,6 +58,13 @@ services:
     image: brandawg93/peanut:latest
     container_name: PeaNUT
     restart: unless-stopped
+    # The container runs as UID/GID 1000:1000. The host directory mounted at
+    # /config must be writable by that user — otherwise settings made in the
+    # web UI will not persist across restarts. If you see "EACCES: permission
+    # denied, access '/config'" in the logs:
+    #   - chown -R 1000:1000 /path/to/config        on the host, or
+    #   - set `user: "<host-uid>:<host-gid>"` to match the host dir owner.
+    # Note: PUID/PGID environment variables are not supported.
     volumes:
       - /path/to/config:/config
     ports:
