@@ -12,30 +12,22 @@ on:
     paths-ignore:
       - 'README.md'
       - 'helm/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+
 jobs:
-  build:
+  lint:
+    name: Lint, type-check, format
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-        # with:
-        #   fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-
-      - uses: pnpm/action-setup@v6
-        with:
-          version: latest
-
-      - uses: actions/setup-node@v6.4.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-
-      - uses: actions/cache@v5
-        name: Setup nextjs cache
-        with:
-          path: ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+      - uses: ./.github/actions/setup
 
       - uses: actions/cache@v5
         name: Setup eslint cache
@@ -53,8 +45,42 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-prettier-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - name: Install dependencies
-        run: pnpm i --frozen-lockfile
+      - uses: actions/cache@v5
+        name: Setup tsc incremental cache
+        with:
+          path: .next/tsbuilder.tsbuildinfo
+          key: ${{ runner.os }}-tsc-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', 'tsconfig.json') }}
+          restore-keys: |
+            ${{ runner.os }}-tsc-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Lint, type-check, stylelint, format
+        run: pnpm run fullcheck
+
+  jest:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Run jest
+        run: pnpm test
+
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      USERNAME: admin
+      PASSWORD: nut_test
+      NUT_HOST: localhost
+      NUT_PORT: 3493
+      WEB_PORT: 8080
+      AUTH_SECRET: test-secret-at-least-thirty-two-characters-long
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Get installed Playwright version
         id: playwright-version
@@ -71,33 +97,32 @@ jobs:
 
       - name: Install Playwright with dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Install Playwright's dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
+        run: pnpm exec playwright install-deps
 
-      - name: Lint and type check
-        timeout-minutes: 5
-        run: npm run fullcheck
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
+      - name: Run Playwright tests
+        run: pnpm run test:e2e
 
-      - name: Run tests
-        timeout-minutes: 10
-        run: |
-          export AUTH_SECRET=$(npx --yes auth secret)
-          npm run test:all
-        env:
-          USERNAME: admin
-          PASSWORD: nut_test
-          NUT_HOST: localhost
-          NUT_PORT: 3493
-          WEB_PORT: 8080
-          NEXT_TELEMETRY_DISABLED: 1
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
-      - name: Build production
-        timeout-minutes: 5
-        run: npm run build
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
+      - uses: actions/cache@v5
+        name: Setup nextjs cache
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+            ${{ github.workspace }}/.next/tsbuilder.tsbuildinfo
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Build
+        run: pnpm run build
