@@ -2,7 +2,7 @@ import React, { useMemo, useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import LineChart from './line-chart-base'
-import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import type { LegendPayload } from 'recharts'
 import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 import { useTemperatureUnit } from '@/client/context/settings'
@@ -44,7 +44,7 @@ export default function TemperatureChart({ id, updated, ambientTemperature, batt
     })
   }, [ambientTemperatureData, batteryTemperatureData, showAmbient, showBattery, temperatureUnit])
 
-  const handleLegendClick = (payload: Payload) => {
+  const handleLegendClick = (payload: LegendPayload) => {
     if (payload.value === 'ambientTemperature') {
       setShowAmbient((prev) => !prev)
     } else if (payload.value === 'batteryTemperature') {

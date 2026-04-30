@@ -9,7 +9,7 @@ import {
   ChartLegendContent,
 } from '@/client/components/ui/chart'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, ReferenceLine } from 'recharts'
-import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import type { LegendPayload } from 'recharts'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
 import { LanguageContext } from '@/client/context/language'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +22,7 @@ type Props = Readonly<{
   config: ChartConfig
   data: any[]
   unit: string
-  onLegendClick?: (payload: Payload) => void
+  onLegendClick?: (payload: LegendPayload) => void
   referenceLineData?: ReferenceLineData
 }>
 
@@ -105,7 +105,9 @@ export default function LineChartBase(props: Props) {
                   />
                   <ChartLegend
                     verticalAlign='top'
-                    content={<ChartLegendContent handleClick={(e: Payload) => onLegendClick && onLegendClick(e)} />}
+                    content={
+                      <ChartLegendContent handleClick={(e: LegendPayload) => onLegendClick && onLegendClick(e)} />
+                    }
                   />
                   <CartesianGrid horizontal vertical />
                   {referenceLineData?.map((line) => (
