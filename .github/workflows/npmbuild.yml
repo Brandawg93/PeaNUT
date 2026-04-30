@@ -33,22 +33,6 @@ jobs:
       - uses: ./.github/actions/setup
 
       - uses: actions/cache@v5
-        name: Setup eslint cache
-        with:
-          path: .eslintcache
-          key: ${{ runner.os }}-eslint-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', 'eslint.config.mjs') }}
-          restore-keys: |
-            ${{ runner.os }}-eslint-${{ hashFiles('**/pnpm-lock.yaml') }}-
-
-      - uses: actions/cache@v5
-        name: Setup prettier cache
-        with:
-          path: node_modules/.cache/prettier
-          key: ${{ runner.os }}-prettier-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.json', '**/*.css', '**/*.md', '.prettierrc.json') }}
-          restore-keys: |
-            ${{ runner.os }}-prettier-${{ hashFiles('**/pnpm-lock.yaml') }}-
-
-      - uses: actions/cache@v5
         name: Setup tsc incremental cache
         with:
           path: .next/tsbuilder.tsbuildinfo
