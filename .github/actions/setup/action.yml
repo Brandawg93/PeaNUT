@@ -1,5 +1,5 @@
 name: Setup
-description: Checkout, install pnpm + Node, and install dependencies (frozen lockfile).
+description: Install pnpm + Node, and install dependencies (frozen lockfile).
 
 runs:
   using: composite
