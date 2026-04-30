@@ -33,9 +33,13 @@ export async function UPGRADE(
   request: import('next/server').NextRequest
 ) {
   if (process.env.WEB_USERNAME && process.env.WEB_PASSWORD) {
+    const forwardedProto = request.headers.get('x-forwarded-proto')
+    const normalizedForwardedProto = (forwardedProto ?? '').split(',')[0].trim().toLowerCase()
+    const secureCookie = normalizedForwardedProto === 'https' || request.nextUrl.protocol === 'https:'
     const token = await getToken({
       req: request,
       secret: process.env.AUTH_SECRET,
+      secureCookie,
     })
 
     if (!token) {
