@@ -56,7 +56,9 @@ function ChartContainer({
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveContainer initialDimension={{ width: 320, height: 200 }}>
+          {children}
+        </RechartsPrimitive.ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   )
@@ -108,15 +110,30 @@ function ChartTooltipContent({
   nameKey,
   labelKey,
   unit,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<'div'> & {
-    hideLabel?: boolean
-    hideIndicator?: boolean
-    indicator?: 'line' | 'dot' | 'dashed'
-    nameKey?: string
-    labelKey?: string
-    unit?: string
-  }) {
+}: React.ComponentProps<'div'> & {
+  active?: boolean
+  payload?: ReadonlyArray<RechartsPrimitive.TooltipPayloadEntry>
+  label?: React.ReactNode
+  labelFormatter?: (
+    label: React.ReactNode,
+    payload: ReadonlyArray<RechartsPrimitive.TooltipPayloadEntry>
+  ) => React.ReactNode
+  formatter?: (
+    value: any,
+    name: any,
+    item: RechartsPrimitive.TooltipPayloadEntry,
+    index: number,
+    payload: any
+  ) => React.ReactNode
+  color?: string
+  labelClassName?: string
+  hideLabel?: boolean
+  hideIndicator?: boolean
+  indicator?: 'line' | 'dot' | 'dashed'
+  nameKey?: string
+  labelKey?: string
+  unit?: string
+}) {
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -162,7 +179,7 @@ function ChartTooltipContent({
 
           return (
             <div
-              key={item.dataKey}
+              key={`${key}-${index}`}
               className={cn(
                 '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5',
                 indicator === 'dot' && 'items-center'
@@ -225,12 +242,13 @@ function ChartLegendContent({
   verticalAlign = 'bottom',
   nameKey,
   handleClick,
-}: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
-    hideIcon?: boolean
-    nameKey?: string
-    handleClick?: (payload: any) => void
-  }) {
+}: React.ComponentProps<'div'> & {
+  payload?: ReadonlyArray<RechartsPrimitive.LegendPayload>
+  verticalAlign?: 'top' | 'bottom' | 'middle'
+  hideIcon?: boolean
+  nameKey?: string
+  handleClick?: (payload: any) => void
+}) {
   const { config } = useChart()
 
   const handleItemClick = (item: any) => {
