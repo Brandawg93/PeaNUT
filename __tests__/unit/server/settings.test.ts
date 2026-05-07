@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync, accessSync, statSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync, statSync } from 'fs'
 import { load, dump } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
@@ -11,7 +11,7 @@ jest.mock('fs', () => ({
   readFileSync: jest.fn(),
   writeFileSync: jest.fn(),
   mkdirSync: jest.fn(),
-  accessSync: jest.fn(),
+  unlinkSync: jest.fn(),
   statSync: jest.fn(),
   constants: {
     W_OK: 2,
@@ -43,9 +43,9 @@ describe('YamlSettings', () => {
     jest.clearAllMocks()
     // Default mock implementations to prevent console errors
     ;(existsSync as jest.Mock).mockReturnValue(false)
-    ;(accessSync as jest.Mock).mockImplementation(() => {})
     ;(mkdirSync as jest.Mock).mockImplementation(() => {})
     ;(writeFileSync as jest.Mock).mockImplementation(() => {})
+    ;(unlinkSync as jest.Mock).mockImplementation(() => {})
     yamlSettings = new YamlSettings(filePath)
   })
 
@@ -89,7 +89,7 @@ describe('YamlSettings', () => {
     it('logs an actionable diagnostic when the config directory is not writable', () => {
       ;(existsSync as jest.Mock).mockReturnValue(true)
       const accessErr = Object.assign(new Error("EACCES: permission denied, access '/uniq-full'"), { code: 'EACCES' })
-      ;(accessSync as jest.Mock).mockImplementation(() => {
+      ;(writeFileSync as jest.Mock).mockImplementation(() => {
         throw accessErr
       })
       ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
@@ -116,7 +116,7 @@ describe('YamlSettings', () => {
 
     it('rate-limits the diagnostic to one full block per dirPath', () => {
       ;(existsSync as jest.Mock).mockReturnValue(true)
-      ;(accessSync as jest.Mock).mockImplementation(() => {
+      ;(writeFileSync as jest.Mock).mockImplementation(() => {
         throw Object.assign(new Error("EACCES: permission denied, access '/uniq-rate'"), { code: 'EACCES' })
       })
       ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })

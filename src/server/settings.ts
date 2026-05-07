@@ -128,8 +128,19 @@ export class YamlSettings {
         this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
         if (fs.existsSync(dirPath)) {
-          // Test if the directory is writable only if it already exists
-          fs.accessSync(dirPath, fs.constants.W_OK)
+          // Real-write probe: Docker Desktop for macOS bind mounts can stat as
+          // root:root and fool fs.accessSync(W_OK) even when writes succeed (#422).
+          // Stable filename so a leaked probe is overwritten, not accumulated.
+          const probePath = path.join(dirPath, '.peanut-write-test')
+          fs.writeFileSync(probePath, '')
+          try {
+            fs.unlinkSync(probePath)
+          } catch (cleanupError) {
+            this.debug.debug('Failed to remove writability probe file', {
+              probePath,
+              error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+            })
+          }
         } else {
           this.debug.info('Creating config directory', { dirPath })
           fs.mkdirSync(dirPath, { recursive: true })
