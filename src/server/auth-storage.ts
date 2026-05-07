@@ -11,7 +11,7 @@ export interface AuthUserInfo {
   passwordHash: string
 }
 
-const AUTH_FILE_PATH = process.env.AUTH_FILE_PATH || '/config/auth.yaml'
+const AUTH_FILE_PATH = process.env.AUTH_FILE_PATH || 'config/auth.yaml'
 
 export class AuthStorage {
   private static instance: AuthStorage
