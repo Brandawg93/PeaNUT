@@ -128,8 +128,23 @@ export class YamlSettings {
         this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
         if (fs.existsSync(dirPath)) {
-          // Test if the directory is writable only if it already exists
-          fs.accessSync(dirPath, fs.constants.W_OK)
+          // Real-write probe: Docker Desktop for macOS bind mounts can stat as
+          // root:root and fool fs.accessSync(W_OK) even when writes succeed (#422).
+          // Use exclusive create ('wx') so we verify creation rights, don't follow
+          // symlinks, and never truncate existing data. EEXIST means a stale probe
+          // from a prior run — remove it and retry once.
+          const probePath = path.join(dirPath, '.peanut-write-test')
+          const openExclusive = () => fs.openSync(probePath, 'wx')
+          let fd: number
+          try {
+            fd = openExclusive()
+          } catch (err) {
+            if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err
+            fs.unlinkSync(probePath)
+            fd = openExclusive()
+          }
+          fs.closeSync(fd)
+          fs.unlinkSync(probePath)
         } else {
           this.debug.info('Creating config directory', { dirPath })
           fs.mkdirSync(dirPath, { recursive: true })
