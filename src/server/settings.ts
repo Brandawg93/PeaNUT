@@ -130,17 +130,21 @@ export class YamlSettings {
         if (fs.existsSync(dirPath)) {
           // Real-write probe: Docker Desktop for macOS bind mounts can stat as
           // root:root and fool fs.accessSync(W_OK) even when writes succeed (#422).
-          // Stable filename so a leaked probe is overwritten, not accumulated.
+          // Use exclusive create ('wx') so we verify creation rights, don't follow
+          // symlinks, and never truncate existing data. EEXIST means a stale probe
+          // from a prior run — remove it and retry once.
           const probePath = path.join(dirPath, '.peanut-write-test')
-          fs.writeFileSync(probePath, '')
+          const openExclusive = () => fs.openSync(probePath, 'wx')
+          let fd: number
           try {
+            fd = openExclusive()
+          } catch (err) {
+            if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err
             fs.unlinkSync(probePath)
-          } catch (cleanupError) {
-            this.debug.debug('Failed to remove writability probe file', {
-              probePath,
-              error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
-            })
+            fd = openExclusive()
           }
+          fs.closeSync(fd)
+          fs.unlinkSync(probePath)
         } else {
           this.debug.info('Creating config directory', { dirPath })
           fs.mkdirSync(dirPath, { recursive: true })

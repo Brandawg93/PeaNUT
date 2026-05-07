@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync, statSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, mkdirSync, openSync, closeSync, unlinkSync, statSync } from 'node:fs'
 import { load, dump } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
@@ -6,11 +6,15 @@ jest.mock('js-yaml', () => ({
   load: jest.fn(),
   dump: jest.fn((data) => JSON.stringify(data)),
 }))
-jest.mock('fs', () => ({
+// Mock 'node:fs' (the specifier the implementation imports) rather than 'fs'
+// so the production code and the tests share the same mocked module.
+jest.mock('node:fs', () => ({
   existsSync: jest.fn(),
   readFileSync: jest.fn(),
   writeFileSync: jest.fn(),
   mkdirSync: jest.fn(),
+  openSync: jest.fn(),
+  closeSync: jest.fn(),
   unlinkSync: jest.fn(),
   statSync: jest.fn(),
   constants: {
@@ -45,6 +49,8 @@ describe('YamlSettings', () => {
     ;(existsSync as jest.Mock).mockReturnValue(false)
     ;(mkdirSync as jest.Mock).mockImplementation(() => {})
     ;(writeFileSync as jest.Mock).mockImplementation(() => {})
+    ;(openSync as jest.Mock).mockReturnValue(3)
+    ;(closeSync as jest.Mock).mockImplementation(() => {})
     ;(unlinkSync as jest.Mock).mockImplementation(() => {})
     yamlSettings = new YamlSettings(filePath)
   })
@@ -89,7 +95,7 @@ describe('YamlSettings', () => {
     it('logs an actionable diagnostic when the config directory is not writable', () => {
       ;(existsSync as jest.Mock).mockReturnValue(true)
       const accessErr = Object.assign(new Error("EACCES: permission denied, access '/uniq-full'"), { code: 'EACCES' })
-      ;(writeFileSync as jest.Mock).mockImplementation(() => {
+      ;(openSync as jest.Mock).mockImplementation(() => {
         throw accessErr
       })
       ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
@@ -116,7 +122,7 @@ describe('YamlSettings', () => {
 
     it('rate-limits the diagnostic to one full block per dirPath', () => {
       ;(existsSync as jest.Mock).mockReturnValue(true)
-      ;(writeFileSync as jest.Mock).mockImplementation(() => {
+      ;(openSync as jest.Mock).mockImplementation(() => {
         throw Object.assign(new Error("EACCES: permission denied, access '/uniq-rate'"), { code: 'EACCES' })
       })
       ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
@@ -139,6 +145,29 @@ describe('YamlSettings', () => {
       expect(newOutput).not.toContain('How to fix')
       expect(newOutput).toContain('still not writable')
       expect(newOutput).toContain('/uniq-rate')
+
+      consoleSpy.mockRestore()
+    })
+
+    it('recovers from a stale probe file (EEXIST) by unlinking and retrying', () => {
+      ;(existsSync as jest.Mock).mockReturnValue(true)
+      const eexist = Object.assign(new Error('EEXIST: file already exists'), { code: 'EEXIST' })
+      let calls = 0
+      ;(openSync as jest.Mock).mockImplementation(() => {
+        calls += 1
+        if (calls === 1) throw eexist
+        return 7
+      })
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      const settings = new YamlSettings('/uniq-stale/settings.yml')
+      expect(settings).toBeInstanceOf(YamlSettings)
+      // We unlinked the stale file, retried, then unlinked the fresh probe = 2 unlinks.
+      expect(unlinkSync).toHaveBeenCalledTimes(2)
+      expect(closeSync).toHaveBeenCalledWith(7)
+      // No "cannot write" diagnostic because the retry succeeded.
+      const output = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n')
+      expect(output).not.toContain('cannot write to the config directory')
 
       consoleSpy.mockRestore()
     })
