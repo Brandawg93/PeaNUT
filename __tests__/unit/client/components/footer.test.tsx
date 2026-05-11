@@ -100,9 +100,9 @@ describe('Footer', () => {
     )
   })
 
-  it('external links open in a new tab with rel=noreferrer', async () => {
+  it('external links open in a new tab with rel=noreferrer', () => {
     const { container } = renderWithProviders(<Footer updated={new Date()} />, {
-      settings: { DISABLE_VERSION_CHECK: false },
+      settings: { DISABLE_VERSION_CHECK: true },
     })
     const externalLinks = container.querySelectorAll('a[target="_blank"]')
     expect(externalLinks.length).toBeGreaterThan(0)
@@ -111,12 +111,13 @@ describe('Footer', () => {
     })
   })
 
-  it('displays last updated content', async () => {
+  it('renders the last updated label with the provided timestamp', () => {
     renderWithProviders(<Footer updated={new Date()} />, {
-      settings: { DISABLE_VERSION_CHECK: false },
+      settings: { DISABLE_VERSION_CHECK: true },
     })
-    const footer = screen.getByTestId('footer')
-    expect(footer.textContent?.length).toBeGreaterThan(0)
+    const lastUpdated = screen.getByTitle('toggleTime')
+    expect(lastUpdated).toHaveTextContent(/lastUpdated/)
+    expect(lastUpdated).toHaveTextContent(/\d{1,2}\/\d{1,2}\/\d{4}/)
   })
 
   it('renders API docs link with correct pathname', async () => {
