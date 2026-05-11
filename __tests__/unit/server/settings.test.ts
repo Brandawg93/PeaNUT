@@ -169,6 +169,97 @@ describe('YamlSettings', () => {
       expect(settingFromEnv4.get('INFLUX_HOST')).toBe('localhost_env')
       delete process.env.INFLUX_HOST
     })
+
+    describe('env var parsing edge cases', () => {
+      const ENV_KEYS = [
+        'DASHBOARD_SECTIONS',
+        'DISABLE_VERSION_CHECK',
+        'TEMPERATURE_UNIT',
+        'NUT_HOST',
+        'NUT_PORT',
+        'NUT_SERVERS',
+        'DISABLE_CONFIG_FILE',
+      ] as const
+
+      const cleanEnv = () => ENV_KEYS.forEach((k) => delete process.env[k])
+
+      beforeEach(cleanEnv)
+      afterEach(cleanEnv)
+
+      it('parses DASHBOARD_SECTIONS, DISABLE_VERSION_CHECK, and TEMPERATURE_UNIT env vars', () => {
+        process.env.DASHBOARD_SECTIONS = JSON.stringify([{ key: 'KPIS', enabled: false }])
+        process.env.DISABLE_VERSION_CHECK = 'true'
+        process.env.TEMPERATURE_UNIT = 'fahrenheit'
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('DASHBOARD_SECTIONS')).toEqual([{ key: 'KPIS', enabled: false }])
+        expect(settings.get('DISABLE_VERSION_CHECK')).toBe(true)
+        expect(settings.get('TEMPERATURE_UNIT')).toBe('fahrenheit')
+      })
+
+      it('defaults TEMPERATURE_UNIT to celsius when env value is not fahrenheit', () => {
+        process.env.TEMPERATURE_UNIT = 'not-a-real-unit'
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('TEMPERATURE_UNIT')).toBe('celsius')
+      })
+
+      it('logs and falls back when env var fails to parse', () => {
+        process.env.NUT_SERVERS = 'not-valid-json{'
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('NUT_SERVERS')).toEqual([])
+        expect(consoleSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Error parsing environment variable NUT_SERVERS'),
+          expect.any(SyntaxError)
+        )
+
+        consoleSpy.mockRestore()
+      })
+
+      it('logs and bails on invalid NUT_PORT', () => {
+        process.env.NUT_HOST = 'host'
+        process.env.NUT_PORT = 'not-a-number'
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('NUT_SERVERS')).toEqual([])
+        expect(consoleSpy).toHaveBeenCalledWith('Invalid NUT_PORT value')
+
+        consoleSpy.mockRestore()
+      })
+
+      it('does not duplicate NUT_SERVERS entry already present via NUT_SERVERS env var', () => {
+        process.env.NUT_SERVERS = JSON.stringify([{ HOST: 'h', PORT: 9 }])
+        process.env.NUT_HOST = 'h'
+        process.env.NUT_PORT = '9'
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('NUT_SERVERS')).toHaveLength(1)
+      })
+
+      it('returns false from set() when DISABLE_CONFIG_FILE=true', () => {
+        process.env.DISABLE_CONFIG_FILE = 'true'
+        const settings = new YamlSettings(filePath)
+        ;(writeFileSync as jest.Mock).mockClear()
+        expect(settings.set('INFLUX_TOKEN', 'anything')).toBe(false)
+        expect(writeFileSync).not.toHaveBeenCalled()
+      })
+
+      it('returns false from set() when writeFileSync throws', () => {
+        const settings = new YamlSettings(filePath)
+        ;(writeFileSync as jest.Mock).mockImplementationOnce(() => {
+          throw new Error('ENOSPC')
+        })
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        const result = settings.set('INFLUX_TOKEN', 'value')
+        expect(result).toBe(false)
+        expect(consoleSpy).toHaveBeenCalledWith('Error saving settings file:', 'ENOSPC')
+
+        consoleSpy.mockRestore()
+      })
+    })
   })
 
   describe('get', () => {
@@ -279,14 +370,7 @@ describe('YamlSettings', () => {
 
       expect(yamlSettings.get('INFLUX_HOST')).toBe('imported-host')
       expect(yamlSettings.get('INFLUX_INTERVAL')).toBe(10) // Default value
-      expect(yamlSettings.get('NUT_SERVERS')).toEqual([
-        {
-          HOST: 'localhost_env',
-          PASSWORD: undefined,
-          PORT: 8082,
-          USERNAME: undefined,
-        },
-      ]) // Default value
+      expect(yamlSettings.get('NUT_SERVERS')).toEqual([]) // Default value
     })
   })
 })

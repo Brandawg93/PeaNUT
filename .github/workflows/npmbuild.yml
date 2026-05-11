@@ -51,8 +51,8 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
-      - name: Run jest
-        run: pnpm test
+      - name: Run jest with coverage
+        run: pnpm run test:coverage
 
   e2e:
     name: E2E tests

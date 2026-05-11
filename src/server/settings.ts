@@ -32,7 +32,16 @@ const ISettings = {
   TEMPERATURE_UNIT: 'celsius' as TemperatureUnit,
 }
 
-export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
+// Deep-clone the defaults so each YamlSettings instance gets its own nested
+// arrays. A plain `{ ...ISettings }` aliases NUT_SERVERS and DASHBOARD_SECTIONS
+// across instances, which leaks mutations (e.g. the NUT_HOST/NUT_PORT
+// backwards-compat push) into every instance constructed afterward. The
+// scheduler rebuilds YamlSettings every tick, so this matters in production.
+// The defaults are JSON-safe, so JSON round-trip is sufficient and avoids
+// reliance on structuredClone (not available under jsdom in tests).
+const defaultSettings = (): SettingsType => JSON.parse(JSON.stringify(ISettings)) as SettingsType
+
+export type SettingsType = typeof ISettings
 
 export class YamlSettings {
   // Shared across all instances in the process so the multi-line warning fires
@@ -49,7 +58,7 @@ export class YamlSettings {
 
   constructor(filePath: string) {
     this.filePath = filePath
-    this.data = { ...ISettings }
+    this.data = defaultSettings()
     // Cache environment variables
     this.envVars = { ...process.env }
     this.debug = createDebugLogger('SETTINGS')
@@ -67,7 +76,7 @@ export class YamlSettings {
     let key: keyof SettingsType
     for (key in ISettings) {
       const envValue = this.envVars[key]
-      if (envValue === undefined || this.data[key] !== ISettings[key]) continue
+      if (envValue === undefined) continue
 
       try {
         this.debug.debug('Processing environment variable', { key, hasValue: !!envValue })
@@ -266,7 +275,7 @@ How to fix (Docker):
   public import(contents: string): boolean {
     try {
       const fileData = load(contents) as SettingsType
-      this.data = { ...ISettings, ...fileData }
+      this.data = { ...defaultSettings(), ...fileData }
       return this.save()
     } catch (error) {
       throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`, {
