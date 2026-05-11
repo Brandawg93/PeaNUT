@@ -35,29 +35,34 @@ export async function GET(request: NextRequest) {
   const nutInstances = await getNutInstances()
   const prometheusMetrics: string[] = []
 
-  for (const nut of nutInstances) {
-    const devices = await nut.getDevices()
-    const serverInfo = `${nut.getHost()}:${nut.getPort()}`
+  const perInstanceMetrics = await Promise.all(
+    nutInstances.map(async (nut) => {
+      const devices = await nut.getDevices()
+      const serverInfo = `${nut.getHost()}:${nut.getPort()}`
 
-    for (const device of devices) {
-      const data = await nut.getData(device.name)
+      const perDeviceMetrics = await Promise.all(
+        devices.map(async (device) => {
+          const data = await nut.getData(device.name)
+          const lines: string[] = []
 
-      for (const [key, value] of Object.entries(data)) {
-        // Only process numeric values
-        if (isNumeric(value.value)) {
-          const metricName = toMetricName(key)
-          const metricValue = Number(value.value)
-          const metricDescription = value.description ?? 'N/A'
-
-          // Add labels for the device including server for multi-server disambiguation
-          const labels = `ups="${device.name}",server="${serverInfo}"`
-          prometheusMetrics.push(`# HELP ${metricName} ${metricDescription}`)
-          prometheusMetrics.push(`# TYPE ${metricName} gauge`)
-          prometheusMetrics.push(`${metricName}{${labels}} ${metricValue}`)
-        }
-      }
-    }
-  }
+          for (const [key, value] of Object.entries(data)) {
+            if (isNumeric(value.value)) {
+              const metricName = toMetricName(key)
+              const metricValue = Number(value.value)
+              const metricDescription = value.description ?? 'N/A'
+              const labels = `ups="${device.name}",server="${serverInfo}"`
+              lines.push(`# HELP ${metricName} ${metricDescription}`)
+              lines.push(`# TYPE ${metricName} gauge`)
+              lines.push(`${metricName}{${labels}} ${metricValue}`)
+            }
+          }
+          return lines
+        })
+      )
+      return perDeviceMetrics.flat()
+    })
+  )
+  prometheusMetrics.push(...perInstanceMetrics.flat())
 
   // Return metrics with proper content type
   return new NextResponse(prometheusMetrics.join('\n'), {
