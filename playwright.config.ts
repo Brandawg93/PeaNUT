@@ -63,26 +63,32 @@ export default defineConfig({
           },
         ]
       : [
+          // API tests hit HTTP routes via the `request` fixture — no browser engine involved,
+          // so run them once instead of across every browser project.
+          {
+            name: 'API',
+            testMatch: '**/api/**/*.test.ts',
+          },
           {
             name: 'Desktop Chrome',
             use: {
               ...devices['Desktop Chrome'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           {
             name: 'Desktop Firefox',
             use: {
               ...devices['Desktop Firefox'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           {
             name: 'Desktop Safari',
             use: {
               ...devices['Desktop Safari'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           // Test against mobile viewports.
           {
@@ -90,12 +96,12 @@ export default defineConfig({
             use: {
               ...devices['Pixel 5'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           {
             name: 'Mobile Safari',
             use: devices['iPhone 12'],
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
         ]),
   ],

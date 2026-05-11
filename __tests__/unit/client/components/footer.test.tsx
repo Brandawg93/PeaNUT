@@ -100,6 +100,25 @@ describe('Footer', () => {
     )
   })
 
+  it('external links open in a new tab with rel=noreferrer', async () => {
+    const { container } = renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
+    const externalLinks = container.querySelectorAll('a[target="_blank"]')
+    expect(externalLinks.length).toBeGreaterThan(0)
+    externalLinks.forEach((link) => {
+      expect(link.getAttribute('rel') ?? '').toMatch(/noreferrer/)
+    })
+  })
+
+  it('displays last updated content', async () => {
+    renderWithProviders(<Footer updated={new Date()} />, {
+      settings: { DISABLE_VERSION_CHECK: false },
+    })
+    const footer = screen.getByTestId('footer')
+    expect(footer.textContent?.length).toBeGreaterThan(0)
+  })
+
   it('renders API docs link with correct pathname', async () => {
     const { container } = renderWithProviders(<Footer updated={new Date()} />, {
       settings: { DISABLE_VERSION_CHECK: false },
