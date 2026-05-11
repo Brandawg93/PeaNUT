@@ -30,34 +30,63 @@ function isNumeric(value: string | number): boolean {
   return !isNaN(Number(value))
 }
 
+// Per-instance concurrency cap for getData() calls. Aligned with the NUT
+// connection pool's idle-retention size so a Prometheus scrape doesn't burst
+// far past what the pool can absorb (pool only caps idle sockets; without
+// this cap, N devices means N simultaneous TCP connections per scrape).
+const PER_INSTANCE_CONCURRENCY = 3
+
+async function mapWithConcurrency<T, R>(
+  items: ReadonlyArray<T>,
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<Array<R>> {
+  const results: Array<R> = new Array(items.length)
+  let cursor = 0
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const i = cursor++
+      if (i >= items.length) return
+      results[i] = await fn(items[i], i)
+    }
+  })
+  await Promise.all(workers)
+  return results
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   const nutInstances = await getNutInstances()
   const prometheusMetrics: string[] = []
 
-  for (const nut of nutInstances) {
-    const devices = await nut.getDevices()
-    const serverInfo = `${nut.getHost()}:${nut.getPort()}`
+  const perInstanceMetrics = await Promise.all(
+    nutInstances.map(async (nut) => {
+      const devices = await nut.getDevices()
+      const serverInfo = `${nut.getHost()}:${nut.getPort()}`
 
-    for (const device of devices) {
-      const data = await nut.getData(device.name)
+      const perDeviceMetrics = await mapWithConcurrency(devices, PER_INSTANCE_CONCURRENCY, async (device) => {
+        const data = await nut.getData(device.name)
+        const lines: string[] = []
 
-      for (const [key, value] of Object.entries(data)) {
-        // Only process numeric values
-        if (isNumeric(value.value)) {
-          const metricName = toMetricName(key)
-          const metricValue = Number(value.value)
-          const metricDescription = value.description ?? 'N/A'
-
-          // Add labels for the device including server for multi-server disambiguation
-          const labels = `ups="${device.name}",server="${serverInfo}"`
-          prometheusMetrics.push(`# HELP ${metricName} ${metricDescription}`)
-          prometheusMetrics.push(`# TYPE ${metricName} gauge`)
-          prometheusMetrics.push(`${metricName}{${labels}} ${metricValue}`)
+        for (const [key, value] of Object.entries(data)) {
+          if (isNumeric(value.value)) {
+            const metricName = toMetricName(key)
+            const metricValue = Number(value.value)
+            const metricDescription = value.description ?? 'N/A'
+            const labels = `ups="${device.name}",server="${serverInfo}"`
+            lines.push(
+              `# HELP ${metricName} ${metricDescription}`,
+              `# TYPE ${metricName} gauge`,
+              `${metricName}{${labels}} ${metricValue}`
+            )
+          }
         }
-      }
-    }
-  }
+        return lines
+      })
+      return perDeviceMetrics.flat()
+    })
+  )
+  prometheusMetrics.push(...perInstanceMetrics.flat())
 
   // Return metrics with proper content type
   return new NextResponse(prometheusMetrics.join('\n'), {

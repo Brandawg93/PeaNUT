@@ -46,41 +46,36 @@ export default class InfluxWriter {
     let floatFieldCount = 0
     let stringFieldCount = 0
 
-    for (const key of Object.keys(device.vars)) {
-      const variable = device.vars[key]
+    const point = new Point(device.name).tag('description', device.description).tag('server', device.server) // Server tag for multi-server disambiguation
+
+    for (const [key, variable] of Object.entries(device.vars)) {
       const value = variable.value
-
-      if (typeof value !== 'number' && typeof value !== 'string') {
-        continue
-      }
-
-      const point = new Point(device.name).tag('description', device.description).tag('server', device.server) // Server tag for multi-server disambiguation
 
       if (typeof value === 'number') {
         point.floatField(key, value)
-      } else {
+        floatFieldCount++
+      } else if (typeof value === 'string') {
         point.stringField(key, value)
+        stringFieldCount++
       }
+    }
 
-      if (timestamp) {
-        point.timestamp(timestamp)
-      }
+    if (floatFieldCount === 0 && stringFieldCount === 0) {
+      return
+    }
 
-      try {
-        this.writeApi.writePoint(point)
-        if (typeof value === 'number') {
-          floatFieldCount++
-        } else {
-          stringFieldCount++
-        }
-      } catch (e) {
-        this.debug.error('Failed to write field', {
-          device: device.name,
-          field: key,
-          error: e instanceof Error ? e.message : String(e),
-        })
-        console.error(`Failed to write field ${key} for device ${device.name}:`, e)
-      }
+    if (timestamp) {
+      point.timestamp(timestamp)
+    }
+
+    try {
+      this.writeApi.writePoint(point)
+    } catch (e) {
+      this.debug.error('Failed to write point', {
+        device: device.name,
+        error: e instanceof Error ? e.message : String(e),
+      })
+      console.error(`Failed to write point for device ${device.name}:`, e)
     }
 
     this.debug.debug('Device data write completed', {
