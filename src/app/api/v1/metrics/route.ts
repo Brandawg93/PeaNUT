@@ -74,9 +74,11 @@ export async function GET(request: NextRequest) {
             const metricValue = Number(value.value)
             const metricDescription = value.description ?? 'N/A'
             const labels = `ups="${device.name}",server="${serverInfo}"`
-            lines.push(`# HELP ${metricName} ${metricDescription}`)
-            lines.push(`# TYPE ${metricName} gauge`)
-            lines.push(`${metricName}{${labels}} ${metricValue}`)
+            lines.push(
+              `# HELP ${metricName} ${metricDescription}`,
+              `# TYPE ${metricName} gauge`,
+              `${metricName}{${labels}} ${metricValue}`
+            )
           }
         }
         return lines
