@@ -259,6 +259,92 @@ describe('actions', () => {
     expect(data.devices![1].server).toBe('Server2')
   })
 
+  describe('error and branch paths', () => {
+    beforeEach(() => {
+      // Prior tests overwrite the NUT_SERVERS mock; re-apply the canonical one
+      // so composite-ID lookups can find the test host.
+      ;(YamlSettings.prototype.get as jest.Mock).mockImplementation((key: keyof SettingsType) => {
+        const settings = {
+          NUT_SERVERS: [
+            { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+          ],
+        }
+        return settings[key as keyof typeof settings]
+      })
+    })
+
+    it('testConnection invokes checkCredentials when credentials provided', async () => {
+      ;(Nut.prototype.checkCredentials as jest.Mock).mockClear()
+      await testConnection(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      expect(Nut.prototype.checkCredentials).toHaveBeenCalled()
+    })
+
+    it('testConnection wraps inner errors', async () => {
+      ;(Nut.prototype.testConnection as jest.Mock).mockRejectedValueOnce(new Error('refused'))
+      await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).rejects.toThrow('refused')
+    })
+
+    it('saveVar returns error message when underlying setVar fails', async () => {
+      ;(Nut.prototype.setVar as jest.Mock).mockRejectedValueOnce(new Error('not writable'))
+      const result = await saveVar('foo', 'battery.charge', '50')
+      expect(result.error).toBe('not writable')
+    })
+
+    it('saveVar targets a specific server for composite device IDs', async () => {
+      const setVarSpy = (Nut.prototype.setVar as jest.Mock).mockClear()
+      const result = await saveVar(`${TEST_HOSTNAME}~${TEST_PORT}~foo`, 'battery.charge', '50')
+      expect(result.error).toBeUndefined()
+      expect(setVarSpy).toHaveBeenCalled()
+    })
+
+    it('saveVar reports "Device not found" for unknown composite IDs', async () => {
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
+      const result = await saveVar(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, 'battery.charge', '50')
+      expect(result.error).toBe('Device not found')
+    })
+
+    it('runCommand reports "Device not found" for unknown composite IDs', async () => {
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
+      const result = await runCommand(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, 'test.battery.start')
+      expect(result.error).toBe('Device not found')
+    })
+
+    it('runCommand targets a specific server for composite device IDs', async () => {
+      const runSpy = (Nut.prototype.runCommand as jest.Mock).mockClear()
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(true)
+      const result = await runCommand(`${TEST_HOSTNAME}~${TEST_PORT}~foo`, 'test.battery.start')
+      expect(result.error).toBeUndefined()
+      expect(runSpy).toHaveBeenCalledWith('test.battery.start', 'foo')
+    })
+
+    it('getAllCommands collects commands from composite ID path', async () => {
+      ;(Nut.prototype.getCommands as jest.Mock).mockResolvedValueOnce(['shutdown.reboot'])
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(true)
+      const commands = await getAllCommands(`${TEST_HOSTNAME}~${TEST_PORT}~foo`)
+      expect(commands).toEqual(['shutdown.reboot'])
+    })
+
+    it('getAllCommands returns [] when the underlying call throws', async () => {
+      ;(Nut.prototype.getCommands as jest.Mock).mockRejectedValueOnce(new Error('boom'))
+      const commands = await getAllCommands('foo')
+      expect(commands).toEqual([])
+    })
+
+    it('getAllVarDescriptions returns an error message when the lookup throws', async () => {
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
+      const result = await getAllVarDescriptions(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, ['battery.charge'])
+      expect(result.error).toBeDefined()
+    })
+
+    it('checkSettings returns false when the settings lookup throws', async () => {
+      ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('disk gone')
+      })
+      const result = await checkSettings()
+      expect(result).toBe(false)
+    })
+  })
+
   describe('authenticate', () => {
     beforeEach(() => {
       jest.clearAllMocks()

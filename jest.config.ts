@@ -49,8 +49,17 @@ const config: Config = {
   //   "clover"
   // ],
 
-  // An object that configures minimum threshold enforcement for coverage results
-  // coverageThreshold: undefined,
+  // An object that configures minimum threshold enforcement for coverage results.
+  // Set ~1% below current measured coverage so future PRs can't silently regress.
+  // Bump these up as coverage improves.
+  coverageThreshold: {
+    global: {
+      statements: 83,
+      lines: 85,
+      functions: 71,
+      branches: 65,
+    },
+  },
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,
