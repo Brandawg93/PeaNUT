@@ -82,7 +82,7 @@
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
     "toad-scheduler": "^3.0.1",
-    "ws": "^8.20.0",
+    "ws": "^8.20.1",
     "zod": "^4.2.1"
   },
   "devDependencies": {
