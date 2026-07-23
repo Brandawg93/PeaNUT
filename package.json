@@ -66,7 +66,7 @@
     "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-resources-to-backend": "^1.2.1",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.0",
     "lucide-react": "^0.563.0",
     "next": "^16.2.4",
     "next-auth": "~5.0.0-beta.30",
