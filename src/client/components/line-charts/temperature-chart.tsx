@@ -24,8 +24,8 @@ export default function TemperatureChart({ id, updated, ambientTemperature, batt
   const [showAmbient, setShowAmbient] = useState<boolean>(true)
   const [showBattery, setShowBattery] = useState<boolean>(true)
 
-  const ambientTemperatureData = useChartData(id, updated, ambientTemperature)
-  const batteryTemperatureData = useChartData(id, updated, batteryTemperature)
+  const ambientTemperatureData = useChartData(id, 'ambient.temperature', updated, ambientTemperature)
+  const batteryTemperatureData = useChartData(id, 'battery.temperature', updated, batteryTemperature)
 
   const chartData = useMemo(() => {
     const maxLength = Math.max(ambientTemperatureData.length, batteryTemperatureData.length)
