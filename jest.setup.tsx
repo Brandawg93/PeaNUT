@@ -1,6 +1,21 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 
+// jsdom's selector engine (nwsapi) is catastrophically slow — effectively hanging, not just
+// slow — matching the `:popover-open` and `:modal` pseudo-classes (confirmed: 2000 raw
+// `element.matches()` calls didn't finish in 60+ seconds). @floating-ui/dom >= 1.6.0 added a
+// `topLayer()` check that calls both on every position computation, which is what made Radix
+// dropdown/select/popover tests take 3-6s+ locally and time out entirely in CI: bisecting
+// @floating-ui/dom versions showed 1.5.4 at ~20ms vs 1.8.0 at ~4.5s for the same computePosition
+// call, and patching just these two selectors to short-circuit restores the ~20ms baseline.
+// Neither pseudo-class is relevant here (we don't render native <dialog>/Popover-API elements),
+// so always resolving them to `false` changes no test's real behavior.
+const originalMatches = Element.prototype.matches
+Element.prototype.matches = function (this: Element, selector: string): boolean {
+  if (selector === ':popover-open' || selector === ':modal') return false
+  return originalMatches.call(this, selector)
+} as typeof Element.prototype.matches
+
 jest.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
   useTranslation: () => {

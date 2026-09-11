@@ -3,13 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import DayNightSwitch from '@/client/components/daynight'
 import LanguageProvider from '@/client/context/language'
 
-// Opening a Radix dropdown here runs floating-ui's flip/shift position middleware, which is
-// consistently ~5-6.5s of CPU-bound work under Jest+jsdom on a fast local machine (reproduced
-// with a raw computePosition() call outside React entirely; the same call takes <30ms in plain
-// Node — this overhead appears to be specific to Jest's runtime, not floating-ui or jsdom on
-// their own). CI's shared/slower runners exceeded even a 15s timeout here, so give it real room.
-jest.setTimeout(30000)
-
 describe('Daynight', () => {
   let component: React.ReactElement<any>
   beforeAll(() => {
