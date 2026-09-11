@@ -51,13 +51,24 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
+      - uses: actions/cache@v5
+        name: Setup jest cache
+        with:
+          path: .jest-cache
+          key: ${{ runner.os }}-jest-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-jest-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
       - name: Run jest with coverage
-        run: pnpm run test:coverage
+        run: pnpm run test:coverage -- --ci --maxWorkers=2
 
   e2e:
     name: E2E tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      matrix:
+        auth: [disabled, enabled]
     env:
       USERNAME: admin
       PASSWORD: nut_test
@@ -90,8 +101,31 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm exec playwright install-deps
 
-      - name: Run Playwright tests
-        run: pnpm run test:e2e
+      - name: Start NUT server
+        run: docker compose up -d
+
+      - name: Run Playwright tests (auth disabled)
+        if: matrix.auth == 'disabled'
+        run: pnpm exec playwright test
+
+      - name: Run Playwright tests (auth enabled)
+        if: matrix.auth == 'enabled'
+        env:
+          WEB_USERNAME: admin
+          WEB_PASSWORD: test123
+        run: pnpm exec playwright test
+
+      - name: Stop NUT server
+        if: always()
+        run: docker compose down
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.auth }}
+          path: playwright-report/
+          retention-days: 7
 
   build:
     name: Production build

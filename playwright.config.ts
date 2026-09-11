@@ -22,6 +22,10 @@ export default defineConfig({
   // Run all tests in parallel.
   fullyParallel: true,
 
+  // Use the GitHub Actions annotations reporter in CI (plus an HTML report for debugging failures),
+  // and the default list reporter locally.
+  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
+
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
