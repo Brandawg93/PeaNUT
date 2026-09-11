@@ -66,7 +66,7 @@
     "i18next": "^26.4.2",
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-resources-to-backend": "^1.2.3",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^5.4.1",
     "lucide-react": "^1.45.0",
     "next": "^16.3.4",
     "next-auth": "~5.0.0-beta.30",
@@ -98,7 +98,6 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
     "@types/jest": "^30.0.0",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.20.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -137,7 +136,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@typescript-eslint/utils": "^8.57.2"
+      "@typescript-eslint/utils": "^8.70.0"
     }
   }
 }
