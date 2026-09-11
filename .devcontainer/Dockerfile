@@ -1,4 +1,4 @@
-ARG VARIANT="20"
+ARG VARIANT="22"
 FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT}
 
 RUN apt update && apt install nut -y

@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NutGrid from '@/client/components/grid'
 import { DEVICE } from '@/common/types'
@@ -60,6 +60,45 @@ describe('Grid', () => {
   it('renders', () => {
     const { getByTestId } = renderGrid()
     expect(getByTestId('grid')).toBeInTheDocument()
+  })
+
+  it('keeps a manually collapsed tree node collapsed across a data refresh', async () => {
+    const { getAllByRole, rerender } = render(
+      <QueryClientProvider client={queryClient}>
+        <NutGrid data={device} onRefetchAction={jest.fn()} />
+      </QueryClientProvider>
+    )
+
+    // Switch to tree view
+    const treeToggleButton = getAllByRole('button').find(
+      (button) => button.querySelector('svg') && button.dataset.slot === 'button'
+    )
+    expect(treeToggleButton).toBeDefined()
+    fireEvent.click(treeToggleButton!)
+
+    // Collapse the top-level "input" node. Its only grandchild is "nominal" (from
+    // input.voltage.nominal) — unlike "voltage", which also appears under the sibling "output"
+    // node, so it unambiguously proves the "input" branch specifically is collapsed.
+    const inputRow = screen.getByText('input')
+    fireEvent.click(inputRow.closest('button')!)
+    expect(screen.queryByText('nominal')).not.toBeInTheDocument()
+
+    // Simulate a periodic data refresh (e.g. polling) with a new `vars` object
+    const refreshedDevice: DEVICE = { ...device, vars: { ...device.vars } }
+    await act(async () => {
+      rerender(
+        <QueryClientProvider client={queryClient}>
+          <NutGrid data={refreshedDevice} onRefetchAction={jest.fn()} />
+        </QueryClientProvider>
+      )
+      // v9's expanded-state auto-reset (when enabled) is scheduled via the table's reactivity
+      // system rather than applied synchronously with the render that triggers it — flush that
+      // scheduling queue so the assertion below isn't racing ahead of it.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    // The manually collapsed node should stay collapsed, not reset back to fully expanded
+    expect(screen.queryByText('nominal')).not.toBeInTheDocument()
   })
 
   describe('Filter functionality', () => {

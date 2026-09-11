@@ -189,7 +189,7 @@ const config: Config = {
   // transform: undefined,
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ['/node_modules/(?!(next-auth|@auth/core)/)'],
+  // transformIgnorePatterns: undefined,
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
@@ -208,4 +208,16 @@ const config: Config = {
   },
 }
 
-export default createJestConfig(config)
+// next/jest only lets custom config *append* to its own transformIgnorePatterns, and its
+// built-in patterns ignore anything under pnpm's `.pnpm/<name>@<version>/node_modules/<name>`
+// nesting that isn't `geist`/`next` itself — appending an exemption can't undo an ignore that
+// an earlier pattern in the array already matched. Post-process the resolved config instead so
+// ESM-only packages (next-auth, @auth/core, @tanstack/react-table and its deps) still get
+// transformed under Jest's CJS test runtime.
+export default async () => {
+  const resolvedConfig = await createJestConfig(config)()
+  resolvedConfig.transformIgnorePatterns = [
+    '/node_modules/(?!.*(next-auth|@auth/core|@tanstack/(react-table|table-core|react-store|store)|chokidar|readdirp)/)',
+  ]
+  return resolvedConfig
+}
