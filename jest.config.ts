@@ -217,7 +217,7 @@ const config: Config = {
 export default async () => {
   const resolvedConfig = await createJestConfig(config)()
   resolvedConfig.transformIgnorePatterns = [
-    '/node_modules/(?!.*(next-auth|@auth/core|@tanstack/(react-table|table-core|react-store|store))/)',
+    '/node_modules/(?!.*(next-auth|@auth/core|@tanstack/(react-table|table-core|react-store|store)|chokidar|readdirp)/)',
   ]
   return resolvedConfig
 }

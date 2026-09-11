@@ -4,7 +4,7 @@ import InfluxWriter from '@/server/influxdb'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
 import { DEVICE, server, DeviceData, DevicesData, VarDescription, NutDevice, VARS } from '@/common/types'
-import chokidar from 'chokidar'
+import { watch } from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
 import { upsStatus } from '@/common/constants'
@@ -24,7 +24,7 @@ const debug = createDebugLogger('ACTIONS')
 let settingsInstance: YamlSettings | null = null
 
 // Initialize watcher
-const watcher = chokidar.watch(settingsFile, {
+const watcher = watch(settingsFile, {
   persistent: true,
   ignoreInitial: true,
 })
