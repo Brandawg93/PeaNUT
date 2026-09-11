@@ -463,12 +463,15 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
     data: useTreeData ? filteredHierarchicalData : filteredFlatData,
     columns,
     features,
-    // v9 auto-resets `expanded` to `initialState.expanded` (not the controlled `state.expanded`
-    // value) whenever the row model's structure changes, e.g. switching flat/tree data — declare
-    // the "start fully expanded" default here too so that reset doesn't collapse everything.
+    // `expanded` is fully controlled via `state`/`onExpandedChange` below. v9 still auto-resets
+    // it to `initialState.expanded` whenever the row model's structure changes — which includes
+    // every periodic data refresh (device.vars gets a new object from polling), not just the
+    // flat/tree toggle. Without `autoResetExpanded: false`, a user's collapsed nodes would keep
+    // reopening on every refresh; `initialState.expanded` only sets the first-mount default.
     initialState: {
       expanded: true,
     },
+    autoResetExpanded: false,
     state: {
       expanded,
     },
