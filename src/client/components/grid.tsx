@@ -21,9 +21,10 @@ import { Toaster, toast } from 'sonner'
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  useReactTable,
+  tableFeatures,
+  rowExpandingFeature,
+  createExpandedRowModel,
+  useTable,
   ExpandedState,
 } from '@tanstack/react-table'
 
@@ -49,6 +50,12 @@ interface HierarchicalTableProps extends TableProps {
 }
 
 const GRID_ID = 'accordion-grid'
+
+const features = tableFeatures({
+  rowExpandingFeature,
+  expandedRowModel: createExpandedRowModel(),
+})
+const columnHelper = createColumnHelper<typeof features, HierarchicalTableProps>()
 
 const transformInput = (input: TableProps[]): HierarchicalTableProps[] => {
   const root: HierarchicalTableProps[] = []
@@ -373,13 +380,13 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
     [data.vars]
   )
 
-  const flatData = useMemo<TableProps[]>(
+  const flatData = useMemo<HierarchicalTableProps[]>(
     () =>
       Object.entries(data.vars).map(([k, v]) => ({ key: k, value: v?.value || 'N/A', description: v?.description })),
     [data.vars]
   )
 
-  const filteredFlatData = useMemo<TableProps[]>(() => {
+  const filteredFlatData = useMemo<HierarchicalTableProps[]>(() => {
     const query = keyFilter.trim().toLowerCase()
     if (!query) return flatData
     return flatData.filter((row) => row.key.toLowerCase().includes(query))
@@ -408,61 +415,66 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
     return filterTree(hierarchicalData, query)
   }, [hierarchicalData, keyFilter])
 
-  const columnHelper = createColumnHelper<HierarchicalTableProps>()
-  const columns = [
-    columnHelper.accessor('key', {
-      id: 'key',
-      cell: (props) => <KeyCell {...props} useTreeData={useTreeData} />,
-      header: (props) => (
-        <KeyHeader
-          {...props}
-          useTreeData={useTreeData}
-          t={t}
-          filterOpen={filterOpen}
-          setFilterOpen={setFilterOpen}
-          keyFilter={keyFilter}
-          filterInputRef={filterInputRef}
-          setKeyFilter={setKeyFilter}
-          setUseTreeData={setUseTreeData}
-        />
-      ),
-    }),
-    columnHelper.accessor('value', {
-      id: 'value',
-      cell: (props) => (
-        <ValueCell {...props} useTreeData={useTreeData} edit={edit} handleSave={handleSave} handleClose={handleClose} />
-      ),
-      header: () => <ValueHeader t={t} />,
-    }),
-    columnHelper.display({
-      id: 'actions',
-      cell: (props) => (
-        <ActionsCell {...props} useTreeData={useTreeData} data={data} edit={edit} handleEdit={handleEdit} />
-      ),
-    }),
-  ].filter((column) => column.id !== 'actions' || anyRW) // Hide actions column if there are no RW vars
+  const columns = columnHelper
+    .columns([
+      columnHelper.accessor('key', {
+        id: 'key',
+        cell: (props) => <KeyCell {...props} useTreeData={useTreeData} />,
+        header: (props) => (
+          <KeyHeader
+            {...props}
+            useTreeData={useTreeData}
+            t={t}
+            filterOpen={filterOpen}
+            setFilterOpen={setFilterOpen}
+            keyFilter={keyFilter}
+            filterInputRef={filterInputRef}
+            setKeyFilter={setKeyFilter}
+            setUseTreeData={setUseTreeData}
+          />
+        ),
+      }),
+      columnHelper.accessor('value', {
+        id: 'value',
+        cell: (props) => (
+          <ValueCell
+            {...props}
+            useTreeData={useTreeData}
+            edit={edit}
+            handleSave={handleSave}
+            handleClose={handleClose}
+          />
+        ),
+        header: () => <ValueHeader t={t} />,
+      }),
+      columnHelper.display({
+        id: 'actions',
+        cell: (props) => (
+          <ActionsCell {...props} useTreeData={useTreeData} data={data} edit={edit} handleEdit={handleEdit} />
+        ),
+      }),
+    ])
+    .filter((column) => column.id !== 'actions' || anyRW) // Hide actions column if there are no RW vars
 
-  const tableConfig = {
-    data: filteredFlatData,
+  // Keep a single, consistently-shaped options object across the flat/tree toggle — only
+  // swapping `data` between renders — so useTable's controlled `expanded` state stays synced
+  // from the first render instead of only gaining `state`/`getSubRows` once tree mode turns on.
+  const table = useTable({
+    data: useTreeData ? filteredHierarchicalData : filteredFlatData,
     columns,
-    onExpandedChange: setExpanded,
-    getCoreRowModel: getCoreRowModel(),
-  }
-
-  const treeTableConfig = {
-    data: filteredHierarchicalData,
-    columns,
+    features,
+    // v9 auto-resets `expanded` to `initialState.expanded` (not the controlled `state.expanded`
+    // value) whenever the row model's structure changes, e.g. switching flat/tree data — declare
+    // the "start fully expanded" default here too so that reset doesn't collapse everything.
+    initialState: {
+      expanded: true,
+    },
     state: {
       expanded,
     },
     onExpandedChange: setExpanded,
     getSubRows: (row: HierarchicalTableProps) => row.children,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-  }
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable(useTreeData ? treeTableConfig : tableConfig)
+  })
 
   if (!data) {
     return null
@@ -506,10 +518,10 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
+                      {headerGroup.headers.map((header, headerIndex) => (
                         <TableHead
                           key={header.id}
-                          className={`p-3 text-left ${header.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-border-card bg-muted border-b`}
+                          className={`p-3 text-left ${headerIndex === columns.length - 1 ? 'border-r-0' : 'border-r'} border-border-card bg-muted border-b`}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </TableHead>
@@ -520,9 +532,9 @@ export default function NutGrid({ data, onRefetchAction }: Props) {
                 <TableBody>
                   {table.getRowModel().rows.map((row, index) => (
                     <TableRow key={row.id} aria-rowindex={index}>
-                      {row.getVisibleCells().map((cell) => (
+                      {row.getAllCells().map((cell, cellIndex) => (
                         <TableCell
-                          className={`w-1/2 ${cell.column.getIndex() === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t p-3`}
+                          className={`w-1/2 ${cellIndex === columns.length - 1 ? 'border-r-0' : 'border-r'} border-t p-3`}
                           key={cell.id}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
