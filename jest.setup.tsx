@@ -24,6 +24,9 @@ jest.mock('fs', () => ({
   mkdirSync: jest.fn(),
   unlinkSync: jest.fn(),
   watch: jest.fn(),
+  accessSync: jest.fn(),
+  statSync: jest.fn(),
+  constants: { W_OK: 2 },
 }))
 
 jest.mock('lucide-react', () => ({
