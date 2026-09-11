@@ -81,7 +81,7 @@
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "toad-scheduler": "^3.0.1",
+    "toad-scheduler": "^4.2.0",
     "ws": "^8.21.3",
     "zod": "^4.6.2"
   },
