@@ -3,6 +3,10 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import DayNightSwitch from '@/client/components/daynight'
 import LanguageProvider from '@/client/context/language'
 
+// Radix's dropdown-menu now adds a window "blur" listener and floating-ui autoUpdate
+// polling while open, which pushes these tests past Jest's default 5s timeout in jsdom.
+jest.setTimeout(15000)
+
 describe('Daynight', () => {
   let component: React.ReactElement<any>
   beforeAll(() => {

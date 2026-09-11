@@ -3,6 +3,10 @@ import { screen, fireEvent, act } from '@testing-library/react'
 import Refresh from '@/client/components/refresh'
 import { renderWithProviders } from '../../../utils/test-utils'
 
+// Radix's dropdown-menu now adds a window "blur" listener and floating-ui autoUpdate
+// polling while open, which pushes these tests past Jest's default 5s timeout in jsdom.
+jest.setTimeout(15000)
+
 describe('Refresh', () => {
   const baseProps = {
     onClick: jest.fn(),
