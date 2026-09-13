@@ -2,6 +2,7 @@
   "name": "peanut",
   "version": "6.0.0",
   "private": true,
+  "packageManager": "pnpm@10.25.0",
   "scripts": {
     "clean": "rm -rf .next .swc coverage test-results",
     "dev": "docker compose up -d && (next dev || true) && docker compose down",
