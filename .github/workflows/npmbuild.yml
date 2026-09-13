@@ -60,7 +60,7 @@ jobs:
             ${{ runner.os }}-jest-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Run jest with coverage
-        run: pnpm run test:coverage -- --ci --maxWorkers=2
+        run: pnpm exec jest --coverage --ci --maxWorkers=2
 
   e2e:
     name: E2E tests

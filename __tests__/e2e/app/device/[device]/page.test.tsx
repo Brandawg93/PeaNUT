@@ -1,16 +1,13 @@
 import { expect, test } from '@playwright/test'
-
-const hostname = process.env.HOSTNAME ?? 'localhost'
-const port = process.env.PORT ?? '3000'
+import { gotoAndCheckAuth } from '../../../utils/page-helpers'
 
 test.describe('Device detail', () => {
   test('renders the device page or redirects to login when auth enabled', async ({ page }) => {
-    await page.goto(`http://${hostname}:${port}/device/ups`)
-    const currentUrl = page.url()
-    if (currentUrl.includes('/login')) {
-      expect(currentUrl).toContain('/login')
-    } else {
-      await expect(page.locator('[data-testid="wrapper"], [data-testid="empty-wrapper"]').first()).toBeAttached()
-    }
+    if (await gotoAndCheckAuth(page, '/device/ups')) return
+
+    // The `ups` device is always seeded by the docker-compose NUT fixture, so assert the
+    // populated wrapper specifically — accepting `empty-wrapper` here would let a broken
+    // device request pass silently.
+    await expect(page.locator('[data-testid="wrapper"]')).toBeAttached()
   })
 })
