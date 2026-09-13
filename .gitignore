@@ -8,6 +8,7 @@
 
 # testing
 /coverage
+/.jest-cache
 
 # production
 /build
@@ -41,4 +42,5 @@ auth.yaml
 .swc
 next-env.d.ts
 test-results
+playwright-report
 .eslintcache
