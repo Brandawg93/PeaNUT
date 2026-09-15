@@ -1,0 +1,230 @@
+{
+  "noDevicesError": "Tidak ada perangkat yang ditemukan. Tambahkan perangkat baru di pengaturan.",
+  "updateAvailable": "Pembaruan Tersedia",
+  "device": "Perangkat",
+  "manufacturer": "Produsen",
+  "model": "Model",
+  "serial": "Nomor Seri",
+  "currentLoad": "Beban Saat Ini",
+  "currentWattage": "Daya Saat Ini",
+  "batteryCharge": "Tingkat Baterai",
+  "batteryRuntime": "Waktu Baterai Tersisa",
+  "lastUpdated": "Terakhir Diperbarui",
+  "toggleTime": "Klik untuk beralih format 12/24 jam",
+  "docs": "Dokumentasi API",
+  "voltsChart": {
+    "inputVoltage": "Tegangan Input",
+    "outputVoltage": "Tegangan Output",
+    "nominalInputVoltage": "Tegangan Input Nominal",
+    "nominalOutputVoltage": "Tegangan Output Nominal",
+    "nominalVoltage": "Tegangan Nominal",
+    "title": "Tegangan"
+  },
+  "wattsChart": {
+    "realpower": "Daya Aktif",
+    "nominalRealpower": "Daya Aktif Nominal"
+  },
+  "temperatureChart": {
+    "ambientTemperature": "Suhu Lingkungan",
+    "batteryTemperature": "Suhu Baterai"
+  },
+  "grid": {
+    "key": "Kunci",
+    "value": "Nilai",
+    "filter": {
+      "placeholder": "Filter kunci",
+      "apply": "Terapkan filter",
+      "clear": "Hapus filter"
+    }
+  },
+  "sidebar": {
+    "settings": "Pengaturan",
+    "disconnect": "Putuskan Koneksi",
+    "refresh": "Segarkan",
+    "language": "Bahasa",
+    "timeRange": {
+      "title": "Rentang Waktu",
+      "all": "Semua Data",
+      "1min": "Menit Terakhir",
+      "5min": "5 Menit Terakhir",
+      "30min": "30 Menit Terakhir",
+      "1hour": "Jam Terakhir",
+      "24hours": "24 Jam Terakhir"
+    }
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "general": "Umum",
+    "generalNotice": "Pengaturan umum aplikasi",
+    "dateFormat": "Format Tanggal",
+    "selectDateFormat": "Pilih format tanggal",
+    "timeFormat": "Format Waktu",
+    "selectTimeFormat": "Pilih format waktu",
+    "temperatureUnit": "Satuan Suhu",
+    "selectTemperatureUnit": "Pilih satuan suhu",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
+    "disableVersionCheck": "Nonaktifkan Pemeriksaan Versi",
+    "disableVersionCheckDescription": "Nonaktifkan pemeriksaan pembaruan di bagian bawah halaman",
+    "manageServers": "Kelola Server",
+    "influxDb": "InfluxDB",
+    "influxNotice": "Ini hanya berfungsi dengan InfluxDB 2.x",
+    "influxInterval": "Interval Influx (s)",
+    "addServer": "Tambah Server",
+    "apply": "Terapkan",
+    "saved": "Perubahan disimpan",
+    "configExport": "Impor/Ekspor Konfigurasi",
+    "configExportNotice": "Edit file konfigurasi YAML secara manual.",
+    "download": "Unduh",
+    "save": "Simpan",
+    "viewConfig": "Klik untuk melihat konfigurasi.",
+    "serversNotice": "Nama pengguna dan kata sandi diperlukan untuk menjalankan perintah",
+    "terminal": "Terminal",
+    "terminalNotice": "Ketik \"help\" untuk melihat daftar perintah.",
+    "selectServer": "Pilih server",
+    "dashboard": "Dasbor",
+    "dashboardNotice": "Atur urutan bagian dan tentukan apakah ditampilkan.",
+    "hide": "Sembunyikan",
+    "show": "Tampilkan",
+    "section": {
+      "kpis": "KPI",
+      "charts": "Grafik",
+      "variables": "Variabel"
+    },
+    "remove": "Hapus",
+    "enable": "Aktifkan",
+    "disable": "Nonaktifkan"
+  },
+  "connect": {
+    "name": "Nama",
+    "namePlaceholder": "Masukkan nama server (alias)",
+    "server": "Alamat Server",
+    "port": "Port",
+    "username": "Nama Pengguna",
+    "password": "Kata Sandi",
+    "token": "Token",
+    "org": "Organisasi",
+    "bucket": "Bucket",
+    "connect": "Hubungkan",
+    "clear": "Kosongkan",
+    "test": "Uji",
+    "success": "Koneksi berhasil",
+    "error": "Koneksi gagal. Periksa log untuk informasi lebih lanjut.",
+    "testing": "Menguji koneksi..."
+  },
+  "theme": {
+    "dark": "Gelap",
+    "light": "Terang",
+    "system": "Sistem",
+    "title": "Tema"
+  },
+  "serverNotFound": "Host tidak ditemukan. Periksa pengaturan.",
+  "serverRefused": "Koneksi ditolak. Apakah server NUT sedang berjalan?",
+  "selectDevice": "Pilih perangkat",
+  "loading": "Memuat...",
+  "cancel": "Batal",
+  "close": "Tutup",
+  "confirm": "Konfirmasi",
+  "continue": "Lanjutkan",
+  "actions": {
+    "title": "Tindakan",
+    "groups": {
+      "testing": "Pengujian",
+      "power": "Kontrol Daya",
+      "beeper": "Buzzer"
+    },
+    "testing": {
+      "title": "Pengujian",
+      "description": "Pilih pengujian baterai yang akan dijalankan.",
+      "selectPlaceholder": "Pilih jenis pengujian",
+      "run": "Jalankan pengujian"
+    },
+    "power": {
+      "title": "Kontrol Daya",
+      "description": "Pilih tindakan daya, lalu konfirmasikan."
+    },
+    "beeper": {
+      "title": "Buzzer",
+      "description": "Aktifkan atau nonaktifkan buzzer, atau bisukan sementara.",
+      "switchLabel": "Aktifkan buzzer",
+      "muteLabel": "Bisukan buzzer",
+      "muteButton": "Bisukan"
+    },
+    "batteryTestQuick": {
+      "title": "Jalankan Uji Cepat Baterai",
+      "description": "Jalankan uji cepat baterai pada UPS?",
+      "successMessage": "Uji cepat baterai dimulai",
+      "actionText": "Jalankan uji cepat"
+    },
+    "batteryTestDeep": {
+      "title": "Jalankan Uji Baterai Mendalam",
+      "description": "Jalankan uji baterai mendalam pada UPS?",
+      "actionText": "Jalankan uji mendalam",
+      "successMessage": "Uji baterai mendalam dimulai"
+    },
+    "restart": {
+      "title": "Mulai Ulang",
+      "description": "Mulai ulang UPS?",
+      "actionText": "Mulai Ulang",
+      "successMessage": "Memulai ulang"
+    },
+    "shutdown": {
+      "title": "Matikan",
+      "description": "Matikan UPS?",
+      "actionText": "Matikan",
+      "successMessage": "Mematikan"
+    },
+    "beeperDisable": {
+      "title": "Nonaktifkan Buzzer",
+      "description": "Nonaktifkan buzzer?",
+      "actionText": "Nonaktifkan buzzer",
+      "successMessage": "Buzzer dinonaktifkan"
+    },
+    "beeperEnable": {
+      "title": "Aktifkan Buzzer",
+      "description": "Aktifkan buzzer?",
+      "actionText": "Aktifkan buzzer",
+      "successMessage": "Buzzer diaktifkan"
+    },
+    "beeperMute": {
+      "title": "Bisukan Buzzer",
+      "description": "Bisukan buzzer?",
+      "actionText": "Bisukan buzzer",
+      "successMessage": "Buzzer dibisukan"
+    }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "Daya Nominal",
+    "power": "Daya"
+  },
+  "volts-chart": "Tegangan",
+  "watts-chart": "Daya Aktif",
+  "volt-amps-chart": "Daya Semu",
+  "temperature-chart": "Suhu",
+  "accordion-grid": "Data UPS",
+  "login": {
+    "title": "Silakan masuk untuk melanjutkan.",
+    "username": "Nama Pengguna",
+    "usernamePlaceholder": "Masukkan nama pengguna",
+    "password": "Kata Sandi",
+    "passwordPlaceholder": "Masukkan kata sandi",
+    "submit": "Masuk"
+  },
+  "setup": {
+    "title": "Selamat Datang di PeaNUT",
+    "description": "Buat akun administrator awal untuk memulai.",
+    "username": "Nama Pengguna",
+    "password": "Kata Sandi",
+    "passwordHint": "Minimal 5 karakter.",
+    "submit": "Buat Akun",
+    "submitting": "Membuat akun...",
+    "errorUserExists": "Pengguna sudah ada.",
+    "errorSaveFailed": "Gagal menyimpan pengguna.",
+    "errorUsernameRequired": "Nama pengguna wajib diisi"
+  },
+  "logout": "Keluar",
+  "description": "Deskripsi",
+  "status": "Status",
+  "view": "Lihat",
+  "details": "Detail"
+}
