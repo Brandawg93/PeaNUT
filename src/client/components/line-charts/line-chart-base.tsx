@@ -101,7 +101,9 @@ export default function LineChartBase(props: Props) {
                           : dataMax,
                     ]}
                     tickMargin={8}
-                    tickFormatter={(value) => `${value}${unit}`}
+                    // Tick values come from data aggregated in InfluxDB (mean over a window), which
+                    // produces long floating-point results (e.g. 111.56470588235288) - round for display.
+                    tickFormatter={(value) => `${Math.round(value * 10) / 10}${unit}`}
                   />
                   <ChartLegend
                     verticalAlign='top'
