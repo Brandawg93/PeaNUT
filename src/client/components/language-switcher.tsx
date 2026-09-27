@@ -20,6 +20,7 @@ const languages = [
   { value: 'ro', label: 'Română', flag: '🇷🇴' },
   { value: 'ko', label: '한국어', flag: '🇰🇷' },
   { value: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
+  { value: 'ja', label: '日本語', flag: '🇯🇵' },
 ]
 
 export default function LanguageSwitcher() {
