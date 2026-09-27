@@ -4,9 +4,9 @@
   "device": "デバイス",
   "manufacturer": "メーカー",
   "model": "モデル",
-  "serial": "シリアル",
+  "serial": "シリアル番号",
   "currentLoad": "現在の負荷",
-  "currentWattage": "現在の消費電力",
+  "currentWattage": "現在の出力電力",
   "batteryCharge": "バッテリー残量",
   "batteryRuntime": "バッテリー駆動時間",
   "lastUpdated": "最終更新",
@@ -124,7 +124,7 @@
   "loading": "読み込み中...",
   "cancel": "キャンセル",
   "close": "閉じる",
-  "confirm": "確認",
+  "confirm": "実行",
   "continue": "続行",
   "actions": {
     "title": "操作",
@@ -157,10 +157,10 @@
       "actionText": "クイックテストを実行"
     },
     "batteryTestDeep": {
-      "title": "詳細バッテリーテストを実行",
-      "description": "UPSの詳細バッテリーテストを実行しますか？",
-      "actionText": "詳細テストを実行",
-      "successMessage": "詳細バッテリーテストを開始しました"
+      "title": "ディープバッテリーテストを実行",
+      "description": "UPSのディープバッテリーテストを実行しますか？",
+      "actionText": "ディープテストを実行",
+      "successMessage": "ディープバッテリーテストを開始しました"
     },
     "restart": {
       "title": "再起動",
@@ -194,8 +194,8 @@
     }
   },
   "voltAmpsChart": {
-    "nominalPower": "定格電力",
-    "power": "電力"
+    "nominalPower": "定格皮相電力",
+    "power": "皮相電力"
   },
   "volts-chart": "電圧",
   "watts-chart": "有効電力",
