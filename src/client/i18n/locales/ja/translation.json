@@ -1,0 +1,230 @@
+{
+  "noDevicesError": "デバイスが見つかりません。設定からデバイスを追加してください。",
+  "updateAvailable": "アップデートがあります",
+  "device": "デバイス",
+  "manufacturer": "メーカー",
+  "model": "モデル",
+  "serial": "シリアル番号",
+  "currentLoad": "現在の負荷",
+  "currentWattage": "現在の出力電力",
+  "batteryCharge": "バッテリー残量",
+  "batteryRuntime": "バッテリー駆動時間",
+  "lastUpdated": "最終更新",
+  "toggleTime": "クリックして12/24時間表示を切り替え",
+  "docs": "APIドキュメント",
+  "voltsChart": {
+    "inputVoltage": "入力電圧",
+    "outputVoltage": "出力電圧",
+    "nominalInputVoltage": "定格入力電圧",
+    "nominalOutputVoltage": "定格出力電圧",
+    "nominalVoltage": "定格電圧",
+    "title": "電圧"
+  },
+  "wattsChart": {
+    "realpower": "有効電力",
+    "nominalRealpower": "定格有効電力"
+  },
+  "temperatureChart": {
+    "ambientTemperature": "周囲温度",
+    "batteryTemperature": "バッテリー温度"
+  },
+  "grid": {
+    "key": "キー",
+    "value": "値",
+    "filter": {
+      "placeholder": "キーで絞り込み",
+      "apply": "絞り込みを適用",
+      "clear": "絞り込みを解除"
+    }
+  },
+  "sidebar": {
+    "settings": "設定",
+    "disconnect": "切断",
+    "refresh": "更新",
+    "language": "言語",
+    "timeRange": {
+      "title": "期間",
+      "all": "全データ",
+      "1min": "直近1分",
+      "5min": "直近5分",
+      "30min": "直近30分",
+      "1hour": "直近1時間",
+      "24hours": "直近24時間"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "general": "一般",
+    "generalNotice": "アプリケーションの一般設定",
+    "dateFormat": "日付形式",
+    "selectDateFormat": "日付形式を選択",
+    "timeFormat": "時刻形式",
+    "selectTimeFormat": "時刻形式を選択",
+    "temperatureUnit": "温度単位",
+    "selectTemperatureUnit": "温度単位を選択",
+    "celsius": "摂氏 (°C)",
+    "fahrenheit": "華氏 (°F)",
+    "disableVersionCheck": "バージョンチェックを無効化",
+    "disableVersionCheckDescription": "フッターでの更新確認を無効にします",
+    "manageServers": "サーバー管理",
+    "influxDb": "InfluxDB",
+    "influxNotice": "InfluxDB 2.x でのみ動作します",
+    "influxInterval": "Influx間隔 (秒)",
+    "addServer": "サーバーを追加",
+    "apply": "適用",
+    "saved": "変更を保存しました",
+    "configExport": "設定のインポート/エクスポート",
+    "configExportNotice": "YAML設定ファイルを手動で編集します。",
+    "download": "ダウンロード",
+    "save": "保存",
+    "viewConfig": "クリックして設定を表示します。",
+    "serversNotice": "コマンドの実行にはユーザー名とパスワードが必要です",
+    "terminal": "ターミナル",
+    "terminalNotice": "コマンド一覧を表示するには「help」と入力してください。",
+    "selectServer": "サーバーを選択",
+    "dashboard": "ダッシュボード",
+    "dashboardNotice": "セクションの並べ替えと表示/非表示を切り替えます。",
+    "hide": "非表示",
+    "show": "表示",
+    "section": {
+      "kpis": "KPI",
+      "charts": "グラフ",
+      "variables": "変数"
+    },
+    "remove": "削除",
+    "enable": "有効化",
+    "disable": "無効化"
+  },
+  "connect": {
+    "name": "名前",
+    "namePlaceholder": "サーバー名（別名）を入力",
+    "server": "サーバーアドレス",
+    "port": "ポート",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "token": "トークン",
+    "org": "組織",
+    "bucket": "バケット",
+    "connect": "接続",
+    "clear": "クリア",
+    "test": "テスト",
+    "success": "接続に成功しました",
+    "error": "接続に失敗しました。詳細はログを確認してください。",
+    "testing": "接続をテスト中..."
+  },
+  "theme": {
+    "dark": "ダーク",
+    "light": "ライト",
+    "system": "システム",
+    "title": "テーマ"
+  },
+  "serverNotFound": "ホストが見つかりません。設定を確認してください。",
+  "serverRefused": "接続が拒否されました。NUTサーバーは起動していますか？",
+  "selectDevice": "デバイスを選択",
+  "loading": "読み込み中...",
+  "cancel": "キャンセル",
+  "close": "閉じる",
+  "confirm": "実行",
+  "continue": "続行",
+  "actions": {
+    "title": "操作",
+    "groups": {
+      "testing": "テスト",
+      "power": "電源操作",
+      "beeper": "ブザー"
+    },
+    "testing": {
+      "title": "テスト",
+      "description": "実行するバッテリーテストを選択します。",
+      "selectPlaceholder": "テストの種類を選択",
+      "run": "テストを実行"
+    },
+    "power": {
+      "title": "電源操作",
+      "description": "電源操作を選択して確認します。"
+    },
+    "beeper": {
+      "title": "ブザー",
+      "description": "ブザーの有効/無効、または一時的なミュートを行います。",
+      "switchLabel": "ブザーを有効化",
+      "muteLabel": "ブザーをミュート",
+      "muteButton": "ミュート"
+    },
+    "batteryTestQuick": {
+      "title": "クイックバッテリーテストを実行",
+      "description": "UPSのクイックバッテリーテストを実行しますか？",
+      "successMessage": "クイックバッテリーテストを開始しました",
+      "actionText": "クイックテストを実行"
+    },
+    "batteryTestDeep": {
+      "title": "ディープバッテリーテストを実行",
+      "description": "UPSのディープバッテリーテストを実行しますか？",
+      "actionText": "ディープテストを実行",
+      "successMessage": "ディープバッテリーテストを開始しました"
+    },
+    "restart": {
+      "title": "再起動",
+      "description": "UPSを再起動しますか？",
+      "actionText": "再起動",
+      "successMessage": "再起動中"
+    },
+    "shutdown": {
+      "title": "シャットダウン",
+      "description": "UPSをシャットダウンしますか？",
+      "actionText": "シャットダウン",
+      "successMessage": "シャットダウン中"
+    },
+    "beeperDisable": {
+      "title": "ブザーを無効化",
+      "description": "ブザーを無効にしますか？",
+      "actionText": "ブザーを無効化",
+      "successMessage": "ブザーを無効にしました"
+    },
+    "beeperEnable": {
+      "title": "ブザーを有効化",
+      "description": "ブザーを有効にしますか？",
+      "actionText": "ブザーを有効化",
+      "successMessage": "ブザーを有効にしました"
+    },
+    "beeperMute": {
+      "title": "ブザーをミュート",
+      "description": "ブザーをミュートしますか？",
+      "actionText": "ブザーをミュート",
+      "successMessage": "ブザーをミュートしました"
+    }
+  },
+  "voltAmpsChart": {
+    "nominalPower": "定格皮相電力",
+    "power": "皮相電力"
+  },
+  "volts-chart": "電圧",
+  "watts-chart": "有効電力",
+  "volt-amps-chart": "皮相電力",
+  "temperature-chart": "温度",
+  "accordion-grid": "UPSデータ",
+  "login": {
+    "title": "続行するにはログインしてください。",
+    "username": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力",
+    "submit": "ログイン"
+  },
+  "setup": {
+    "title": "PeaNUTへようこそ",
+    "description": "開始するには初期管理者アカウントを作成してください。",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "passwordHint": "5文字以上で入力してください。",
+    "submit": "アカウントを作成",
+    "submitting": "アカウントを作成中...",
+    "errorUserExists": "ユーザーはすでに存在します。",
+    "errorSaveFailed": "ユーザーを保存できませんでした。",
+    "errorUsernameRequired": "ユーザー名は必須です"
+  },
+  "logout": "ログアウト",
+  "description": "説明",
+  "status": "ステータス",
+  "view": "表示",
+  "details": "詳細"
+}
