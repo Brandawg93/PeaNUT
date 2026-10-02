@@ -121,6 +121,22 @@ export async function testInfluxConnection(host: string, token: string, org: str
   return await influxdata.testConnection()
 }
 
+export async function getInfluxHistory(measurement: string, field: string, rangeMinutes: number) {
+  const settings = getCachedSettings()
+  const host = settings.get('INFLUX_HOST')
+  const token = settings.get('INFLUX_TOKEN')
+  const org = settings.get('INFLUX_ORG')
+  const bucket = settings.get('INFLUX_BUCKET')
+
+  if (!host || !token || !org || !bucket) {
+    debug.warn('getInfluxHistory called without complete InfluxDB configuration')
+    return []
+  }
+
+  const influxdata = new InfluxWriter(host, token, org, bucket)
+  return await influxdata.queryHistory(measurement, field, rangeMinutes)
+}
+
 export async function getDevices(): Promise<DevicesData> {
   debug.info('Starting getDevices operation')
   const nuts = connect()
