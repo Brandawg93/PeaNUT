@@ -45,6 +45,12 @@ function getCachedSettings(): YamlSettings {
   return settingsInstance
 }
 
+function getCachedRWVarsIfReachable(nut: Nut, deviceName: string, isReachable: boolean) {
+  return isReachable
+    ? getCachedRWVars(nut.getHost(), nut.getPort(), deviceName, nut.getUsername(), nut.getPassword())
+    : Promise.resolve([])
+}
+
 function connect(): Array<Nut> {
   try {
     debug.info('Connecting to NUT servers')
@@ -197,7 +203,7 @@ export async function getDevices(): Promise<DevicesData> {
           const isReachable = data && data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
           const [rwVars, commands] = await Promise.all([
-            isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), device.name, nut.getUsername(), nut.getPassword()) : Promise.resolve([]),
+            getCachedRWVarsIfReachable(nut, device.name, isReachable),
             isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), device.name) : Promise.resolve([]),
           ])
 
@@ -270,7 +276,7 @@ export async function getDevice(deviceId: string): Promise<DeviceData> {
   const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
   const [rwVars, commands, description] = await Promise.all([
-    isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), parsed.name, nut.getUsername(), nut.getPassword()) : Promise.resolve([]),
+    getCachedRWVarsIfReachable(nut, parsed.name, isReachable),
     isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve([]),
     isReachable ? getCachedDeviceDescription(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve(''),
   ])
