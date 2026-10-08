@@ -53,6 +53,13 @@ describe('nut-cache', () => {
     expect(result).toEqual(['ups.delay.start'])
   })
 
+  test('getCachedRWVars forwards credentials to Nut', async () => {
+    mockNutMethods.getRWVars.mockResolvedValue(['ups.delay.start'])
+    const result = await getCachedRWVars('h', 1, 'ups', 'user', 'pass')
+    expect(Nut).toHaveBeenCalledWith('h', 1, 'user', 'pass')
+    expect(result).toEqual(['ups.delay.start'])
+  })
+
   test('getCachedVarDescription forwards args including socket', async () => {
     mockNutMethods.getVarDescription.mockResolvedValue('desc')
     const sock = { id: 'sock' }

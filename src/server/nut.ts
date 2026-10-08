@@ -45,6 +45,14 @@ export class Nut {
     return this.name
   }
 
+  public getUsername(): string {
+    return this.username
+  }
+
+  public getPassword(): string {
+    return this.password
+  }
+
   public hasCredentials(): boolean {
     return !!this.username && !!this.password
   }

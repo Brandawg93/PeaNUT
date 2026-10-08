@@ -197,7 +197,7 @@ export async function getDevices(): Promise<DevicesData> {
           const isReachable = data && data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
           const [rwVars, commands] = await Promise.all([
-            isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), device.name) : Promise.resolve([]),
+            isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), device.name, nut.getUsername(), nut.getPassword()) : Promise.resolve([]),
             isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), device.name) : Promise.resolve([]),
           ])
 
@@ -270,7 +270,7 @@ export async function getDevice(deviceId: string): Promise<DeviceData> {
   const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
   const [rwVars, commands, description] = await Promise.all([
-    isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve([]),
+    isReachable ? getCachedRWVars(nut.getHost(), nut.getPort(), parsed.name, nut.getUsername(), nut.getPassword()) : Promise.resolve([]),
     isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve([]),
     isReachable ? getCachedDeviceDescription(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve(''),
   ])
