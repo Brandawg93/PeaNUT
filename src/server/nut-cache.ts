@@ -21,8 +21,14 @@ export const getCachedCommands = cache(async (host: string, port: number, device
  * Cached wrapper for device RW vars retrieval
  */
 export const getCachedRWVars = cache(
-  async (host: string, port: number, device: string): Promise<Array<keyof import('@/common/types').VARS>> => {
-    const nut = new Nut(host, port)
+  async (
+    host: string,
+    port: number,
+    device: string,
+    username?: string,
+    password?: string
+  ): Promise<Array<keyof import('@/common/types').VARS>> => {
+    const nut = new Nut(host, port, username, password)
     return await nut.getRWVars(device)
   }
 )

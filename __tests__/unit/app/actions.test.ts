@@ -1,5 +1,6 @@
 import { TextDecoder } from 'node:util'
 import { DEVICE, VARS } from '@/common/types'
+import { upsStatus } from '@/common/constants'
 import { Nut } from '@/server/nut'
 import {
   getAllVarDescriptions,
@@ -94,6 +95,42 @@ describe('actions', () => {
   it('gets devices', async () => {
     const data = await getDevices()
     expect(data.devices).toEqual(result)
+  })
+
+  describe.each([
+    ['getDevices', async () => (await getDevices()).devices![0]],
+    ['getDevice', async () => (await getDevice('foo')).device],
+  ] as const)('%s writable variables', (_name, loadDevice) => {
+    it('discovers writable variables using the configured credentials', async () => {
+      ;(YamlSettings.prototype.get as jest.Mock).mockReturnValueOnce([
+        { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD },
+      ])
+      ;(Nut.prototype.getRWVars as jest.Mock).mockImplementationOnce(function (this: Nut) {
+        expect(this.getHost()).toBe(TEST_HOSTNAME)
+        expect(this.getPort()).toBe(TEST_PORT)
+        expect(this.getUsername()).toBe(TEST_USERNAME)
+        expect(this.getPassword()).toBe(TEST_PASSWORD)
+        return Promise.resolve(['battery.charge'])
+      })
+
+      const device = await loadDevice()
+
+      expect(device.rwVars).toEqual(['battery.charge'])
+      expect(Nut.prototype.getRWVars).toHaveBeenCalledWith('foo')
+    })
+
+    it('skips writable-variable and command discovery for an unreachable device', async () => {
+      ;(Nut.prototype.getData as jest.Mock).mockResolvedValueOnce({
+        'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+      })
+
+      const device = await loadDevice()
+
+      expect(device.rwVars).toEqual([])
+      expect(device.commands).toEqual([])
+      expect(Nut.prototype.getRWVars).not.toHaveBeenCalled()
+      expect(Nut.prototype.getCommands).not.toHaveBeenCalled()
+    })
   })
 
   it('gets all var descriptions', async () => {

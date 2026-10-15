@@ -28,6 +28,6 @@ import { getCachedRWVars } from '@/server/nut-cache'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
   return handleDeviceOperation(device, async (nut, deviceName) => {
-    return await getCachedRWVars(nut.getHost(), nut.getPort(), deviceName)
+    return await getCachedRWVars(nut.getHost(), nut.getPort(), deviceName, nut.getUsername(), nut.getPassword())
   })
 }
