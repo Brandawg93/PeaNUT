@@ -29,8 +29,8 @@ export default function VoltsChart({
   const [showInputVoltage, setShowInputVoltage] = useState<boolean>(true)
   const [showOutputVoltage, setShowOutputVoltage] = useState<boolean>(true)
 
-  const inputVoltageData = useChartData(id, updated, inputVoltage)
-  const outputVoltageData = useChartData(id, updated, outputVoltage)
+  const inputVoltageData = useChartData(id, 'input.voltage', updated, inputVoltage)
+  const outputVoltageData = useChartData(id, 'output.voltage', updated, outputVoltage)
 
   const referenceLineData = []
   if (inputVoltageNominal && outputVoltageNominal && inputVoltageNominal === outputVoltageNominal) {
