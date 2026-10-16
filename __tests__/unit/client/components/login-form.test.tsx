@@ -26,6 +26,7 @@ describe('LoginForm', () => {
     expect(screen.getByText('login.title')).toBeInTheDocument()
     expect(screen.getByLabelText('login.username')).toBeInTheDocument()
     expect(screen.getByLabelText('login.password')).toBeInTheDocument()
+    expect(screen.getByLabelText('login.password')).toHaveAttribute('minLength', '5')
     expect(screen.getByTestId('login-button')).toBeInTheDocument()
   })
 
