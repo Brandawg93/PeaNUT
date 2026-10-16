@@ -43,7 +43,7 @@ export default function LoginForm() {
               name='password'
               placeholder={t('login.passwordPlaceholder')}
               required
-              minLength={6}
+              minLength={5}
             />
           </div>
           <input type='hidden' name='redirectTo' value={callbackUrl} />
