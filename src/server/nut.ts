@@ -433,11 +433,25 @@ export class Nut {
   }
 
   public async getType(variable: string, device = 'UPS', socket?: PromiseSocket): Promise<string> {
-    const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n', false, socket)
-    if (!data.startsWith('TYPE')) {
-      throw new Error('Invalid response')
+    try {
+      const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n', false, socket)
+      if (!data.startsWith('TYPE')) {
+        throw new Error('Invalid response')
+      }
+      return data.split(`TYPE ${device} ${variable}`)[1].trim()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      // Transport failures (timeouts, closed connections) must propagate so the
+      // caller destroys the connection instead of reusing a socket whose
+      // request/response lockstep is unknown. Only protocol-level failures
+      // (upsd ERR replies, malformed responses) degrade to an empty type.
+      const isProtocolError = message.startsWith('ERR') || message === 'Invalid response'
+      if (!isProtocolError) {
+        throw error
+      }
+      this.debug.warn('Failed to get type', { variable, device, error: message })
+      return ''
     }
-    return data.split(`TYPE ${device} ${variable}`)[1].trim()
   }
 
   public async setVar(variable: string, value: string, device = 'UPS'): Promise<void> {

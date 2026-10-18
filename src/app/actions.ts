@@ -273,10 +273,37 @@ export async function getDevice(deviceId: string): Promise<DeviceData> {
   const data = await nut.getData(parsed.name)
   const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
+  // Degrade per command: a single rejected NUT command (e.g. an upsd that
+  // answers ERR INVALID-ARGUMENT to GET UPSDESC) must not blank the whole
+  // dashboard. getDevices() already degrades this way per device.
   const [rwVars, commands, description] = await Promise.all([
-    isReachable ? getCachedRWVarsForNut(nut, parsed.name) : Promise.resolve([]),
-    isReachable ? getCachedCommands(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve([]),
-    isReachable ? getCachedDeviceDescription(nut.getHost(), nut.getPort(), parsed.name) : Promise.resolve(''),
+    isReachable
+      ? getCachedRWVarsForNut(nut, parsed.name).catch((e) => {
+          debug.warn('Failed to get RW vars for device', {
+            device: parsed.name,
+            error: e instanceof Error ? e.message : String(e),
+          })
+          return []
+        })
+      : Promise.resolve([]),
+    isReachable
+      ? getCachedCommands(nut.getHost(), nut.getPort(), parsed.name).catch((e) => {
+          debug.warn('Failed to get commands for device', {
+            device: parsed.name,
+            error: e instanceof Error ? e.message : String(e),
+          })
+          return []
+        })
+      : Promise.resolve([]),
+    isReachable
+      ? getCachedDeviceDescription(nut.getHost(), nut.getPort(), parsed.name).catch((e) => {
+          debug.warn('Failed to get device description', {
+            device: parsed.name,
+            error: e instanceof Error ? e.message : String(e),
+          })
+          return ''
+        })
+      : Promise.resolve(''),
   ])
   return {
     device: {
