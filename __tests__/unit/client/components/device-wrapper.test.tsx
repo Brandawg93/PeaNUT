@@ -119,6 +119,15 @@ describe('DeviceWrapper', () => {
     })
   })
 
+  it('should show error state instead of loading forever when the action rejects (#470)', async () => {
+    mockGetDeviceAction.mockRejectedValue(new Error('ERR INVALID-ARGUMENT\n'))
+    await renderComponent()
+    await waitFor(() => {
+      expect(screen.getByTestId('error-wrapper')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('loading-wrapper')).not.toBeInTheDocument()
+  })
+
   it('should display device information when data is available', async () => {
     mockGetDeviceAction.mockResolvedValue(mockDeviceData)
     await renderComponent()

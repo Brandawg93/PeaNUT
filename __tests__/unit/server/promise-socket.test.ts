@@ -209,6 +209,19 @@ describe('PromiseSocket', () => {
       expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
     })
 
+    test('should reject ERR responses to single-line commands instead of resolving (#470)', async () => {
+      // Single-line commands (GET UPSDESC, GET TYPE, ...) use '\n' as the
+      // terminator. An `ERR ...\n` reply must reject, not resolve as data.
+      const callbacks = mockSocketEvents()
+      const readPromise = promiseSocket.readAll('GET UPSDESC foo', '\n')
+      callbacks.data(Buffer.from('ERR INVALID-ARGUMENT\n'))
+
+      await expect(readPromise).rejects.toThrow('ERR INVALID-ARGUMENT\n')
+      expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
+    })
+
     test('should not reject when data starts with ERR but no newline', async () => {
       const callbacks = mockSocketEvents()
       const readPromise = promiseSocket.readAll('COMMAND', 'END COMMAND')

@@ -367,6 +367,45 @@ describe('actions', () => {
       expect(commands).toEqual([])
     })
 
+    it('getDevice degrades to [] rwVars when the RW vars lookup fails (#470)', async () => {
+      ;(Nut.prototype.getRWVars as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device?.rwVars).toEqual([])
+      expect(deviceData.device?.vars).toEqual({})
+      expect(deviceData.device?.description).toBe('bar')
+    })
+
+    it('getDevice degrades to [] commands when the commands lookup fails (#470)', async () => {
+      ;(Nut.prototype.getCommands as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device?.commands).toEqual([])
+      expect(deviceData.device?.rwVars).toEqual(['battery.charge'])
+    })
+
+    it('getDevice degrades to empty description when the description lookup fails (#470)', async () => {
+      ;(Nut.prototype.getDescription as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device?.description).toBe('')
+      expect(deviceData.device?.vars).toEqual({})
+    })
+
+    it('getDevice still resolves when every optional command fails (#470)', async () => {
+      ;(Nut.prototype.getRWVars as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      ;(Nut.prototype.getCommands as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      ;(Nut.prototype.getDescription as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device).toEqual({
+        id: 'foo',
+        name: 'foo',
+        server: `${TEST_HOSTNAME}:${TEST_PORT}`,
+        vars: {},
+        rwVars: [],
+        description: '',
+        clients: [],
+        commands: [],
+      })
+    })
+
     it('getAllVarDescriptions returns an error message when the lookup throws', async () => {
       ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
       const result = await getAllVarDescriptions(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, ['battery.charge'])
