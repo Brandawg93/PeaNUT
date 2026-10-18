@@ -209,23 +209,14 @@ describe('PromiseSocket', () => {
       expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
     })
 
-    test('should reject ERR responses to single-line commands instead of resolving (#470)', async () => {
-      // Single-line commands (GET UPSDESC, GET TYPE, ...) use '\n' as the
-      // terminator. An `ERR ...\n` reply must reject, not resolve as data.
+    test.each([
+      { response: 'complete', chunks: ['ERR INVALID-ARGUMENT\n'] },
+      { response: 'fragmented', chunks: ['ERR INVALID-', 'ARGUMENT\n'] },
+    ])('should reject $response ERR responses to single-line commands (#470)', async ({ chunks }) => {
+      // Single-line commands use '\n' as the terminator, but ERR replies must reject.
       const callbacks = mockSocketEvents()
       const readPromise = promiseSocket.readAll('GET UPSDESC foo', '\n')
-      callbacks.data(Buffer.from('ERR INVALID-ARGUMENT\n'))
-
-      await expect(readPromise).rejects.toThrow('ERR INVALID-ARGUMENT\n')
-      expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))
-      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
-      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
-    })
-    test('should reject fragmented ERR responses to single-line commands (#470)', async () => {
-      const callbacks = mockSocketEvents()
-      const readPromise = promiseSocket.readAll('GET UPSDESC foo', '\n')
-      callbacks.data(Buffer.from('ERR INVALID-'))
-      callbacks.data(Buffer.from('ARGUMENT\n'))
+      chunks.forEach((chunk) => callbacks.data(Buffer.from(chunk)))
 
       await expect(readPromise).rejects.toThrow('ERR INVALID-ARGUMENT\n')
       expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))

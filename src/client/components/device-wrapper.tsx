@@ -17,6 +17,7 @@ import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
 import NavBar from '@/client/components/navbar'
+import PageStatus from '@/client/components/page-status'
 import NavBarControls from '@/client/components/navbar-controls'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
@@ -28,7 +29,6 @@ import { upsStatus, parseUpsStatus } from '@/common/constants'
 import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
-import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 import { useSettings } from '@/client/context/settings'
 import { DashboardSectionConfig } from '@/server/settings'
@@ -233,34 +233,31 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   // unmounting here would also kill the auto-refresh timer in NavBarControls.
   if (isError && !data?.device) {
     return (
-      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='error-wrapper'>
-        <NavBar>
+      <PageStatus
+        testId='error-wrapper'
+        controls={
           <div className='flex justify-end space-x-2'>
             <DayNightSwitch />
             <LanguageSwitcher />
           </div>
-        </NavBar>
-        <div className='flex flex-1 flex-col items-center justify-center'>
-          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
-            <div className='flex flex-col items-center pb-2'>
-              <HiOutlineExclamationCircle className='text-destructive mb-4 text-8xl' />
-              <p>{t('error')}</p>
-              {error instanceof Error ? <p className='text-muted-foreground mt-2 text-sm'>{error.message}</p> : null}
-            </div>
-            <div>
-              <Button variant='default' title={t('refresh')} className='shadow-none' onClick={() => refetch()}>
-                {t('refresh')}
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>
+        }
+        action={
+          <Button variant='default' title={t('refresh')} className='shadow-none' onClick={() => refetch()}>
+            {t('refresh')}
+          </Button>
+        }
+      >
+        <HiOutlineExclamationCircle className='text-destructive mb-4 text-8xl' />
+        <p>{t('error')}</p>
+        {error instanceof Error ? <p className='text-muted-foreground mt-2 text-sm'>{error.message}</p> : null}
+      </PageStatus>
     )
   }
   if (!data?.device) {
     return (
-      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
-        <NavBar>
+      <PageStatus
+        testId='empty-wrapper'
+        controls={
           <div className='flex justify-end space-x-2'>
             <DayNightSwitch />
             <LanguageSwitcher />
@@ -275,26 +272,21 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               <TbSettings className='size-6! stroke-[1.5px]' />
             </Button>
           </div>
-        </NavBar>
-        <div className='flex flex-1 flex-col items-center justify-center'>
-          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
-            <div className='flex flex-col items-center pb-2'>
-              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
-              <p>{t('noDevicesError')}</p>
-            </div>
-            <div>
-              <Button
-                variant='default'
-                title={t('sidebar.settings')}
-                className='shadow-none'
-                onClick={() => push('/settings')}
-              >
-                <TbSettings className='size-6! stroke-[1.5px]' />
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>
+        }
+        action={
+          <Button
+            variant='default'
+            title={t('sidebar.settings')}
+            className='shadow-none'
+            onClick={() => push('/settings')}
+          >
+            <TbSettings className='size-6! stroke-[1.5px]' />
+          </Button>
+        }
+      >
+        <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
+        <p>{t('noDevicesError')}</p>
+      </PageStatus>
     )
   }
 
