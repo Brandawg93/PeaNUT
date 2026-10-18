@@ -433,11 +433,20 @@ export class Nut {
   }
 
   public async getType(variable: string, device = 'UPS', socket?: PromiseSocket): Promise<string> {
-    const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n', false, socket)
-    if (!data.startsWith('TYPE')) {
-      throw new Error('Invalid response')
+    try {
+      const data = await this.getCommand(`GET TYPE ${device} ${variable}`, '\n', false, socket)
+      if (!data.startsWith('TYPE')) {
+        throw new Error('Invalid response')
+      }
+      return data.split(`TYPE ${device} ${variable}`)[1].trim()
+    } catch (error) {
+      this.debug.warn('Failed to get type', {
+        variable,
+        device,
+        error: error instanceof Error ? error.message : String(error),
+      })
+      return ''
     }
-    return data.split(`TYPE ${device} ${variable}`)[1].trim()
   }
 
   public async setVar(variable: string, value: string, device = 'UPS'): Promise<void> {

@@ -647,10 +647,16 @@ describe('Nut', () => {
       expect(result).toEqual('Description unavailable')
     })
 
-    it('throws "Invalid response" from getType on malformed reply', async () => {
+    it('returns "" from getType on malformed reply (degrades like getVarDescription)', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('NOTTYPE ups battery.charge NUMBER')
-      await expect(nut.getType('battery.charge', 'ups')).rejects.toThrow('Invalid response')
+      await expect(nut.getType('battery.charge', 'ups')).resolves.toEqual('')
+    })
+
+    it('returns "" from getType when the command throws', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR INVALID-ARGUMENT\n'))
+      await expect(nut.getType('battery.charge', 'ups')).resolves.toEqual('')
     })
 
     it('throws "Invalid response" from setVar when the SET reply is not OK', async () => {

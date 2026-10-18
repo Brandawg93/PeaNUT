@@ -85,7 +85,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   const { t } = useTranslation(lng)
   const { push } = useNavigation()
   const { settings } = useSettings()
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, isError, error, data, refetch } = useQuery({
     queryKey: ['deviceData', device, getDeviceAction],
     queryFn: async () => await getDeviceAction(device),
   })
@@ -227,6 +227,32 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
 
   if (isLoading) {
     return loadingWrapper
+  }
+  if (isError) {
+    return (
+      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='error-wrapper'>
+        <NavBar>
+          <div className='flex justify-end space-x-2'>
+            <DayNightSwitch />
+            <LanguageSwitcher />
+          </div>
+        </NavBar>
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
+            <div className='flex flex-col items-center pb-2'>
+              <HiOutlineExclamationCircle className='text-destructive mb-4 text-8xl' />
+              <p>{t('error')}</p>
+              {error instanceof Error ? <p className='text-muted-foreground mt-2 text-sm'>{error.message}</p> : null}
+            </div>
+            <div>
+              <Button variant='default' title={t('refresh')} className='shadow-none' onClick={() => refetch()}>
+                {t('refresh')}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
   }
   if (!data?.device) {
     return (

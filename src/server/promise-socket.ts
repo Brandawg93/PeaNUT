@@ -65,10 +65,9 @@ export default class PromiseSocket {
 
         const onData = (data: Buffer) => {
           buf += data.toString()
-          if (buf.includes(until)) {
-            cleanup()
-            resolve(buf)
-          }
+          // Check for protocol errors first: single-line commands use '\n' as
+          // the terminator, so an `ERR ...\n` response would otherwise resolve
+          // as if it were a successful reply.
           if (buf.startsWith('ERR')) {
             const newlineIndex = buf.indexOf('\n')
             if (newlineIndex !== -1) {
@@ -76,6 +75,10 @@ export default class PromiseSocket {
               reject(new Error(buf.slice(0, newlineIndex + 1)))
               return
             }
+          }
+          if (buf.includes(until)) {
+            cleanup()
+            resolve(buf)
           }
         }
 
