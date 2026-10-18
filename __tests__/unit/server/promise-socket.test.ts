@@ -221,6 +221,17 @@ describe('PromiseSocket', () => {
       expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
       expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
     })
+    test('should reject fragmented ERR responses to single-line commands (#470)', async () => {
+      const callbacks = mockSocketEvents()
+      const readPromise = promiseSocket.readAll('GET UPSDESC foo', '\n')
+      callbacks.data(Buffer.from('ERR INVALID-'))
+      callbacks.data(Buffer.from('ARGUMENT\n'))
+
+      await expect(readPromise).rejects.toThrow('ERR INVALID-ARGUMENT\n')
+      expect(mockSocket.off).toHaveBeenCalledWith('data', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('end', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
+    })
 
     test('should not reject when data starts with ERR but no newline', async () => {
       const callbacks = mockSocketEvents()

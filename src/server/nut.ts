@@ -440,11 +440,16 @@ export class Nut {
       }
       return data.split(`TYPE ${device} ${variable}`)[1].trim()
     } catch (error) {
-      this.debug.warn('Failed to get type', {
-        variable,
-        device,
-        error: error instanceof Error ? error.message : String(error),
-      })
+      const message = error instanceof Error ? error.message : String(error)
+      // Transport failures (timeouts, closed connections) must propagate so the
+      // caller destroys the connection instead of reusing a socket whose
+      // request/response lockstep is unknown. Only protocol-level failures
+      // (upsd ERR replies, malformed responses) degrade to an empty type.
+      const isProtocolError = message.startsWith('ERR') || message === 'Invalid response'
+      if (!isProtocolError) {
+        throw error
+      }
+      this.debug.warn('Failed to get type', { variable, device, error: message })
       return ''
     }
   }

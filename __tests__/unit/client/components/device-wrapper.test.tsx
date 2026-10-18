@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, waitFor, fireEvent } from '@testing-library/react'
+import { screen, waitFor, fireEvent, act } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
 import DeviceWrapper from '@/client/components/device-wrapper'
 import { renderWithProviders, waitForSettings } from '../../../utils/test-utils'
@@ -126,6 +126,19 @@ describe('DeviceWrapper', () => {
       expect(screen.getByTestId('error-wrapper')).toBeInTheDocument()
     })
     expect(screen.queryByTestId('loading-wrapper')).not.toBeInTheDocument()
+  })
+
+  it('should keep showing the cached device when a background refresh fails', async () => {
+    mockGetDeviceAction.mockResolvedValueOnce(mockDeviceData).mockRejectedValueOnce(new Error('boom'))
+    await renderComponent()
+    await waitFor(() => {
+      expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+    })
+    await act(async () => {
+      await queryClient.refetchQueries({ queryKey: ['deviceData'] })
+    })
+    expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+    expect(screen.queryByTestId('error-wrapper')).not.toBeInTheDocument()
   })
 
   it('should display device information when data is available', async () => {

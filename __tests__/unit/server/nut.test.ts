@@ -659,6 +659,12 @@ describe('Nut', () => {
       await expect(nut.getType('battery.charge', 'ups')).resolves.toEqual('')
     })
 
+    it('rethrows transport errors from getType so the connection is destroyed', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Operation timeout'))
+      await expect(nut.getType('battery.charge', 'ups')).rejects.toThrow('Operation timeout')
+    })
+
     it('throws "Invalid response" from setVar when the SET reply is not OK', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)

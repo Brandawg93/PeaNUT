@@ -228,7 +228,10 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   if (isLoading) {
     return loadingWrapper
   }
-  if (isError) {
+  // Only take over the full page when there is no cached device to show: a
+  // failed background refresh keeps isError set while data is retained, and
+  // unmounting here would also kill the auto-refresh timer in NavBarControls.
+  if (isError && !data?.device) {
     return (
       <div className='bg-background flex h-full min-h-screen flex-col' data-testid='error-wrapper'>
         <NavBar>
