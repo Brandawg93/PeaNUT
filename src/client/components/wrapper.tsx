@@ -2,7 +2,7 @@
 
 import React, { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { HiQuestionMarkCircle } from 'react-icons/hi2'
+import { HiQuestionMarkCircle, HiOutlineExclamationCircle } from 'react-icons/hi2'
 import { TbSettings } from 'react-icons/tb'
 import { Button } from '@/client/components/ui/button'
 import { useTranslation } from 'react-i18next'
@@ -27,10 +27,36 @@ export default function Wrapper({ getDevicesAction, logoutAction }: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { push } = useNavigation()
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ['devicesData', getDevicesAction],
     queryFn: async () => await getDevicesAction(),
   })
+
+  // A rejected initial query has no data, but is no longer loading. Keep cached
+  // devices on refresh errors, and offer retry instead of a permanent skeleton.
+  if (isError && !data?.devices) {
+    return (
+      <PageStatus
+        testId='error-wrapper'
+        controls={
+          <NavBarControls
+            disableRefresh={false}
+            onRefreshClick={() => refetch()}
+            onRefetch={() => refetch()}
+            onLogout={logoutAction}
+          />
+        }
+        action={
+          <Button variant='default' title={t('refresh')} className='shadow-none' onClick={() => refetch()}>
+            {t('refresh')}
+          </Button>
+        }
+      >
+        <HiOutlineExclamationCircle className='text-destructive mb-4 text-8xl' />
+        <p>{t('error')}</p>
+      </PageStatus>
+    )
+  }
 
   if (!data?.devices || isLoading) {
     return (
