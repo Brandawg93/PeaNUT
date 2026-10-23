@@ -86,6 +86,10 @@ pnpm run start:local
 
 More examples can be found in the [examples](https://github.com/Brandawg93/PeaNUT/tree/main/examples) folder.
 
+## One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/PeaNUT/)
+
 ## Environment Variables
 
 | Variable            | Default   | Description                                       |
