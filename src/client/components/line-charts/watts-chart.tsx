@@ -18,7 +18,7 @@ export default function WattsChart({ id, realpower, realpowerNominal, updated }:
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [showRealpower, setShowRealpower] = useState<boolean>(true)
-  const realpowerData = useChartData(id, updated, realpower)
+  const realpowerData = useChartData(id, 'ups.realpower', updated, realpower)
 
   const referenceLineData = realpowerNominal
     ? [{ label: t('wattsChart.nominalRealpower'), value: realpowerNominal }]
