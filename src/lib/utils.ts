@@ -53,6 +53,15 @@ export function setLocalStorageItem(key: string, value: string): void {
   }
 }
 
+// Route params arrive percent-encoded (e.g. "My%20NAS~3493~ups"); decode before parsing
+export function decodeDeviceId(deviceId: string): string {
+  try {
+    return decodeURIComponent(deviceId)
+  } catch {
+    return deviceId
+  }
+}
+
 // Parse device ID to extract server info and device name
 // Supports URL-safe format "host~port~name" (preferred) and legacy format "name"
 // Also supports backward compatible "host_port_name" format

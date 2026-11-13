@@ -155,6 +155,17 @@ describe('API Utils', () => {
       expect(mockNut2.deviceExists).toHaveBeenCalledWith('test-device')
     })
 
+    it('should decode a percent-encoded device ID from the route', async () => {
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
+
+      const result = await getSingleNutInstance('my%20ups')
+
+      expect(result?.deviceName).toBe('my ups')
+      expect(mockNut.deviceExists).toHaveBeenCalledWith('my ups')
+    })
+
     it('should return undefined when device is not found on any instance', async () => {
       const mockNut = createMockNut(false)
       setupServerSettings()

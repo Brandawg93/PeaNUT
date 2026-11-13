@@ -1,6 +1,6 @@
 import { Nut } from '@/server/nut'
 import { getSettings } from '@/app/actions'
-import { parseDeviceId } from '@/lib/utils'
+import { decodeDeviceId, parseDeviceId } from '@/lib/utils'
 import { server } from '@/common/types'
 import { NextResponse } from 'next/server'
 
@@ -18,7 +18,7 @@ export type NutInstanceResult = {
 
 export const getSingleNutInstance = async (deviceId: string): Promise<NutInstanceResult | undefined> => {
   const nuts = await getNutInstances()
-  const parsed = parseDeviceId(deviceId)
+  const parsed = parseDeviceId(decodeDeviceId(deviceId))
 
   try {
     if (parsed.host && parsed.port) {
