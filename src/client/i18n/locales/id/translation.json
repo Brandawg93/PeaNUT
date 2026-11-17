@@ -25,6 +25,7 @@
     "nominalRealpower": "Daya Aktif Nominal"
   },
   "temperatureChart": {
+    "upsTemperature": "Suhu UPS",
     "ambientTemperature": "Suhu Lingkungan",
     "batteryTemperature": "Suhu Baterai"
   },

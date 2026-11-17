@@ -25,6 +25,7 @@
     "nominalRealpower": "공칭 유효 전력"
   },
   "temperatureChart": {
+    "upsTemperature": "UPS 온도",
     "ambientTemperature": "주변 온도",
     "batteryTemperature": "배터리 온도"
   },

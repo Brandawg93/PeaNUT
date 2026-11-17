@@ -1,68 +1,149 @@
-import React from 'react'
-import { render } from '@testing-library/react'
+import React, { ComponentProps } from 'react'
+import { act, render } from '@testing-library/react'
 import TemperatureChart from '@/client/components/line-charts/temperature-chart'
+import ChartsContainer from '@/client/components/line-charts/charts-container'
 import LineChartBase from '@/client/components/line-charts/line-chart-base'
-import { LanguageContext } from '@/client/context/language'
-import { useChartData } from '@/client/components/line-charts/hooks/useChartData'
 import { useTemperatureUnit } from '@/client/context/settings'
+import { useTimeRange } from '@/client/context/time-range'
+import { device } from '../../../../__mocks__/chartData'
 
 jest.mock('@/client/components/line-charts/line-chart-base', () => jest.fn(() => null))
-jest.mock('@/client/components/line-charts/hooks/useChartData', () => ({
-  useChartData: jest.fn(),
-}))
-jest.mock('@/client/context/settings', () => ({
-  useTemperatureUnit: jest.fn(),
-}))
+jest.mock('@/client/context/settings', () => ({ useTemperatureUnit: jest.fn() }))
+jest.mock('@/client/context/time-range', () => ({ useTimeRange: jest.fn() }))
 
-const mockedLineChart = LineChartBase as jest.MockedFunction<typeof LineChartBase>
-const mockedUseChartData = useChartData as jest.MockedFunction<typeof useChartData>
-const mockedUseTemperatureUnit = useTemperatureUnit as jest.MockedFunction<typeof useTemperatureUnit>
+const mockedLineChart = jest.mocked(LineChartBase)
+const mockedUseTemperatureUnit = jest.mocked(useTemperatureUnit)
+const mockedUseTimeRange = jest.mocked(useTimeRange)
+const updated = new Date('2026-01-01T00:00:00Z')
 
-const renderChart = () =>
-  render(
-    <LanguageContext.Provider value='en'>
-      <TemperatureChart id='ups' ambientTemperature={20} batteryTemperature={25} updated={new Date()} />
-    </LanguageContext.Provider>
-  )
+const chartProps = () => {
+  const call = mockedLineChart.mock.calls.at(-1)
+  if (!call) throw new Error('LineChartBase was not called')
+  return call[0]
+}
+
+const renderChart = async (props: Partial<ComponentProps<typeof TemperatureChart>> = {}) => {
+  let view!: ReturnType<typeof render>
+  await act(async () => {
+    view = render(<TemperatureChart id='ups' updated={updated} {...props} />)
+  })
+  return view
+}
 
 describe('TemperatureChart', () => {
   beforeEach(() => {
     mockedLineChart.mockClear()
-    mockedUseChartData.mockReset()
-    mockedUseTemperatureUnit.mockReset().mockReturnValue('celsius')
+    mockedUseTemperatureUnit.mockReturnValue('celsius')
+    mockedUseTimeRange.mockReturnValue({ timeRange: 0, setTimeRange: jest.fn() })
   })
 
-  it('renders temperature chart configuration', () => {
-    mockedUseChartData
-      .mockReturnValueOnce([{ dataPoint: 20, time: new Date('2024-01-01T00:00:00Z') }])
-      .mockReturnValueOnce([{ dataPoint: 25, time: new Date('2024-01-01T00:00:00Z') }])
-
-    renderChart()
-
-    expect(mockedLineChart).toHaveBeenCalled()
-    const props = mockedLineChart.mock.calls[0][0] as { id: string }
-    expect(props.id).toBe('temperature-chart')
+  afterEach(() => {
+    jest.useRealTimers()
   })
 
-  it('converts temperatures to fahrenheit when setting enabled', () => {
+  it('charts the issue 445 UPS without an unavailable ambient or missing battery series', async () => {
+    const vars = Object.freeze({
+      'ambient.temperature': Object.freeze({ value: '-1' }),
+      'ups.temperature': Object.freeze({ value: '32.5' }),
+    })
+    await act(async () => {
+      render(<ChartsContainer vars={vars} data={{ device, updated }} name={device.name} />)
+    })
+
+    expect(chartProps()).toMatchObject({
+      id: 'temperature-chart',
+      unit: '°C',
+      config: {
+        upsTemperature: { label: 'temperatureChart.upsTemperature', color: 'var(--chart-3)' },
+      },
+      data: [{ upsTemperature: 32.5 }],
+    })
+    expect(Object.keys(chartProps().config)).toEqual(['time', 'upsTemperature'])
+    expect(Object.keys(chartProps().data[0])).toEqual(['time', 'upsTemperature'])
+    expect(vars['ambient.temperature'].value).toBe('-1')
+  })
+
+  it.each([undefined, -1, '-1', '', ' ', 'N/A', 'NaN', 'Infinity', NaN, Infinity])(
+    'omits a chart with only unavailable readings (%p)',
+    async (value) => {
+      await renderChart({ ambientTemperature: value, batteryTemperature: value, upsTemperature: value })
+      expect(mockedLineChart).not.toHaveBeenCalled()
+    }
+  )
+
+  it('preserves zero and other subzero temperatures', async () => {
+    await renderChart({ ambientTemperature: '0', batteryTemperature: -5, upsTemperature: 25 })
+    expect(chartProps().data[0]).toMatchObject({ ambientTemperature: 0, batteryTemperature: -5, upsTemperature: 25 })
+    expect(Object.keys(chartProps().config)).toEqual([
+      'time',
+      'ambientTemperature',
+      'batteryTemperature',
+      'upsTemperature',
+    ])
+  })
+
+  it('converts every series to fahrenheit and toggles each legend independently', async () => {
     mockedUseTemperatureUnit.mockReturnValue('fahrenheit')
-    mockedUseChartData
-      .mockReturnValueOnce([{ dataPoint: 25, time: new Date('2024-01-01T00:00:00Z') }])
-      .mockReturnValueOnce([{ dataPoint: 30, time: new Date('2024-01-01T00:00:00Z') }])
+    await renderChart({ ambientTemperature: 25, batteryTemperature: 30, upsTemperature: 35 })
+    expect(chartProps().unit).toBe('°F')
+    expect(chartProps().data[0]).toMatchObject({ ambientTemperature: 77, batteryTemperature: 86, upsTemperature: 95 })
 
-    renderChart()
-
-    const lastCall = mockedLineChart.mock.calls[mockedLineChart.mock.calls.length - 1]
-    if (!lastCall) {
-      throw new Error('LineChartBase was not called')
+    for (const value of ['ambientTemperature', 'batteryTemperature', 'upsTemperature']) {
+      const original = chartProps().data[0]
+      await act(async () => chartProps().onLegendClick?.({ value }))
+      expect(chartProps().data[0][value]).toBeUndefined()
+      expect(chartProps().data).toHaveLength(1)
+      await act(async () => chartProps().onLegendClick?.({ value }))
+      expect(chartProps().data[0]).toEqual(original)
     }
-    const props = lastCall[0] as {
-      unit: string
-      data: Array<{ ambientTemperature?: number; batteryTemperature?: number }>
-    }
+  })
 
-    expect(props.unit).toBe('°F')
-    expect(props.data[0]?.ambientTemperature).toBeCloseTo(77)
-    expect(props.data[0]?.batteryTemperature).toBeCloseTo(86)
+  it('keeps late, invalid, and recovered readings aligned with the other sensors', async () => {
+    const view = await renderChart({ ambientTemperature: 20, upsTemperature: 30 })
+    await act(async () => {
+      view.rerender(
+        <TemperatureChart
+          id='ups'
+          updated={new Date()}
+          ambientTemperature={-1}
+          batteryTemperature={25}
+          upsTemperature={31}
+        />
+      )
+    })
+    await act(async () => {
+      view.rerender(<TemperatureChart id='ups' updated={new Date()} ambientTemperature={21} upsTemperature={32} />)
+    })
+
+    expect(chartProps().data).toMatchObject([
+      { ambientTemperature: 20, batteryTemperature: undefined, upsTemperature: 30 },
+      { ambientTemperature: undefined, batteryTemperature: 25, upsTemperature: 31 },
+      { ambientTemperature: 21, batteryTemperature: undefined, upsTemperature: 32 },
+    ])
+    expect(Object.keys(chartProps().data[0])).toContain('batteryTemperature')
+  })
+
+  it('starts a new history when switching devices', async () => {
+    const view = await renderChart({ ambientTemperature: 20 })
+    await act(async () => {
+      view.rerender(<TemperatureChart id='other-ups' updated={updated} upsTemperature={35} />)
+    })
+    expect(chartProps().data).toHaveLength(1)
+    expect(chartProps().data[0]).toMatchObject({ upsTemperature: 35 })
+    expect(Object.keys(chartProps().config)).toEqual(['time', 'upsTemperature'])
+  })
+
+  it('filters all sensor histories to the selected time range', async () => {
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] })
+    jest.setSystemTime(updated)
+    const view = await renderChart({ ambientTemperature: 20, upsTemperature: 30 })
+    jest.setSystemTime(new Date(updated.getTime() + 120_000))
+    mockedUseTimeRange.mockReturnValue({ timeRange: 1, setTimeRange: jest.fn() })
+    await act(async () => {
+      view.rerender(<TemperatureChart id='ups' updated={new Date()} batteryTemperature={25} upsTemperature={31} />)
+    })
+    expect(chartProps().data).toHaveLength(1)
+    expect(chartProps().data[0]).toMatchObject({ batteryTemperature: 25, upsTemperature: 31 })
+    expect(chartProps().config).not.toHaveProperty('ambientTemperature')
   })
 })
