@@ -82,6 +82,7 @@ export default function TemperatureChart({
   return (
     <LineChart
       id='temperature-chart'
+      showDots
       onLegendClick={handleLegendClick}
       config={{
         time: { label: 'Time' },

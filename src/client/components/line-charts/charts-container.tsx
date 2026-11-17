@@ -38,12 +38,8 @@ export default function ChartsContainer({ vars, data, name }: Props) {
     const hasBatteryTemperature = vars['battery.temperature']
     const hasUpsTemperature = vars['ups.temperature']
 
-    if (!hasAmbientTemperature && !hasBatteryTemperature && !hasUpsTemperature) {
-      return <></>
-    }
-
     return (
-      <div className='mb-4'>
+      <div className='mb-4 empty:hidden'>
         <TemperatureChart
           id={name}
           ambientTemperature={hasAmbientTemperature?.value}

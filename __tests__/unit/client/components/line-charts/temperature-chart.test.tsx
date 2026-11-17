@@ -6,6 +6,8 @@ import LineChartBase from '@/client/components/line-charts/line-chart-base'
 import { useTemperatureUnit } from '@/client/context/settings'
 import { useTimeRange } from '@/client/context/time-range'
 import { device } from '../../../../__mocks__/chartData'
+import { Nut } from '@/server/nut'
+import PromiseSocket from '@/server/promise-socket'
 
 jest.mock('@/client/components/line-charts/line-chart-base', () => jest.fn(() => null))
 jest.mock('@/client/context/settings', () => ({ useTemperatureUnit: jest.fn() }))
@@ -39,6 +41,7 @@ describe('TemperatureChart', () => {
 
   afterEach(() => {
     jest.useRealTimers()
+    jest.restoreAllMocks()
   })
 
   it('charts the issue 445 UPS without an unavailable ambient or missing battery series', async () => {
@@ -81,6 +84,53 @@ describe('TemperatureChart', () => {
       'upsTemperature',
     ])
   })
+
+  it('preserves history when entire polls omit temperature variables', async () => {
+    let view!: ReturnType<typeof render>
+    const renderPoll = async (vars: ComponentProps<typeof ChartsContainer>['vars']) => {
+      await act(async () => {
+        const chart = <ChartsContainer vars={vars} data={{ device, updated: new Date() }} name={device.name} />
+        if (view) view.rerender(chart)
+        else view = render(chart)
+      })
+    }
+
+    await renderPoll({})
+    expect(mockedLineChart).not.toHaveBeenCalled()
+    await renderPoll({ 'ups.temperature': { value: 20 } })
+    await renderPoll({})
+    await renderPoll({})
+    await renderPoll({ 'ups.temperature': { value: 21 } })
+
+    expect(chartProps().data.map((point) => point.upsTemperature)).toEqual([undefined, 20, undefined, undefined, 21])
+    expect(chartProps().showDots).toBe(true)
+  })
+
+  it.each(['', '   ', '\t'])(
+    'preserves blank NUMBER temperatures (%p) from NUT through the chart while retaining real zeroes',
+    async (blank) => {
+      jest.spyOn(PromiseSocket.prototype, 'connect').mockResolvedValue()
+      jest.spyOn(PromiseSocket.prototype, 'write').mockResolvedValue()
+      jest.spyOn(PromiseSocket.prototype, 'close').mockResolvedValue()
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockImplementation(async (command) => {
+        const [, , name, variable] = command.split(' ')
+        if (command.startsWith('GET TYPE')) return `TYPE ${name} ${variable} NUMBER\n`
+        if (command.startsWith('GET DESC')) return `DESC ${name} ${variable} "Temperature"\n`
+        return `BEGIN LIST VAR ups\nVAR ups ambient.temperature "${blank}"\nVAR ups battery.temperature "0"\nVAR ups ups.temperature "25"\nEND LIST VAR ups\n`
+      })
+      const vars = await new Nut('localhost', 3493).getData('ups')
+      expect(vars['ambient.temperature'].value).toBe('')
+      expect(vars['battery.temperature'].value).toBe(0)
+
+      await act(async () => {
+        render(<ChartsContainer vars={vars} data={{ device, updated }} name={device.name} />)
+      })
+
+      expect(Object.keys(chartProps().config)).toEqual(['time', 'batteryTemperature', 'upsTemperature'])
+      expect(chartProps().data[0]).toMatchObject({ batteryTemperature: 0, upsTemperature: 25 })
+      expect(vars['ambient.temperature'].value).toBe('')
+    }
+  )
 
   it('converts every series to fahrenheit and toggles each legend independently', async () => {
     mockedUseTemperatureUnit.mockReturnValue('fahrenheit')
