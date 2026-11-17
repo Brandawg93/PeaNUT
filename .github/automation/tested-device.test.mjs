@@ -80,6 +80,16 @@ test('preserves headings inside a fenced note as text', () => {
   assert.match(parseReport(`${body}\n\n\`\`\`\n### Manufacturer\nnot a field\n\`\`\``).notes, /### Manufacturer/)
 })
 
+test('preserves Notes subheadings and all following limitations, including repeated subheadings', () => {
+  const notes = 'Basic readings work.\n\n### Limitations\nSelf-tests fail.\n\n### Limitations\nNo output voltage.'
+  for (const text of [notes.split('\n\n### Limitations\nNo output voltage.')[0], notes]) {
+    const report = parseReport(`${body.split('### Notes')[0]}### Notes\n\n${text}`)
+    assert.equal(report.notes, text)
+    const result = updateWiki(wiki, report, 500, issueUrl)
+    assert.ok(result.markdown.includes('Basic readings work.<br><br>### Limitations<br>Self-tests fail.'))
+  }
+})
+
 test('inserts in the manufacturer group, preserves existing content, and links the source issue', () => {
   const result = updateWiki(wiki, parseReport(body), 500, issueUrl)
   assert.equal(result.changed, true)
@@ -123,6 +133,42 @@ test('keeps existing duplicate devices for manual review, including aliases and 
   assert.throws(() => updateWiki('No table', report, 500, issueUrl), /table could not be found/)
   const otherDriver = updateWiki(wiki, { ...report, driver: 'snmp-ups' }, 500, issueUrl)
   assert.equal(otherDriver.changed, true)
+})
+
+test('checks duplicate devices on and after wiki rows with escaped pipes', () => {
+  const escapedWiki = wiki.replace('Existing note', 'Readings work \\| self-tests fail')
+  for (const [manufacturer, model] of [
+    ['CPS', 'CP1500PFCLCD'],
+    ['APC', 'Back-UPS BX750MI'],
+  ]) {
+    const report = { ...parseReport(body), manufacturer, model }
+    assert.throws(() => updateWiki(escapedWiki, report, 500, issueUrl), /already listed/)
+  }
+})
+
+test('recognizes escaped pipes in model names and preserves existing table rows when inserting', () => {
+  const escapedWiki = wiki.replace('CP1500PFCLCD', 'CP1500\\|PFCLCD')
+  const duplicate = { ...parseReport(body), model: 'CP1500|PFCLCD' }
+  assert.throws(() => updateWiki(escapedWiki, duplicate, 500, issueUrl), /already listed/)
+  const result = updateWiki(escapedWiki, parseReport(body), 500, issueUrl)
+  assert.ok(result.markdown.includes('CPS | CP1500\\|PFCLCD | usbhid-ups | ✅ | Existing note |'))
+  assert.match(result.markdown, /Existing note \|\nCPS \| VP1000ELCD/)
+})
+
+test('handles paired backslashes before a table separator', () => {
+  const escapedWiki = wiki.replace('CP1500PFCLCD |', 'CP1500PFCLCD\\\\ |')
+  const duplicate = { ...parseReport(body), model: 'CP1500PFCLCD\\' }
+  assert.throws(() => updateWiki(escapedWiki, duplicate, 500, issueUrl), /already listed/)
+})
+
+test('fails closed on malformed wiki rows instead of skipping duplicate checks', () => {
+  for (const row of [
+    'CPS | Incomplete | usbhid-ups | ✅ |',
+    'CPS | Ambiguous | usbhid-ups | ✅ | Unescaped | pipe |',
+  ]) {
+    const malformedWiki = wiki.replace('CPS | CP1500PFCLCD | usbhid-ups | ✅ | Existing note |', row)
+    assert.throws(() => updateWiki(malformedWiki, parseReport(body), 500, issueUrl), /malformed wiki table row/i)
+  }
 })
 
 function setup(overrides = {}) {

@@ -29,34 +29,52 @@ function escapeCell(value) {
 }
 
 function cells(line) {
-  return line
-    .trim()
-    .replace(/^\|/, '')
-    .replace(/\|$/, '')
-    .split('|')
-    .map((cell) => cell.trim().replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code))))
+  const text = line.trim()
+  const columns = []
+  let cell = ''
+  for (let index = 0; index < text.length; index++) {
+    const character = text[index]
+    if (character === '\\' && ['\\', '|'].includes(text[index + 1])) {
+      cell += text[++index]
+    } else if (character === '|') {
+      columns.push(cell)
+      cell = ''
+    } else {
+      cell += character
+    }
+  }
+  columns.push(cell)
+  if (columns[0] === '') columns.shift()
+  if (columns.at(-1) === '') columns.pop()
+  return columns.map((column) => column.trim().replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code))))
 }
 
-export function parseReport(body) {
+function nextFence(fence, delimiter) {
+  if (!fence) return delimiter
+  return delimiter[0] === fence[0] && delimiter.length >= fence.length ? undefined : fence
+}
+
+function reportSections(body) {
   const sections = new Map()
   let section
   let fence
-  for (const line of body.replace(/\r\n/g, '\n').split('\n')) {
+  for (const line of body.replaceAll('\r\n', '\n').split('\n')) {
     const delimiter = line.match(/^\s*(`{3,}|~{3,})/)
-    if (delimiter) {
-      if (!fence) fence = delimiter[1]
-      else if (delimiter[1][0] === fence[0] && delimiter[1].length >= fence.length) fence = undefined
-    }
-    const heading = !fence && !delimiter && line.match(/^### (.+?)\s*$/)
-    if (heading) {
-      section = heading[1]
+    if (delimiter) fence = nextFence(fence, delimiter[1])
+    const heading = line.startsWith('### ') ? line.slice(4).trimEnd() : undefined
+    if (!fence && !delimiter && fields.includes(heading)) {
+      section = heading
       if (sections.has(section)) throw new Error('Duplicate form headings. Use the Tested Device form.')
       sections.set(section, [])
     } else if (section) {
       sections.get(section).push(line)
     }
   }
+  return sections
+}
 
+export function parseReport(body) {
+  const sections = reportSections(body)
   const values = fields.map((field) => {
     const value = (sections.get(field) || []).join('\n').trim()
     return value === '_No response_' ? '' : value
@@ -80,14 +98,20 @@ export function parseReport(body) {
   }
 }
 
-export function updateWiki(markdown, report, issueNumber, issueUrl) {
-  const lines = markdown.split('\n')
+function wikiTableStart(lines) {
   const header = lines.findIndex(
     (line) => cells(line).map(normalize).join('|') === 'manufacturer|model|driver|status|notes'
   )
-  if (header < 0 || !/^\s*\|?\s*:?-+/.test(lines[header + 1] || '')) {
+  const separator = cells(lines[header + 1] || '')
+  if (header < 0 || separator.length !== 5 || !separator.every((cell) => /^:?-{3,}:?$/.test(cell))) {
     throw new Error('The tested-device wiki table could not be found. No changes were published.')
   }
+  return header + 2
+}
+
+export function updateWiki(markdown, report, issueNumber, issueUrl) {
+  const lines = markdown.split('\n')
+  const tableStart = wikiTableStart(lines)
   const digest = createHash('sha256').update(JSON.stringify(report)).digest('hex')
   const marker = `<!-- tested-device:${issueNumber}:${digest} -->`
   if (markdown.includes(`<!-- tested-device:${issueNumber}:`)) {
@@ -95,11 +119,14 @@ export function updateWiki(markdown, report, issueNumber, issueUrl) {
     throw new Error('This issue was already published with different details. Reconcile its wiki entry manually.')
   }
 
-  let insertion = header + 2
+  let insertion = tableStart
   let groupEnd
   for (; insertion < lines.length; insertion++) {
+    if (!lines[insertion].trim()) break
     const row = cells(lines[insertion])
-    if (row.length !== 5) break
+    if (row.length !== 5) {
+      throw new Error('Malformed wiki table row. Review the existing table before publishing another device.')
+    }
     const sameManufacturer = normalize(manufacturer(row[0])) === normalize(report.manufacturer)
     if (sameManufacturer) groupEnd = insertion + 1
     if (
@@ -126,13 +153,14 @@ export async function publishWiki({
 }) {
   if (!token) throw new Error('A wiki authentication token is required.')
   const directory = await mkdtemp(join(tmpdir(), 'peanut-wiki-'))
+  const credentials = Buffer.from(`x-access-token:${token}`).toString('base64')
   // Pass credentials through the environment so errors never include them in command arguments or remote URLs.
   const env = {
     ...process.env,
     GIT_TERMINAL_PROMPT: '0',
     GIT_CONFIG_COUNT: '3',
     GIT_CONFIG_KEY_0: `http.${serverUrl}/.extraheader`,
-    GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${Buffer.from(`x-access-token:${token}`).toString('base64')}`,
+    GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${credentials}`,
     GIT_CONFIG_KEY_1: 'credential.helper',
     GIT_CONFIG_VALUE_1: '',
     GIT_CONFIG_KEY_2: 'core.hooksPath',
@@ -179,8 +207,8 @@ export async function publishApprovedDevice({ github, context, core, writeWiki =
   const issueParameters = { ...repository, issue_number: payload.issue.number }
   const checkApproval = async () => {
     const { data: issue } = await github.rest.issues.get(issueParameters)
-    const labels = issue.labels.map((label) => (typeof label === 'string' ? label : label.name))
-    if (issue.state !== 'open' || !labels.includes(approvalLabel) || !labels.includes('tested device')) {
+    const labels = new Set(issue.labels.map((label) => (typeof label === 'string' ? label : label.name)))
+    if (issue.state !== 'open' || !labels.has(approvalLabel) || !labels.has('tested device')) {
       throw new Error('The report must be open and have both tested device and approved-device labels.')
     }
     if (issue.body !== payload.issue.body || issue.title !== payload.issue.title) {
