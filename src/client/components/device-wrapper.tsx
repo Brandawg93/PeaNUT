@@ -30,6 +30,7 @@ import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
+import { getUpsMetrics } from '@/lib/ups-metrics'
 import { useSettings } from '@/client/context/settings'
 import { DashboardSectionConfig } from '@/server/settings'
 import { useNavigation } from '@/hooks/useNavigation'
@@ -127,43 +128,30 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   }, [])
 
   const vars = data?.device?.vars
+  const metrics = useMemo(() => getUpsMetrics(vars ?? {}), [vars])
 
   const currentLoad = useMemo(() => {
     if (!vars) return <Kpi text='N/A' description={t('currentLoad')} />
-    if (vars['ups.load']) {
-      if (vars['ups.realpower.nominal'] && wattsOrPercent) {
-        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
+    if (metrics.load !== undefined) {
+      if (metrics.wattage !== undefined && wattsOrPercent) {
         return (
           <Kpi
             onClick={toggleWattsOrPercent}
-            text={`${roundIfNeeded(currentWattage)}W`}
+            text={`${roundIfNeeded(metrics.wattage)}W`}
             description={`${t('currentLoad')} (W)`}
           />
         )
       }
-      return (
-        <Gauge
-          onClick={toggleWattsOrPercent}
-          percentage={+vars['ups.load'].value}
-          title={`${t('currentLoad')} (%)`}
-          invert
-        />
-      )
+      return <Gauge onClick={toggleWattsOrPercent} percentage={metrics.load} title={`${t('currentLoad')} (%)`} invert />
     }
     return <Kpi text='N/A' description={t('currentLoad')} />
-  }, [vars, wattsOrPercent, toggleWattsOrPercent, t])
+  }, [vars, metrics, wattsOrPercent, toggleWattsOrPercent, t])
 
   const currentWh = useMemo(() => {
     if (!vars) return <Kpi text='N/A' description={t('batteryCharge')} />
     if (vars['battery.charge']) {
-      if (
-        vars['ups.load'] &&
-        vars['ups.realpower.nominal'] &&
-        wattHours &&
-        vars['battery.runtime']?.value !== undefined
-      ) {
-        const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
-        const capacity = (+vars['battery.runtime'].value / 3600) * currentWattage
+      if (metrics.wattage !== undefined && wattHours && vars['battery.runtime']?.value !== undefined) {
+        const capacity = (+vars['battery.runtime'].value / 3600) * metrics.wattage
         return (
           <Kpi
             onClick={toggleWattHours}
@@ -184,7 +172,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     } else {
       return <Kpi text='N/A' description={t('batteryCharge')} />
     }
-  }, [vars, wattHours, toggleWattHours, t])
+  }, [vars, metrics, wattHours, toggleWattHours, t])
 
   const renderSection = useCallback(
     (key: string) => {

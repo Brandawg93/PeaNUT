@@ -3,6 +3,7 @@ import { screen, waitFor, fireEvent, act } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
 import DeviceWrapper from '@/client/components/device-wrapper'
 import { renderWithProviders, waitForSettings } from '../../../utils/test-utils'
+import { threePhaseVars } from '../../../__mocks__/chartData'
 
 // Mock the next/navigation
 jest.mock('next/navigation', () => ({
@@ -193,6 +194,54 @@ describe('DeviceWrapper', () => {
     await waitFor(() => {
       expect(screen.getByTestId('exclamation-icon')).toBeInTheDocument()
     })
+  })
+
+  it('displays a numeric zero load and toggles to zero watts', async () => {
+    mockGetDeviceAction.mockResolvedValue({
+      ...mockDeviceData,
+      device: {
+        ...mockDeviceData.device,
+        vars: { ...mockDeviceData.device.vars, 'ups.load': { value: 0 }, 'output.realpower': { value: 0 } },
+      },
+    })
+    await renderComponent()
+    await waitFor(() => expect(screen.getAllByTestId('gauge')).toHaveLength(2))
+    fireEvent.click(screen.getAllByTestId('gauge')[0])
+    expect(screen.getByText('0W')).toBeInTheDocument()
+  })
+
+  it('uses total phase watts when toggling three-phase load and battery displays', async () => {
+    mockGetDeviceAction.mockResolvedValue({
+      ...mockDeviceData,
+      device: {
+        ...mockDeviceData.device,
+        vars: {
+          ...threePhaseVars,
+          'battery.charge': { value: 100 },
+          'battery.runtime': { value: 3600 },
+        },
+      },
+    })
+    await renderComponent()
+    await waitFor(() => expect(screen.getAllByTestId('gauge')).toHaveLength(2))
+    const gauges = screen.getAllByTestId('gauge')
+    fireEvent.click(gauges[0])
+    expect(screen.getByText('16600W')).toBeInTheDocument()
+    fireEvent.click(gauges[1])
+    expect(screen.getByText('16600Wh')).toBeInTheDocument()
+  })
+
+  it('keeps the phase load gauge when total wattage is unavailable', async () => {
+    localStorage.setItem('wattsOrPercent', 'true')
+    const vars = { ...threePhaseVars }
+    delete vars['output.L2.realpower']
+    mockGetDeviceAction.mockResolvedValue({
+      ...mockDeviceData,
+      device: { ...mockDeviceData.device, vars },
+    })
+    await renderComponent()
+    await waitFor(() => expect(screen.getByTestId('gauge')).toBeInTheDocument())
+    expect(screen.queryByText('19800W')).not.toBeInTheDocument()
   })
 
   // Helper for toggle tests

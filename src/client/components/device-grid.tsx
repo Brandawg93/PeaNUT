@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigation } from '@/hooks/useNavigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/client/components/ui/table'
 import { secondsToDhms } from '@/lib/utils'
+import { getUpsMetrics } from '@/lib/ups-metrics'
 
 const features = tableFeatures({})
 const columnHelper = createColumnHelper<typeof features, DEVICE>()
@@ -144,20 +145,20 @@ export default function DeviceGrid({ data }: Props) {
             return cellContent
           },
         }),
-        columnHelper.accessor((row) => row.vars['ups.load']?.value, {
+        columnHelper.accessor((row) => getUpsMetrics(row.vars).load, {
           id: 'upsLoad',
           header: () => <span className='text-primary mb-0 text-lg font-semibold'>{t('currentLoad')}</span>,
           cell: (info) => {
             const value = info.getValue()
             const device = info.row.original
-            const realpower = device.vars['ups.realpower']?.value
-            const hasWattage = realpower && +realpower > 0
+            const { realpower } = getUpsMetrics(device.vars)
+            const hasWattage = realpower !== undefined
 
-            if (!value) return <>N/A</>
+            if (value === undefined) return <>N/A</>
 
             const cellContent = (
               <div className='flex items-center gap-2'>
-                <Progress value={value as number} />
+                <Progress value={value} />
                 <span>{value}%</span>
               </div>
             )
@@ -265,6 +266,12 @@ export const MemoizedDeviceGrid = memo(DeviceGrid, (prev, next) => {
       prevDevice.description !== nextDevice.description
     ) {
       return false // Re-render needed
+    }
+
+    const prevMetrics = getUpsMetrics(prevDevice.vars)
+    const nextMetrics = getUpsMetrics(nextDevice.vars)
+    if (prevMetrics.load !== nextMetrics.load || prevMetrics.realpower !== nextMetrics.realpower) {
+      return false
     }
 
     // Check if relevant vars changed (only the ones used in the grid)
