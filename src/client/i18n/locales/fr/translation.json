@@ -25,6 +25,7 @@
     "nominalRealpower": "Puissance réelle nominale"
   },
   "temperatureChart": {
+    "upsTemperature": "Température de l’onduleur",
     "ambientTemperature": "Température ambiante",
     "batteryTemperature": "Température de la batterie"
   },

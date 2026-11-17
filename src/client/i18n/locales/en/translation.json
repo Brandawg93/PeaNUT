@@ -25,6 +25,7 @@
     "nominalRealpower": "Nominal Realpower"
   },
   "temperatureChart": {
+    "upsTemperature": "UPS Temperature",
     "ambientTemperature": "Ambient Temperature",
     "batteryTemperature": "Battery Temperature"
   },

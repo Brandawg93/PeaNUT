@@ -25,6 +25,7 @@
     "nominalRealpower": "Nominale Wirkleistung"
   },
   "temperatureChart": {
+    "upsTemperature": "USV-Temperatur",
     "ambientTemperature": "Umgebungstemperatur",
     "batteryTemperature": "Batterietemperatur"
   },

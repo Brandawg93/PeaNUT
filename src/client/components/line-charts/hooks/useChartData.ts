@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTimeRange } from '@/client/context/time-range'
 
-type DataPoint = {
-  dataPoint: number
+type DataPoint<T> = {
+  dataPoint: T
   time: Date
 }
 
-export function useChartData(id: string, updated: Date, value?: number) {
-  const [data, setData] = useState<DataPoint[]>([])
+export function useChartData<T = number>(id: string, updated: Date, value?: T) {
+  const [data, setData] = useState<DataPoint<T>[]>([])
   const prevDataRef = useRef(id)
   const isFirstRender = useRef(true)
   const { timeRange } = useTimeRange()

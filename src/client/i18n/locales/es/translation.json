@@ -24,6 +24,7 @@
     "nominalRealpower": "Potencia Real Nominal"
   },
   "temperatureChart": {
+    "upsTemperature": "Temperatura del SAI",
     "ambientTemperature": "Temperatura ambiente",
     "batteryTemperature": "Temperatura de la batería"
   },

@@ -25,6 +25,7 @@
     "nominalRealpower": "Potenza reale nominale"
   },
   "temperatureChart": {
+    "upsTemperature": "Temperatura UPS",
     "ambientTemperature": "Temperatura ambiente",
     "batteryTemperature": "Temperatura batteria"
   },

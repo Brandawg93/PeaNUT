@@ -25,6 +25,7 @@
     "nominalRealpower": "Putere nominală"
   },
   "temperatureChart": {
+    "upsTemperature": "Temperatură UPS",
     "ambientTemperature": "Temperatura ambientală",
     "batteryTemperature": "Temperatura bateriei"
   },
