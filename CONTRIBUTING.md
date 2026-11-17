@@ -22,6 +22,18 @@ Thank you for considering contributing to Peanut! We welcome contributions from 
 - A detailed description of the proposed enhancement.
 - Any relevant examples or use cases.
 
+### Reporting Tested Devices
+
+Use the [Tested Device form](https://github.com/Brandawg93/PeaNUT/issues/new?template=tested_device.yml) to provide the manufacturer, model, NUT driver, operational status, and any limitations. Submitting a report does not publish it automatically.
+
+Maintainers with write access can publish a report by reviewing its fields and applying the `approved-device` label. The report must also have the `tested device` label, which the form adds automatically. The **Publish approved tested device** workflow updates only the tested-device wiki page and closes the issue after the wiki push succeeds. It uses the built-in `GITHUB_TOKEN`; no personal token or external service is needed.
+
+Missing fields, duplicate manufacturer/model/driver combinations, changed reports, and failed wiki pushes leave the issue open. Check the workflow run under **Actions**, correct the report or reconcile an existing wiki entry, then remove and reapply `approved-device` to retry. If the wiki push succeeded but closing the issue failed, rerunning that workflow run recognizes the published report and closes it without adding another row. A report changed after publishing needs manual reconciliation.
+
+Older free-text reports must be converted to the form's `### Manufacturer`, `### Model`, `### Driver`, `### Status`, and optional `### Notes` sections before approval. Status must be `✅ Fully Operational`, `⚠️ Partially Operational`, or `❌ Not Operational`. CyberPower reports are grouped under `CPS` to match the existing wiki.
+
+The `tested device` and `approved-device` repository labels must exist before using the form and workflow. Test the automation locally with `node --test .github/automation/tested-device.test.mjs`.
+
 ### Submitting Pull Requests
 
 1. Fork the repository.

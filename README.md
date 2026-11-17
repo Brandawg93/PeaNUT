@@ -284,7 +284,7 @@ Example:
 
 ## Tested Devices
 
-[A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Feel free to look there for your device or add your device to the list by submitting an issue with the `tested device` label.
+[A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Look there for your device, or submit a report with the [Tested Device form](https://github.com/Brandawg93/PeaNUT/issues/new?template=tested_device.yml). After a maintainer reviews and approves the report, automation adds it to the wiki and closes the issue.
 
 ## Donate to Support PeaNUT
 
