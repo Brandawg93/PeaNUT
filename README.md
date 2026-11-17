@@ -274,6 +274,10 @@ Example:
 
 ## FAQ
 
+**Question:** How is load displayed for a three-phase UPS without `ups.load`?
+
+**Answer:** When `output.phases` is `3`, PeaNUT uses the highest of `output.L1.power.percent`, `output.L2.power.percent`, and `output.L3.power.percent`. All three readings must be available. A reported `ups.load`, including `0`, takes precedence. Watts use `ups.realpower`, then `output.realpower`, then the sum of all three `output.Lx.realpower` readings. The busiest-phase percentage is not used to estimate total watts. These display fallbacks leave the raw NUT variables unchanged.
+
 **Question:** Chokidar is using lots of resources on my machine.
 
 **Answer:** If you are using a Networked File Share, please see [#142](https://github.com/Brandawg93/PeaNUT/issues/142).

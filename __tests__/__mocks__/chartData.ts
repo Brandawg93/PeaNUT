@@ -1,5 +1,17 @@
 import { DEVICE } from '@/common/types'
 
+// Three-phase snmp-ups readings from issue #482.
+export const threePhaseVars: DEVICE['vars'] = {
+  'output.phases': { value: 3 },
+  'output.L1.power.percent': { value: 8 },
+  'output.L2.power.percent': { value: 11 },
+  'output.L3.power.percent': { value: 9 },
+  'output.L1.realpower': { value: 4600 },
+  'output.L2.realpower': { value: 6600 },
+  'output.L3.realpower': { value: 5400 },
+  'output.realpower.nominal': { value: 180000 },
+}
+
 export const device: DEVICE = {
   id: 'localhost:3493/test',
   name: 'test',

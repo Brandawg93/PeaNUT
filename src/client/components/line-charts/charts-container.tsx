@@ -6,6 +6,7 @@ import VoltsChart from '@/client/components/line-charts/volts-chart'
 import WattsChart from '@/client/components/line-charts/watts-chart'
 import VoltAmpsChart from '@/client/components/line-charts/volt-amps-chart'
 import TemperatureChart from '@/client/components/line-charts/temperature-chart'
+import { getUpsMetrics } from '@/lib/ups-metrics'
 
 type Props = Readonly<{
   vars: VARS
@@ -14,6 +15,8 @@ type Props = Readonly<{
 }>
 
 export default function ChartsContainer({ vars, data, name }: Props) {
+  const { realpower, realpowerNominal } = getUpsMetrics(vars)
+
   const voltageWrapper = useMemo(
     () =>
       vars['input.voltage'] ? (
@@ -55,19 +58,14 @@ export default function ChartsContainer({ vars, data, name }: Props) {
 
   const wattsWrapper = useMemo(
     () =>
-      vars['ups.realpower'] ? (
+      realpower !== undefined ? (
         <div className='mb-4'>
-          <WattsChart
-            id={name}
-            realpower={+vars['ups.realpower'].value}
-            realpowerNominal={+vars['ups.realpower.nominal']?.value}
-            updated={data.updated}
-          />
+          <WattsChart id={name} realpower={realpower} realpowerNominal={realpowerNominal} updated={data.updated} />
         </div>
       ) : (
         <></>
       ),
-    [vars, data.updated, name]
+    [realpower, realpowerNominal, data.updated, name]
   )
 
   const voltAmpsWrapper = useMemo(
