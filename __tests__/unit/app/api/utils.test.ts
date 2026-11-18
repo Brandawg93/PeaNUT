@@ -1,6 +1,8 @@
 import { Nut } from '@/server/nut'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../../utils/test-constants'
 import { getSettings } from '@/app/actions'
+import { getRouteMatcher } from 'next/dist/shared/lib/router/utils/route-matcher'
+import { getRouteRegex } from 'next/dist/shared/lib/router/utils/route-regex'
 import {
   getNutInstances,
   getSingleNutInstance,
@@ -155,15 +157,21 @@ describe('API Utils', () => {
       expect(mockNut2.deviceExists).toHaveBeenCalledWith('test-device')
     })
 
-    it('should decode a percent-encoded device ID from the route', async () => {
+    it.each([
+      ['/api/v1/devices/my%20ups', 'my ups'],
+      ['/api/v1/devices/ups%2532', 'ups%32'],
+    ])('should not decode the route param again (%s)', async (pathname, expectedName) => {
       const mockNut = createMockNut(true)
       setupServerSettings()
       setupNutMock(mockNut)
 
-      const result = await getSingleNutInstance('my%20ups')
+      const params = getRouteMatcher(getRouteRegex('/api/v1/devices/[device]'))(pathname)
+      if (!params) throw new Error(`route did not match ${pathname}`)
 
-      expect(result?.deviceName).toBe('my ups')
-      expect(mockNut.deviceExists).toHaveBeenCalledWith('my ups')
+      const result = await getSingleNutInstance(params.device as string)
+
+      expect(result?.deviceName).toBe(expectedName)
+      expect(mockNut.deviceExists).toHaveBeenCalledWith(expectedName)
     })
 
     it('should return undefined when device is not found on any instance', async () => {
