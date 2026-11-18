@@ -190,7 +190,7 @@ export default function DeviceGrid({ data }: Props) {
               className='flex cursor-pointer items-center gap-2'
               onClick={(e) => {
                 e.stopPropagation()
-                push(`/device/${info.getValue()}`)
+                push(`/device/${encodeURIComponent(info.getValue())}`)
               }}
             >
               <HiOutlineInformationCircle className='size-4' />

@@ -18,6 +18,7 @@ export type NutInstanceResult = {
 
 export const getSingleNutInstance = async (deviceId: string): Promise<NutInstanceResult | undefined> => {
   const nuts = await getNutInstances()
+  // Route handlers already receive decoded params; do not decode again
   const parsed = parseDeviceId(deviceId)
 
   try {
