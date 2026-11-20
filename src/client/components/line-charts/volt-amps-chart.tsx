@@ -18,7 +18,7 @@ export default function VoltAmpsChart({ id, power, powerNominal, updated }: Prop
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const [showPower, setShowPower] = useState<boolean>(true)
-  const powerData = useChartData(id, updated, power)
+  const powerData = useChartData(id, 'ups.power', updated, power)
 
   const referenceLineData = powerNominal ? [{ label: t('voltAmpsChart.nominalPower'), value: powerNominal }] : []
 
