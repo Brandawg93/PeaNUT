@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getNutInstances } from '@/app/api/utils'
+import { upsStatus } from '@/common/constants'
+import { createDebugLogger } from '@/server/debug'
+
+const debug = createDebugLogger('METRICS')
 
 /**
  * Retrieves device metrics in Prometheus format from the NUT server.
@@ -57,15 +61,23 @@ async function mapWithConcurrency<T, R>(
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   const nutInstances = await getNutInstances()
-  const prometheusMetrics: string[] = []
 
-  const perInstanceMetrics = await Promise.all(
+  const perInstanceMetrics = await Promise.allSettled(
     nutInstances.map(async (nut) => {
       const devices = await nut.getDevices()
       const serverInfo = `${nut.getHost()}:${nut.getPort()}`
 
       const perDeviceMetrics = await mapWithConcurrency(devices, PER_INSTANCE_CONCURRENCY, async (device) => {
-        const data = await nut.getData(device.name)
+        const data = await nut.getData(device.name).catch((error: unknown) => {
+          debug.warn('Failed to read UPS metrics', {
+            server: serverInfo,
+            device: device.name,
+            error: error instanceof Error ? error.message : String(error),
+          })
+          return null
+        })
+        if (!data || data['ups.status']?.value === upsStatus.DEVICE_UNREACHABLE) return null
+
         const lines: string[] = []
 
         for (const [key, value] of Object.entries(data)) {
@@ -83,10 +95,32 @@ export async function GET(request: NextRequest) {
         }
         return lines
       })
-      return perDeviceMetrics.flat()
+
+      if (perDeviceMetrics.length > 0 && perDeviceMetrics.every((lines) => lines === null)) {
+        throw new Error('Failed to read metrics from any discovered UPS')
+      }
+
+      return perDeviceMetrics.flatMap((lines) => lines ?? [])
     })
   )
-  prometheusMetrics.push(...perInstanceMetrics.flat())
+
+  const errors: unknown[] = []
+  const prometheusMetrics = perInstanceMetrics.flatMap((result, index) => {
+    if (result.status === 'fulfilled') return result.value
+
+    const nut = nutInstances[index]
+    const error: unknown = result.reason
+    debug.warn('Failed to collect metrics from NUT server', {
+      server: `${nut.getHost()}:${nut.getPort()}`,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    errors.push(error)
+    return []
+  })
+
+  if (errors.length > 0 && errors.length === nutInstances.length) {
+    throw new AggregateError(errors, 'Failed to collect metrics from any NUT server')
+  }
 
   // Return metrics with proper content type
   return new NextResponse(prometheusMetrics.join('\n'), {
