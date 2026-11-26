@@ -1,4 +1,4 @@
-import { secondsToDhms, parseDeviceId } from '@/lib/utils'
+import { secondsToDhms, parseDeviceId, decodeDeviceId } from '@/lib/utils'
 
 describe('utils', () => {
   describe('secondsToDhms', () => {
@@ -51,6 +51,23 @@ describe('utils', () => {
       ['some_text_here', { name: 'some_text_here' }, 'non-numeric port treated as legacy'],
     ])('treats "%s" as legacy format (%s)', (input, expected) => {
       expect(parseDeviceId(input)).toEqual(expected)
+    })
+  })
+
+  describe('decodeDeviceId', () => {
+    it.each([
+      ['My%20NAS~3493~ups', 'My NAS~3493~ups', 'space in server name'],
+      ['Office%20%232%2Fup%3F~3493~ups', 'Office #2/up?~3493~ups', 'reserved characters'],
+      ['%C3%BCst~3493~ups', 'üst~3493~ups', 'non-ASCII'],
+      ['Home~3493~ups', 'Home~3493~ups', 'nothing to decode'],
+      ['100%~3493~ups', '100%~3493~ups', 'malformed escape is kept as is'],
+    ])('decodes "%s" (%s)', (input, expected) => {
+      expect(decodeDeviceId(input)).toBe(expected)
+    })
+
+    it('round-trips an encoded composite ID through parseDeviceId', () => {
+      const id = encodeURIComponent('My NAS~3493~ups')
+      expect(parseDeviceId(decodeDeviceId(id))).toEqual({ host: 'My NAS', port: 3493, name: 'ups' })
     })
   })
 })
