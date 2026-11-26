@@ -1,9 +1,10 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import DeviceGrid from '@/client/components/device-grid'
+import DeviceGrid, { MemoizedDeviceGrid } from '@/client/components/device-grid'
 import { DevicesData, DEVICE } from '@/common/types'
 import { LanguageContext } from '@/client/context/language'
+import { threePhaseVars } from '../../../__mocks__/chartData'
 
 // Mock next/navigation
 const mockPush = jest.fn()
@@ -48,6 +49,15 @@ const mockDevicesData: DevicesData = {
 const mockLanguageContext = 'en'
 
 describe('DeviceGrid', () => {
+  beforeAll(() => {
+    // Opening Radix tooltips measures their content; jsdom has no ResizeObserver.
+    globalThis.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }))
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -81,6 +91,54 @@ describe('DeviceGrid', () => {
 
     // Check that details button is present
     expect(screen.getByText('details')).toBeInTheDocument()
+  })
+
+  it.each([0, '0'])('displays a reported zero load (%p)', (value) => {
+    render(<DeviceGrid data={{ ...mockDevicesData, devices: [{ ...mockDevice, vars: { 'ups.load': { value } } }] }} />)
+    expect(screen.getByText('0%')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('updates the memoized grid when phase load changes or an overall zero appears', () => {
+    const data = { ...mockDevicesData, devices: [{ ...mockDevice, vars: threePhaseVars }] }
+    const { rerender } = render(<MemoizedDeviceGrid data={data} />)
+    expect(screen.getByText('11%')).toBeInTheDocument()
+
+    const vars = { ...threePhaseVars, 'output.L1.power.percent': { value: 20 } }
+    rerender(<MemoizedDeviceGrid data={{ ...data, devices: [{ ...mockDevice, vars }] }} />)
+    expect(screen.getByText('20%')).toBeInTheDocument()
+
+    rerender(
+      <MemoizedDeviceGrid
+        data={{ ...data, devices: [{ ...mockDevice, vars: { ...vars, 'ups.load': { value: 0 } } }] }}
+      />
+    )
+    expect(screen.getByText('0%')).toBeInTheDocument()
+  })
+
+  it('updates the phase wattage tooltip even when the load is unchanged', async () => {
+    const data = { ...mockDevicesData, devices: [{ ...mockDevice, vars: threePhaseVars }] }
+    const { rerender } = render(<MemoizedDeviceGrid data={data} />)
+    fireEvent.pointerMove(screen.getByText('11%'), { pointerType: 'mouse' })
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('16600W')
+
+    const vars = { ...threePhaseVars, 'output.L1.realpower': { value: 5000 } }
+    rerender(<MemoizedDeviceGrid data={{ ...data, devices: [{ ...mockDevice, vars }] }} />)
+    fireEvent.pointerMove(screen.getByText('11%'), { pointerType: 'mouse' })
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('17000W')
+  })
+
+  it('displays zero watts in the load tooltip', async () => {
+    render(
+      <DeviceGrid
+        data={{
+          ...mockDevicesData,
+          devices: [{ ...mockDevice, vars: { 'ups.load': { value: 0 }, 'ups.realpower': { value: 0 } } }],
+        }}
+      />
+    )
+    fireEvent.pointerMove(screen.getByText('0%'), { pointerType: 'mouse' })
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('0W')
   })
 
   it('renders empty state when no devices', () => {
