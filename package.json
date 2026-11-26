@@ -84,7 +84,7 @@
     "tailwindcss-animate": "^1.0.7",
     "toad-scheduler": "^4.2.0",
     "ws": "^8.21.3",
-    "zod": "^4.6.2"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.1",

@@ -1,6 +1,8 @@
 import { Nut } from '@/server/nut'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../../utils/test-constants'
 import { getSettings } from '@/app/actions'
+import { getRouteMatcher } from 'next/dist/shared/lib/router/utils/route-matcher'
+import { getRouteRegex } from 'next/dist/shared/lib/router/utils/route-regex'
 import {
   getNutInstances,
   getSingleNutInstance,
@@ -155,6 +157,23 @@ describe('API Utils', () => {
       expect(mockNut2.deviceExists).toHaveBeenCalledWith('test-device')
     })
 
+    it.each([
+      ['/api/v1/devices/my%20ups', 'my ups'],
+      ['/api/v1/devices/ups%2532', 'ups%32'],
+    ])('should not decode the route param again (%s)', async (pathname, expectedName) => {
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
+
+      const params = getRouteMatcher(getRouteRegex('/api/v1/devices/[device]'))(pathname)
+      if (!params) throw new Error(`route did not match ${pathname}`)
+
+      const result = await getSingleNutInstance(params.device as string)
+
+      expect(result?.deviceName).toBe(expectedName)
+      expect(mockNut.deviceExists).toHaveBeenCalledWith(expectedName)
+    })
+
     it('should return undefined when device is not found on any instance', async () => {
       const mockNut = createMockNut(false)
       setupServerSettings()
@@ -233,7 +252,7 @@ describe('API Utils', () => {
       const result = await handleDeviceOperation('test-device', operation)
 
       expect(result).toBeDefined()
-      expect(result.json()).resolves.toEqual({ success: true })
+      await expect(result.json()).resolves.toEqual({ success: true })
       expect(operation).toHaveBeenCalledWith(mockNut, 'test-device')
     })
 
@@ -263,7 +282,7 @@ describe('API Utils', () => {
 
       expect(result).toBeDefined()
       expect(result.status).toBe(500)
-      expect(result.json()).resolves.toBe('Failed to Operation failed unknown on device test-device')
+      await expect(result.json()).resolves.toBe('Failed to Operation failed unknown on device test-device')
       expect(consoleSpy).toHaveBeenCalledWith(new Error('Operation failed'))
 
       consoleSpy.mockRestore()
@@ -281,7 +300,7 @@ describe('API Utils', () => {
       const result = await handleVariableOperation('test-device', 'battery.charge', operation)
 
       expect(result).toBeDefined()
-      expect(result.json()).resolves.toEqual({ value: '100' })
+      await expect(result.json()).resolves.toEqual({ value: '100' })
       expect(operation).toHaveBeenCalledWith(mockNut, 'test-device')
     })
 
@@ -311,7 +330,7 @@ describe('API Utils', () => {
 
       expect(result).toBeDefined()
       expect(result.status).toBe(404)
-      expect(result.json()).resolves.toBe('Parameter battery.charge on device test-device not found')
+      await expect(result.json()).resolves.toBe('Parameter battery.charge on device test-device not found')
       expect(consoleSpy).toHaveBeenCalledWith(new Error('Variable not found'))
 
       consoleSpy.mockRestore()

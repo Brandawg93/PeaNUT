@@ -240,6 +240,21 @@ describe('DeviceGrid', () => {
     expect(mockPush).toHaveBeenCalledWith('/device/localhost_3493_test-device')
   })
 
+  it('encodes the device ID when navigating to device details', () => {
+    const data: DevicesData = { ...mockDevicesData, devices: [{ ...mockDevice, id: 'My NAS #2~3493~ups' }] }
+    render(
+      <QueryClientProvider client={queryClient}>
+        <LanguageContext.Provider value={mockLanguageContext}>
+          <DeviceGrid data={data} />
+        </LanguageContext.Provider>
+      </QueryClientProvider>
+    )
+
+    fireEvent.click(screen.getByText('details'))
+
+    expect(mockPush).toHaveBeenCalledWith('/device/My%20NAS%20%232~3493~ups')
+  })
+
   it('displays progress bars for battery charge and ups load', () => {
     render(
       <QueryClientProvider client={queryClient}>
