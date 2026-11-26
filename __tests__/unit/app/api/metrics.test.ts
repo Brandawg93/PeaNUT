@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { getNutInstances } from '@/app/api/utils'
 import { GET } from '@/app/api/v1/metrics/route'
+import { upsStatus } from '@/common/constants'
 import { Nut } from '@/server/nut'
 
 jest.mock('next/server', () => ({
@@ -72,6 +73,34 @@ describe('GET /api/v1/metrics', () => {
     const response = await GET(request)
     expect(response.status).toBe(200)
     expect(await response.text()).toContain('ups_battery_charge{ups="ups-a",server="healthy:3493"} 97')
+  })
+
+  it.each(['connection error', 'unreachable status'])(
+    'fails the scrape when discovery succeeds but every device read fails (%s)',
+    async (failure) => {
+      const server = mockServer('server', 'ups-a', 97)
+      server.getDevices.mockResolvedValue([mockDevice('ups-a'), mockDevice('ups-b')])
+      if (failure === 'connection error') {
+        server.getData.mockRejectedValue(new Error('Device connection lost'))
+      } else {
+        server.getData.mockResolvedValue({ 'ups.status': { value: upsStatus.DEVICE_UNREACHABLE } })
+      }
+      jest.mocked(getNutInstances).mockResolvedValue([server.nut])
+
+      await expect(GET(request)).rejects.toThrow('Failed to collect metrics from any NUT server')
+      expect(server.getData).toHaveBeenCalledWith('ups-a')
+      expect(server.getData).toHaveBeenCalledWith('ups-b')
+    }
+  )
+
+  it('returns an empty successful scrape when a device responds with only nonnumeric data', async () => {
+    const server = mockServer('server', 'ups-a', 97)
+    server.getData.mockResolvedValue({ 'ups.status': { value: 'OL' } })
+    jest.mocked(getNutInstances).mockResolvedValue([server.nut])
+
+    const response = await GET(request)
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe('')
   })
 
   it('fails the scrape when no configured server can be reached', async () => {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getNutInstances } from '@/app/api/utils'
+import { upsStatus } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
 
 const debug = createDebugLogger('METRICS')
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
           })
           return null
         })
-        if (!data) return []
+        if (!data || data['ups.status']?.value === upsStatus.DEVICE_UNREACHABLE) return null
 
         const lines: string[] = []
 
@@ -94,7 +95,12 @@ export async function GET(request: NextRequest) {
         }
         return lines
       })
-      return perDeviceMetrics.flat()
+
+      if (perDeviceMetrics.length > 0 && perDeviceMetrics.every((lines) => lines === null)) {
+        throw new Error('Failed to read metrics from any discovered UPS')
+      }
+
+      return perDeviceMetrics.flatMap((lines) => lines ?? [])
     })
   )
 
