@@ -12,6 +12,10 @@ const mockPoint = {
   timestamp: jest.fn().mockReturnThis(),
 }
 
+const mockQueryApi = {
+  collectRows: jest.fn(),
+}
+
 jest.mock('@influxdata/influxdb-client', () => {
   const actual = jest.requireActual('@influxdata/influxdb-client')
   const mockWriteApi = {
@@ -20,8 +24,12 @@ jest.mock('@influxdata/influxdb-client', () => {
   }
   const mockInfluxDB = jest.fn().mockImplementation(() => ({
     getWriteApi: jest.fn().mockReturnValue(mockWriteApi),
+    getQueryApi: jest.fn().mockImplementation(() => mockQueryApi),
   }))
-  mockInfluxDB.prototype = { getWriteApi: jest.fn().mockReturnValue(mockWriteApi) }
+  mockInfluxDB.prototype = {
+    getWriteApi: jest.fn().mockReturnValue(mockWriteApi),
+    getQueryApi: jest.fn().mockImplementation(() => mockQueryApi),
+  }
 
   return {
     ...actual,
@@ -329,6 +337,54 @@ describe('InfluxWriter', () => {
       expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
+      consoleErrorSpy.mockRestore()
+    })
+  })
+
+  describe('queryHistory', () => {
+    it('should query and map history points for a bounded range', async () => {
+      mockQueryApi.collectRows.mockImplementation(
+        async (_flux: string, rowMapper: (v: string[], m: unknown) => unknown) => {
+          const tableMeta = {
+            get: (values: string[], column: string) => (column === '_time' ? values[0] : Number(values[1])),
+          }
+          return [rowMapper(['2023-01-01T00:00:00Z', '120.5'], tableMeta)]
+        }
+      )
+
+      const result = await influxWriter.queryHistory('ups', 'input.voltage', 60)
+
+      expect(result).toEqual([{ time: '2023-01-01T00:00:00Z', value: 120.5 }])
+      const flux = mockQueryApi.collectRows.mock.calls[0][0] as string
+      expect(flux).toContain('range(start: -60m)')
+      expect(flux).toContain('r._measurement == "ups"')
+      expect(flux).toContain('r._field == "input.voltage"')
+    })
+
+    it('should use an epoch start for "all data" (rangeMinutes <= 0)', async () => {
+      mockQueryApi.collectRows.mockResolvedValue([])
+
+      await influxWriter.queryHistory('ups', 'input.voltage', 0)
+
+      const flux = mockQueryApi.collectRows.mock.calls[0][0] as string
+      expect(flux).toContain('range(start: time(v: 0))')
+    })
+
+    it('should escape double quotes in measurement/field names', async () => {
+      mockQueryApi.collectRows.mockResolvedValue([])
+
+      await influxWriter.queryHistory('weird"device', 'weird"field', 60)
+
+      const flux = mockQueryApi.collectRows.mock.calls[0][0] as string
+      expect(flux).toContain('r._measurement == "weird\\"device"')
+      expect(flux).toContain('r._field == "weird\\"field"')
+    })
+
+    it('should propagate query errors', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+      mockQueryApi.collectRows.mockRejectedValue(new Error('query failed'))
+
+      await expect(influxWriter.queryHistory('ups', 'input.voltage', 60)).rejects.toThrow('query failed')
       consoleErrorSpy.mockRestore()
     })
   })
