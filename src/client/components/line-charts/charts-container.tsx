@@ -36,17 +36,15 @@ export default function ChartsContainer({ vars, data, name }: Props) {
   const temperatureWrapper = useMemo(() => {
     const hasAmbientTemperature = vars['ambient.temperature']
     const hasBatteryTemperature = vars['battery.temperature']
-
-    if (!hasAmbientTemperature && !hasBatteryTemperature) {
-      return <></>
-    }
+    const hasUpsTemperature = vars['ups.temperature']
 
     return (
-      <div className='mb-4'>
+      <div className='mb-4 empty:hidden'>
         <TemperatureChart
           id={name}
-          ambientTemperature={hasAmbientTemperature ? +hasAmbientTemperature.value : undefined}
-          batteryTemperature={hasBatteryTemperature ? +hasBatteryTemperature.value : undefined}
+          ambientTemperature={hasAmbientTemperature?.value}
+          batteryTemperature={hasBatteryTemperature?.value}
+          upsTemperature={hasUpsTemperature?.value}
           updated={data.updated}
         />
       </div>

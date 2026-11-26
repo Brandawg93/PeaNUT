@@ -319,7 +319,7 @@ export class Nut {
         const value = line.split('"')[1].trim()
         const description = await getCachedVarDescription(this.host, this.port, key, device, conn.socket)
         const type = await getCachedVarType(this.host, this.port, key, device, conn.socket)
-        if (type.includes('NUMBER') && !Number.isNaN(+value)) {
+        if (value !== '' && type.includes('NUMBER') && !Number.isNaN(+value)) {
           const num = +value
           vars[key] = { value: num, description }
         } else {

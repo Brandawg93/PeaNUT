@@ -22,12 +22,13 @@ type Props = Readonly<{
   config: ChartConfig
   data: any[]
   unit: string
+  showDots?: boolean
   onLegendClick?: (payload: LegendPayload) => void
   referenceLineData?: ReferenceLineData
 }>
 
 export default function LineChartBase(props: Props) {
-  const { referenceLineData, id, config, data, unit, onLegendClick } = props
+  const { referenceLineData, id, config, data, unit, onLegendClick, showDots = false } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
 
@@ -147,7 +148,7 @@ export default function LineChartBase(props: Props) {
                           type='monotone'
                           stroke={`var(--color-${key})`}
                           strokeWidth={2}
-                          dot={false}
+                          dot={showDots}
                         />
                       ))}
                 </LineChart>

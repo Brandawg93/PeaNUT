@@ -25,6 +25,7 @@
     "nominalRealpower": "定格有効電力"
   },
   "temperatureChart": {
+    "upsTemperature": "UPS温度",
     "ambientTemperature": "周囲温度",
     "batteryTemperature": "バッテリー温度"
   },
