@@ -28,6 +28,15 @@ describe('useNavigation', () => {
     expect(push).toHaveBeenCalledWith('/device/ups')
   })
 
+  it('keeps settings navigation on the current host with a root base path', () => {
+    ;(env as jest.Mock).mockReturnValue('/')
+
+    const { result } = renderHook(() => useNavigation())
+    result.current.push('/settings')
+
+    expect(push).toHaveBeenCalledWith('/settings')
+  })
+
   it('prefixes the base path when pushing', () => {
     ;(env as jest.Mock).mockReturnValue('/nut')
 
