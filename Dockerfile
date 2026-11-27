@@ -1,4 +1,4 @@
-FROM node:lts-slim AS pnpm
+FROM node:24-slim AS pnpm
 
 WORKDIR /app
 
@@ -48,7 +48,7 @@ RUN pnpm run next-ws && \
     mkdir -p /config
 
 # Production stage with minimal footprint
-FROM dhi.io/node:24 AS runner
+FROM dhi.io/node:26 AS runner
 
 WORKDIR /app
 
