@@ -53,10 +53,10 @@ const TestSettingsProvider = ({
 }
 
 const createTestWrapper = (options: CustomRenderOptions = {}) => {
-  const { queryClient, language = 'en', settings = {} } = options
+  const { queryClient = new QueryClient(), language = 'en', settings = {} } = options
 
   const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient || new QueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
         <TestSettingsProvider customSettings={settings}>
           <TimeRangeProvider>
