@@ -17,6 +17,7 @@ import { MemoizedGrid } from '@/client/components/grid'
 import Gauge from '@/client/components/gauge'
 import Kpi from '@/client/components/kpi'
 import NavBar from '@/client/components/navbar'
+import PageStatus from '@/client/components/page-status'
 import NavBarControls from '@/client/components/navbar-controls'
 import Runtime from '@/client/components/runtime'
 import Footer from '@/client/components/footer'
@@ -28,7 +29,6 @@ import { upsStatus, parseUpsStatus } from '@/common/constants'
 import { DeviceData } from '@/common/types'
 import DayNightSwitch from './daynight'
 import LanguageSwitcher from './language-switcher'
-import { Card } from '@/client/components/ui/card'
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/utils'
 import { useSettings } from '@/client/context/settings'
 import { DashboardSectionConfig } from '@/server/settings'
@@ -86,8 +86,8 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
   const { t } = useTranslation(lng)
   const { push } = useNavigation()
   const { settings } = useSettings()
-  const { isLoading, data, refetch } = useQuery({
-    queryKey: ['deviceData', device],
+  const { isLoading, isError, error, data, refetch } = useQuery({
+    queryKey: ['deviceData', device, getDeviceAction],
     queryFn: async () => await getDeviceAction(device),
   })
 
@@ -128,10 +128,10 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     })
   }, [])
 
-  const currentLoad = useMemo(() => {
-    if (!data?.device?.vars) return <Kpi text='N/A' description={t('currentLoad')} />
+  const vars = data?.device?.vars
 
-    const vars = data.device.vars
+  const currentLoad = useMemo(() => {
+    if (!vars) return <Kpi text='N/A' description={t('currentLoad')} />
     if (vars['ups.load']) {
       if (vars['ups.realpower.nominal'] && wattsOrPercent) {
         const currentWattage = (+vars['ups.load'].value / 100) * +vars['ups.realpower.nominal'].value
@@ -153,12 +153,10 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
       )
     }
     return <Kpi text='N/A' description={t('currentLoad')} />
-  }, [data?.device?.vars, wattsOrPercent, toggleWattsOrPercent, t])
+  }, [vars, wattsOrPercent, toggleWattsOrPercent, t])
 
   const currentWh = useMemo(() => {
-    if (!data?.device?.vars) return <Kpi text='N/A' description={t('batteryCharge')} />
-
-    const vars = data.device.vars
+    if (!vars) return <Kpi text='N/A' description={t('batteryCharge')} />
     if (vars['battery.charge']) {
       if (
         vars['ups.load'] &&
@@ -188,13 +186,12 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
     } else {
       return <Kpi text='N/A' description={t('batteryCharge')} />
     }
-  }, [data?.device?.vars, wattHours, toggleWattHours, t])
+  }, [vars, wattHours, toggleWattHours, t])
 
   const renderSection = useCallback(
     (key: string) => {
-      if (!data?.device?.vars) return null
+      if (!vars || !data?.device) return null
 
-      const vars = data.device.vars
       const ups = data.device
 
       switch (key) {
@@ -237,16 +234,42 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
           return null
       }
     },
-    [currentLoad, currentWh, data, refetch, runCommandAction]
+    [currentLoad, currentWh, data, vars, refetch, runCommandAction]
   )
 
   if (isLoading) {
     return loadingWrapper
   }
+  // Only take over the full page when there is no cached device to show: a
+  // failed background refresh keeps isError set while data is retained, and
+  // unmounting here would also kill the auto-refresh timer in NavBarControls.
+  if (isError && !data?.device) {
+    return (
+      <PageStatus
+        testId='error-wrapper'
+        controls={
+          <div className='flex justify-end space-x-2'>
+            <DayNightSwitch />
+            <LanguageSwitcher />
+          </div>
+        }
+        action={
+          <Button variant='default' title={t('refresh')} className='shadow-none' onClick={() => refetch()}>
+            {t('refresh')}
+          </Button>
+        }
+      >
+        <HiOutlineExclamationCircle className='text-destructive mb-4 text-8xl' />
+        <p>{t('error')}</p>
+        {error instanceof Error ? <p className='text-muted-foreground mt-2 text-sm'>{error.message}</p> : null}
+      </PageStatus>
+    )
+  }
   if (!data?.device) {
     return (
-      <div className='bg-background flex h-full min-h-screen flex-col' data-testid='empty-wrapper'>
-        <NavBar>
+      <PageStatus
+        testId='empty-wrapper'
+        controls={
           <div className='flex justify-end space-x-2'>
             <DayNightSwitch />
             <LanguageSwitcher />
@@ -261,31 +284,25 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               <TbSettings className='size-6! stroke-[1.5px]' />
             </Button>
           </div>
-        </NavBar>
-        <div className='flex flex-1 flex-col items-center justify-center'>
-          <Card className='border-border-card bg-card flex flex-col items-center p-6 shadow-none'>
-            <div className='flex flex-col items-center pb-2'>
-              <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
-              <p>{t('noDevicesError')}</p>
-            </div>
-            <div>
-              <Button
-                variant='default'
-                title={t('sidebar.settings')}
-                className='shadow-none'
-                onClick={() => push('/settings')}
-              >
-                <TbSettings className='size-6! stroke-[1.5px]' />
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>
+        }
+        action={
+          <Button
+            variant='default'
+            title={t('sidebar.settings')}
+            className='shadow-none'
+            onClick={() => push('/settings')}
+          >
+            <TbSettings className='size-6! stroke-[1.5px]' />
+          </Button>
+        }
+      >
+        <HiQuestionMarkCircle className='text-destructive mb-4 text-8xl' />
+        <p>{t('noDevicesError')}</p>
+      </PageStatus>
     )
   }
 
   const ups = data.device
-  const vars = ups.vars
   if (!vars) {
     return loadingWrapper
   }
@@ -321,6 +338,9 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
               <p>
                 {t('serial')}: {vars['device.serial']?.value}
               </p>
+              <p className='text-muted-foreground text-sm'>
+                {t('server')}: {ups.server}
+              </p>
             </div>
             <div>
               <p className='text-2xl font-semibold'>
@@ -332,7 +352,7 @@ export default function DeviceWrapper({ device, getDeviceAction, runCommandActio
                   (!vars['ups.status']?.value || vars['ups.status']?.value === '0' ? '' : vars['ups.status']?.value)}
               </p>
               <div className='flex justify-end'>
-                <Actions commands={ups.commands} device={ups.name} runCommandAction={runCommandAction} vars={vars} />
+                <Actions commands={ups.commands} device={ups.id} runCommandAction={runCommandAction} vars={vars} />
               </div>
             </div>
           </div>

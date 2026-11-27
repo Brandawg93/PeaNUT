@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { ThemeProvider } from '@/client/context/theme-provider'
 
 // Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,

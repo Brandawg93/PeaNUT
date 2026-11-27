@@ -16,7 +16,9 @@ jest.mock('next/navigation', () => ({
 const queryClient = new QueryClient()
 
 const mockDevice: DEVICE = {
+  id: 'localhost_3493_test-device',
   name: 'test-device',
+  server: 'localhost:3493',
   description: 'Test Device Description',
   vars: {
     'ups.status': {
@@ -131,10 +133,11 @@ describe('DeviceGrid', () => {
       </QueryClientProvider>
     )
 
-    // Only the valid device should be displayed
+    // Only valid devices or devices with status should be displayed
     expect(screen.getByText('test-device')).toBeInTheDocument()
+    expect(screen.getByText('na-status-device')).toBeInTheDocument()
+    // no-vars-device is still filtered because of Object.keys(device.vars).length > 0
     expect(screen.queryByText('no-vars-device')).not.toBeInTheDocument()
-    expect(screen.queryByText('na-status-device')).not.toBeInTheDocument()
   })
 
   it('displays correct status icons for different status values', () => {
@@ -233,7 +236,23 @@ describe('DeviceGrid', () => {
     const detailsButton = screen.getByText('details')
     fireEvent.click(detailsButton)
 
-    expect(mockPush).toHaveBeenCalledWith('/device/test-device')
+    // Device ID uses URL-safe underscore format: host_port_name
+    expect(mockPush).toHaveBeenCalledWith('/device/localhost_3493_test-device')
+  })
+
+  it('encodes the device ID when navigating to device details', () => {
+    const data: DevicesData = { ...mockDevicesData, devices: [{ ...mockDevice, id: 'My NAS #2~3493~ups' }] }
+    render(
+      <QueryClientProvider client={queryClient}>
+        <LanguageContext.Provider value={mockLanguageContext}>
+          <DeviceGrid data={data} />
+        </LanguageContext.Provider>
+      </QueryClientProvider>
+    )
+
+    fireEvent.click(screen.getByText('details'))
+
+    expect(mockPush).toHaveBeenCalledWith('/device/My%20NAS%20%232~3493~ups')
   })
 
   it('displays progress bars for battery charge and ups load', () => {

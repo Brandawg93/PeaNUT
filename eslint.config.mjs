@@ -6,21 +6,13 @@ import prettier from 'eslint-plugin-prettier'
 import nextPlugin from '@next/eslint-plugin-next'
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import pluginJest from 'eslint-plugin-jest'
-import { FlatCompat } from '@eslint/eslintrc'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
+import pluginReact from 'eslint-plugin-react'
+import pluginReactHooks from 'eslint-plugin-react-hooks'
+import { fixupPluginRules } from '@eslint/compat'
 
 const config = [
-  ...compat.extends('next/core-web-vitals'),
   {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts', '.claude/**'],
   },
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
@@ -70,10 +62,15 @@ const config = [
   {
     plugins: {
       '@next/next': nextPlugin,
+      react: fixupPluginRules(pluginReact),
+      'react-hooks': fixupPluginRules(pluginReactHooks),
     },
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules,
+      ...pluginReact.configs.recommended.rules,
+      ...pluginReact.configs['jsx-runtime'].rules,
+      ...pluginReactHooks.configs.recommended.rules,
     },
   },
   {

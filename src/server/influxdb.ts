@@ -38,7 +38,7 @@ export default class InfluxWriter {
     this.debug.debug('Writing device data to InfluxDB', { device: device.name, timestamp })
 
     // Skip writing if device is unreachable
-    if (device.vars.status?.value === upsStatus.DEVICE_UNREACHABLE) {
+    if (device.vars['ups.status']?.value === upsStatus.DEVICE_UNREACHABLE) {
       this.debug.debug('Skipping unreachable device', { device: device.name })
       return
     }
@@ -46,48 +46,36 @@ export default class InfluxWriter {
     let floatFieldCount = 0
     let stringFieldCount = 0
 
-    // float fields
-    for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'number')) {
-      const point = new Point(device.name)
-        .tag('description', device.description)
-        .floatField(key, device.vars[key].value)
-      if (timestamp) {
-        point.timestamp(timestamp)
-      }
+    const point = new Point(device.name).tag('description', device.description).tag('server', device.server) // Server tag for multi-server disambiguation
 
-      try {
-        this.writeApi.writePoint(point)
+    for (const [key, variable] of Object.entries(device.vars)) {
+      const value = variable.value
+
+      if (typeof value === 'number') {
+        point.floatField(key, value)
         floatFieldCount++
-      } catch (e) {
-        this.debug.error('Failed to write float field', {
-          device: device.name,
-          field: key,
-          error: e instanceof Error ? e.message : String(e),
-        })
-        console.error(`Failed to write float field ${key} for device ${device.name}:`, e)
+      } else if (typeof value === 'string') {
+        point.stringField(key, value)
+        stringFieldCount++
       }
     }
 
-    // string fields
-    for (const key of Object.keys(device.vars).filter((key) => typeof device.vars[key].value === 'string')) {
-      const point = new Point(device.name)
-        .tag('description', device.description)
-        .stringField(key, device.vars[key].value)
-      if (timestamp) {
-        point.timestamp(timestamp)
-      }
+    if (floatFieldCount === 0 && stringFieldCount === 0) {
+      return
+    }
 
-      try {
-        this.writeApi.writePoint(point)
-        stringFieldCount++
-      } catch (e) {
-        this.debug.error('Failed to write string field', {
-          device: device.name,
-          field: key,
-          error: e instanceof Error ? e.message : String(e),
-        })
-        console.error(`Failed to write string field ${key} for device ${device.name}:`, e)
-      }
+    if (timestamp) {
+      point.timestamp(timestamp)
+    }
+
+    try {
+      this.writeApi.writePoint(point)
+    } catch (e) {
+      this.debug.error('Failed to write point', {
+        device: device.name,
+        error: e instanceof Error ? e.message : String(e),
+      })
+      console.error(`Failed to write point for device ${device.name}:`, e)
     }
 
     this.debug.debug('Device data write completed', {

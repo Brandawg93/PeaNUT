@@ -5,7 +5,7 @@ import NavBarControls from '@/client/components/navbar-controls'
 import { renderWithProviders, waitForSettings } from '../../../utils/test-utils'
 
 // Mock window.matchMedia for next-themes
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,

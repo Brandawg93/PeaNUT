@@ -19,16 +19,16 @@ const config: Config = {
   // bail: 0,
 
   // The directory where Jest should store its cached dependency information
-  // cacheDirectory: "/private/var/folders/1z/lfx09ykx6v55w0sc8m31d38r0000gn/T/jest_dx",
+  cacheDirectory: '<rootDir>/.jest-cache',
 
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
 
   // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: true,
+  collectCoverage: process.env.COVERAGE === 'true',
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  // collectCoverageFrom: undefined,
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
@@ -49,8 +49,17 @@ const config: Config = {
   //   "clover"
   // ],
 
-  // An object that configures minimum threshold enforcement for coverage results
-  // coverageThreshold: undefined,
+  // An object that configures minimum threshold enforcement for coverage results.
+  // Set ~1% below current measured coverage so future PRs can't silently regress.
+  // Bump these up as coverage improves.
+  coverageThreshold: {
+    global: {
+      statements: 83,
+      lines: 85,
+      functions: 71,
+      branches: 65,
+    },
+  },
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,
@@ -180,7 +189,7 @@ const config: Config = {
   // transform: undefined,
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ['/node_modules/(?!(next-auth|@auth/core)/)'],
+  // transformIgnorePatterns: undefined,
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
@@ -199,4 +208,16 @@ const config: Config = {
   },
 }
 
-export default createJestConfig(config)
+// next/jest only lets custom config *append* to its own transformIgnorePatterns, and its
+// built-in patterns ignore anything under pnpm's `.pnpm/<name>@<version>/node_modules/<name>`
+// nesting that isn't `geist`/`next` itself — appending an exemption can't undo an ignore that
+// an earlier pattern in the array already matched. Post-process the resolved config instead so
+// ESM-only packages (next-auth, @auth/core, @tanstack/react-table and its deps) still get
+// transformed under Jest's CJS test runtime.
+export default async () => {
+  const resolvedConfig = await createJestConfig(config)()
+  resolvedConfig.transformIgnorePatterns = [
+    '/node_modules/(?!.*(next-auth|@auth/core|@tanstack/(react-table|table-core|react-store|store)|chokidar|readdirp)/)',
+  ]
+  return resolvedConfig
+}

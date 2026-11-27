@@ -26,7 +26,7 @@ import { handleDeviceOperation } from '@/app/api/utils'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
-  return handleDeviceOperation(device, async (nut) => {
-    return await nut.getClients(device)
+  return handleDeviceOperation(device, async (nut, deviceName) => {
+    return await nut.getClients(deviceName)
   })
 }

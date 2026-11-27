@@ -52,3 +52,52 @@ export function setLocalStorageItem(key: string, value: string): void {
     }
   }
 }
+
+// Route params arrive percent-encoded (e.g. "My%20NAS~3493~ups"); decode before parsing
+export function decodeDeviceId(deviceId: string): string {
+  try {
+    return decodeURIComponent(deviceId)
+  } catch {
+    return deviceId
+  }
+}
+
+// Parse device ID to extract server info and device name
+// Supports URL-safe format "host~port~name" (preferred) and legacy format "name"
+// Also supports backward compatible "host_port_name" format
+export function parseDeviceId(deviceId: string): { host?: string; port?: number; name: string } {
+  // 1. Try preferred tilde separator format: host~port~name
+  if (deviceId.includes('~')) {
+    const parts = deviceId.split('~')
+    // Find the last numeric part that could be a port
+    const portIdx = parts.findLastIndex((p, i) => i > 0 && /^\d+$/.test(p))
+
+    if (portIdx !== -1) {
+      return {
+        host: parts.slice(0, portIdx).join('~'),
+        port: Number.parseInt(parts[portIdx], 10),
+        name: parts.slice(portIdx + 1).join('~'),
+      }
+    }
+  }
+
+  // 2. Try backward compatible underscore format: host_port_name
+  // The port is numeric, everything after it is device name, everything before is host/alias
+  const parts = deviceId.split('_')
+  if (parts.length >= 3) {
+    // Search backwards to find the numeric port
+    // Port cannot be the first or last part in a composite ID
+    const portIdx = parts.findLastIndex((p, i) => i > 0 && i < parts.length - 1 && /^\d+$/.test(p))
+
+    if (portIdx !== -1) {
+      return {
+        host: parts.slice(0, portIdx).join('_'),
+        port: Number.parseInt(parts[portIdx], 10),
+        name: parts.slice(portIdx + 1).join('_'),
+      }
+    }
+  }
+
+  // 3. Legacy format: just the device name
+  return { name: deviceId }
+}

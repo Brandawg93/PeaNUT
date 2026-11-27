@@ -24,6 +24,10 @@
     "realpower": "Potenza reale",
     "nominalRealpower": "Potenza reale nominale"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Temperatura ambiente",
+    "batteryTemperature": "Temperatura batteria"
+  },
   "grid": {
     "key": "Chiave",
     "value": "Valore",
@@ -56,6 +60,10 @@
     "selectDateFormat": "Seleziona un formato di data",
     "timeFormat": "Formato ora",
     "selectTimeFormat": "Seleziona un formato di ora",
+    "temperatureUnit": "Unità di temperatura",
+    "selectTemperatureUnit": "Seleziona un'unità di temperatura",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Disabilita controllo versione",
     "disableVersionCheckDescription": "Disabilita il controllo degli aggiornamenti nel footer",
     "manageServers": "Gestisci server",
@@ -88,6 +96,8 @@
     "disable": "Disabilitare"
   },
   "connect": {
+    "name": "Nome",
+    "namePlaceholder": "Inserisci il nome del server (alias)",
     "server": "Server",
     "port": "Porta",
     "username": "Nome utente",
@@ -188,6 +198,7 @@
     "power": "Energia"
   },
   "volt-amps-chart": "Potere apparente",
+  "temperature-chart": "Temperatura",
   "volts-chart": "Voltaggio",
   "watts-chart": "Vero potere",
   "accordion-grid": "Dati UPS",
@@ -198,6 +209,18 @@
     "password": "Password",
     "passwordPlaceholder": "Inserisci la tua password",
     "submit": "Login"
+  },
+  "setup": {
+    "title": "Benvenuto in PeaNUT",
+    "description": "Crea il tuo account amministratore iniziale per iniziare.",
+    "username": "Nome utente",
+    "password": "Password",
+    "passwordHint": "Deve essere lungo almeno 5 caratteri.",
+    "submit": "Crea account",
+    "submitting": "Creazione account...",
+    "errorUserExists": "Un utente esiste già.",
+    "errorSaveFailed": "Impossibile salvare l'utente.",
+    "errorUsernameRequired": "Il nome utente è obbligatorio"
   },
   "logout": "Logout",
   "description": "Descrizione",

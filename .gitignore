@@ -8,6 +8,7 @@
 
 # testing
 /coverage
+/.jest-cache
 
 # production
 /build
@@ -27,6 +28,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .vscode
+.claude
 Thumbs.db
 
 scripts
@@ -34,7 +36,11 @@ scripts
 dev
 
 settings.yml
+auth.yaml
 
 .next
 .swc
+next-env.d.ts
 test-results
+playwright-report
+.eslintcache

@@ -2,4 +2,4 @@
 -P ubuntu-latest=catthehacker/ubuntu:act-latest
 
 # Set environment variables for act
--e ACT=true
+--env ACT=true

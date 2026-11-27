@@ -13,6 +13,7 @@ import 'swagger-ui-react/swagger-ui.css'
 import './custom.css'
 import { LuLogOut } from 'react-icons/lu'
 import { useNavigation } from '@/hooks/useNavigation'
+import { useAuth } from '@/client/context/auth'
 
 type Props = Readonly<{
   spec: Record<string, any>
@@ -22,6 +23,7 @@ type Props = Readonly<{
 export default function ReactSwagger({ spec, onLogout }: Props) {
   const { push } = useNavigation()
   const { resolvedTheme } = useTheme()
+  const { authEnabled } = useAuth()
   const swaggerTheme = resolvedTheme === 'dark' ? 'invert-[0.98] hue-rotate-180' : 'invert-0 hue-rotate-0'
   return (
     <>
@@ -29,16 +31,18 @@ export default function ReactSwagger({ spec, onLogout }: Props) {
         <div className='flex justify-end space-x-2'>
           <DayNightSwitch />
           <LanguageSwitcher />
-          <Button
-            variant='ghost'
-            size='icon'
-            title={t('logout')}
-            aria-label={t('logout')}
-            onClick={onLogout}
-            className='cursor-pointer'
-          >
-            <LuLogOut className='size-6! stroke-[1.5px]' />
-          </Button>
+          {authEnabled ? (
+            <Button
+              variant='ghost'
+              size='icon'
+              title={t('logout')}
+              aria-label={t('logout')}
+              onClick={onLogout}
+              className='cursor-pointer'
+            >
+              <LuLogOut className='size-6! stroke-[1.5px]' />
+            </Button>
+          ) : null}
           <Button
             variant='ghost'
             size='icon'

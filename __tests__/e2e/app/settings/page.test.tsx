@@ -10,8 +10,7 @@ test.describe('Settings', () => {
     if (currentUrl.includes('/login')) {
       expect(currentUrl).toContain('/login')
     } else {
-      const container = await page.$('[data-testid="settings-wrapper"]')
-      expect(container).toBeDefined()
+      await expect(page.locator('[data-testid="settings-wrapper"]')).toBeAttached()
     }
   })
 })

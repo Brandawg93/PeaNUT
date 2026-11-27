@@ -1,5 +1,6 @@
-import { TextDecoder } from 'util'
+import { TextDecoder } from 'node:util'
 import { DEVICE, VARS } from '@/common/types'
+import { upsStatus } from '@/common/constants'
 import { Nut } from '@/server/nut'
 import {
   getAllVarDescriptions,
@@ -27,8 +28,8 @@ import { signIn } from '@/auth'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import { AuthError } from 'next-auth'
 
-global.TextDecoder = TextDecoder as any
-global.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
+globalThis.TextDecoder = TextDecoder as any
+globalThis.fetch = jest.fn(() => Promise.resolve({})) as jest.Mock
 
 // Mock auth
 jest.mock('@/auth', () => ({
@@ -45,10 +46,12 @@ const vars: VARS = {}
 
 const result: Array<DEVICE> = [
   {
+    id: 'foo',
+    name: 'foo',
+    server: `${TEST_HOSTNAME}:${TEST_PORT}`,
     clients: [],
     commands: [],
     description: 'bar',
-    name: 'foo',
     rwVars: ['battery.charge'],
     vars: {},
   },
@@ -94,6 +97,66 @@ describe('actions', () => {
     expect(data.devices).toEqual(result)
   })
 
+  it('keeps devices in configured server order when responses finish out of order', async () => {
+    const firstDevice = { name: 'first-ups', description: '', rwVars: [], vars: {}, commands: [], clients: [] }
+    const secondDevice = { name: 'second-ups', description: '', rwVars: [], vars: {}, commands: [], clients: [] }
+    ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { NAME: 'First', HOST: 'first', PORT: TEST_PORT, DISABLED: false },
+          { NAME: 'Second', HOST: 'second', PORT: TEST_PORT, DISABLED: false },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+    ;(Nut.prototype.getDevices as jest.Mock)
+      .mockImplementationOnce(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 20))
+        return [firstDevice]
+      })
+      .mockResolvedValueOnce([secondDevice])
+
+    const data = await getDevices()
+
+    expect(data.devices?.map((device) => device.name)).toEqual(['first-ups', 'second-ups'])
+  })
+
+  describe.each([
+    ['getDevices', async () => (await getDevices()).devices![0]],
+    ['getDevice', async () => (await getDevice('foo')).device],
+  ] as const)('%s writable variables', (_name, loadDevice) => {
+    it('discovers writable variables using the configured credentials', async () => {
+      ;(YamlSettings.prototype.get as jest.Mock).mockReturnValueOnce([
+        { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: TEST_PASSWORD },
+      ])
+      ;(Nut.prototype.getRWVars as jest.Mock).mockImplementationOnce(function (this: Nut) {
+        expect(this.getHost()).toBe(TEST_HOSTNAME)
+        expect(this.getPort()).toBe(TEST_PORT)
+        expect(this.getUsername()).toBe(TEST_USERNAME)
+        expect(this.getPassword()).toBe(TEST_PASSWORD)
+        return Promise.resolve(['battery.charge'])
+      })
+
+      const device = await loadDevice()
+
+      expect(device.rwVars).toEqual(['battery.charge'])
+      expect(Nut.prototype.getRWVars).toHaveBeenCalledWith('foo')
+    })
+
+    it('skips writable-variable and command discovery for an unreachable device', async () => {
+      ;(Nut.prototype.getData as jest.Mock).mockResolvedValueOnce({
+        'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+      })
+
+      const device = await loadDevice()
+
+      expect(device.rwVars).toEqual([])
+      expect(device.commands).toEqual([])
+      expect(Nut.prototype.getRWVars).not.toHaveBeenCalled()
+      expect(Nut.prototype.getCommands).not.toHaveBeenCalled()
+    })
+  })
+
   it('gets all var descriptions', async () => {
     const data = await getAllVarDescriptions('ups', ['battery.charge'])
     expect(data?.data?.['battery.charge']).toEqual('test')
@@ -101,6 +164,27 @@ describe('actions', () => {
 
   it('tests connection', async () => {
     await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).resolves.toBe('Connection successful')
+  })
+
+  it('rejects connection to non-allowed server', async () => {
+    await expect(testConnection('malicious.host.com', 3493)).rejects.toThrow('Connection to this server is not allowed')
+  })
+
+  it('rejects connection to disabled server', async () => {
+    ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: true },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+
+    await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).rejects.toThrow('Connection to this server is not allowed')
+  })
+
+  it('allows connection with different casing in hostname', async () => {
+    await expect(testConnection(TEST_HOSTNAME.toUpperCase(), TEST_PORT)).resolves.toBe('Connection successful')
   })
 
   it('saves variable', async () => {
@@ -199,18 +283,166 @@ describe('actions', () => {
   it('gets a single device', async () => {
     const deviceData = await getDevice('foo')
     expect(deviceData.device).toEqual({
+      id: 'foo',
+      name: 'foo',
+      server: `${TEST_HOSTNAME}:${TEST_PORT}`,
       vars: {},
       rwVars: ['battery.charge'],
       description: 'bar',
       clients: [],
       commands: [],
-      name: 'foo',
     })
     expect(deviceData.updated).toBeInstanceOf(Date)
     expect(Nut.prototype.getData).toHaveBeenCalledWith('foo')
     expect(Nut.prototype.getRWVars).toHaveBeenCalledWith('foo')
     expect(Nut.prototype.getCommands).toHaveBeenCalledWith('foo')
     expect(Nut.prototype.getDescription).toHaveBeenCalledWith('foo')
+  })
+
+  it('handles conflicting device names with smart IDs', async () => {
+    // Mock two servers with the same device name
+    jest.spyOn(YamlSettings.prototype, 'get').mockImplementation((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { NAME: 'Server1', HOST: '192.168.1.10', PORT: 3493, DISABLED: false },
+          { NAME: 'Server2', HOST: '192.168.1.20', PORT: 3493, DISABLED: false },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+
+    const data = await getDevices()
+    expect(data.devices).toHaveLength(2)
+    // Both should use composite ID because name 'foo' is not unique
+    expect(data.devices![0].id).toBe('Server1~3493~foo')
+    expect(data.devices![1].id).toBe('Server2~3493~foo')
+    expect(data.devices![0].server).toBe('Server1')
+    expect(data.devices![1].server).toBe('Server2')
+  })
+
+  describe('error and branch paths', () => {
+    beforeEach(() => {
+      // Prior tests overwrite the NUT_SERVERS mock; re-apply the canonical one
+      // so composite-ID lookups can find the test host.
+      ;(YamlSettings.prototype.get as jest.Mock).mockImplementation((key: keyof SettingsType) => {
+        const settings = {
+          NUT_SERVERS: [
+            { HOST: TEST_HOSTNAME, PORT: TEST_PORT, USERNAME: TEST_USERNAME, PASSWORD: undefined, DISABLED: false },
+          ],
+        }
+        return settings[key as keyof typeof settings]
+      })
+    })
+
+    it('testConnection invokes checkCredentials when credentials provided', async () => {
+      ;(Nut.prototype.checkCredentials as jest.Mock).mockClear()
+      await testConnection(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      expect(Nut.prototype.checkCredentials).toHaveBeenCalled()
+    })
+
+    it('testConnection wraps inner errors', async () => {
+      ;(Nut.prototype.testConnection as jest.Mock).mockRejectedValueOnce(new Error('refused'))
+      await expect(testConnection(TEST_HOSTNAME, TEST_PORT)).rejects.toThrow('refused')
+    })
+
+    it('saveVar returns error message when underlying setVar fails', async () => {
+      ;(Nut.prototype.setVar as jest.Mock).mockRejectedValueOnce(new Error('not writable'))
+      const result = await saveVar('foo', 'battery.charge', '50')
+      expect(result.error).toBe('not writable')
+    })
+
+    it('saveVar targets a specific server for composite device IDs', async () => {
+      const setVarSpy = (Nut.prototype.setVar as jest.Mock).mockClear()
+      const result = await saveVar(`${TEST_HOSTNAME}~${TEST_PORT}~foo`, 'battery.charge', '50')
+      expect(result.error).toBeUndefined()
+      expect(setVarSpy).toHaveBeenCalled()
+    })
+
+    it('saveVar reports "Device not found" for unknown composite IDs', async () => {
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
+      const result = await saveVar(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, 'battery.charge', '50')
+      expect(result.error).toBe('Device not found')
+    })
+
+    it('runCommand reports "Device not found" for unknown composite IDs', async () => {
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
+      const result = await runCommand(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, 'test.battery.start')
+      expect(result.error).toBe('Device not found')
+    })
+
+    it('runCommand targets a specific server for composite device IDs', async () => {
+      const runSpy = (Nut.prototype.runCommand as jest.Mock).mockClear()
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(true)
+      const result = await runCommand(`${TEST_HOSTNAME}~${TEST_PORT}~foo`, 'test.battery.start')
+      expect(result.error).toBeUndefined()
+      expect(runSpy).toHaveBeenCalledWith('test.battery.start', 'foo')
+    })
+
+    it('getAllCommands collects commands from composite ID path', async () => {
+      ;(Nut.prototype.getCommands as jest.Mock).mockResolvedValueOnce(['shutdown.reboot'])
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(true)
+      const commands = await getAllCommands(`${TEST_HOSTNAME}~${TEST_PORT}~foo`)
+      expect(commands).toEqual(['shutdown.reboot'])
+    })
+
+    it('getAllCommands returns [] when the underlying call throws', async () => {
+      ;(Nut.prototype.getCommands as jest.Mock).mockRejectedValueOnce(new Error('boom'))
+      const commands = await getAllCommands('foo')
+      expect(commands).toEqual([])
+    })
+
+    it('getDevice degrades to [] rwVars when the RW vars lookup fails (#470)', async () => {
+      ;(Nut.prototype.getRWVars as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device?.rwVars).toEqual([])
+      expect(deviceData.device?.vars).toEqual({})
+      expect(deviceData.device?.description).toBe('bar')
+    })
+
+    it('getDevice degrades to [] commands when the commands lookup fails (#470)', async () => {
+      ;(Nut.prototype.getCommands as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device?.commands).toEqual([])
+      expect(deviceData.device?.rwVars).toEqual(['battery.charge'])
+    })
+
+    it('getDevice degrades to empty description when the description lookup fails (#470)', async () => {
+      ;(Nut.prototype.getDescription as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device?.description).toBe('')
+      expect(deviceData.device?.vars).toEqual({})
+    })
+
+    it('getDevice still resolves when every optional command fails (#470)', async () => {
+      ;(Nut.prototype.getRWVars as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      ;(Nut.prototype.getCommands as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      ;(Nut.prototype.getDescription as jest.Mock).mockRejectedValueOnce(new Error('ERR INVALID-ARGUMENT\n'))
+      const deviceData = await getDevice('foo')
+      expect(deviceData.device).toEqual({
+        id: 'foo',
+        name: 'foo',
+        server: `${TEST_HOSTNAME}:${TEST_PORT}`,
+        vars: {},
+        rwVars: [],
+        description: '',
+        clients: [],
+        commands: [],
+      })
+    })
+
+    it('getAllVarDescriptions returns an error message when the lookup throws', async () => {
+      ;(Nut.prototype.deviceExists as jest.Mock).mockResolvedValueOnce(false)
+      const result = await getAllVarDescriptions(`${TEST_HOSTNAME}~${TEST_PORT}~ghost`, ['battery.charge'])
+      expect(result.error).toBeDefined()
+    })
+
+    it('checkSettings returns false when the settings lookup throws', async () => {
+      ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('disk gone')
+      })
+      const result = await checkSettings()
+      expect(result).toBe(false)
+    })
   })
 
   describe('authenticate', () => {

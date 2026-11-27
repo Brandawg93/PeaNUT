@@ -12,6 +12,7 @@ import LanguageSwitcher from '@/client/components/language-switcher'
 import DayNightSwitch from '@/client/components/daynight'
 import { getLocalStorageItem } from '@/lib/utils'
 import { useNavigation } from '@/hooks/useNavigation'
+import { useAuth } from '@/client/context/auth'
 
 type Props = Readonly<{
   onRefreshClick: () => void
@@ -30,6 +31,7 @@ export default function NavBarControls(props: Props) {
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
   const { push } = useNavigation()
+  const { authEnabled } = useAuth()
 
   useEffect(() => {
     if (refreshInterval > 0) {
@@ -56,18 +58,20 @@ export default function NavBarControls(props: Props) {
         <div className='hidden sm:block'>
           <LanguageSwitcher />
         </div>
-        <div className='hidden sm:block'>
-          <Button
-            className='cursor-pointer'
-            variant='ghost'
-            size='icon'
-            title={t('logout')}
-            aria-label={t('logout')}
-            onClick={onLogout}
-          >
-            <LuLogOut className='size-6! cursor-pointer stroke-[1.5px]' />
-          </Button>
-        </div>
+        {authEnabled ? (
+          <div className='hidden sm:block'>
+            <Button
+              className='cursor-pointer'
+              variant='ghost'
+              size='icon'
+              title={t('logout')}
+              aria-label={t('logout')}
+              onClick={onLogout}
+            >
+              <LuLogOut className='size-6! cursor-pointer stroke-[1.5px]' />
+            </Button>
+          </div>
+        ) : null}
         <div>
           <Button
             variant='ghost'

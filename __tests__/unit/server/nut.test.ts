@@ -2,6 +2,17 @@ import { Nut } from '@/server/nut'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../utils/test-constants'
 import PromiseSocket from '@/server/promise-socket'
 import { upsStatus } from '@/common/constants'
+import { nutConnectionPool } from '@/server/nut-pool'
+
+// Default: pool always returns null (overflow path), preserving existing test behaviour.
+// Individual tests can override acquire to simulate a pool hit.
+jest.mock('@/server/nut-pool', () => ({
+  nutConnectionPool: {
+    acquire: jest.fn().mockReturnValue(null),
+    release: jest.fn(),
+    drain: jest.fn(),
+  },
+}))
 
 const listVarUps = `BEGIN LIST VAR ups
 VAR ups battery.charge "100"
@@ -48,6 +59,11 @@ VAR ups ups.timer.start "-60"
 VAR ups ups.vendorid "0764"
 END LIST VAR ups`
 
+const mockGetDevicesWithUps = () =>
+  jest
+    .spyOn(Nut.prototype, 'getDevices')
+    .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+
 describe('Nut', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
@@ -77,16 +93,6 @@ describe('Nut', () => {
 
     const description = await nut.getVarDescription('ups', 'battery.charge')
     expect(description).toEqual('Battery charge level')
-  })
-
-  it('should get devices', async () => {
-    const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
-    jest
-      .spyOn(PromiseSocket.prototype, 'readAll')
-      .mockResolvedValue('BEGIN LIST UPS\nUPS ups "cyberpower"\nUPS ups2 "cyberpower"\nEND LIST UPS')
-
-    const devices = await nut.getDevices()
-    expect(devices.map((device) => device.name)).toEqual(['ups', 'ups2'])
   })
 
   it('should detect when a device is unreachable', async () => {
@@ -206,9 +212,7 @@ describe('Nut', () => {
         .mockResolvedValueOnce('OK\n') // USERNAME response
         .mockResolvedValueOnce('OK\n') // PASSWORD response
         .mockResolvedValueOnce('OK\n') // LOGIN response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await nut.checkCredentials()
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith(`USERNAME ${TEST_USERNAME}`)
       expect(PromiseSocket.prototype.write).toHaveBeenCalledWith(`PASSWORD ${TEST_PASSWORD}`)
@@ -220,9 +224,7 @@ describe('Nut', () => {
     it('should successfully check credentials without username and password', async () => {
       const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
       jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValueOnce('OK\n') // LOGIN response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await nut.checkCredentials()
       expect(PromiseSocket.prototype.write).not.toHaveBeenCalledWith('USERNAME testuser')
       expect(PromiseSocket.prototype.write).not.toHaveBeenCalledWith('PASSWORD testpass')
@@ -263,9 +265,7 @@ describe('Nut', () => {
         .mockResolvedValueOnce('OK\n') // USERNAME response
         .mockResolvedValueOnce('OK\n') // PASSWORD response
         .mockResolvedValueOnce('ERR\n') // LOGIN response
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await expect(nut.checkCredentials()).rejects.toThrow('Invalid credentials')
     })
 
@@ -280,9 +280,7 @@ describe('Nut', () => {
           .mockResolvedValueOnce('OK\n'), // LOGIN response
         close: jest.fn().mockResolvedValue(undefined),
       }
-      jest
-        .spyOn(Nut.prototype, 'getDevices')
-        .mockResolvedValue([{ name: 'ups', description: 'test', rwVars: [], commands: [], clients: [], vars: {} }])
+      mockGetDevicesWithUps()
       await nut.checkCredentials(mockSocket as any)
       expect(mockSocket.write).toHaveBeenCalledWith(`USERNAME ${TEST_USERNAME}`)
       expect(mockSocket.write).toHaveBeenCalledWith(`PASSWORD ${TEST_PASSWORD}`)
@@ -440,6 +438,250 @@ describe('Nut', () => {
 
       const exists = await nut.deviceExists('ups1')
       expect(exists).toBe(true)
+    })
+  })
+
+  describe('Connection Pool', () => {
+    const makePoolSocket = (
+      readAllMock = jest.fn().mockResolvedValue('BEGIN LIST UPS\nUPS ups "test"\nEND LIST UPS')
+    ) => ({
+      isConnected: jest.fn().mockReturnValue(true),
+      write: jest.fn().mockResolvedValue(undefined),
+      readAll: readAllMock,
+      close: jest.fn().mockResolvedValue(undefined),
+    })
+
+    it('reuses a pooled socket without calling connect()', async () => {
+      const mockPoolSocket = makePoolSocket()
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await nut.getDevices()
+
+      // Pool socket was used directly — connect() on a fresh PromiseSocket should not have been called
+      expect(PromiseSocket.prototype.connect).not.toHaveBeenCalled()
+      expect(mockPoolSocket.write).toHaveBeenCalledWith('LIST UPS')
+    })
+
+    it('returns a pooled socket to the pool on success', async () => {
+      const mockPoolSocket = makePoolSocket()
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await nut.getDevices()
+
+      expect(nutConnectionPool.release).toHaveBeenCalledWith(TEST_HOSTNAME, TEST_PORT, mockPoolSocket)
+      // LOGOUT should NOT be sent to a pooled socket on successful release
+      expect(mockPoolSocket.write).not.toHaveBeenCalledWith('LOGOUT')
+    })
+
+    it('destroys a pooled socket on error instead of returning it to the pool', async () => {
+      const mockPoolSocket = makePoolSocket(jest.fn().mockRejectedValue(new Error('Connection reset')))
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await expect(nut.getVersion()).rejects.toThrow('Connection reset')
+
+      expect(nutConnectionPool.release).not.toHaveBeenCalled()
+      expect(mockPoolSocket.close).toHaveBeenCalled()
+    })
+
+    it('bypasses the pool for authenticated commands (checkCredentials=true)', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // USERNAME
+        .mockResolvedValueOnce('OK\n') // PASSWORD
+        .mockResolvedValueOnce('OK\n') // LOGIN
+        .mockResolvedValueOnce('OK\n') // INSTCMD response
+      mockGetDevicesWithUps()
+
+      await nut.runCommand('test.command', 'ups')
+
+      // acquire() must not be called for authenticated commands
+      expect(nutConnectionPool.acquire).not.toHaveBeenCalled()
+      // The authenticated session must be destroyed (LOGOUT sent)
+      expect(PromiseSocket.prototype.write).toHaveBeenCalledWith('LOGOUT')
+    })
+
+    it('passes the pool socket down to getData helpers', async () => {
+      const mockPoolSocket = makePoolSocket(
+        jest.fn().mockResolvedValue('BEGIN LIST VAR ups\nVAR ups battery.charge "100"\nEND LIST VAR ups')
+      )
+      jest.mocked(nutConnectionPool.acquire).mockReturnValueOnce(mockPoolSocket as any)
+
+      jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('Battery charge')
+      jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('NUMBER')
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await nut.getData('ups')
+
+      // The pool socket was passed into getVarDescription and getType (via getCommand with socket)
+      // Verify the pool socket's write was used for LIST VAR (not a separate connection)
+      expect(mockPoolSocket.write).toHaveBeenCalledWith('LIST VAR ups')
+      expect(PromiseSocket.prototype.connect).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Memory Leak Prevention', () => {
+    it('should close connection when a command fails in getCommand', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      await expect(nut.getVersion()).rejects.toThrow('Communication error')
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+
+    it('should close connection when getData receives a transport-level error', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      const data = await nut.getData('ups')
+      expect(data['ups.status'].value).toEqual(upsStatus.DEVICE_UNREACHABLE)
+
+      // A transport-level readAll failure may leave the socket broken, so it must be
+      // destroyed (LOGOUT + close) rather than returned to the pool.
+      expect(nutConnectionPool.release).not.toHaveBeenCalled()
+      expect(mockClose).toHaveBeenCalled()
+    })
+
+    it('should close connection when an error occurs in checkCredentials', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Auth error'))
+      const mockClose = jest.spyOn(PromiseSocket.prototype, 'close')
+
+      await expect(nut.checkCredentials()).rejects.toThrow('Auth error')
+
+      expect(mockClose).toHaveBeenCalled()
+    })
+  })
+
+  describe('error branches', () => {
+    it('wraps connection failure with a "Connection failed" message for unauthenticated commands', async () => {
+      jest.spyOn(PromiseSocket.prototype, 'connect').mockRejectedValueOnce(new Error('ECONNREFUSED'))
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await expect(nut.getVersion()).rejects.toThrow('Connection failed: ECONNREFUSED')
+    })
+
+    it('wraps connection failure with a "Connection failed" message for authenticated commands', async () => {
+      jest.spyOn(PromiseSocket.prototype, 'connect').mockRejectedValueOnce(new Error('ECONNREFUSED'))
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      // runCommand uses checkCredentials=true → exercises the authenticated open-socket failure path
+      await expect(nut.runCommand('test.command', 'ups')).rejects.toThrow('Connection failed: ECONNREFUSED')
+    })
+
+    it('wraps non-Error connection failures via String(...) fallback', async () => {
+      jest.spyOn(PromiseSocket.prototype, 'connect').mockImplementationOnce(() => Promise.reject('boom'))
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      await expect(nut.getVersion()).rejects.toThrow('Connection failed: boom')
+    })
+
+    it('wraps checkCredentials open-socket failure', async () => {
+      jest.spyOn(PromiseSocket.prototype, 'connect').mockRejectedValueOnce(new Error('ENETUNREACH'))
+
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT, TEST_USERNAME, TEST_PASSWORD)
+      await expect(nut.checkCredentials()).rejects.toThrow('Connection failed: ENETUNREACH')
+    })
+
+    it('returns DEVICE_UNREACHABLE from LIST VAR when a caller-provided socket fails', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      const mockSocket = {
+        write: jest.fn().mockResolvedValue(undefined),
+        readAll: jest.fn().mockRejectedValue(new Error('Communication error')),
+        close: jest.fn().mockResolvedValue(undefined),
+        isConnected: jest.fn().mockReturnValue(true),
+      } as any
+
+      jest.spyOn(Nut.prototype, 'getVarDescription').mockResolvedValue('desc')
+      jest.spyOn(Nut.prototype, 'getType').mockResolvedValue('STRING')
+
+      const data = await (nut as any).getCommand('LIST VAR ups', undefined, false, mockSocket)
+      expect(data).toEqual(upsStatus.DEVICE_UNREACHABLE)
+    })
+
+    it('returns [] from getRWVars when credentials are missing', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      const rw = await nut.getRWVars('ups')
+      expect(rw).toEqual([])
+    })
+
+    it('throws "Invalid response" from getCommandDescription on malformed reply', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('NOTCMDDESC ups "..."')
+      await expect(nut.getCommandDescription('shutdown.reboot', 'ups')).rejects.toThrow('Invalid response')
+    })
+
+    it('throws "Invalid response" from runCommand on non-OK reply', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // LOGIN response
+        .mockResolvedValueOnce('NOPE\n') // INSTCMD response
+      mockGetDevicesWithUps()
+      await expect(nut.runCommand('test.command', 'ups')).rejects.toThrow('Invalid response')
+    })
+
+    it('throws "Invalid response" from getVar on malformed reply', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('NOTVAR ups battery.charge "100"')
+      await expect(nut.getVar('battery.charge', 'ups')).rejects.toThrow('Invalid response')
+    })
+
+    it('returns "Description unavailable" from getVarDescription on non-DESC reply', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('NOTDESC ups battery.charge "..."')
+      const result = await nut.getVarDescription('battery.charge', 'ups')
+      expect(result).toEqual('Description unavailable')
+    })
+
+    it('returns "Description unavailable" from getVarDescription when the command throws', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Communication error'))
+      const result = await nut.getVarDescription('battery.charge', 'ups')
+      expect(result).toEqual('Description unavailable')
+    })
+
+    it('returns "" from getType on malformed reply (degrades like getVarDescription)', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockResolvedValue('NOTTYPE ups battery.charge NUMBER')
+      await expect(nut.getType('battery.charge', 'ups')).resolves.toEqual('')
+    })
+
+    it('returns "" from getType when the command throws', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('ERR INVALID-ARGUMENT\n'))
+      await expect(nut.getType('battery.charge', 'ups')).resolves.toEqual('')
+    })
+
+    it('rethrows transport errors from getType so the connection is destroyed', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(PromiseSocket.prototype, 'readAll').mockRejectedValue(new Error('Operation timeout'))
+      await expect(nut.getType('battery.charge', 'ups')).rejects.toThrow('Operation timeout')
+    })
+
+    it('throws "Invalid response" from setVar when the SET reply is not OK', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(true)
+      jest
+        .spyOn(PromiseSocket.prototype, 'readAll')
+        .mockResolvedValueOnce('OK\n') // LOGIN response
+        .mockResolvedValueOnce('NOPE\n') // SET response
+      mockGetDevicesWithUps()
+      await expect(nut.setVar('battery.charge.low', '15', 'ups')).rejects.toThrow('Invalid response')
+    })
+
+    it('does not invoke SET when the device does not exist', async () => {
+      const nut = new Nut(TEST_HOSTNAME, TEST_PORT)
+      jest.spyOn(Nut.prototype, 'deviceExists').mockResolvedValue(false)
+      const writeSpy = jest.spyOn(PromiseSocket.prototype, 'write')
+      await expect(nut.setVar('battery.charge.low', '15', 'nonexistent')).resolves.toBeUndefined()
+      expect(writeSpy).not.toHaveBeenCalledWith(expect.stringContaining('SET VAR'))
     })
   })
 })

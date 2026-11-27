@@ -1,23 +1,21 @@
 import type { NextAuthConfig } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { ensureAuthSecret } from './server/auth-config'
+// Remove authStorage import as it's not Edge-compatible
 
 export const authConfig = {
   pages: {
     signIn: '/login',
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl, headers } }) {
-      // Check if authentication is enabled via env variables
-      // Also check for empty strings
-      const authEnabled = process.env.WEB_USERNAME?.trim() && process.env.WEB_PASSWORD?.trim()
+    async authorized({ auth, request: { nextUrl, headers } }) {
+      const authDisabled = process.env.AUTH_DISABLED === 'true'
 
-      // If auth is not enabled, allow all access
-      if (!authEnabled) {
+      // If auth is disabled, allow all access
+      if (authDisabled) {
         return true
       }
 
-      const isLoggedIn = !!auth?.user
       const isApiRoute = nextUrl.pathname.startsWith('/api')
       const isApiV1Route = nextUrl.pathname.startsWith('/api/v1')
 
@@ -38,15 +36,54 @@ export const authConfig = {
         const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
         const [username, password] = credentials.split(':')
 
-        // Verify credentials against environment variables
-        const isAuthorized = username === process.env.WEB_USERNAME && password === process.env.WEB_PASSWORD
-        if (!isAuthorized) {
-          return NextResponse.json('Unauthorized', { status: 401 })
+        // For API v1, we check both environment variables and stored credentials.
+        // Since we can't easily check the hash here in Edge, we use an internal API call
+        // to verify against the stored credentials in the Node.js runtime.
+
+        // 1. Check environment variables first (legacy/override)
+        if (
+          process.env.WEB_USERNAME &&
+          process.env.WEB_PASSWORD &&
+          username === process.env.WEB_USERNAME &&
+          password === process.env.WEB_PASSWORD
+        ) {
+          return true
         }
+
+        // 2. Check against stored credentials via internal API
+        try {
+          const baseUrl = nextUrl.origin
+          const verifyUrl = new URL('/api/auth/verify', baseUrl)
+          const response = await fetch(verifyUrl.toString(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-internal-verify-secret': process.env.AUTH_SECRET || '',
+            },
+            body: JSON.stringify({ username, password }),
+          })
+
+          if (response.ok) {
+            const result = await response.json()
+            if (result.valid) {
+              return true
+            }
+          }
+        } catch (error) {
+          console.error('API auth verification failed:', error)
+        }
+
+        return NextResponse.json('Unauthorized', { status: 401 })
+      }
+
+      const isLoggedIn = !!auth?.user
+      const isLoginPage = nextUrl.pathname === '/login'
+      const isSetupPage = nextUrl.pathname === '/setup'
+
+      if (isLoggedIn || isLoginPage || isSetupPage) {
         return true
       }
 
-      if (isLoggedIn) return true
       // Determine external base path for reverse proxies
       const rawBasePath = (process.env.BASE_PATH || headers.get('x-base-path') || '').trim()
       let basePath = ''

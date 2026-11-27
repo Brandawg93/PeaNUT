@@ -32,8 +32,8 @@ import { handleDeviceOperation, successfulOperationMessage } from '@/app/api/uti
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ device: string; param: string }> }) {
   const { device, param } = await params
-  return handleDeviceOperation(device, async (nut) => {
-    await nut.runCommand(param, device)
+  return handleDeviceOperation(device, async (nut, deviceName) => {
+    await nut.runCommand(param, deviceName)
     return successfulOperationMessage('Command', param, device)
   })
 }

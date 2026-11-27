@@ -1,0 +1,33 @@
+name: Publish approved tested device
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+# Wiki pushes must run one at a time; keep every approval in the queue.
+concurrency:
+  group: tested-device-wiki
+  queue: max
+
+jobs:
+  publish:
+    if: github.event.label.name == 'approved-device' && github.event.issue.state == 'open'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate approval, publish device, and close report
+        uses: actions/github-script@v9
+        env:
+          WIKI_TOKEN: ${{ github.token }}
+        with:
+          script: |
+            const { publishApprovedDevice } = await import(`${process.env.GITHUB_WORKSPACE}/.github/automation/tested-device.mjs`)
+            await publishApprovedDevice({ github, context, core })

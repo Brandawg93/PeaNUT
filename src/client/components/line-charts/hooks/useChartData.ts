@@ -9,19 +9,33 @@ type DataPoint = {
 export function useChartData(id: string, updated: Date, value?: number) {
   const [data, setData] = useState<DataPoint[]>([])
   const prevDataRef = useRef(id)
+  const isFirstRender = useRef(true)
   const { timeRange } = useTimeRange()
 
   useEffect(() => {
+    // Check if ID changed - reset data
     if (id !== prevDataRef.current) {
-      if (value) {
-        setData([{ dataPoint: value, time: new Date() }])
-      } else {
-        setData([])
-      }
-    } else if (value) {
-      setData((prev) => [...prev, { dataPoint: value, time: new Date() }])
+      prevDataRef.current = id
+      isFirstRender.current = true
     }
-    prevDataRef.current = id
+
+    // On first render or ID change, initialize with current value
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      // Schedule state update to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        setData(value === undefined ? [] : [{ dataPoint: value, time: new Date() }])
+      })
+      return
+    }
+
+    // On subsequent renders, append data if we have a value
+    if (value !== undefined) {
+      // Schedule state update to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        setData((prev) => [...prev, { dataPoint: value, time: new Date() }])
+      })
+    }
   }, [id, value, updated])
 
   // Filter data based on time range

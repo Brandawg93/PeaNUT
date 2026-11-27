@@ -1,7 +1,6 @@
-import { Socket } from 'net'
+import { Socket } from 'node:net'
 
 const TIMEOUT = 10000
-const MAX_LISTENERS = 9
 
 export default class PromiseSocket {
   private readonly innerSok: Socket = new Socket()
@@ -22,17 +21,19 @@ export default class PromiseSocket {
     return Promise.race([promise, this.setTimeoutPromise(timeout)])
   }
 
-  private addErrorHandler(reject: (reason?: any) => void): void {
-    if (this.innerSok.listenerCount('error') < MAX_LISTENERS) {
-      this.innerSok.once('error', reject)
-    }
-  }
-
   public connect(port: number, host: string, timeout = TIMEOUT): Promise<void> {
     return this.raceWithTimeout(
       new Promise<void>((resolve, reject) => {
-        this.addErrorHandler(reject)
-        this.innerSok.connect(port, host, resolve)
+        const onError = (error: Error) => {
+          this.innerSok.off('error', onError)
+          reject(error)
+        }
+
+        this.innerSok.once('error', onError)
+        this.innerSok.connect(port, host, () => {
+          this.innerSok.off('error', onError)
+          resolve()
+        })
       }),
       timeout
     )
@@ -41,8 +42,14 @@ export default class PromiseSocket {
   async write(data: string, timeout = TIMEOUT): Promise<void> {
     return this.raceWithTimeout(
       new Promise<void>((resolve, reject) => {
-        this.addErrorHandler(reject)
+        const onError = (error: Error) => {
+          this.innerSok.off('error', onError)
+          reject(error)
+        }
+
+        this.innerSok.once('error', onError)
         this.innerSok.write(`${data}\n`, (err) => {
+          this.innerSok.off('error', onError)
           if (err) reject(new Error(`${err}`))
           else resolve()
         })
@@ -58,10 +65,9 @@ export default class PromiseSocket {
 
         const onData = (data: Buffer) => {
           buf += data.toString()
-          if (buf.includes(until)) {
-            cleanup()
-            resolve(buf)
-          }
+          // Check for protocol errors first: single-line commands use '\n' as
+          // the terminator, so an `ERR ...\n` response would otherwise resolve
+          // as if it were a successful reply.
           if (buf.startsWith('ERR')) {
             const newlineIndex = buf.indexOf('\n')
             if (newlineIndex !== -1) {
@@ -70,26 +76,35 @@ export default class PromiseSocket {
               return
             }
           }
+          if (buf.includes(until)) {
+            cleanup()
+            resolve(buf)
+          }
         }
 
         const onEnd = () => {
           cleanup()
-          if (!buf.includes(until)) {
-            reject(new Error('Connection closed before receiving complete data'))
-          } else {
+          if (buf.includes(until)) {
             resolve(buf)
+          } else {
+            reject(new Error('Connection closed before receiving complete data'))
           }
+        }
+
+        const onError = (error: Error) => {
+          cleanup()
+          reject(error)
         }
 
         const cleanup = () => {
           this.innerSok.off('data', onData)
           this.innerSok.off('end', onEnd)
-          this.innerSok.off('error', reject)
+          this.innerSok.off('error', onError)
         }
 
         this.innerSok.on('data', onData)
         this.innerSok.on('end', onEnd)
-        this.addErrorHandler(reject)
+        this.innerSok.once('error', onError)
       }),
       timeout
     )

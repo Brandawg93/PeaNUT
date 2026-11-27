@@ -23,6 +23,10 @@
     "realpower": "Potencia Real",
     "nominalRealpower": "Potencia Real Nominal"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Temperatura ambiente",
+    "batteryTemperature": "Temperatura de la batería"
+  },
   "grid": {
     "key": "Clave",
     "value": "Valor",
@@ -55,6 +59,10 @@
     "selectDateFormat": "Seleccione un formato de fecha",
     "timeFormat": "Formato de hora",
     "selectTimeFormat": "Seleccione un formato de hora",
+    "temperatureUnit": "Unidad de temperatura",
+    "selectTemperatureUnit": "Seleccione una unidad de temperatura",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Desactivar verificación de versión",
     "disableVersionCheckDescription": "Desactivar la verificación de actualizaciones en el pie de página",
     "manageServers": "Administrar servidores",
@@ -87,6 +95,8 @@
     "disable": "Desactivar"
   },
   "connect": {
+    "name": "Nombre",
+    "namePlaceholder": "Ingrese el nombre del servidor (alias)",
     "server": "Servidor",
     "port": "Puerto",
     "username": "Nombre de usuario",
@@ -187,6 +197,7 @@
     "power": "Potencia"
   },
   "volt-amps-chart": "Potencia aparente",
+  "temperature-chart": "Temperatura",
   "volts-chart": "Voltaje",
   "watts-chart": "Potencia real",
   "accordion-grid": "Datos de UPS",
@@ -197,6 +208,18 @@
     "password": "Contraseña",
     "passwordPlaceholder": "Ingrese su contraseña",
     "submit": "Acceso"
+  },
+  "setup": {
+    "title": "Bienvenido a PeaNUT",
+    "description": "Cree su cuenta de administrador inicial para comenzar.",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "passwordHint": "Debe tener al menos 5 caracteres.",
+    "submit": "Crear cuenta",
+    "submitting": "Creando cuenta...",
+    "errorUserExists": "Ya existe un usuario.",
+    "errorSaveFailed": "Error al guardar el usuario.",
+    "errorUsernameRequired": "Se requiere nombre de usuario"
   },
   "logout": "Cerrar sesión",
   "description": "Descripción",

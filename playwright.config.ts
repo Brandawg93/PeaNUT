@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
-import path from 'path'
+import path from 'node:path'
 
 // Use process.env.PORT by default and fallback to port 3000
 const PORT = process.env.PORT ?? 3000
@@ -11,6 +11,8 @@ const baseURL = `http://localhost:${PORT}`
 export default defineConfig({
   // Timeout per test
   timeout: 30 * 1000,
+  // Global timeout for the entire test run (5 minutes)
+  globalTimeout: 5 * 60 * 1000,
   // Test directory
   testDir: path.join(__dirname, '__tests__/e2e'),
   // If a test fails, retry it additional 3 times
@@ -20,11 +22,19 @@ export default defineConfig({
   // Run all tests in parallel.
   fullyParallel: true,
 
+  // Use the GitHub Actions annotations reporter in CI (plus an HTML report for debugging failures),
+  // and the default list reporter locally.
+  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
+
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
-    command: 'pnpm run dev',
+    command: 'pnpm run dev:next',
     url: baseURL,
+    env: {
+      AUTH_DISABLED: process.env.WEB_USERNAME?.trim() ? 'false' : 'true',
+      AUTH_SECRET: 'test-secret-at-least-thirty-two-characters-long',
+    },
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
   },
@@ -57,26 +67,32 @@ export default defineConfig({
           },
         ]
       : [
+          // API tests hit HTTP routes via the `request` fixture — no browser engine involved,
+          // so run them once instead of across every browser project.
+          {
+            name: 'API',
+            testMatch: '**/api/**/*.test.ts',
+          },
           {
             name: 'Desktop Chrome',
             use: {
               ...devices['Desktop Chrome'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           {
             name: 'Desktop Firefox',
             use: {
               ...devices['Desktop Firefox'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           {
             name: 'Desktop Safari',
             use: {
               ...devices['Desktop Safari'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           // Test against mobile viewports.
           {
@@ -84,12 +100,12 @@ export default defineConfig({
             use: {
               ...devices['Pixel 5'],
             },
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
           {
             name: 'Mobile Safari',
             use: devices['iPhone 12'],
-            testIgnore: '**/auth-enabled.test.tsx',
+            testIgnore: ['**/auth-enabled.test.tsx', '**/api/**'],
           },
         ]),
   ],

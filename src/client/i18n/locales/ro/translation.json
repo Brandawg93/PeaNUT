@@ -24,6 +24,10 @@
     "realpower": "Putere reală",
     "nominalRealpower": "Putere nominală"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Temperatura ambientală",
+    "batteryTemperature": "Temperatura bateriei"
+  },
   "grid": {
     "key": "Cheie",
     "value": "Valoare",
@@ -56,6 +60,10 @@
     "selectDateFormat": "Selectați un format de dată",
     "timeFormat": "Formatul orei",
     "selectTimeFormat": "Selectați un format de oră",
+    "temperatureUnit": "Unitate de temperatură",
+    "selectTemperatureUnit": "Selectați o unitate de temperatură",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Dezactivați verificarea versiunii",
     "disableVersionCheckDescription": "Dezactivați verificarea actualizărilor în subsol",
     "manageServers": "Gestionați serverele",
@@ -88,6 +96,8 @@
     "disable": "Dezactiva"
   },
   "connect": {
+    "name": "Nume",
+    "namePlaceholder": "Introduceți numele serverului (alias)",
     "server": "Adresa serverului",
     "port": "Port",
     "username": "Nume de utilizator",
@@ -188,6 +198,7 @@
     "power": "Putere"
   },
   "volt-amps-chart": "Putere aparentă",
+  "temperature-chart": "Temperatură",
   "volts-chart": "Voltaj",
   "watts-chart": "Putere reală",
   "accordion-grid": "Date UPS",
@@ -198,6 +209,18 @@
     "password": "Parolă",
     "passwordPlaceholder": "Introduceți parola",
     "submit": "Log in"
+  },
+  "setup": {
+    "title": "Bine ați venit la PeaNUT",
+    "description": "Creați-vă contul inițial de administrator pentru a începe.",
+    "username": "Nume de utilizator",
+    "password": "Parolă",
+    "passwordHint": "Trebuie să aibă cel puțin 5 caractere.",
+    "submit": "Creează cont",
+    "submitting": "Se creează contul...",
+    "errorUserExists": "Un utilizator există deja.",
+    "errorSaveFailed": "Eroare la salvarea utilizatorului.",
+    "errorUsernameRequired": "Numele de utilizator este obligatoriu"
   },
   "logout": "Deconectare",
   "description": "Descriere",

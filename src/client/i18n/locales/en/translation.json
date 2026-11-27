@@ -24,6 +24,10 @@
     "realpower": "Realpower",
     "nominalRealpower": "Nominal Realpower"
   },
+  "temperatureChart": {
+    "ambientTemperature": "Ambient Temperature",
+    "batteryTemperature": "Battery Temperature"
+  },
   "grid": {
     "key": "Key",
     "value": "Value",
@@ -56,6 +60,10 @@
     "selectDateFormat": "Select a date format",
     "timeFormat": "Time Format",
     "selectTimeFormat": "Select a time format",
+    "temperatureUnit": "Temperature Unit",
+    "selectTemperatureUnit": "Select a temperature unit",
+    "celsius": "Celsius (°C)",
+    "fahrenheit": "Fahrenheit (°F)",
     "disableVersionCheck": "Disable Version Check",
     "disableVersionCheckDescription": "Disable checking for updates in the footer",
     "manageServers": "Manage Servers",
@@ -89,6 +97,8 @@
     "disable": "Disable"
   },
   "connect": {
+    "name": "Name",
+    "namePlaceholder": "Enter server name (alias)",
     "server": "Server Address",
     "port": "Port",
     "username": "Username",
@@ -191,6 +201,7 @@
   "volts-chart": "Voltage",
   "watts-chart": "Real Power",
   "volt-amps-chart": "Apparent Power",
+  "temperature-chart": "Temperature",
   "accordion-grid": "UPS Data",
   "login": {
     "title": "Please log in to continue.",
@@ -199,6 +210,18 @@
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "submit": "Log in"
+  },
+  "setup": {
+    "title": "Welcome to PeaNUT",
+    "description": "Create your initial administrator account to get started.",
+    "username": "Username",
+    "password": "Password",
+    "passwordHint": "Must be at least 5 characters.",
+    "submit": "Create Account",
+    "submitting": "Creating account...",
+    "errorUserExists": "A user already exists.",
+    "errorSaveFailed": "Failed to save user.",
+    "errorUsernameRequired": "Username is required"
   },
   "logout": "Logout",
   "description": "Description",
@@ -210,6 +233,10 @@
     "power": "Power",
     "cycle": "Cycle",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "unknown": "Unknown",
+    "onSuccess": "Outlet turned on",
+    "offSuccess": "Outlet turned off",
+    "cycleSuccess": "Outlet cycle started"
   }
 }

@@ -42,18 +42,15 @@ COPY --link --from=deps /app/node_modules ./node_modules/
 COPY --link . /app
 
 RUN pnpm run next-ws && \
-    if [ "$(uname -m)" = "armv7l" ]; then \
-        echo "Building for ARMv7 architecture" && \
-        pnpm run build; \
-    else \
-        echo "Building for default architecture with turbo" && \
-        pnpm run build:turbo; \
-    fi && \
+    pnpm run build && \
     # Clean up cache to reduce image size
-    rm -rf .next/standalone/.next/cache
+    rm -rf .next/standalone/.next/cache && \
+    mkdir -p /config
 
 # Production stage with minimal footprint
-FROM alpine:3 AS runner
+FROM dhi.io/node:24 AS runner
+
+WORKDIR /app
 
 # Add labels for better image metadata
 LABEL org.opencontainers.image.title="PeaNUT"
@@ -63,14 +60,17 @@ LABEL org.opencontainers.image.source='https://github.com/Brandawg93/PeaNUT'
 LABEL org.opencontainers.image.licenses='Apache-2.0'
 
 # Copy built application and set permissions to default node user
-COPY --link --chown=1000:1000 --from=build /app/.next/standalone ./
-COPY --link --chown=1000:1000 --from=build /app/.next/static ./.next/static
+COPY --link --from=build --chown=1000:1000 /app/.next/standalone ./
+COPY --link --from=build --chown=1000:1000 /app/.next/static ./.next/static
+# Create config directory and set permissions for non-root user
+COPY --link --from=build --chown=1000:1000 /config /config
+# Copy only API source files needed for Swagger documentation generation
+COPY --link --from=build --chown=1000:1000 /app/src/app/api ./src/app/api
+COPY --link --from=build --chown=1000:1000 /app/package.json ./package.json
 
 # Copy and set up entrypoint script
-COPY --link --chown=1000:1000 entrypoint.sh /entrypoint.sh
-
-# Install nodejs and tini
-RUN apk add --no-cache libstdc++ nodejs tini && chmod +x /entrypoint.sh
+COPY --link --chmod=755 --chown=1000:1000 entrypoint.mjs ./entrypoint.mjs
+COPY --link --chmod=755 --chown=1000:1000 healthcheck.mjs ./healthcheck.mjs
 
 # Set environment variables
 ENV CI=true
@@ -79,15 +79,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
 ENV BASE_PATH=""
+ENV SETTINGS_FILE=/config/settings.yml
+ENV AUTH_FILE_PATH=/config/auth.yaml
 ENV DEBUG=false
-
-# Switch to non-root user (node user is built into the image)
-# USER 1000
 
 EXPOSE $WEB_PORT
 
 # Optimized healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider --no-check-certificate http://${WEB_HOST}:${WEB_PORT}/api/ping || exit 1
+    CMD ["node", "healthcheck.mjs"]
 
-ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
+ENTRYPOINT ["node", "entrypoint.mjs"]

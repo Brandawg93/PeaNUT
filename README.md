@@ -30,6 +30,15 @@ A Tiny Dashboard for Network UPS Tools
 - Customizable widgets for [Homepage](https://gethomepage.dev) integration
 - Detailed [documentation](https://github.com/Brandawg93/PeaNUT/wiki) and examples available
 
+## Platform Support
+
+PeaNUT supports the following platforms:
+
+- `linux/amd64` (x86-64)
+- `linux/arm64` (ARM 64-bit, including Raspberry Pi 4+)
+
+**Note:** Raspberry Pi 3 and older models (arm/v7) are no longer supported as of version 5.17.0. Please use arm64-capable hardware (Raspberry Pi 4 or newer).
+
 ## Installation
 
 Install using Docker
@@ -49,6 +58,13 @@ services:
     image: brandawg93/peanut:latest
     container_name: PeaNUT
     restart: unless-stopped
+    # The container runs as UID/GID 1000:1000. The host directory mounted at
+    # /config must be writable by that user — otherwise settings made in the
+    # web UI will not persist across restarts. If you see "EACCES: permission
+    # denied, access '/config'" in the logs:
+    #   - chown -R 1000:1000 /path/to/config        on the host, or
+    #   - set `user: "<host-uid>:<host-gid>"` to match the host dir owner.
+    # Note: PUID/PGID environment variables are not supported.
     volumes:
       - /path/to/config:/config
     ports:
@@ -76,9 +92,12 @@ More examples can be found in the [examples](https://github.com/Brandawg93/PeaNU
 | ------------------- | --------- | ------------------------------------------------- |
 | WEB_HOST            | localhost | Hostname of web server                            |
 | WEB_PORT            | 8080      | Port of web server                                |
-| WEB_USERNAME        | undefined | Username of web app                               |
-| WEB_PASSWORD        | undefined | Password of web app                               |
+| WEB_USERNAME        | undefined | Initial username (used for auto-creation)         |
+| WEB_PASSWORD        | undefined | Initial password (used for auto-creation)         |
+| AUTH_DISABLED       | false     | Set to 'true' to disable authentication           |
 | BASE_PATH           | undefined | Base path for reverse proxy                       |
+| SSL_CERT_PATH       | undefined | Path to SSL certificate file                      |
+| SSL_KEY_PATH        | undefined | Path to SSL private key file                      |
 | DISABLE_CONFIG_FILE | undefined | If set to 'true', disables all config file saving |
 | DEBUG               | false     | Enable debug logging for server components        |
 
@@ -94,12 +113,24 @@ Configuration is primarily done via the UI, but manual configuration can be done
 
 ## Authentication
 
-Authentication can be enabled by setting both `WEB_USERNAME` and `WEB_PASSWORD` environment variables. When these are set:
+PeaNUT provides a single-user authentication system. Passwords are stored securely using bcrypt hashing.
 
-- Web UI access will require login using these credentials
-- API calls will require Basic Authentication
+### Initial Setup
 
-For API calls, you'll need to include an Authorization header with the Base64 encoded credentials in the format `username:password`. The header should be formatted as: `Authorization: Basic <encoded credentials>`
+On the first run, if no user is configured, you will be automatically redirected to a setup page to create your administrator account.
+
+### Automated Creation
+
+You can skip the manual setup by providing `WEB_USERNAME` and `WEB_PASSWORD` as environment variables. PeaNUT will automatically create the user account on startup if it doesn't already exist.
+
+### Disabling Authentication
+
+If you prefer to run PeaNUT without authentication, set the `AUTH_DISABLED` environment variable to `true`.
+
+### API Access
+
+API calls require Basic Authentication (unless disabled). Include an Authorization header with the Base64 encoded credentials:
+`Authorization: Basic <encoded username:password>`
 
 ## API
 
@@ -157,7 +188,7 @@ Ex:
 ```yaml
 widget:
   type: customapi
-  url: http://{HOSTNAME}:{PORT}/api/v1/devices/ups
+  url: http://{HOSTNAME}:{PORT}/api/v1/devices/{UPS_NAME}
   mappings:
     - field: battery.charge
       label: Battery Charge
@@ -182,6 +213,65 @@ widget:
           to: Unknown
 ```
 
+## Glance Support
+
+For information about how to set up Glance, check the [Glance docs](https://github.com/glanceapp/glance).
+
+Example:
+
+<img src="https://raw.githubusercontent.com/Brandawg93/PeaNUT/main/images/glance.png" width="600px" />
+
+```yaml
+- type: custom-api
+  title: UPS
+  cache: 5m
+  url: http://{HOSTNAME}:{PORT}/api/v1/devices/{UPS_NAME}
+  template: |
+    {{ if .JSON.Exists "ups\\.status" }}
+      {{ $jsonStatus := .JSON.String "ups\\.status" }}
+      <div class="flex justify-between text-center">
+        <div>
+          <div class="color-highlight size-h3">{{ .JSON.Int "battery\\.charge" | formatNumber }}%</div>
+          <div class="size-h6">BATTERY CHARGE</div>
+        </div>
+        <div>
+          <div class="color-highlight size-h3">{{ concat (.JSON.String "battery\\.runtime") "s" | duration }} ({{ div (.JSON.Int "battery\\.runtime") 60 | formatNumber }} Wh)</div>
+          <div class="size-h6">BATTERY RUNTIME</div>
+        </div>
+        <div>
+          <div class="color-highlight size-h3">{{ .JSON.Int "ups\\.load" | formatNumber }}% ({{ .JSON.Int "ups\\.realpower" | formatNumber }} W / {{ .JSON.Int "ups\\.power" | formatNumber }} VA)</div>
+          <div class="size-h6">UPS LOAD</div>
+        </div>
+        <div>
+          <div class="color-highlight size-h3">
+      {{ if eq $jsonStatus "OL" }}
+          Online
+      {{ else if eq $jsonStatus "OL CHRG" }}
+            Online Charging
+      {{ else if eq $jsonStatus "OB" }}
+            On Battery
+      {{ else if eq $jsonStatus "OB DISCHRG" }}
+            On Battery Discharging
+      {{ else if eq $jsonStatus "LB" }}
+            Low Battery
+      {{ else }}
+            Unknown
+      {{ end }}
+          </div>
+          <div class="size-h6">UPS STATUS</div>
+        </div>
+      </div>
+    {{ else }}
+      <div class="widget-error-header">
+        <div class="color-negative size-h3">ERROR</div>
+        <svg class="widget-error-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"></path>
+        </svg>
+      </div>
+      <p class="break-all">UPS is unavailable</p>
+    {{ end }}
+```
+
 ## FAQ
 
 **Question:** Chokidar is using lots of resources on my machine.
@@ -194,7 +284,7 @@ widget:
 
 ## Tested Devices
 
-[A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Feel free to look there for your device or add your device to the list by submitting an issue with the `tested device` label.
+[A wiki](https://github.com/Brandawg93/PeaNUT/wiki/Tested-UPS-Devices) has been compiled of tested UPS devices. Look there for your device, or submit a report with the [Tested Device form](https://github.com/Brandawg93/PeaNUT/issues/new?template=tested_device.yml). After a maintainer reviews and approves the report, automation adds it to the wiki and closes the issue.
 
 ## Donate to Support PeaNUT
 

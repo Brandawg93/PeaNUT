@@ -1,13 +1,21 @@
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NutGrid from '@/client/components/grid'
 import { DEVICE } from '@/common/types'
+import { saveVar } from '@/app/actions'
 import PromiseSocket from '@/server/promise-socket'
+
+jest.mock('@/app/actions', () => ({
+  saveVar: jest.fn(),
+}))
 
 const queryClient = new QueryClient()
 
 const device: DEVICE = {
+  id: 'localhost:3493/test',
+  name: 'test',
+  server: 'localhost:3493',
   vars: {
     'input.voltage': {
       value: '120',
@@ -32,7 +40,6 @@ const device: DEVICE = {
   commands: [],
   description: 'test',
   clients: [],
-  name: 'test',
 }
 
 describe('Grid', () => {
@@ -53,6 +60,45 @@ describe('Grid', () => {
   it('renders', () => {
     const { getByTestId } = renderGrid()
     expect(getByTestId('grid')).toBeInTheDocument()
+  })
+
+  it('keeps a manually collapsed tree node collapsed across a data refresh', async () => {
+    const { getAllByRole, rerender } = render(
+      <QueryClientProvider client={queryClient}>
+        <NutGrid data={device} onRefetchAction={jest.fn()} />
+      </QueryClientProvider>
+    )
+
+    // Switch to tree view
+    const treeToggleButton = getAllByRole('button').find(
+      (button) => button.querySelector('svg') && button.dataset.slot === 'button'
+    )
+    expect(treeToggleButton).toBeDefined()
+    fireEvent.click(treeToggleButton!)
+
+    // Collapse the top-level "input" node. Its only grandchild is "nominal" (from
+    // input.voltage.nominal) — unlike "voltage", which also appears under the sibling "output"
+    // node, so it unambiguously proves the "input" branch specifically is collapsed.
+    const inputRow = screen.getByText('input')
+    fireEvent.click(inputRow.closest('button')!)
+    expect(screen.queryByText('nominal')).not.toBeInTheDocument()
+
+    // Simulate a periodic data refresh (e.g. polling) with a new `vars` object
+    const refreshedDevice: DEVICE = { ...device, vars: { ...device.vars } }
+    await act(async () => {
+      rerender(
+        <QueryClientProvider client={queryClient}>
+          <NutGrid data={refreshedDevice} onRefetchAction={jest.fn()} />
+        </QueryClientProvider>
+      )
+      // v9's expanded-state auto-reset (when enabled) is scheduled via the table's reactivity
+      // system rather than applied synchronously with the render that triggers it — flush that
+      // scheduling queue so the assertion below isn't racing ahead of it.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    // The manually collapsed node should stay collapsed, not reset back to fully expanded
+    expect(screen.queryByText('nominal')).not.toBeInTheDocument()
   })
 
   describe('Filter functionality', () => {
@@ -206,13 +252,10 @@ describe('Grid', () => {
         const dataRows = rows.slice(1) // Skip header row
 
         // All visible rows should contain 'voltage' in their key
-        dataRows.forEach((row) => {
+        for (const row of dataRows) {
           const keyCell = row.querySelector('td:first-child')
-          if (keyCell) {
-            const keyText = keyCell.textContent || ''
-            expect(keyText.toLowerCase()).toContain('voltage')
-          }
-        })
+          expect((keyCell?.textContent || '').toLowerCase()).toContain('voltage')
+        }
       })
     })
 
@@ -231,16 +274,105 @@ describe('Grid', () => {
       // Switch to tree view - find the toggle button by looking for the list icon
       const treeToggleButtons = screen.getAllByRole('button')
       const treeToggleButton = treeToggleButtons.find(
-        (button) => button.querySelector('svg') && button.getAttribute('data-slot') === 'button'
+        (button) => button.querySelector('svg') && button.dataset.slot === 'button'
       )
       expect(treeToggleButton).toBeDefined()
-      fireEvent.click(treeToggleButton!)
+      if (treeToggleButton) {
+        fireEvent.click(treeToggleButton)
+      }
 
       // Filter should still work in tree view
       await waitFor(() => {
         const rows = screen.getAllByRole('row')
         expect(rows.length).toBeLessThan(7) // Should still be filtered
       })
+    })
+  })
+
+  describe('Edit functionality', () => {
+    it('saves the correct value when edited', async () => {
+      ;(saveVar as jest.Mock).mockResolvedValue({ error: undefined })
+
+      const { getAllByRole, getByLabelText } = renderGrid()
+
+      // Find the row with 'input.voltage' (which is in rwVars)
+      const rows = getAllByRole('row')
+      const voltageRow = rows.find((row) => row.textContent?.includes('input.voltage'))
+      expect(voltageRow).toBeDefined()
+
+      // Click the edit button
+      const editButton = getByLabelText('Edit variable')
+      fireEvent.click(editButton)
+
+      // Find the input field (it should be in the document now)
+      const input = screen.getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '230' } })
+
+      // Click the save button
+      const saveButton = getByLabelText('Save changes')
+      fireEvent.click(saveButton)
+
+      // Verify saveVar was called with the new value
+      await waitFor(() => {
+        expect(saveVar).toHaveBeenCalledWith(device.id, 'input.voltage', '230')
+      })
+    })
+
+    it('saves the full key path when editing in tree view', async () => {
+      ;(saveVar as jest.Mock).mockResolvedValue({ error: undefined })
+      const { getAllByRole } = renderGrid()
+
+      // Switch to tree view
+      const treeToggleButtons = getAllByRole('button')
+      const treeToggleButton = treeToggleButtons.find(
+        (button) => button.querySelector('svg') && button.dataset.slot === 'button'
+      )
+      expect(treeToggleButton).toBeDefined()
+      if (treeToggleButton) {
+        fireEvent.click(treeToggleButton)
+      }
+
+      // In tree view, 'input.voltage' is RW.
+      // Since expanded=true by default, we should see it immediately.
+      // We look for the edit button. If there's only one RW var, it must be it.
+      const editButton = await screen.findByLabelText('Edit variable')
+      expect(editButton).toBeInTheDocument()
+      fireEvent.click(editButton)
+
+      // Change value
+      const input = screen.getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '240' } })
+
+      // Save
+      const saveButton = screen.getByLabelText('Save changes')
+      fireEvent.click(saveButton)
+
+      // Verify saveVar was called with the full 'input.voltage' key, not just 'voltage'
+      await waitFor(() => {
+        expect(saveVar).toHaveBeenCalledWith(device.id, 'input.voltage', '240')
+      })
+    })
+
+    it('cancels editing when cancel button is clicked', async () => {
+      const { getByLabelText, queryByLabelText, getByDisplayValue } = renderGrid()
+
+      // Click the edit button
+      const editButton = getByLabelText('Edit variable')
+      fireEvent.click(editButton)
+
+      // Change input
+      const input = getByDisplayValue('120')
+      fireEvent.change(input, { target: { value: '230' } })
+
+      // Click cancel
+      const cancelButton = getByLabelText('Cancel edit')
+      fireEvent.click(cancelButton)
+
+      // Input should be gone, and saveVar should NOT have been called
+      await waitFor(() => {
+        expect(queryByLabelText('Save changes')).not.toBeInTheDocument()
+      })
+      expect(saveVar).not.toHaveBeenCalled()
     })
   })
 })

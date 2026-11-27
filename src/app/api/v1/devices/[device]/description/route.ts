@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { handleDeviceOperation } from '@/app/api/utils'
+import { getCachedDeviceDescription } from '@/server/nut-cache'
 
 /**
  * Retrieves description for a specific device.
@@ -26,7 +27,7 @@ import { handleDeviceOperation } from '@/app/api/utils'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ device: string }> }) {
   const { device } = await params
-  return handleDeviceOperation(device, async (nut) => {
-    return await nut.getDescription(device)
+  return handleDeviceOperation(device, async (nut, deviceName) => {
+    return await getCachedDeviceDescription(nut.getHost(), nut.getPort(), deviceName)
   })
 }

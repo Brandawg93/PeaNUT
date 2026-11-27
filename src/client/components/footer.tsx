@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, startTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
 import { LanguageContext } from '@/client/context/language'
@@ -29,32 +29,48 @@ export default function Footer({ updated }: Props) {
   const basePath = useBasePath()
 
   useEffect(() => {
+    let isMounted = true
+
     // Skip version checking if disabled in settings
     if (disableVersionCheck) {
       return
     }
 
     const checkVersions = async () => {
-      const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
-      const json = (await res.json()) as Array<{ name: string; published_at: string; html_url: string }>
-      const version = json.find((r) => r.name === `v${pJson.version}`)
-      if (!version) return
-      const latest = json[0]
-      const created = new Date(version.published_at)
-      setCurrentVersion({ created, version: version.name, url: version.html_url })
-      if (version.name !== latest.name) {
-        setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
+      try {
+        const res = await fetch('https://api.github.com/repos/brandawg93/peanut/releases')
+        const json = await res.json()
+        if (!isMounted || !Array.isArray(json)) return
+        const version = json.find((r) => r.name === `v${pJson.version}`)
+        if (!version) return
+        const latest = json[0]
+        const created = new Date(version.published_at)
+        startTransition(() => {
+          setCurrentVersion({ created, version: version.name, url: version.html_url })
+          if (version.name !== latest.name) {
+            setUpdateAvailable({ created: new Date(latest.published_at), version: latest.name, url: latest.html_url })
+          }
+        })
+      } catch (error) {
+        if (isMounted) {
+          console.error('Failed to check versions:', error)
+        }
       }
     }
     checkVersions()
+
+    return () => {
+      isMounted = false
+    }
   }, [disableVersionCheck])
 
   const updateAvailableWrapper = updateAvailable.version ? (
     <Link
       className='no-underline-text text-muted-foreground m-0 text-sm'
-      href={{ href: updateAvailable.url }}
+      href={updateAvailable.url}
       target='_blank'
       rel='noreferrer'
+      data-testid='update-available-link'
     >
       &nbsp;
       <HiOutlineExclamationCircle className='inline-block size-4' />
@@ -78,7 +94,7 @@ export default function Footer({ updated }: Props) {
           <div className='flex items-center'>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href={{ href: 'https://www.github.com/brandawg93/peanut' }}
+              href='https://www.github.com/brandawg93/peanut'
               target='_blank'
               rel='noreferrer'
               aria-label='GitHub'
@@ -87,7 +103,7 @@ export default function Footer({ updated }: Props) {
             </Link>
             <Link
               className='no-underline-text text-muted-foreground ml-1'
-              href={{ href: 'https://www.github.com/sponsors/brandawg93' }}
+              href='https://www.github.com/sponsors/brandawg93'
               target='_blank'
               rel='noreferrer'
               aria-label='Sponsor'
@@ -105,7 +121,7 @@ export default function Footer({ updated }: Props) {
           </Link>
           <p className='m-0 text-sm'>
             <Link
-              href={{ href: currentVersion.url }}
+              href={currentVersion.url}
               target='_blank'
               rel='noreferrer'
               className='no-underline-text text-muted-foreground text-xs'

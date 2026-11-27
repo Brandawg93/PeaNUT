@@ -5,6 +5,7 @@ import { VARS, DeviceData } from '@/common/types'
 import VoltsChart from '@/client/components/line-charts/volts-chart'
 import WattsChart from '@/client/components/line-charts/watts-chart'
 import VoltAmpsChart from '@/client/components/line-charts/volt-amps-chart'
+import TemperatureChart from '@/client/components/line-charts/temperature-chart'
 
 type Props = Readonly<{
   vars: VARS
@@ -31,6 +32,26 @@ export default function ChartsContainer({ vars, data, name }: Props) {
       ),
     [vars, data.updated, name]
   )
+
+  const temperatureWrapper = useMemo(() => {
+    const hasAmbientTemperature = vars['ambient.temperature']
+    const hasBatteryTemperature = vars['battery.temperature']
+
+    if (!hasAmbientTemperature && !hasBatteryTemperature) {
+      return <></>
+    }
+
+    return (
+      <div className='mb-4'>
+        <TemperatureChart
+          id={name}
+          ambientTemperature={hasAmbientTemperature ? +hasAmbientTemperature.value : undefined}
+          batteryTemperature={hasBatteryTemperature ? +hasBatteryTemperature.value : undefined}
+          updated={data.updated}
+        />
+      </div>
+    )
+  }, [vars, data.updated, name])
 
   const wattsWrapper = useMemo(
     () =>
@@ -69,6 +90,7 @@ export default function ChartsContainer({ vars, data, name }: Props) {
   return (
     <>
       {voltageWrapper}
+      {temperatureWrapper}
       {wattsWrapper}
       {voltAmpsWrapper}
     </>

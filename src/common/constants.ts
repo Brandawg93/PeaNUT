@@ -26,6 +26,7 @@ export const upsStatus = {
  */
 export const parseUpsStatus = (status: string): string => {
   if (!status) return ''
+  if (Object.values(upsStatus).includes(status)) return status
 
   // Parse combined statuses by splitting on spaces and mapping each part
   const statusParts = status.split(' ').filter((part) => part.trim() !== '')

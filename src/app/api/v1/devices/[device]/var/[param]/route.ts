@@ -36,8 +36,8 @@ type Params = {
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   const { device, param } = await params
-  return handleVariableOperation(device, param, async (nut) => {
-    return await nut.getVar(param, device)
+  return handleVariableOperation(device, param, async (nut, deviceName) => {
+    return await nut.getVar(param, deviceName)
   })
 }
 
@@ -80,13 +80,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<P
   const { device, param } = await params
   const value = await request.text()
 
-  return handleDeviceOperation(device, async (nut) => {
-    const deviceExists = await nut.deviceExists(device)
-    if (!deviceExists) {
-      throw new Error('Device not found on any instance')
-    }
-
-    await nut.setVar(param, value, device)
+  return handleDeviceOperation(device, async (nut, deviceName) => {
+    await nut.setVar(param, value, deviceName)
     return successfulOperationMessage('Variable', param, device)
   })
 }

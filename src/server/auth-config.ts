@@ -1,3 +1,8 @@
+export function isAuthEnabled(): boolean {
+  if (process.env.AUTH_DISABLED === 'true') return false
+  return true
+}
+
 export function ensureAuthSecret() {
   if (process.env.NEXT_RUNTIME === 'nodejs' && !process.env.NEXT_PHASE) {
     if (!process.env.AUTH_SECRET) {
@@ -6,7 +11,7 @@ export function ensureAuthSecret() {
       globalThis.crypto.getRandomValues(randomBytes)
       const authSecret = Buffer.from(randomBytes).toString('base64')
       process.env.AUTH_SECRET = authSecret
-      if (process.env.WEB_USERNAME && process.env.WEB_PASSWORD) {
+      if (isAuthEnabled()) {
         console.log(`Generated new AUTH_SECRET: ${authSecret}`)
       }
       return authSecret

@@ -12,41 +12,80 @@ on:
     paths-ignore:
       - 'README.md'
       - 'helm/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+
 jobs:
-  build:
+  lint:
+    name: Lint, type-check, format
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
-        # with:
-        #   fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
 
-      - uses: pnpm/action-setup@v4
+      - uses: actions/cache@v6
+        name: Setup tsc incremental cache
         with:
-          version: 9
-          run_install: false
-
-      - uses: actions/setup-node@v5.0.0
-        with:
-          node-version: 22
-          cache: 'pnpm'
-
-      - uses: actions/cache@v4
-        name: Setup nextjs cache
-        with:
-          path: ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          path: .next/tsbuilder.tsbuildinfo
+          key: ${{ runner.os }}-tsc-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', 'tsconfig.json') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-tsc-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - name: Install dependencies
-        run: pnpm i --frozen-lockfile
+      - name: Lint, type-check, stylelint, format
+        run: pnpm run fullcheck
+
+  jest:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - uses: actions/cache@v6
+        name: Setup jest cache
+        with:
+          path: .jest-cache
+          key: ${{ runner.os }}-jest-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-jest-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Run jest with coverage
+        run: pnpm exec jest --coverage --ci --maxWorkers=2
+
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        auth: [disabled, enabled]
+    env:
+      USERNAME: admin
+      PASSWORD: nut_test
+      NUT_HOST: localhost
+      NUT_PORT: 3493
+      WEB_PORT: 8080
+      AUTH_SECRET: test-secret-at-least-thirty-two-characters-long
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
 
       - name: Get installed Playwright version
         id: playwright-version
-        run: echo "version=$(pnpm why --json @playwright/test | jq --raw-output '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         id: playwright-cache
         with:
           path: '~/.cache/ms-playwright'
@@ -56,21 +95,55 @@ jobs:
 
       - name: Install Playwright with dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Install Playwright's dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
+        run: pnpm exec playwright install-deps
 
-      - name: Build and test
-        run: |
-          export AUTH_SECRET=$(npx --yes auth secret)
-          npm run fullcheck
-          npm run test:all
-          npm run build:turbo
+      - name: Start NUT server
+        run: docker compose up -d
+
+      - name: Run Playwright tests (auth disabled)
+        if: matrix.auth == 'disabled'
+        run: pnpm exec playwright test
+
+      - name: Run Playwright tests (auth enabled)
+        if: matrix.auth == 'enabled'
         env:
-          USERNAME: admin
-          PASSWORD: nut_test
-          NUT_HOST: localhost
-          NUT_PORT: 3493
-          WEB_PORT: 8080
+          WEB_USERNAME: admin
+          WEB_PASSWORD: test123
+        run: pnpm exec playwright test
+
+      - name: Stop NUT server
+        if: always()
+        run: docker compose down
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ matrix.auth }}
+          path: playwright-report/
+          retention-days: 7
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - uses: actions/cache@v6
+        name: Setup nextjs cache
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+            ${{ github.workspace }}/.next/tsbuilder.tsbuildinfo
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Build
+        run: pnpm run build

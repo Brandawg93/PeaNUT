@@ -1,6 +1,8 @@
 import { Nut } from '@/server/nut'
 import { TEST_USERNAME, TEST_PASSWORD, TEST_HOSTNAME, TEST_PORT } from '../../../utils/test-constants'
 import { getSettings } from '@/app/actions'
+import { getRouteMatcher } from 'next/dist/shared/lib/router/utils/route-matcher'
+import { getRouteRegex } from 'next/dist/shared/lib/router/utils/route-regex'
 import {
   getNutInstances,
   getSingleNutInstance,
@@ -27,6 +29,18 @@ jest.mock('next/server', () => ({
 // Mock dependencies
 jest.mock('@/app/actions', () => ({
   getSettings: jest.fn(),
+}))
+
+jest.mock('@/lib/utils', () => ({
+  ...jest.requireActual('@/lib/utils'),
+  parseDeviceId: jest.fn().mockImplementation((deviceId: string) => {
+    if (deviceId.includes('/')) {
+      const [serverPart, name] = deviceId.split('/')
+      const [host, portStr] = serverPart.split(':')
+      return { host, port: Number.parseInt(portStr, 10), name }
+    }
+    return { name: deviceId }
+  }),
 }))
 
 jest.mock('@/server/nut')
@@ -136,9 +150,28 @@ describe('API Utils', () => {
 
       const result = await getSingleNutInstance('test-device')
 
-      expect(result).toBe(mockNut2)
+      expect(result).toBeDefined()
+      expect(result?.nut).toBe(mockNut2)
+      expect(result?.deviceName).toBe('test-device')
       expect(mockNut1.deviceExists).toHaveBeenCalledWith('test-device')
       expect(mockNut2.deviceExists).toHaveBeenCalledWith('test-device')
+    })
+
+    it.each([
+      ['/api/v1/devices/my%20ups', 'my ups'],
+      ['/api/v1/devices/ups%2532', 'ups%32'],
+    ])('should not decode the route param again (%s)', async (pathname, expectedName) => {
+      const mockNut = createMockNut(true)
+      setupServerSettings()
+      setupNutMock(mockNut)
+
+      const params = getRouteMatcher(getRouteRegex('/api/v1/devices/[device]'))(pathname)
+      if (!params) throw new Error(`route did not match ${pathname}`)
+
+      const result = await getSingleNutInstance(params.device as string)
+
+      expect(result?.deviceName).toBe(expectedName)
+      expect(mockNut.deviceExists).toHaveBeenCalledWith(expectedName)
     })
 
     it('should return undefined when device is not found on any instance', async () => {
@@ -219,8 +252,8 @@ describe('API Utils', () => {
       const result = await handleDeviceOperation('test-device', operation)
 
       expect(result).toBeDefined()
-      expect(result.json()).resolves.toEqual({ success: true })
-      expect(operation).toHaveBeenCalledWith(mockNut)
+      await expect(result.json()).resolves.toEqual({ success: true })
+      expect(operation).toHaveBeenCalledWith(mockNut, 'test-device')
     })
 
     it('should return device not found error when device does not exist', async () => {
@@ -249,7 +282,7 @@ describe('API Utils', () => {
 
       expect(result).toBeDefined()
       expect(result.status).toBe(500)
-      expect(result.json()).resolves.toBe('Failed to Operation failed unknown on device test-device')
+      await expect(result.json()).resolves.toBe('Failed to Operation failed unknown on device test-device')
       expect(consoleSpy).toHaveBeenCalledWith(new Error('Operation failed'))
 
       consoleSpy.mockRestore()
@@ -267,8 +300,8 @@ describe('API Utils', () => {
       const result = await handleVariableOperation('test-device', 'battery.charge', operation)
 
       expect(result).toBeDefined()
-      expect(result.json()).resolves.toEqual({ value: '100' })
-      expect(operation).toHaveBeenCalledWith(mockNut)
+      await expect(result.json()).resolves.toEqual({ value: '100' })
+      expect(operation).toHaveBeenCalledWith(mockNut, 'test-device')
     })
 
     it('should return device not found error when device does not exist', async () => {
@@ -297,7 +330,7 @@ describe('API Utils', () => {
 
       expect(result).toBeDefined()
       expect(result.status).toBe(404)
-      expect(result.json()).resolves.toBe('Parameter battery.charge on device test-device not found')
+      await expect(result.json()).resolves.toBe('Parameter battery.charge on device test-device not found')
       expect(consoleSpy).toHaveBeenCalledWith(new Error('Variable not found'))
 
       consoleSpy.mockRestore()

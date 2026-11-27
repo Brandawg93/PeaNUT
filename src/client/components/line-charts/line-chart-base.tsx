@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Card, CardContent } from '@/client/components/ui/card'
 import {
   ChartConfig,
@@ -9,7 +9,7 @@ import {
   ChartLegendContent,
 } from '@/client/components/ui/chart'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, ReferenceLine } from 'recharts'
-import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import type { LegendPayload } from 'recharts'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/client/components/ui/accordion'
 import { LanguageContext } from '@/client/context/language'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +22,7 @@ type Props = Readonly<{
   config: ChartConfig
   data: any[]
   unit: string
-  onLegendClick?: (payload: Payload) => void
+  onLegendClick?: (payload: LegendPayload) => void
   referenceLineData?: ReferenceLineData
 }>
 
@@ -30,11 +30,27 @@ export default function LineChartBase(props: Props) {
   const { referenceLineData, id, config, data, unit, onLegendClick } = props
   const lng = useContext<string>(LanguageContext)
   const { t } = useTranslation(lng)
-  const [accordionValue, setAccordionValue] = useState<string | undefined>(id)
 
-  useEffect(() => {
+  // Track the previous id to detect changes
+  const prevIdRef = useRef(id)
+
+  // Initialize accordion value from localStorage
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(() => {
     const storedState = getLocalStorageItem(`accordion-${id}`)
-    setAccordionValue(storedState === 'closed' ? undefined : id)
+    return storedState === 'closed' ? undefined : id
+  })
+
+  // Update accordion value when id changes
+  useEffect(() => {
+    if (id !== prevIdRef.current) {
+      prevIdRef.current = id
+      const storedState = getLocalStorageItem(`accordion-${id}`)
+      const newValue = storedState === 'closed' ? undefined : id
+      // Use queueMicrotask to defer setState and avoid synchronous setState in effect warning
+      queueMicrotask(() => {
+        setAccordionValue(newValue)
+      })
+    }
   }, [id])
 
   const handleAccordionChange = (value: string) => {
@@ -89,7 +105,9 @@ export default function LineChartBase(props: Props) {
                   />
                   <ChartLegend
                     verticalAlign='top'
-                    content={<ChartLegendContent handleClick={(e: Payload) => onLegendClick && onLegendClick(e)} />}
+                    content={
+                      <ChartLegendContent handleClick={(e: LegendPayload) => onLegendClick && onLegendClick(e)} />
+                    }
                   />
                   <CartesianGrid horizontal vertical />
                   {referenceLineData?.map((line) => (

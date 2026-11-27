@@ -28,7 +28,7 @@ import { AiOutlineSave, AiOutlineDownload } from 'react-icons/ai'
 import Footer from '@/client/components/footer'
 import AddServer from '@/client/components/add-server'
 import AddInflux from './add-influx'
-import { SettingsType, DashboardSectionConfig } from '@/server/settings'
+import type { SettingsType, DashboardSectionConfig, TemperatureUnit } from '@/server/settings'
 import { server } from '@/common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import dynamic from 'next/dynamic'
@@ -81,6 +81,7 @@ export default function SettingsWrapper({
   const [influxInterval, setInfluxInterval] = useState<number>(10)
   const [dateFormat, setDateFormat] = useState<string>('MM/DD/YYYY')
   const [timeFormat, setTimeFormat] = useState<string>('12-hour')
+  const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>('celsius')
   const [disableVersionCheck, setDisableVersionCheck] = useState<boolean>(false)
   const [selectedServer, setSelectedServer] = useState<string>('')
   const [sections, setSections] = useState<DashboardSectionConfig>([
@@ -105,6 +106,7 @@ export default function SettingsWrapper({
       influxInterval,
       format,
       timeFormat,
+      temperatureUnitSetting,
       dashboardSections,
       disableVersionCheck,
     ] = await Promise.all([
@@ -116,6 +118,7 @@ export default function SettingsWrapper({
       getSettingsAction('INFLUX_INTERVAL') as Promise<number>,
       getSettingsAction('DATE_FORMAT') as Promise<string>,
       getSettingsAction('TIME_FORMAT') as Promise<string>,
+      getSettingsAction('TEMPERATURE_UNIT') as Promise<TemperatureUnit>,
       getSettingsAction('DASHBOARD_SECTIONS') as Promise<DashboardSectionConfig>,
       getSettingsAction('DISABLE_VERSION_CHECK') as Promise<boolean>,
     ])
@@ -146,6 +149,9 @@ export default function SettingsWrapper({
     if (timeFormat) {
       setTimeFormat(timeFormat)
     }
+    if (temperatureUnitSetting) {
+      setTemperatureUnit(temperatureUnitSetting === 'fahrenheit' ? 'fahrenheit' : 'celsius')
+    }
     if (dashboardSections && Array.isArray(dashboardSections) && dashboardSections.length > 0) {
       setSections(dashboardSections)
     }
@@ -169,6 +175,7 @@ export default function SettingsWrapper({
     (
       server: string,
       port: number,
+      name: string | undefined,
       username: string | undefined,
       password: string | undefined,
       disabled: boolean | undefined,
@@ -182,6 +189,7 @@ export default function SettingsWrapper({
             ...updatedList[index].server,
             HOST: server,
             PORT: port,
+            NAME: name,
             USERNAME: username,
             PASSWORD: password,
             DISABLED: disabled ?? updatedList[index].server.DISABLED ?? false,
@@ -207,11 +215,12 @@ export default function SettingsWrapper({
     await Promise.all([
       setSettingsAction('DATE_FORMAT', dateFormat),
       setSettingsAction('TIME_FORMAT', timeFormat),
+      setSettingsAction('TEMPERATURE_UNIT', temperatureUnit),
       setSettingsAction('DISABLE_VERSION_CHECK', disableVersionCheck),
     ])
     toast.success(t('settings.saved'))
     refreshSettings()
-  }, [setSettingsAction, dateFormat, timeFormat, disableVersionCheck, t, refreshSettings])
+  }, [setSettingsAction, dateFormat, timeFormat, temperatureUnit, disableVersionCheck, t, refreshSettings])
 
   const handleSaveInflux = useCallback(async () => {
     await Promise.all([
@@ -343,11 +352,12 @@ export default function SettingsWrapper({
                         key={server.id}
                         initialServer={server.server.HOST}
                         initialPort={server.server.PORT}
+                        initialName={server.server.NAME}
                         initialUsername={server.server.USERNAME}
                         initialPassword={server.server.PASSWORD}
                         initialDisabled={server.server.DISABLED}
-                        handleChange={(server, port, username, password, disabled) =>
-                          handleServerChange(server, port, username, password, disabled, index)
+                        handleChange={(server, port, name, username, password, disabled) =>
+                          handleServerChange(server, port, name, username, password, disabled, index)
                         }
                         handleRemove={() => handleServerRemove(index)}
                         testConnectionAction={testConnectionAction}
@@ -364,7 +374,7 @@ export default function SettingsWrapper({
                               ...prevList,
                               {
                                 id: `new-server-${Date.now()}`,
-                                server: { HOST: '', PORT: 0, USERNAME: '', PASSWORD: '', DISABLED: false },
+                                server: { NAME: '', HOST: '', PORT: 0, USERNAME: '', PASSWORD: '', DISABLED: false },
                                 saved: false,
                               },
                             ]
@@ -518,7 +528,7 @@ export default function SettingsWrapper({
                                   key={`${server.HOST}:${server.PORT}`}
                                   value={`${server.HOST}:${server.PORT}`}
                                 >
-                                  {server.HOST}:{server.PORT}
+                                  {server.NAME || `${server.HOST}:${server.PORT}`}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -584,6 +594,21 @@ export default function SettingsWrapper({
                           <SelectContent>
                             <SelectItem value='12-hour'>12-hour</SelectItem>
                             <SelectItem value='24-hour'>24-hour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className='flex items-center gap-4'>
+                        <span className='w-1/4'>{t('settings.temperatureUnit')}</span>
+                        <Select
+                          value={temperatureUnit}
+                          onValueChange={(value) => setTemperatureUnit(value as TemperatureUnit)}
+                        >
+                          <SelectTrigger className='w-3/4'>
+                            <SelectValue placeholder={t('settings.selectTemperatureUnit')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='celsius'>{t('settings.celsius')}</SelectItem>
+                            <SelectItem value='fahrenheit'>{t('settings.fahrenheit')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

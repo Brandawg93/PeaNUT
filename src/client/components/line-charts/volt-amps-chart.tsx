@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import './charts.css'
 import LineChart from './line-chart-base'
-import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import type { LegendPayload } from 'recharts'
 import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 
@@ -22,7 +22,7 @@ export default function VoltAmpsChart({ id, power, powerNominal, updated }: Prop
 
   const referenceLineData = powerNominal ? [{ label: t('voltAmpsChart.nominalPower'), value: powerNominal }] : []
 
-  const handleLegendClick = (payload: Payload) => {
+  const handleLegendClick = (payload: LegendPayload) => {
     if (payload.value === 'power') {
       setShowPower(!showPower)
     }

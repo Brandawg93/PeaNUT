@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import { load, dump } from 'js-yaml'
 import { server } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
@@ -11,6 +11,8 @@ export type DashboardSectionConfig = Array<{
   key: DashboardSectionKey
   enabled: boolean
 }>
+
+export type TemperatureUnit = 'celsius' | 'fahrenheit'
 
 const ISettings = {
   NUT_SERVERS: [] as Array<server>,
@@ -28,11 +30,27 @@ const ISettings = {
     { key: 'OUTLETS', enabled: true },
   ] as DashboardSectionConfig,
   DISABLE_VERSION_CHECK: false,
+  TEMPERATURE_UNIT: 'celsius' as TemperatureUnit,
 }
 
-export type SettingsType = { [K in keyof typeof ISettings]: (typeof ISettings)[K] }
+// Deep-clone the defaults so each YamlSettings instance gets its own nested
+// arrays. A plain `{ ...ISettings }` aliases NUT_SERVERS and DASHBOARD_SECTIONS
+// across instances, which leaks mutations (e.g. the NUT_HOST/NUT_PORT
+// backwards-compat push) into every instance constructed afterward. The
+// scheduler rebuilds YamlSettings every tick, so this matters in production.
+// The defaults are JSON-safe, so JSON round-trip is sufficient and avoids
+// reliance on structuredClone (not available under jsdom in tests).
+const defaultSettings = (): SettingsType => JSON.parse(JSON.stringify(ISettings)) as SettingsType
+
+export type SettingsType = typeof ISettings
 
 export class YamlSettings {
+  // Shared across all instances in the process so the multi-line warning fires
+  // at most once per dirPath. YamlSettings is re-constructed on every scheduler
+  // tick (see src/server/scheduler.ts), and without this guard a non-writable
+  // /config would flood the logs every interval.
+  private static readonly warnedDirs = new Set<string>()
+
   private readonly filePath: string
   private data: SettingsType
   private readonly envVars: Record<string, string | undefined>
@@ -41,7 +59,7 @@ export class YamlSettings {
 
   constructor(filePath: string) {
     this.filePath = filePath
-    this.data = { ...ISettings }
+    this.data = defaultSettings()
     // Cache environment variables
     this.envVars = { ...process.env }
     this.debug = createDebugLogger('SETTINGS')
@@ -59,7 +77,7 @@ export class YamlSettings {
     let key: keyof SettingsType
     for (key in ISettings) {
       const envValue = this.envVars[key]
-      if (envValue === undefined || this.data[key] !== ISettings[key]) continue
+      if (envValue === undefined) continue
 
       try {
         this.debug.debug('Processing environment variable', { key, hasValue: !!envValue })
@@ -69,10 +87,12 @@ export class YamlSettings {
           this.data[key] = JSON.parse(envValue) as DashboardSectionConfig
         } else if (key === 'INFLUX_INTERVAL') {
           const parsed = Number(envValue)
-          if (isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
+          if (Number.isNaN(parsed)) throw new Error(`Invalid number for ${key}`)
           this.data[key] = parsed
         } else if (key === 'DISABLE_VERSION_CHECK') {
           this.data[key] = envValue === 'true'
+        } else if (key === 'TEMPERATURE_UNIT') {
+          this.data[key] = envValue === 'fahrenheit' ? 'fahrenheit' : 'celsius'
         } else {
           this.data[key] = envValue
         }
@@ -90,7 +110,7 @@ export class YamlSettings {
 
     if (nutHost && nutPort) {
       const port = Number(nutPort)
-      if (isNaN(port)) {
+      if (Number.isNaN(port)) {
         console.error('Invalid NUT_PORT value')
         return
       }
@@ -112,27 +132,23 @@ export class YamlSettings {
     this.debug.info('Loading settings from file', { filePath: this.filePath })
     // Create directory if it doesn't exist (only if file saving is enabled)
     if (!this.disableFileSaving) {
+      const absolutePath = path.resolve(this.filePath)
+      const dirPath = path.dirname(absolutePath)
       try {
-        const absolutePath = path.resolve(this.filePath)
-        const dirPath = path.dirname(absolutePath)
-
         this.debug.debug('Checking directory permissions', { dirPath })
         // Check if directory exists first to avoid unnecessary mkdir calls
-        if (!fs.existsSync(dirPath)) {
-          this.debug.info('Creating config directory', { dirPath })
-          fs.mkdirSync(dirPath, { recursive: true })
-        } else {
+        if (fs.existsSync(dirPath)) {
           // Test if the directory is writable only if it already exists
           fs.accessSync(dirPath, fs.constants.W_OK)
+        } else {
+          this.debug.info('Creating config directory', { dirPath })
+          fs.mkdirSync(dirPath, { recursive: true })
         }
       } catch (error) {
         this.debug.error('Config directory is not writable, disabling file saving', {
           error: error instanceof Error ? error.message : String(error),
         })
-        console.error(
-          'Config directory is not writable, disabling file saving:',
-          error instanceof Error ? error.message : error
-        )
+        this.logConfigDirError(dirPath, error)
         this.disableFileSaving = true
       }
     }
@@ -155,22 +171,7 @@ export class YamlSettings {
       console.error('Error loading settings file:', error instanceof Error ? error.message : error)
     }
 
-    // Ensure dashboard sections include any new defaults (e.g., OUTLETS)
-    try {
-      const defaultSectionKeys: DashboardSectionKey[] = ['KPIS', 'CHARTS', 'VARIABLES', 'OUTLETS']
-      const currentSections = Array.isArray(this.data.DASHBOARD_SECTIONS) ? this.data.DASHBOARD_SECTIONS : []
-      const existingKeys = new Set(currentSections.map((s) => s.key))
-      defaultSectionKeys.forEach((key) => {
-        if (!existingKeys.has(key)) {
-          currentSections.push({ key, enabled: true })
-        }
-      })
-      this.data.DASHBOARD_SECTIONS = currentSections
-    } catch (error) {
-      this.debug.warn?.('Failed to normalize DASHBOARD_SECTIONS; using defaults', {
-        error: error instanceof Error ? error.message : String(error),
-      })
-    }
+    this.normalizeDashboardSections()
 
     // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
@@ -183,6 +184,20 @@ export class YamlSettings {
     ]
   }
 
+  private normalizeDashboardSections(): void {
+    const defaultSectionKeys: DashboardSectionKey[] = ['KPIS', 'CHARTS', 'VARIABLES', 'OUTLETS']
+    const currentSections = Array.isArray(this.data.DASHBOARD_SECTIONS) ? this.data.DASHBOARD_SECTIONS : []
+    const existingKeys = new Set(currentSections.map((section) => section.key))
+
+    defaultSectionKeys.forEach((key) => {
+      if (!existingKeys.has(key)) {
+        currentSections.push({ key, enabled: true })
+      }
+    })
+
+    this.data.DASHBOARD_SECTIONS = currentSections
+  }
+
   private save(): boolean {
     if (this.disableFileSaving) {
       this.debug.debug('File saving is disabled, skipping save operation')
@@ -192,7 +207,7 @@ export class YamlSettings {
     try {
       this.debug.info('Saving settings to file', { filePath: this.filePath })
       const yamlStr = dump(this.data)
-      fs.writeFileSync(this.filePath, yamlStr, 'utf8')
+      fs.writeFileSync(this.filePath, yamlStr, { encoding: 'utf8', mode: 0o600 })
       this.debug.info('Settings saved successfully')
       return true
     } catch (error) {
@@ -225,13 +240,66 @@ export class YamlSettings {
     return dump(this.data)
   }
 
+  private logConfigDirError(dirPath: string, error: unknown): void {
+    const errMsg = error instanceof Error ? error.message : String(error)
+
+    // Subsequent failures for the same dirPath get a single-line reminder so
+    // log volume stays bounded.
+    if (YamlSettings.warnedDirs.has(dirPath)) {
+      console.error(`PeaNUT: config directory ${dirPath} still not writable (${errMsg}). UI changes will not persist.`)
+      return
+    }
+    YamlSettings.warnedDirs.add(dirPath)
+
+    // process.getuid/getgid are Unix-only (undefined on Windows). Most PeaNUT
+    // users hit this in Docker on Linux, so we report when available.
+    const uid = process.getuid?.()
+    const gid = process.getgid?.()
+    const processLine = uid !== undefined && gid !== undefined ? `\n  Process user:  uid=${uid} gid=${gid}` : ''
+
+    let dirLine = ''
+    try {
+      const stat = fs.statSync(dirPath)
+      const mode = (stat.mode & 0o777).toString(8).padStart(3, '0')
+      dirLine = `\n  Directory:     uid=${stat.uid} gid=${stat.gid} mode=${mode}`
+    } catch {
+      // Directory doesn't exist or can't be stat'd — likely the parent isn't
+      // writable either. Skip the directory line; the error above already
+      // tells the user what happened.
+    }
+
+    console.error(
+      `
+=========================================================================
+PeaNUT cannot write to the config directory.
+Settings changed in the web UI will NOT be saved and will be lost
+on restart. Servers added through the UI will disappear.
+
+  Path:          ${dirPath}
+  Error:         ${errMsg}${processLine}${dirLine}
+
+How to fix (Docker):
+  - Make the host directory owned by the container user, e.g.
+      chown -R 1000:1000 /path/to/host/config
+  - Or run the container as a user that owns the directory, e.g.
+      services.peanut.user: '1000:1000'   in docker-compose.yml
+  - Or set DISABLE_CONFIG_FILE=true to acknowledge env-only config
+    and silence this warning. Note: UI settings still will not persist.
+=========================================================================
+`
+    )
+  }
+
   public import(contents: string): boolean {
     try {
       const fileData = load(contents) as SettingsType
-      this.data = { ...ISettings, ...fileData }
+      this.data = { ...defaultSettings(), ...fileData }
+      this.normalizeDashboardSections()
       return this.save()
     } catch (error) {
-      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`)
+      throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`, {
+        cause: error,
+      })
     }
   }
 }

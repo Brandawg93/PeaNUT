@@ -3,21 +3,28 @@
 import InfluxWriter from '@/server/influxdb'
 import { Nut } from '@/server/nut'
 import { YamlSettings, SettingsType } from '@/server/settings'
-import { DEVICE, server, DeviceData, DevicesData, VarDescription } from '@/common/types'
-import chokidar from 'chokidar'
+import { DEVICE, server, DeviceData, DevicesData, VarDescription, NutDevice, VARS } from '@/common/types'
+import { watch } from 'chokidar'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
 import { upsStatus } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
+import { parseDeviceId } from '@/lib/utils'
+import {
+  getCachedCommands,
+  getCachedRWVars,
+  getCachedDeviceDescription,
+  getCachedVarDescription,
+} from '@/server/nut-cache'
 
-const settingsFile = './config/settings.yml'
+const settingsFile = process.env.SETTINGS_FILE || './config/settings.yml'
 const debug = createDebugLogger('ACTIONS')
 
 // Cache settings instance
 let settingsInstance: YamlSettings | null = null
 
 // Initialize watcher
-const watcher = chokidar.watch(settingsFile, {
+const watcher = watch(settingsFile, {
   persistent: true,
   ignoreInitial: true,
 })
@@ -29,13 +36,48 @@ watcher.on('change', () => {
 })
 
 function getCachedSettings(): YamlSettings {
-  if (!settingsInstance) {
+  if (settingsInstance) {
+    debug.debug('Using cached settings instance')
+  } else {
     debug.info('Creating new settings instance')
     settingsInstance = new YamlSettings(settingsFile)
-  } else {
-    debug.debug('Using cached settings instance')
   }
   return settingsInstance
+}
+
+function getCachedRWVarsForNut(nut: Nut, deviceName: string) {
+  return getCachedRWVars(nut.getHost(), nut.getPort(), deviceName, nut.getUsername(), nut.getPassword())
+}
+
+// Optional discovery must behave identically on the overview and device pages.
+// Catch outside the cache so a rejected lookup cannot reject the whole action.
+async function getOptionalDeviceValue<T>(
+  nut: Nut,
+  device: string,
+  command: string,
+  lookup: () => Promise<T>,
+  fallback: T
+): Promise<T> {
+  try {
+    return await lookup()
+  } catch (error) {
+    debug.warn('Failed optional NUT command', {
+      server: `${nut.getHost()}:${nut.getPort()}`,
+      device,
+      command,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return fallback
+  }
+}
+
+async function getDeviceCapabilities(nut: Nut, device: string, isReachable: boolean) {
+  if (!isReachable) return { rwVars: [], commands: [] }
+  const [rwVars, commands] = await Promise.all([
+    getOptionalDeviceValue(nut, device, 'LIST RW', () => getCachedRWVarsForNut(nut, device), []),
+    getOptionalDeviceValue(nut, device, 'LIST CMD', () => getCachedCommands(nut.getHost(), nut.getPort(), device), []),
+  ])
+  return { rwVars, commands }
 }
 
 function connect(): Array<Nut> {
@@ -49,11 +91,25 @@ function connect(): Array<Nut> {
     }
     const enabledServers = servers.filter((server: server) => !server.DISABLED)
     debug.info('Creating NUT connections', { serverCount: enabledServers.length })
-    return enabledServers.map((server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD))
+    return enabledServers.map(
+      (server: server) => new Nut(server.HOST, server.PORT, server.USERNAME, server.PASSWORD, server.NAME)
+    )
   } catch (e: any) {
     debug.error('Failed to connect to NUT servers', { error: e.message })
-    throw new Error(`Failed to connect to NUT servers: ${e.message}`)
+    throw new Error(`Failed to connect to NUT servers: ${e.message}`, { cause: e })
   }
+}
+
+// Validate that the host and port are present in the configured allow-list
+function isAllowedNutServer(host: string, port: number): boolean {
+  const settings = getCachedSettings()
+  const servers = settings.get('NUT_SERVERS') || []
+  return servers.some(
+    (s: server) =>
+      String(s.HOST).trim().toLowerCase() === String(host).trim().toLowerCase() &&
+      Number(s.PORT) === Number(port) &&
+      !s.DISABLED
+  )
 }
 
 export async function testConnection(
@@ -62,6 +118,9 @@ export async function testConnection(
   username?: string,
   password?: string
 ): Promise<string> {
+  if (!isAllowedNutServer(server, port)) {
+    throw new Error('Connection to this server is not allowed')
+  }
   try {
     const nut = new Nut(server, port, username, password)
     const connection = await nut.testConnection()
@@ -70,7 +129,7 @@ export async function testConnection(
     }
     return connection
   } catch (error: any) {
-    return Promise.reject(new Error(error.message))
+    throw new Error(error.message, { cause: error })
   }
 }
 
@@ -106,68 +165,94 @@ export async function getDevices(): Promise<DevicesData> {
 
   debug.info('Processing NUT servers', { serverCount: nuts.length })
 
-  await Promise.all(
-    nuts.map(async (nut) => {
-      const serverInfo = `${nut.getHost()}:${nut.getPort()}`
-      try {
-        debug.info('Testing connection to server', { server: serverInfo })
-        // Test connection first
-        await nut.testConnection()
-
-        debug.info('Getting devices from server', { server: serverInfo })
-        const devices = await nut.getDevices()
-        debug.info('Retrieved devices from server', { server: serverInfo, deviceCount: devices.length })
-
-        devices.forEach((device) => {
-          if (!deviceOrder.includes(device.name)) {
-            deviceOrder.push(device.name)
-          }
-        })
-
-        await Promise.all(
-          devices.map(async (device) => {
-            // Skip if we already have this device
-            if (deviceMap.has(device.name)) {
-              debug.debug('Skipping duplicate device', { device: device.name, server: serverInfo })
-              return
-            }
-
-            debug.info('Processing device', { device: device.name, server: serverInfo })
-            const data = await nut.getData(device.name)
-            const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
-
-            debug.debug('Device reachability check', { device: device.name, isReachable })
-
-            const [rwVars, commands] = await Promise.all([
-              isReachable ? nut.getRWVars(device.name) : Promise.resolve([]),
-              isReachable ? nut.getCommands(device.name) : Promise.resolve([]),
-            ])
-
-            deviceMap.set(device.name, {
-              vars: data,
-              rwVars,
-              description: device.description === 'Description unavailable' ? '' : device.description,
-              clients: [],
-              commands: nut.hasCredentials() ? commands : [],
-              name: device.name,
-            })
-
-            debug.info('Device processed successfully', { device: device.name, server: serverInfo })
+  // 1. Fetch all devices from all servers first to determine name uniqueness
+  type ServerDevices = { nut: Nut; devices: Array<NutDevice>; serverInfo: string }
+  const serverDevices = (
+    await Promise.all(
+      nuts.map(async (nut): Promise<ServerDevices | undefined> => {
+        const serverInfo = `${nut.getHost()}:${nut.getPort()}`
+        try {
+          await nut.testConnection()
+          const devices = await nut.getDevices()
+          return { nut, devices, serverInfo }
+        } catch (error) {
+          debug.error('Failed to process server', {
+            server: serverInfo,
+            error: error instanceof Error ? error.message : String(error),
           })
-        )
-      } catch (error) {
-        debug.error('Failed to process server', {
-          server: serverInfo,
-          error: error instanceof Error ? error.message : String(error),
+          failedServers.push(serverInfo)
+          return undefined
+        }
+      })
+    )
+  ).filter((server): server is ServerDevices => server !== undefined)
+
+  // 2. Count device name occurrences
+  const nameCounts = new Map<string, number>()
+  serverDevices.forEach(({ devices }) => {
+    devices.forEach((device) => {
+      nameCounts.set(device.name, (nameCounts.get(device.name) || 0) + 1)
+    })
+  })
+
+  // 3. Process each device and generate IDs
+  await Promise.all(
+    serverDevices.map(async ({ nut, devices, serverInfo }) => {
+      const serverName = nut.getName() || serverInfo
+      await Promise.all(
+        devices.map(async (device) => {
+          const isUnique = (nameCounts.get(device.name) || 0) === 1
+          // Create ID: simple name if unique, else alias~port~name (URL-safe)
+          // Use ~ as separator for composite IDs
+          const deviceId = isUnique ? device.name : `${nut.getName() || nut.getHost()}~${nut.getPort()}~${device.name}`
+
+          // Skip if we already have this exact device
+          if (deviceMap.has(deviceId)) {
+            return
+          }
+
+          if (!deviceOrder.includes(deviceId)) {
+            deviceOrder.push(deviceId)
+          }
+
+          let data: VARS = device.vars || {}
+          const alreadyUnreachable = data['ups.status']?.value === upsStatus.DEVICE_UNREACHABLE
+
+          if (!alreadyUnreachable) {
+            try {
+              data = await nut.getData(device.name)
+            } catch (error) {
+              debug.warn('Failed to get data for device', {
+                device: device.name,
+                server: serverInfo,
+                error: error instanceof Error ? error.message : String(error),
+              })
+              data = {
+                'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
+              }
+            }
+          }
+          const isReachable = data && data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
+
+          const { rwVars, commands } = await getDeviceCapabilities(nut, device.name, isReachable)
+
+          deviceMap.set(deviceId, {
+            id: deviceId,
+            name: device.name,
+            server: serverName,
+            vars: data,
+            rwVars,
+            description: device.description === 'Description unavailable' ? '' : device.description,
+            clients: [],
+            commands: nut.hasCredentials() ? commands : [],
+          })
         })
-        // Add failed server to list
-        failedServers.push(serverInfo)
-      }
+      )
     })
   )
 
   const result = {
-    devices: deviceOrder.map((name) => deviceMap.get(name)!),
+    devices: deviceOrder.map((id) => deviceMap.get(id)!),
     updated: new Date(),
     failedServers: failedServers.length > 0 ? failedServers : undefined,
   }
@@ -180,54 +265,109 @@ export async function getDevices(): Promise<DevicesData> {
   return result
 }
 
-export async function getDevice(device: string): Promise<DeviceData> {
-  const nuts = connect()
-  const nut = await Promise.any(
-    nuts.map(async (nut) => {
-      if (await nut.deviceExists(device)) {
-        return nut
-      }
-      throw new Error('Device not found on this server')
-    })
-  )
+async function findNut(nuts: Nut[], parsedId: ReturnType<typeof parseDeviceId>): Promise<Nut> {
+  const { host, port, name } = parsedId
 
-  const data = await nut.getData(device)
+  if (host && port) {
+    const matchingNut = nuts.find((n) => (n.getName() === host || n.getHost() === host) && n.getPort() === port)
+    if (!matchingNut) throw new Error('Server not found')
+    if (!(await matchingNut.deviceExists(name))) throw new Error('Device not found on this server')
+    return matchingNut
+  }
+
+  try {
+    return await Promise.any(
+      nuts.map(async (n) => {
+        if (await n.deviceExists(name)) return n
+        throw new Error('Device not found on this server')
+      })
+    )
+  } catch (e) {
+    if (e instanceof AggregateError) {
+      throw new Error(`Device '${name}' not found on any configured NUT server`, { cause: e })
+    }
+    throw e
+  }
+}
+
+export async function getDevice(deviceId: string): Promise<DeviceData> {
+  const nuts = connect()
+  const parsed = parseDeviceId(deviceId)
+  const nut = await findNut(nuts, parsed)
+
+  const serverInfo = `${nut.getHost()}:${nut.getPort()}`
+  const serverName = nut.getName() || serverInfo
+  // Use the provided deviceId if it's already in a valid format, otherwise generate one
+  // If deviceId is just a name, it's a unique ID. If it's composite, we should preserve the format.
+  const compositeId = deviceId.includes('~') || deviceId.includes('_') ? deviceId : parsed.name
+
+  const data = await nut.getData(parsed.name)
   const isReachable = data['ups.status']?.value !== upsStatus.DEVICE_UNREACHABLE
 
-  const [rwVars, commands, description] = await Promise.all([
-    isReachable ? nut.getRWVars(device) : Promise.resolve([]),
-    isReachable ? nut.getCommands(device) : Promise.resolve([]),
-    isReachable ? nut.getDescription(device) : Promise.resolve(''),
+  const [{ rwVars, commands }, description] = await Promise.all([
+    getDeviceCapabilities(nut, parsed.name, isReachable),
+    isReachable
+      ? getOptionalDeviceValue(
+          nut,
+          parsed.name,
+          'GET UPSDESC',
+          () => getCachedDeviceDescription(nut.getHost(), nut.getPort(), parsed.name),
+          ''
+        )
+      : Promise.resolve(''),
   ])
   return {
     device: {
+      id: compositeId,
+      name: parsed.name,
+      server: serverName,
       vars: data,
       rwVars,
       description: description === 'Description unavailable' ? '' : description,
       clients: [],
       commands: nut.hasCredentials() ? commands : [],
-      name: device,
     },
     updated: new Date(),
   }
 }
 
-export async function getAllVarDescriptions(device: string, params: string[]): Promise<VarDescription> {
+export async function getAllVarDescriptions(deviceId: string, params: string[]): Promise<VarDescription> {
   try {
     const nuts = connect()
     const data: { [x: string]: string } = {}
+    const parsed = parseDeviceId(deviceId)
+    let nut: Nut
 
-    // Find the first NUT server that has the device
-    const nut = await Promise.any(
-      nuts.map(async (nut) => {
-        if (await nut.deviceExists(device)) {
-          return nut
+    if (parsed.host && parsed.port) {
+      // Composite ID format: find the specific server (by alias or host)
+      const matchingNut = nuts.find(
+        (n) => (n.getName() === parsed.host || n.getHost() === parsed.host) && n.getPort() === parsed.port
+      )
+      if (!matchingNut || !(await matchingNut.deviceExists(parsed.name))) {
+        throw new Error('Device not found')
+      }
+      nut = matchingNut
+    } else {
+      try {
+        nut = await Promise.any(
+          nuts.map(async (n) => {
+            if (await n.deviceExists(parsed.name)) {
+              return n
+            }
+            throw new Error('Device not found on this server')
+          })
+        )
+      } catch (e) {
+        if (e instanceof AggregateError) {
+          throw new Error(`Device '${parsed.name}' not found on any configured NUT server`, { cause: e })
         }
-        throw new Error('Device not found on this server')
-      })
-    )
+        throw e
+      }
+    }
 
-    const descriptions = await Promise.all(params.map((param) => nut.getVarDescription(param, device)))
+    const descriptions = await Promise.all(
+      params.map((param) => getCachedVarDescription(nut.getHost(), nut.getPort(), param, parsed.name))
+    )
     params.forEach((param, index) => {
       data[param] = descriptions[index]
     })
@@ -237,54 +377,103 @@ export async function getAllVarDescriptions(device: string, params: string[]): P
   }
 }
 
-export async function saveVar(device: string, varName: string, value: string) {
+export async function saveVar(deviceId: string, varName: string, value: string) {
   try {
     const nuts = connect()
-    await Promise.all(
-      nuts.map(async (nut) => {
-        const deviceExists = await nut.deviceExists(device)
-        if (deviceExists) {
-          await nut.setVar(varName, value, device)
-        }
-      })
-    )
+    const parsed = parseDeviceId(deviceId)
+
+    if (parsed.host && parsed.port) {
+      // Composite ID: target specific server (by alias or host)
+      const nut = nuts.find(
+        (n) => (n.getName() === parsed.host || n.getHost() === parsed.host) && n.getPort() === parsed.port
+      )
+      if (!nut || !(await nut.deviceExists(parsed.name))) {
+        throw new Error('Device not found')
+      }
+      await nut.setVar(varName, value, parsed.name)
+    } else {
+      // Legacy format: apply to all servers that have the device
+      await Promise.all(
+        nuts.map(async (nut) => {
+          const deviceExists = await nut.deviceExists(parsed.name)
+          if (deviceExists) {
+            await nut.setVar(varName, value, parsed.name)
+          }
+        })
+      )
+    }
     return { error: undefined }
   } catch (e: any) {
     return { error: e?.message ?? 'Unknown error' }
   }
 }
 
-export async function getAllCommands(device: string): Promise<string[]> {
+export async function getAllCommands(deviceId: string): Promise<string[]> {
   try {
     const nuts = connect()
     const commands = new Set<string>()
+    const parsed = parseDeviceId(deviceId)
 
-    await Promise.all(
-      nuts.map(async (nut) => {
-        const deviceExists = await nut.deviceExists(device)
-        if (deviceExists) {
-          const deviceCommands = await nut.getCommands(device)
-          deviceCommands.forEach((command) => commands.add(command))
+    if (parsed.host && parsed.port) {
+      // Composite ID: target specific server (by alias or host)
+      const nut = nuts.find(
+        (n) => (n.getName() === parsed.host || n.getHost() === parsed.host) && n.getPort() === parsed.port
+      )
+      if (nut && (await nut.deviceExists(parsed.name))) {
+        const deviceCommands = await nut.getCommands(parsed.name)
+        for (const command of deviceCommands) {
+          commands.add(command)
         }
-      })
-    )
+      }
+    } else {
+      // Legacy format: collect from all servers that have the device
+      await Promise.all(
+        nuts.map(async (nut) => {
+          const deviceExists = await nut.deviceExists(parsed.name)
+          if (deviceExists) {
+            const deviceCommands = await nut.getCommands(parsed.name)
+            for (const command of deviceCommands) {
+              commands.add(command)
+            }
+          }
+        })
+      )
+    }
 
     return Array.from(commands)
-  } catch {
+  } catch (error) {
+    debug.error('Failed to get all commands', {
+      deviceId,
+      error: error instanceof Error ? error.message : String(error),
+    })
     return []
   }
 }
 
-export async function runCommand(device: string, command: string) {
+export async function runCommand(deviceId: string, command: string) {
   try {
     const nuts = connect()
-    const runPromises = nuts.map(async (nut) => {
-      const deviceExists = await nut.deviceExists(device)
-      if (deviceExists) {
-        await nut.runCommand(command, device)
+    const parsed = parseDeviceId(deviceId)
+
+    if (parsed.host && parsed.port) {
+      // Composite ID: target specific server (by alias or host)
+      const nut = nuts.find(
+        (n) => (n.getName() === parsed.host || n.getHost() === parsed.host) && n.getPort() === parsed.port
+      )
+      if (!nut || !(await nut.deviceExists(parsed.name))) {
+        throw new Error('Device not found')
       }
-    })
-    await Promise.all(runPromises)
+      await nut.runCommand(command, parsed.name)
+    } else {
+      // Legacy format: run on all servers that have the device
+      const runPromises = nuts.map(async (nut) => {
+        const deviceExists = await nut.deviceExists(parsed.name)
+        if (deviceExists) {
+          await nut.runCommand(command, parsed.name)
+        }
+      })
+      await Promise.all(runPromises)
+    }
     return { error: undefined }
   } catch (e: any) {
     return { error: e?.message ?? 'Unknown error' }
@@ -296,7 +485,8 @@ export async function checkSettings(): Promise<boolean> {
     const settings = getCachedSettings()
     const servers = settings.get('NUT_SERVERS')
     return Array.isArray(servers) && servers.length > 0
-  } catch {
+  } catch (error) {
+    debug.error('Failed to check settings', { error: error instanceof Error ? error.message : String(error) })
     return false
   }
 }
@@ -343,10 +533,12 @@ export async function disconnect() {
       'INFLUX_BUCKET',
     ]
 
-    keysToDelete.forEach((key) => settings.delete(key))
+    for (const key of keysToDelete) {
+      settings.delete(key)
+    }
     settingsInstance = null // Reset cached instance
     await watcher.close() // Clean up the watcher
   } catch (e: any) {
-    throw new Error(`Failed to disconnect: ${e.message}`)
+    throw new Error(`Failed to disconnect: ${e.message}`, { cause: e })
   }
 }

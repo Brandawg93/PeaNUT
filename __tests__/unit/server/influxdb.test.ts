@@ -74,7 +74,9 @@ describe('InfluxWriter', () => {
 
   describe('writePoint', () => {
     const baseDevice: DEVICE = {
+      id: 'localhost:3493/test-device',
       name: 'test-device',
+      server: 'localhost:3493',
       description: 'test description',
       vars: {},
       rwVars: [],
@@ -82,7 +84,7 @@ describe('InfluxWriter', () => {
       clients: [],
     }
 
-    it('should write numeric fields correctly', () => {
+    it('should write numeric fields correctly with server tag', () => {
       const device: DEVICE = {
         ...baseDevice,
         vars: {
@@ -96,9 +98,10 @@ describe('InfluxWriter', () => {
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
-      expect(writePointMock).toHaveBeenCalledTimes(3)
+      expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(Point).toHaveBeenCalledWith('test-device')
       expect(mockPoint.tag).toHaveBeenCalledWith('description', 'test description')
+      expect(mockPoint.tag).toHaveBeenCalledWith('server', 'localhost:3493')
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.floatField).toHaveBeenCalledWith('humidity', 60)
       expect(mockPoint.floatField).toHaveBeenCalledWith('voltage', 120.0)
@@ -119,7 +122,7 @@ describe('InfluxWriter', () => {
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
-      expect(writePointMock).toHaveBeenCalledTimes(3)
+      expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(Point).toHaveBeenCalledWith('test-device')
       expect(mockPoint.tag).toHaveBeenCalledWith('description', 'test description')
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
@@ -143,7 +146,7 @@ describe('InfluxWriter', () => {
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
-      expect(writePointMock).toHaveBeenCalledTimes(4)
+      expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.floatField).toHaveBeenCalledWith('voltage', 120.0)
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
@@ -155,7 +158,7 @@ describe('InfluxWriter', () => {
       const device: DEVICE = {
         ...baseDevice,
         vars: {
-          status: { value: upsStatus.DEVICE_UNREACHABLE },
+          'ups.status': { value: upsStatus.DEVICE_UNREACHABLE },
           temperature: { value: 25.5 },
         },
       }
@@ -237,10 +240,7 @@ describe('InfluxWriter', () => {
       influxWriter.writePoint(device)
 
       expect(writePointMock).toHaveBeenCalled()
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to write float field temperature for device test-device:',
-        expect.any(Error)
-      )
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to write point for device test-device:', expect.any(Error))
       consoleErrorSpy.mockRestore()
     })
 
@@ -261,9 +261,9 @@ describe('InfluxWriter', () => {
 
       influxWriter.writePoint(device)
 
-      // Should attempt to write all fields and log errors for each
-      expect(writePointMock).toHaveBeenCalledTimes(3)
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(3)
+      // Single consolidated point write — one error on failure
+      expect(writePointMock).toHaveBeenCalledTimes(1)
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
       consoleErrorSpy.mockRestore()
     })
 
@@ -295,9 +295,11 @@ describe('InfluxWriter', () => {
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
-      // Should only write the valid numeric field
+      // Should write a single consolidated point containing only the valid numeric field
       expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(mockPoint.floatField).toHaveBeenCalledWith('valid', 25.5)
+      expect(mockPoint.floatField).toHaveBeenCalledTimes(1)
+      expect(mockPoint.stringField).not.toHaveBeenCalled()
       consoleErrorSpy.mockRestore()
     })
 
@@ -324,7 +326,7 @@ describe('InfluxWriter', () => {
       const writePointMock = jest.spyOn(influxWriter['writeApi'], 'writePoint')
       influxWriter.writePoint(device)
 
-      expect(writePointMock).toHaveBeenCalledTimes(2)
+      expect(writePointMock).toHaveBeenCalledTimes(1)
       expect(mockPoint.floatField).toHaveBeenCalledWith('temperature', 25.5)
       expect(mockPoint.stringField).toHaveBeenCalledWith('status', 'Online')
       consoleErrorSpy.mockRestore()

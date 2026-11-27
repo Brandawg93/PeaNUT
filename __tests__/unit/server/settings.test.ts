@@ -1,14 +1,18 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync, accessSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, mkdirSync, accessSync, statSync } from 'fs'
 import { load, dump } from 'js-yaml'
 import { YamlSettings } from '../../../src/server/settings'
 
-jest.mock('js-yaml')
+jest.mock('js-yaml', () => ({
+  load: jest.fn(),
+  dump: jest.fn((data) => JSON.stringify(data)),
+}))
 jest.mock('fs', () => ({
   existsSync: jest.fn(),
   readFileSync: jest.fn(),
   writeFileSync: jest.fn(),
   mkdirSync: jest.fn(),
   accessSync: jest.fn(),
+  statSync: jest.fn(),
   constants: {
     W_OK: 2,
   },
@@ -36,7 +40,7 @@ describe('YamlSettings', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
     // Default mock implementations to prevent console errors
     ;(existsSync as jest.Mock).mockReturnValue(false)
     ;(accessSync as jest.Mock).mockImplementation(() => {})
@@ -82,6 +86,63 @@ describe('YamlSettings', () => {
       consoleSpy.mockRestore()
     })
 
+    it('logs an actionable diagnostic when the config directory is not writable', () => {
+      ;(existsSync as jest.Mock).mockReturnValue(true)
+      const accessErr = Object.assign(new Error("EACCES: permission denied, access '/uniq-full'"), { code: 'EACCES' })
+      ;(accessSync as jest.Mock).mockImplementation(() => {
+        throw accessErr
+      })
+      ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      const settings = new YamlSettings('/uniq-full/settings.yml')
+      expect(settings).toBeInstanceOf(YamlSettings)
+
+      const output = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n')
+      // Plain-language consequence
+      expect(output).toContain('cannot write to the config directory')
+      expect(output).toContain('lost')
+      // Diagnostic facts
+      expect(output).toContain('/uniq-full')
+      expect(output).toContain("EACCES: permission denied, access '/uniq-full'")
+      expect(output).toContain('uid=0 gid=0 mode=755')
+      // Remediation steps
+      expect(output).toMatch(/chown.*1000:1000/)
+      expect(output).toContain("services.peanut.user: '1000:1000'")
+      expect(output).toContain('DISABLE_CONFIG_FILE=true')
+
+      consoleSpy.mockRestore()
+    })
+
+    it('rate-limits the diagnostic to one full block per dirPath', () => {
+      ;(existsSync as jest.Mock).mockReturnValue(true)
+      ;(accessSync as jest.Mock).mockImplementation(() => {
+        throw Object.assign(new Error("EACCES: permission denied, access '/uniq-rate'"), { code: 'EACCES' })
+      })
+      ;(statSync as jest.Mock).mockReturnValue({ uid: 0, gid: 0, mode: 0o40755 })
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      // First instance for this dirPath: full diagnostic block.
+      const first = new YamlSettings('/uniq-rate/settings.yml')
+      expect(first).toBeInstanceOf(YamlSettings)
+      const firstCalls = consoleSpy.mock.calls.length
+      expect(consoleSpy.mock.calls.some((c) => c.join(' ').includes('cannot write to the config directory'))).toBe(true)
+
+      // Second instance for the same dirPath: should NOT re-emit the block,
+      // only a short single-line reminder. This is what protects users from
+      // log floods when the scheduler creates a new YamlSettings every tick.
+      const second = new YamlSettings('/uniq-rate/settings.yml')
+      expect(second).toBeInstanceOf(YamlSettings)
+      const newCalls = consoleSpy.mock.calls.slice(firstCalls)
+      const newOutput = newCalls.map((c) => c.join(' ')).join('\n')
+      expect(newOutput).not.toContain('cannot write to the config directory')
+      expect(newOutput).not.toContain('How to fix')
+      expect(newOutput).toContain('still not writable')
+      expect(newOutput).toContain('/uniq-rate')
+
+      consoleSpy.mockRestore()
+    })
+
     it('initializes settings with environment variables', () => {
       process.env.NUT_HOST = 'localhost_env'
       process.env.NUT_PORT = '8082'
@@ -108,6 +169,102 @@ describe('YamlSettings', () => {
       expect(settingFromEnv4.get('INFLUX_HOST')).toBe('localhost_env')
       delete process.env.INFLUX_HOST
     })
+
+    describe('env var parsing edge cases', () => {
+      const ENV_KEYS = [
+        'DASHBOARD_SECTIONS',
+        'DISABLE_VERSION_CHECK',
+        'TEMPERATURE_UNIT',
+        'NUT_HOST',
+        'NUT_PORT',
+        'NUT_SERVERS',
+        'DISABLE_CONFIG_FILE',
+      ] as const
+
+      const cleanEnv = () => ENV_KEYS.forEach((k) => delete process.env[k])
+
+      beforeEach(cleanEnv)
+      afterEach(cleanEnv)
+
+      it('parses DASHBOARD_SECTIONS, DISABLE_VERSION_CHECK, and TEMPERATURE_UNIT env vars', () => {
+        process.env.DASHBOARD_SECTIONS = JSON.stringify([{ key: 'KPIS', enabled: false }])
+        process.env.DISABLE_VERSION_CHECK = 'true'
+        process.env.TEMPERATURE_UNIT = 'fahrenheit'
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('DASHBOARD_SECTIONS')).toEqual([
+          { key: 'KPIS', enabled: false },
+          { key: 'CHARTS', enabled: true },
+          { key: 'VARIABLES', enabled: true },
+          { key: 'OUTLETS', enabled: true },
+        ])
+        expect(settings.get('DISABLE_VERSION_CHECK')).toBe(true)
+        expect(settings.get('TEMPERATURE_UNIT')).toBe('fahrenheit')
+      })
+
+      it('defaults TEMPERATURE_UNIT to celsius when env value is not fahrenheit', () => {
+        process.env.TEMPERATURE_UNIT = 'not-a-real-unit'
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('TEMPERATURE_UNIT')).toBe('celsius')
+      })
+
+      it('logs and falls back when env var fails to parse', () => {
+        process.env.NUT_SERVERS = 'not-valid-json{'
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('NUT_SERVERS')).toEqual([])
+        expect(consoleSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Error parsing environment variable NUT_SERVERS'),
+          expect.any(SyntaxError)
+        )
+
+        consoleSpy.mockRestore()
+      })
+
+      it('logs and bails on invalid NUT_PORT', () => {
+        process.env.NUT_HOST = 'host'
+        process.env.NUT_PORT = 'not-a-number'
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('NUT_SERVERS')).toEqual([])
+        expect(consoleSpy).toHaveBeenCalledWith('Invalid NUT_PORT value')
+
+        consoleSpy.mockRestore()
+      })
+
+      it('does not duplicate NUT_SERVERS entry already present via NUT_SERVERS env var', () => {
+        process.env.NUT_SERVERS = JSON.stringify([{ HOST: 'h', PORT: 9 }])
+        process.env.NUT_HOST = 'h'
+        process.env.NUT_PORT = '9'
+
+        const settings = new YamlSettings(filePath)
+        expect(settings.get('NUT_SERVERS')).toHaveLength(1)
+      })
+
+      it('returns false from set() when DISABLE_CONFIG_FILE=true', () => {
+        process.env.DISABLE_CONFIG_FILE = 'true'
+        const settings = new YamlSettings(filePath)
+        ;(writeFileSync as jest.Mock).mockClear()
+        expect(settings.set('INFLUX_TOKEN', 'anything')).toBe(false)
+        expect(writeFileSync).not.toHaveBeenCalled()
+      })
+
+      it('returns false from set() when writeFileSync throws', () => {
+        const settings = new YamlSettings(filePath)
+        ;(writeFileSync as jest.Mock).mockImplementationOnce(() => {
+          throw new Error('ENOSPC')
+        })
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+        const result = settings.set('INFLUX_TOKEN', 'value')
+        expect(result).toBe(false)
+        expect(consoleSpy).toHaveBeenCalledWith('Error saving settings file:', 'ENOSPC')
+
+        consoleSpy.mockRestore()
+      })
+    })
   })
 
   describe('get', () => {
@@ -124,6 +281,10 @@ describe('YamlSettings', () => {
 
       expect(yamlSettings.get('INFLUX_TOKEN')).toBe('testValue')
       expect(saveSpy).toHaveBeenCalled()
+      expect(writeFileSync).toHaveBeenLastCalledWith(expect.any(String), expect.any(String), {
+        encoding: 'utf8',
+        mode: 0o600,
+      })
     })
   })
 
@@ -160,7 +321,7 @@ describe('YamlSettings', () => {
       // Mock the dump function to return what it receives
       ;(dump as jest.Mock).mockImplementation((data) => JSON.stringify(data))
 
-      expect(typeof exported).toBe('undefined')
+      expect(typeof exported).toBe('string')
       expect(dump).toHaveBeenCalledWith(yamlSettings.getAll())
     })
   })
@@ -214,14 +375,25 @@ describe('YamlSettings', () => {
 
       expect(yamlSettings.get('INFLUX_HOST')).toBe('imported-host')
       expect(yamlSettings.get('INFLUX_INTERVAL')).toBe(10) // Default value
-      expect(yamlSettings.get('NUT_SERVERS')).toEqual([
-        {
-          HOST: 'localhost_env',
-          PASSWORD: undefined,
-          PORT: 8082,
-          USERNAME: undefined,
-        },
-      ]) // Default value
+      expect(yamlSettings.get('NUT_SERVERS')).toEqual([]) // Default value
+    })
+
+    it('should add newly available sections when importing an older backup', () => {
+      ;(load as jest.Mock).mockReturnValue({
+        DASHBOARD_SECTIONS: [
+          { key: 'KPIS', enabled: false },
+          { key: 'CHARTS', enabled: true },
+        ],
+      })
+
+      yamlSettings.import('DASHBOARD_SECTIONS: []')
+
+      expect(yamlSettings.get('DASHBOARD_SECTIONS')).toEqual([
+        { key: 'KPIS', enabled: false },
+        { key: 'CHARTS', enabled: true },
+        { key: 'VARIABLES', enabled: true },
+        { key: 'OUTLETS', enabled: true },
+      ])
     })
   })
 })

@@ -1,12 +1,12 @@
 import { ToadScheduler, SimpleIntervalJob, Task } from 'toad-scheduler'
-import chokidar from 'chokidar'
+import { watch } from 'chokidar'
 import { YamlSettings } from '@/server/settings'
 import { getDevices } from '@/app/actions'
 import InfluxWriter from '@/server/influxdb'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
 
-const settingsFile = './config/settings.yml'
+const settingsFile = process.env.SETTINGS_FILE || './config/settings.yml'
 const debug = createDebugLogger('SCHEDULER')
 
 // Initialize settings and scheduler
@@ -83,7 +83,7 @@ const addOrUpdateJob = (interval: number) => {
 addOrUpdateJob(influxInterval)
 
 // Define the task to check and update the interval
-const watcher = chokidar.watch(settingsFile)
+const watcher = watch(settingsFile)
 
 watcher.on('change', () => {
   debug.info('Settings file changed, updating scheduler configuration')

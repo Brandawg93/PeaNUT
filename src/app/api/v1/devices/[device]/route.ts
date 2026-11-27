@@ -40,12 +40,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (includeMeta) {
       // Re-resolve the instance to get host:port
       const { getSingleNutInstance } = await import('@/app/api/utils')
-      const nut = await getSingleNutInstance(device)
-      if (nut) {
+      const result = await getSingleNutInstance(device)
+      if (result) {
+        const serverInfo = `${result.nut.getHost()}:${result.nut.getPort()}`
         return NextResponse.json({
           ...varsValues,
-          'peanut.device_id': device,
-          'peanut.server': `${nut.getHost()}:${nut.getPort()}`,
+          'peanut.device_id': `${serverInfo}/${result.deviceName}`,
+          'peanut.server': serverInfo,
         })
       }
     }

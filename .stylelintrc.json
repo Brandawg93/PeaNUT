@@ -6,6 +6,12 @@
       {
         "ignoreAtRules": ["tailwind", "plugin", "custom-variant", "theme"]
       }
+    ],
+    "at-rule-prelude-no-invalid": [
+      true,
+      {
+        "ignoreAtRules": ["apply"]
+      }
     ]
   }
 }

@@ -23,6 +23,26 @@ export default function NutTerminal({ host, port }: Props) {
   useEffect(() => {
     if (!containerRef.current || wsRef.current || terminalRef.current) return
 
+    // Define handleCommand inside effect to avoid accessing before declaration
+    const handleCommand = async (data: string) => {
+      const terminal = terminalRef.current
+      if (!terminal) return
+
+      try {
+        if (data === '\u007F') {
+          terminal.write('\b \b')
+          return
+        }
+
+        if (data) {
+          terminal.write(data)
+        }
+      } catch (error) {
+        console.error('Error in handleCommand:', error)
+        terminal.writeln('\r\nError executing command')
+      }
+    }
+
     // Initialize terminal
     const terminal = new Terminal({
       theme: {
@@ -36,7 +56,7 @@ export default function NutTerminal({ host, port }: Props) {
     terminal.open(containerRef.current)
 
     const ws = new WebSocket(
-      `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}${basePath}/api/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
+      `${globalThis.window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${globalThis.window.location.host}${basePath}/api/ws?nutHost=${encodeURIComponent(host)}&nutPort=${encodeURIComponent(port)}`
     )
     wsRef.current = ws
 
@@ -56,7 +76,7 @@ export default function NutTerminal({ host, port }: Props) {
       })
 
       // Handle resize event
-      window.addEventListener('resize', handleResize)
+      globalThis.window.addEventListener('resize', handleResize)
       // Initial fit
       fitAddon.fit()
     }
@@ -70,28 +90,9 @@ export default function NutTerminal({ host, port }: Props) {
         terminalRef.current.dispose()
         terminalRef.current = null
       }
-      window.removeEventListener('resize', handleResize)
+      globalThis.window.removeEventListener('resize', handleResize)
     }
   }, [host, port, resolvedTheme, basePath])
-
-  const handleCommand = async (data: string) => {
-    const terminal = terminalRef.current
-    if (!terminal) return
-
-    try {
-      if (data === '\u007F') {
-        terminal.write('\b \b')
-        return
-      }
-
-      if (data) {
-        terminal.write(data)
-      }
-    } catch (error) {
-      console.error('Error in handleCommand:', error)
-      terminal.writeln('\r\nError executing command')
-    }
-  }
 
   return (
     <div className='h-full w-full'>

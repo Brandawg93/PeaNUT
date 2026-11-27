@@ -1,0 +1,49 @@
+name: Tested Device
+description: Report a UPS device you have tested with PeaNUT.
+title: '[Tested Device]: '
+labels: ['tested device']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing PeaNUT! A maintainer will review your report before it is added to the tested-device wiki.
+        Include any missing readings or features in Notes, even if the device otherwise works well.
+  - type: input
+    id: manufacturer
+    attributes:
+      label: Manufacturer
+      placeholder: APC, CyberPower (CPS), Eaton, etc.
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: Back-UPS BX2200MI
+    validations:
+      required: true
+  - type: input
+    id: driver
+    attributes:
+      label: Driver
+      description: The NUT driver name, as reported by driver.name.
+      placeholder: usbhid-ups
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      options:
+        - '✅ Fully Operational'
+        - '⚠️ Partially Operational'
+        - '❌ Not Operational'
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Missing readings, self-test results, connection type, NUT version, or setup requirements. Text is published as plain text.
+    validations:
+      required: false

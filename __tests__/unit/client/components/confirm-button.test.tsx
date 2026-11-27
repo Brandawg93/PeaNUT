@@ -213,7 +213,7 @@ describe('ConfirmButton', () => {
   })
 
   it('should clear timeout when component unmounts', () => {
-    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
+    const clearTimeoutSpy = jest.spyOn(globalThis, 'clearTimeout')
     const { unmount } = renderWithProviders(<ConfirmButton {...defaultProps} />)
 
     const button = screen.getByRole('button')

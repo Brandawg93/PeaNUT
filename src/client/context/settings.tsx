@@ -1,8 +1,17 @@
 'use client'
 
 import { getSettings } from '@/app/actions'
-import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react'
-import { SettingsType } from '@/server/settings'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  startTransition,
+} from 'react'
+import type { SettingsType, TemperatureUnit } from '@/server/settings'
 import { LanguageContext } from './language'
 
 type SettingsContextType = {
@@ -62,6 +71,11 @@ export const useNutServers = () => {
 export const useVersionCheck = () => {
   const { settings } = useSettings()
   return settings.DISABLE_VERSION_CHECK || false
+}
+
+export const useTemperatureUnit = (): TemperatureUnit => {
+  const { settings } = useSettings()
+  return settings.TEMPERATURE_UNIT === 'fahrenheit' ? 'fahrenheit' : 'celsius'
 }
 
 // Shared utility function for date formatting
@@ -125,6 +139,8 @@ export const useFormatDate = () => {
 
 export const SettingsProvider = ({ children }: { readonly children: React.ReactNode }) => {
   const [settings, setSettings] = useState<Partial<SettingsType>>({})
+  const isInitializedRef = useRef(false)
+  const mountedRef = useRef(true)
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -132,6 +148,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       const [
         dateFormat,
         timeFormat,
+        temperatureUnit,
         sections,
         disableVersionCheck,
         influxHost,
@@ -143,6 +160,7 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
       ] = await Promise.all([
         getSettings('DATE_FORMAT'),
         getSettings('TIME_FORMAT'),
+        getSettings('TEMPERATURE_UNIT'),
         getSettings('DASHBOARD_SECTIONS'),
         getSettings('DISABLE_VERSION_CHECK'),
         getSettings('INFLUX_HOST'),
@@ -152,10 +170,12 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
         getSettings('INFLUX_INTERVAL'),
         getSettings('NUT_SERVERS'),
       ])
+      if (!mountedRef.current) return
 
       setSettings({
         DATE_FORMAT: dateFormat || '',
         TIME_FORMAT: timeFormat || '',
+        TEMPERATURE_UNIT: temperatureUnit === 'fahrenheit' ? 'fahrenheit' : 'celsius',
         DASHBOARD_SECTIONS: sections,
         DISABLE_VERSION_CHECK: disableVersionCheck || false,
         INFLUX_HOST: influxHost || '',
@@ -166,10 +186,12 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
         NUT_SERVERS: nutServers || [],
       })
     } catch {
+      if (!mountedRef.current) return
       // Handle error silently in tests
       setSettings({
         DATE_FORMAT: '',
         TIME_FORMAT: '',
+        TEMPERATURE_UNIT: 'celsius',
         DISABLE_VERSION_CHECK: false,
         INFLUX_HOST: '',
         INFLUX_TOKEN: '',
@@ -182,7 +204,17 @@ export const SettingsProvider = ({ children }: { readonly children: React.ReactN
   }, [])
 
   useEffect(() => {
-    fetchSettings()
+    // Only fetch settings once on mount using ref to avoid setState in effect
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true
+      // Use startTransition to defer the state update and avoid synchronous setState warning
+      startTransition(() => {
+        fetchSettings()
+      })
+    }
+    return () => {
+      mountedRef.current = false
+    }
   }, [fetchSettings])
 
   const value = useMemo(() => ({ settings, refreshSettings: fetchSettings }), [settings, fetchSettings])

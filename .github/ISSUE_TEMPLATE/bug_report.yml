@@ -14,6 +14,7 @@ body:
     id: debug-output
     attributes:
       label: Debug Output
+      description: If applicable, provide the debug output from the server when run with DEBUG=true
     validations:
       required: true
   - type: textarea

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageContext } from '@/client/context/language'
 import './charts.css'
 import LineChart from './line-chart-base'
-import { Payload } from 'recharts/types/component/DefaultLegendContent'
+import type { LegendPayload } from 'recharts'
 import { useChartData } from './hooks/useChartData'
 import { BaseChartProps } from './types/chart-types'
 
@@ -24,7 +24,7 @@ export default function WattsChart({ id, realpower, realpowerNominal, updated }:
     ? [{ label: t('wattsChart.nominalRealpower'), value: realpowerNominal }]
     : []
 
-  const handleLegendClick = (payload: Payload) => {
+  const handleLegendClick = (payload: LegendPayload) => {
     if (payload.value === 'realpower') {
       setShowRealpower(!showRealpower)
     }
