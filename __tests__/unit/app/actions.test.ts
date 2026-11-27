@@ -97,6 +97,30 @@ describe('actions', () => {
     expect(data.devices).toEqual(result)
   })
 
+  it('keeps devices in configured server order when responses finish out of order', async () => {
+    const firstDevice = { name: 'first-ups', description: '', rwVars: [], vars: {}, commands: [], clients: [] }
+    const secondDevice = { name: 'second-ups', description: '', rwVars: [], vars: {}, commands: [], clients: [] }
+    ;(YamlSettings.prototype.get as jest.Mock).mockImplementationOnce((key: keyof SettingsType) => {
+      const settings = {
+        NUT_SERVERS: [
+          { NAME: 'First', HOST: 'first', PORT: TEST_PORT, DISABLED: false },
+          { NAME: 'Second', HOST: 'second', PORT: TEST_PORT, DISABLED: false },
+        ],
+      }
+      return settings[key as keyof typeof settings]
+    })
+    ;(Nut.prototype.getDevices as jest.Mock)
+      .mockImplementationOnce(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 20))
+        return [firstDevice]
+      })
+      .mockResolvedValueOnce([secondDevice])
+
+    const data = await getDevices()
+
+    expect(data.devices?.map((device) => device.name)).toEqual(['first-ups', 'second-ups'])
+  })
+
   describe.each([
     ['getDevices', async () => (await getDevices()).devices![0]],
     ['getDevice', async () => (await getDevice('foo')).device],
