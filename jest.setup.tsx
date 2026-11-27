@@ -44,6 +44,13 @@ jest.mock('fs', () => ({
   constants: { W_OK: 2 },
 }))
 
+jest.mock('chokidar', () => ({
+  watch: jest.fn(() => ({
+    on: jest.fn().mockReturnThis(),
+    close: jest.fn(),
+  })),
+}))
+
 jest.mock('lucide-react', () => ({
   ChevronDown: jest.fn(),
   ChevronUp: jest.fn(),
