@@ -192,7 +192,12 @@ describe('YamlSettings', () => {
         process.env.TEMPERATURE_UNIT = 'fahrenheit'
 
         const settings = new YamlSettings(filePath)
-        expect(settings.get('DASHBOARD_SECTIONS')).toEqual([{ key: 'KPIS', enabled: false }])
+        expect(settings.get('DASHBOARD_SECTIONS')).toEqual([
+          { key: 'KPIS', enabled: false },
+          { key: 'CHARTS', enabled: true },
+          { key: 'VARIABLES', enabled: true },
+          { key: 'OUTLETS', enabled: true },
+        ])
         expect(settings.get('DISABLE_VERSION_CHECK')).toBe(true)
         expect(settings.get('TEMPERATURE_UNIT')).toBe('fahrenheit')
       })
@@ -371,6 +376,24 @@ describe('YamlSettings', () => {
       expect(yamlSettings.get('INFLUX_HOST')).toBe('imported-host')
       expect(yamlSettings.get('INFLUX_INTERVAL')).toBe(10) // Default value
       expect(yamlSettings.get('NUT_SERVERS')).toEqual([]) // Default value
+    })
+
+    it('should add newly available sections when importing an older backup', () => {
+      ;(load as jest.Mock).mockReturnValue({
+        DASHBOARD_SECTIONS: [
+          { key: 'KPIS', enabled: false },
+          { key: 'CHARTS', enabled: true },
+        ],
+      })
+
+      yamlSettings.import('DASHBOARD_SECTIONS: []')
+
+      expect(yamlSettings.get('DASHBOARD_SECTIONS')).toEqual([
+        { key: 'KPIS', enabled: false },
+        { key: 'CHARTS', enabled: true },
+        { key: 'VARIABLES', enabled: true },
+        { key: 'OUTLETS', enabled: true },
+      ])
     })
   })
 })

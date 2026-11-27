@@ -5,7 +5,7 @@ import { server } from '../common/types'
 import { DEFAULT_INFLUX_INTERVAL } from '@/common/constants'
 import { createDebugLogger } from '@/server/debug'
 
-export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES'
+export type DashboardSectionKey = 'KPIS' | 'CHARTS' | 'VARIABLES' | 'OUTLETS'
 
 export type DashboardSectionConfig = Array<{
   key: DashboardSectionKey
@@ -27,6 +27,7 @@ const ISettings = {
     { key: 'KPIS', enabled: true },
     { key: 'CHARTS', enabled: true },
     { key: 'VARIABLES', enabled: true },
+    { key: 'OUTLETS', enabled: true },
   ] as DashboardSectionConfig,
   DISABLE_VERSION_CHECK: false,
   TEMPERATURE_UNIT: 'celsius' as TemperatureUnit,
@@ -170,6 +171,8 @@ export class YamlSettings {
       console.error('Error loading settings file:', error instanceof Error ? error.message : error)
     }
 
+    this.normalizeDashboardSections()
+
     // Ensure NUT_SERVERS is always an array using nullish coalescing
     this.data.NUT_SERVERS ??= []
     // Ensure DASHBOARD_SECTIONS has a default value
@@ -177,7 +180,22 @@ export class YamlSettings {
       { key: 'KPIS', enabled: true },
       { key: 'CHARTS', enabled: true },
       { key: 'VARIABLES', enabled: true },
+      { key: 'OUTLETS', enabled: true },
     ]
+  }
+
+  private normalizeDashboardSections(): void {
+    const defaultSectionKeys: DashboardSectionKey[] = ['KPIS', 'CHARTS', 'VARIABLES', 'OUTLETS']
+    const currentSections = Array.isArray(this.data.DASHBOARD_SECTIONS) ? this.data.DASHBOARD_SECTIONS : []
+    const existingKeys = new Set(currentSections.map((section) => section.key))
+
+    defaultSectionKeys.forEach((key) => {
+      if (!existingKeys.has(key)) {
+        currentSections.push({ key, enabled: true })
+      }
+    })
+
+    this.data.DASHBOARD_SECTIONS = currentSections
   }
 
   private save(): boolean {
@@ -276,6 +294,7 @@ How to fix (Docker):
     try {
       const fileData = load(contents) as SettingsType
       this.data = { ...defaultSettings(), ...fileData }
+      this.normalizeDashboardSections()
       return this.save()
     } catch (error) {
       throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : String(error)}`, {
