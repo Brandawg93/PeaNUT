@@ -166,23 +166,26 @@ export async function getDevices(): Promise<DevicesData> {
   debug.info('Processing NUT servers', { serverCount: nuts.length })
 
   // 1. Fetch all devices from all servers first to determine name uniqueness
-  const serverDevices: Array<{ nut: Nut; devices: Array<NutDevice>; serverInfo: string }> = []
-  await Promise.all(
-    nuts.map(async (nut) => {
-      const serverInfo = `${nut.getHost()}:${nut.getPort()}`
-      try {
-        await nut.testConnection()
-        const devices = await nut.getDevices()
-        serverDevices.push({ nut, devices, serverInfo })
-      } catch (error) {
-        debug.error('Failed to process server', {
-          server: serverInfo,
-          error: error instanceof Error ? error.message : String(error),
-        })
-        failedServers.push(serverInfo)
-      }
-    })
-  )
+  type ServerDevices = { nut: Nut; devices: Array<NutDevice>; serverInfo: string }
+  const serverDevices = (
+    await Promise.all(
+      nuts.map(async (nut): Promise<ServerDevices | undefined> => {
+        const serverInfo = `${nut.getHost()}:${nut.getPort()}`
+        try {
+          await nut.testConnection()
+          const devices = await nut.getDevices()
+          return { nut, devices, serverInfo }
+        } catch (error) {
+          debug.error('Failed to process server', {
+            server: serverInfo,
+            error: error instanceof Error ? error.message : String(error),
+          })
+          failedServers.push(serverInfo)
+          return undefined
+        }
+      })
+    )
+  ).filter((server): server is ServerDevices => server !== undefined)
 
   // 2. Count device name occurrences
   const nameCounts = new Map<string, number>()
